@@ -10,55 +10,28 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.Resource;
 import org.w3c.dom.html.HTMLElement;
-
-import java.net.InetSocketAddress;
-import java.util.Base64;
-import java.util.Random;
 
 /**
  * Created by limpygnome on 13/11/16.
  */
 public class Program extends Application
 {
-    private static final String randomAccessToken;
+    private Controller controller;
 
-    static
+    public Program()
     {
-        // Generate 32 random bytes
-        Random rand = new Random(System.currentTimeMillis());
-        byte[] randomBytes = new byte[32];
-        rand.nextBytes(randomBytes);
-
-        // Convert to base64 string as our token
-        randomAccessToken = Base64.getEncoder().encodeToString(randomBytes);
+        controller = new Controller();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        System.out.println("Random access token: " + randomAccessToken);
-
         // Start local Jetty server
-        // TODO: handle port unavailable / display message about another instance
-        Server server = new Server(new InetSocketAddress("localhost", 8123));
-
-        ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setDirectoriesListed(true);
-        resourceHandler.setBaseResource(Resource.newClassPathResource("/webapp"));
-
-        HandlerList handlerList = new HandlerList();
-        handlerList.setHandlers(new Handler[]{ resourceHandler });
-        server.setHandler(handlerList);
-
-        server.start();
+        controller.getJettyService().start();
 
         // Locate main page
+        String randomAccessToken = controller.getAccessTokenService().getRandomAccessToken();
         String url = "http://localhost:8123/index.html?randomAccessToken=" + randomAccessToken;
 
         // Build browser
@@ -90,7 +63,7 @@ public class Program extends Application
         primaryStage.setOnCloseRequest(event -> {
             try
             {
-                server.stop();
+                controller.getJettyService().stop();
             }
             catch (Exception e) { }
         });

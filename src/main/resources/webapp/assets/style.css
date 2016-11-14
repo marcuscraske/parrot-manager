@@ -32,6 +32,14 @@ header p.actions
 {
 }
 
+header p.current-file
+{
+    position: absolute;
+    top: 0.4em;
+    left: 50%;
+    color: #999;
+}
+
 header p.options
 {
     position: absolute;
