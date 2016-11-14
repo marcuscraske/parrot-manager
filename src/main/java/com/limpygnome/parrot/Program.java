@@ -10,29 +10,66 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.w3c.dom.html.HTMLElement;
+
+import java.net.InetSocketAddress;
+import java.util.Base64;
+import java.util.Random;
 
 /**
  * Created by limpygnome on 13/11/16.
  */
 public class Program extends Application
 {
+    private static final String randomAccessToken;
+
+    static
+    {
+        // Generate 32 random bytes
+        Random rand = new Random(System.currentTimeMillis());
+        byte[] randomBytes = new byte[32];
+        rand.nextBytes(randomBytes);
+
+        // Convert to base64 string as our token
+        randomAccessToken = Base64.getEncoder().encodeToString(randomBytes);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        System.out.println("Random access token: " + randomAccessToken);
+
+        // Start local Jetty server
+        // TODO: handle port unavailable / display message about another instance
+        Server server = new Server(new InetSocketAddress("localhost", 8123));
+
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setDirectoriesListed(true);
+        resourceHandler.setBaseResource(Resource.newClassPathResource("/webapp"));
+
+        HandlerList handlerList = new HandlerList();
+        handlerList.setHandlers(new Handler[]{ resourceHandler });
+        server.setHandler(handlerList);
+
+        server.start();
+
         // Locate main page
-        String resource = getClass().getResource("/index.html").toExternalForm();
+        String url = "http://localhost:8123/index.html?randomAccessToken=" + randomAccessToken;
 
         // Build browser
         final WebView webView = new WebView();
         WebEngine engine = webView.getEngine();
-        engine.load(resource);
+        engine.load(url);
 
         // Debug only
-        System.out.println("Output enabled - loading: " + resource);
+        System.out.println("Output enabled - loading: " + url);
         WebConsoleListener.setDefaultListener((webView1, message, lineNumber, sourceId) -> {
-            System.out.println("[WEB OUT] " + message);
+            System.out.println("[WEB OUT] " + sourceId + " : " + message + " : line num: " + lineNumber);
         });
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("WebView state change : " + oldValue + " -> " + newValue);
@@ -48,6 +85,17 @@ public class Program extends Application
         // Build view
         primaryStage.setScene(new Scene(webView));
         primaryStage.setTitle("parrot - version 1.x.x");
+
+        // Hook to shutdown jetty on close
+        primaryStage.setOnCloseRequest(event -> {
+            try
+            {
+                server.stop();
+            }
+            catch (Exception e) { }
+        });
+
+        // Show view
         primaryStage.show();
     }
 
