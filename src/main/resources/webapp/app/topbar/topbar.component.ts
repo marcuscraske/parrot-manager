@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 @Component({
   selector: 'topbar',
-  templateUrl: './topbar.component.html'
+  templateUrl: './app/topbar/topbar.component.html'
 })
 export class TopBarComponent { }

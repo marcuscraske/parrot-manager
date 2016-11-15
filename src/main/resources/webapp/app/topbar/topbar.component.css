@@ -1,0 +1,58 @@
+header
+{
+    display: table;
+    width: 100%;
+    height: 2.2em;
+    background: #000;
+    color: #ccc;
+    overflow: hidden;
+}
+
+header p
+{
+    display: table-cell
+}
+
+header p.actions
+{
+    text-align: left;
+}
+
+header p.current-file
+{
+    text-align: center;
+    color: #999;
+}
+
+header p.options
+{
+    text-align: right;
+}
+
+header p.options .version
+{
+    position: relative;
+    font-size: 0.7em;
+    top: -0.1em;
+}
+
+
+header p a
+{
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+    padding: 0.4em 0.6em;
+}
+
+header p a span.icon
+{
+    font-size: 0.8em;
+}
+
+header p a:hover,
+header p a:focus
+{
+    color: #fff;
+    background: #666;
+}
