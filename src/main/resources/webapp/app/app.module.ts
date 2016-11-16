@@ -14,9 +14,12 @@ import { SidebarComponent } from './content/navigator/sidebar/sidebar.component'
 import { ViewerComponent } from './content/navigator/viewer/viewer.component'
 
 const appRoutes: Routes = [
-  { path: '',       component: NavigatorComponent },
-  { path: '**',     component: ErrorComponent },
-  { path: 'help',  component: HelpComponent }
+  { path: '',                                       component: NavigatorComponent },
+  { path: '?randomAccessToken=:token',              component: NavigatorComponent },
+
+  { path: '**',                                     component: ErrorComponent },
+  { path: 'help',                                   component: HelpComponent },
+  { path: 'navigator',                              component: NavigatorComponent }
 ];
 
 @NgModule({
