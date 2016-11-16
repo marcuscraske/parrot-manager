@@ -1,0 +1,14 @@
+.wrapper main.viewer
+{
+    position: absolute;
+    top: 2.2em;
+    left: 13em;
+    right: 0;
+    bottom: 0;
+    padding: 0;
+}
+
+.wrapper main.viewer h1
+{
+    margin: 0;
+}

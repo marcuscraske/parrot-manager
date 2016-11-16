@@ -10,7 +10,8 @@ import { HomeComponent } from './content/home/home.component'
 import { HelpComponent } from './content/help/help.component'
 
 import { NavigatorComponent } from './content/navigator/navigator.component'
-import { SidebarComponent } from './sidebar/sidebar.component'
+import { SidebarComponent } from './content/navigator/sidebar/sidebar.component'
+import { ViewerComponent } from './content/navigator/viewer/viewer.component'
 
 const appRoutes: Routes = [
   { path: '',       component: NavigatorComponent },
@@ -26,7 +27,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent, TopBarComponent,
     ErrorComponent, HomeComponent, HelpComponent,
-    NavigatorComponent, SidebarComponent
+    NavigatorComponent, SidebarComponent, ViewerComponent
   ],
   bootstrap: [
     AppComponent,

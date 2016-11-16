@@ -20,36 +20,7 @@ body
     font: normal 16px "OpenSans-Regular",sans-serif;
 }
 
-.wrapper nav
+main
 {
-    position: absolute;
-    left: 0;
-    top: 2.2em;
-    bottom: 0;
-    width: 12em;
-}
-
-.wrapper nav > ul
-{
-    margin: 0.5em;
-    padding: 0em 1.5em;
-}
-
-.wrapper nav li
-{
-    cursor: pointer;
-}
-
-.wrapper main
-{
-    position: absolute;
-    top: 2.2em;
-    left: 13em;
-    right: 0;
-    bottom: 0;
-}
-
-.wrapper main h1
-{
-    margin: 0;
+    padding: 0 1em;
 }
