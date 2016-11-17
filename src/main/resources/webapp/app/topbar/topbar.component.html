@@ -1,22 +1,26 @@
 <header>
     <p class="actions">
-        <a href="">
+        <a routerLink="viewer">
+            <span class="icon icon-search"></span>
+            viewer
+        </a>
+        <a routerLink="create">
             <span class="icon icon-newspaper"></span>
             create
         </a>
-        <a href="">
+        <a routerLink="open">
             <span class="icon icon-folder"></span>
             open
         </a>
-        <a href="">
+        <a routerLink="save">
             <span class="icon icon-floppy-disk"></span>
             save
         </a>
-        <a href="">
+        <a routerLink="options">
             <span class="icon icon-cog"></span>
             options
         </a>
-        <a href="">
+        <a routerLink="exit">
             <span class="icon icon-exit"></span>
             exit
         </a>
@@ -28,7 +32,7 @@
                 <span class="version">
                     version 1.x.x
                 </span>
-        <a [routerLink]="help">
+        <a routerLink="help">
             <span class="icon icon-question"></span>
         </a>
     </p>
