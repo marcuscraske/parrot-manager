@@ -17,22 +17,32 @@ import org.w3c.dom.html.HTMLElement;
  */
 public class Program extends Application
 {
+    private Controller controller;
+
+    public Program()
+    {
+        controller = new Controller();
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        // Start local Jetty server
+        controller.getJettyService().start();
+
         // Locate main page
-        String resource = getClass().getResource("/index.html").toExternalForm();
+        String randomAccessToken = controller.getAccessTokenService().getRandomAccessToken();
+        String url = "http://localhost:8123/index.html?randomAccessToken=" + randomAccessToken;
 
         // Build browser
         final WebView webView = new WebView();
         WebEngine engine = webView.getEngine();
-        engine.load(resource);
+        engine.load(url);
 
         // Debug only
-        System.out.println("Output enabled - loading: " + resource);
+        System.out.println("Output enabled - loading: " + url);
         WebConsoleListener.setDefaultListener((webView1, message, lineNumber, sourceId) -> {
-            System.out.println("[WEB OUT] " + message);
+            System.out.println("[WEB OUT] " + sourceId + " : " + message + " : line num: " + lineNumber);
         });
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("WebView state change : " + oldValue + " -> " + newValue);
@@ -48,6 +58,17 @@ public class Program extends Application
         // Build view
         primaryStage.setScene(new Scene(webView));
         primaryStage.setTitle("parrot - version 1.x.x");
+
+        // Hook to shutdown jetty on close
+        primaryStage.setOnCloseRequest(event -> {
+            try
+            {
+                controller.getJettyService().stop();
+            }
+            catch (Exception e) { }
+        });
+
+        // Show view
         primaryStage.show();
     }
 

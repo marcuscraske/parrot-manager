@@ -2,3 +2,9 @@
 *.war
 *.iml
 *.class
+
+*.exe
+
+.idea/
+target/
+

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <base href="/">
+
+        <!-- prevent device scaling -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- styling -->
+        <link href="assets/style.css" type="text/css" rel="stylesheet" />
+        <link href="assets/loading-box.css" type="text/css" rel="stylesheet" />
+        <link href="assets/fonts/icomoon/style.css" type="text/css" rel="stylesheet" />
+
+        <!-- component styling -->
+        <link href="app/topbar/topbar.component.css" type="text/css" rel="stylesheet" />
+        <link href="app/content/navigator/sidebar/sidebar.component.css" type="text/css" rel="stylesheet" />
+        <link href="app/content/navigator/viewer/viewer.component.css" type="text/css" rel="stylesheet" />
+
+        <!-- 1. Load libraries -->
+        <!-- Polyfill for older browsers -->
+        <script src="node_modules/core-js/client/shim.min.js"></script>
+        <script src="node_modules/zone.js/dist/zone.js"></script>
+        <script src="node_modules/reflect-metadata/Reflect.js"></script>
+        <script src="node_modules/systemjs/dist/system.src.js"></script>
+        <!-- 2. Configure SystemJS -->
+        <script src="systemjs.config.js"></script>
+
+        <script>
+            System.import('app').catch(function(err){ console.error(err); });
+        </script>
+
+    </head>
+    <body>
+
+        <my-app>
+            <div class="loading-box">
+                <span class="icon icon-cog"></span>
+                loading...
+            </div>
+        </my-app>
+
+    </body>
+</html>

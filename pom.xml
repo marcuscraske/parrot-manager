@@ -8,6 +8,14 @@
     <artifactId>parrot-manager</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.3.14.v20161028</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
 
@@ -31,7 +39,7 @@
                         <id>exec-npm-install</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <workingDirectory>${project.basedir}/src/main/resources</workingDirectory>
+                            <workingDirectory>${project.basedir}/src/main/resources/webapp</workingDirectory>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>install</argument>
@@ -45,7 +53,7 @@
                         <id>exec-npm-run-tsc</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <workingDirectory>${project.basedir}/src/main/resources</workingDirectory>
+                            <workingDirectory>${project.basedir}/src/main/resources/webapp</workingDirectory>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
