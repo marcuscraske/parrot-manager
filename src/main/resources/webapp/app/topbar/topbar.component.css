@@ -43,11 +43,12 @@ header p a
     color: inherit;
     text-decoration: none;
     padding: 0.4em 0.6em;
+    cursor: pointer;
 }
 
 header p a span.icon
 {
-    font-size: 0.8em;
+    vertical-align: middle;
 }
 
 header p a:hover,
