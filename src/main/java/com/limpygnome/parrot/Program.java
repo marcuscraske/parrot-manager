@@ -31,8 +31,7 @@ public class Program extends Application
         controller.getJettyService().start();
 
         // Locate main page
-        String randomAccessToken = controller.getAccessTokenService().getRandomAccessToken();
-        String url = "http://localhost:8123/index.html?randomAccessToken=" + randomAccessToken;
+        String url = "http://localhost:8123/index.html";
 
         // Build browser
         final WebView webView = new WebView();
