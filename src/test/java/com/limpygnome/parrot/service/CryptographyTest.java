@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.model;
+package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.model.node.EncryptedAesValue;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
@@ -6,15 +6,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DatabaseTest {
+import javax.crypto.SecretKey;
+
+public class CryptographyTest {
 
     // SUT
-    private Database database;
+    private CryptographyService service;
 
     @Before
     public void setup() throws Exception
     {
-        database = new Database();
+        service = new CryptographyService();
     }
 
     @Test
@@ -47,10 +49,12 @@ public class DatabaseTest {
     {
         final byte[] MAGIC_WORD_RAW = (MAGIC_WORD != null ? MAGIC_WORD.getBytes("UTF-8") : null);
 
-        EncryptedAesValue encrypted = database.encrypt(MAGIC_WORD_RAW);
+        SecretKey secretKey = service.createSecretKey("test password".toCharArray(), service.generateRandomSalt(), CryptographyService.ROUNDS_DEFAULT);
+
+        EncryptedAesValue encrypted = service.encrypt(secretKey, MAGIC_WORD_RAW);
         System.out.println("encrypted: " + Base64.encode(encrypted.getValue()) + " (iv: " + Base64.encode(encrypted.getIv()) + ")");
 
-        byte[] decrypted = database.decrypt(encrypted);
+        byte[] decrypted = service.decrypt(secretKey, encrypted);
         System.out.println("decrypted: " + Base64.encode(decrypted));
 
         String result = new String(decrypted, 0, decrypted.length, "UTF-8");

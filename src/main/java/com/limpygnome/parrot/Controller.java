@@ -1,9 +1,6 @@
 package com.limpygnome.parrot;
 
-import com.limpygnome.parrot.service.AccessTokenService;
-import com.limpygnome.parrot.service.DatabaseService;
-import com.limpygnome.parrot.service.JettyService;
-import com.limpygnome.parrot.service.RuntimeService;
+import com.limpygnome.parrot.service.*;
 import com.limpygnome.parrot.service.exposed.ClientsideController;
 
 /**
@@ -15,6 +12,8 @@ public class Controller
     private JettyService jettyService;
     private DatabaseService databaseService;
     private AccessTokenService accessTokenService;
+    private CryptographyService cryptographyService;
+    private DatabaseParserService databaseParserService;
 
     // Exposed
     private ClientsideController clientsideController;
@@ -25,6 +24,8 @@ public class Controller
         this.jettyService = new JettyService();
         this.databaseService = new DatabaseService();
         this.accessTokenService = new AccessTokenService();
+        this.cryptographyService = new CryptographyService();
+        this.databaseParserService = new DatabaseParserService(this);
 
         this.clientsideController = new ClientsideController();
     }
@@ -47,6 +48,14 @@ public class Controller
     public AccessTokenService getAccessTokenService()
     {
         return accessTokenService;
+    }
+
+    public CryptographyService getCryptographyService() {
+        return cryptographyService;
+    }
+
+    public DatabaseParserService getDatabaseParserService() {
+        return databaseParserService;
     }
 
     public ClientsideController getClientsideController()

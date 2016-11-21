@@ -1,20 +1,13 @@
 package com.limpygnome.parrot.model.node;
 
 import com.limpygnome.parrot.model.Database;
-import java.util.Map;
+
+import java.util.List;
 
 /**
  * Represents a node in a database.
  *
- * Each node can then have children, which can have more nodes or just values.
- *
- * Password Storage
- * ----------------
- * Where possible, the decrypted value should not be handled as a string, as to avoid being stored immutably in memory.
- * This is a precaution against buffer overflow attacks.
- *
- * Overall this cannot be entirely prevented with regards to the presentation layer. But this at least does not expose
- * the entire database in memory, but only as and if required.
+ * Each node can then have children, which can have more nodes.
  */
 public class DatabaseNode
 {
@@ -22,13 +15,20 @@ public class DatabaseNode
     private Database database;
 
     // Any sub-nodes which belong to this node
-    public Map<String, DatabaseNode> children;
+    public List<DatabaseNode> children;
 
     // The name of the node
     private String name;
 
     // The value stored at this node
     private EncryptedAesValue value;
+
+    public DatabaseNode(Database database, String name, EncryptedAesValue value)
+    {
+        this.database = database;
+        this.name = name;
+        this.value = value;
+    }
 
     public DatabaseNode(Database database, String name, byte[] data) throws Exception
     {
@@ -63,7 +63,7 @@ public class DatabaseNode
     /**
      * @return the child nodes
      */
-    public Map<String, DatabaseNode> getChildren()
+    public List<DatabaseNode> getChildren()
     {
         return children;
     }
