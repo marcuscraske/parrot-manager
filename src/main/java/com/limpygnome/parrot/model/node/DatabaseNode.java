@@ -30,25 +30,42 @@ public class DatabaseNode
     // The value stored at this node
     private EncryptedAesValue value;
 
+    public DatabaseNode(Database database, String name, byte[] data) throws Exception
+    {
+        this.database = database;
+        this.name = name;
+        this.value = database.encrypt(data);
+    }
 
+    /**
+     * @return the name of the node; purely for presentation purposes
+     */
     public String getName()
     {
         return name;
     }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
+    /**
+     * Decrypts the value stored at this node and returns the data.
+     *
+     * This can be an empty array if the node does not store a value i.e. acts as a directory/label for a set of child
+     * nodes.
+     *
+     * @return the decrypted value stored at this node
+     * @throws Exception
+     */
     public byte[] getValue() throws Exception
     {
-        byte[] decryptedBytes = database.decrypt(value.getIv(), value.getValue());
-        return decryptedBytes;
+        byte[] result = database.decrypt(value);
+        return result;
     }
 
-    public void setValue(byte[] value)
+    /**
+     * @return the child nodes
+     */
+    public Map<String, DatabaseNode> getChildren()
     {
+        return children;
     }
 
 }
