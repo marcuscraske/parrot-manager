@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import javax.crypto.SecretKey;
-import java.io.BufferedReader;
 import java.io.File;
 import java.nio.file.Files;
 
@@ -37,7 +36,7 @@ import java.nio.file.Files;
  * -----------------------------------
  * The database stored in memory, once loaded from a persistent store, uses the following JSON structure:
  * {
- *     salt: base64 string of salt byte data,-
+ *     salt: base64 string of salt byte data,
  *     rounds: integer,
  *     children: [ node, ... ]
  * }
@@ -46,6 +45,7 @@ import java.nio.file.Files;
  *
  * {
  *     name: string,
+ *     modified: long (epoch) (used for versioning),
  *     iv: base64 string of byte-array,
  *     data: base64 string of (encrypted) byte-array,
  *     children: [ node, ... ]
@@ -66,10 +66,10 @@ public class DatabaseParserService
         return database;
     }
 
-    public synchronized Database open(String path, char[] password) throws Exception
+    public synchronized Database open(Controller controller, String path, char[] password) throws Exception
     {
         byte[] encryptedData = Files.readAllBytes(new File(path).toPath());
-        Database database = openFileEncrypted(encryptedData, password);
+        Database database = openFileEncrypted(controller, encryptedData, password);
         return database;
     }
 
@@ -92,7 +92,7 @@ public class DatabaseParserService
         SecretKey secretKey = cryptographyService.createSecretKey(password, salt, rounds);
         byte[] decryptedData = cryptographyService.decrypt(secretKey, new EncryptedAesValue(iv, data));
 
-        // Now open as memory ecnrypted database
+        // Now open as memory encrypted database
         Database database = openMemoryEncrypted(decryptedData, password);
         return database;
     }
@@ -160,24 +160,40 @@ public class DatabaseParserService
         }
     }
 
-    public byte[] save() throws Exception
+    public byte[] saveMemoryEncrypted(Controller controller, Database database) throws Exception
     {
         // Convert to JSON object
+        JSONObject root = new JSONObject();
 
         // Fetch as string and convert to bytes
     }
 
-//    public void save(String path) throws Exception
-//    {
-//    }
+    public byte[] saveFileEncrypted(Controller controller, Database database) throws Exception
+    {
+        // Save as memory encrypted
+
+        // Apply file encryption
+    }
+
+    public void save(Controller controller, Database database, String path) throws Exception
+    {
+        // Save as file encrypted
+
+        // Write to path
+    }
 
     /**
      * Merges two databases together.
      *
-     * @param source
-     * @param destination
+     * The current strategy is to open both databases and copy anything missing from the source to the destination.
+     * In the event the same item exists, the version with the latest modified timestamp is retained.
+     *
+     * The timestamp only affects an individual node and not its children.
+     *
+     * @param source the database being merged into the destination
+     * @param destination the database to have the final version of everything
      */
-    public void merge(Database source, Database destination)
+    public void merge(Controller controller, Database source, Database destination)
     {
     }
 

@@ -15,15 +15,13 @@ import javax.crypto.SecretKey;
  */
 public class Database
 {
+    // An instance of the current controller
+    private Controller controller;
 
     // The salt randomly generated when the DB was created
     private byte[] salt;
 
-    // The password for the database
-    // TODO: actually read from somewhere
-    private char[] password;
-
-    // Number of rounds to perform - TODO: store in database
+    // Number of rounds to perform
     private int rounds;
 
     // The actual secret key
@@ -32,23 +30,22 @@ public class Database
     // The root node of the database
     private DatabaseNode root;
 
-    public Database()
+    private Database(Controller controller)
     {
+        this.controller = controller;
     }
 
     public Database(Controller controller, char[] password, int rounds) throws Exception
     {
-        this();
+        this(controller);
 
-        this.password = password;
         this.rounds = rounds;
 
         // Generate random salt (with random length - 32 to 64 bytes)
         salt = controller.getCryptographyService().generateRandomSalt();
 
-
         // Setup initial root node
-        root = new DatabaseNode(this, null, (EncryptedAesValue) null);
+        root = new DatabaseNode(null, 0, null);
 
         // Setup secret key
         secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
@@ -56,13 +53,20 @@ public class Database
 
     public Database(Controller controller, byte[] salt, char[] password, int rounds) throws Exception
     {
-        this();
+        this(controller);
 
         this.salt = salt;
-        this.password = password;
         this.rounds = rounds;
 
         secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
+    }
+
+    /**
+     * @return the root node of this database
+     */
+    public DatabaseNode getRoot()
+    {
+        return root;
     }
 
     /**
@@ -75,6 +79,50 @@ public class Database
         this.root = node;
     }
 
+    /**
+     * Performs memory encryption on data.
+     *
+     * Intended for encrypting data for nodes.
+     *
+     * @param data the data to be encrypted
+     * @return the encrypted wrapper
+     * @throws Exception
+     */
+    public EncryptedAesValue encrypt(byte[] data) throws Exception
+    {
+        EncryptedAesValue value = controller.getCryptographyService().encrypt(secretKey, data);
+        return value;
+    }
 
+    /**
+     * Performs memory decryption.
+     *
+     * Intended for decrypting data for nodes.
+     *
+     * @param data the encrypted wrapper
+     * @return the decrypted data
+     * @throws Exception
+     */
+    public byte[] decrypt(EncryptedAesValue data) throws Exception
+    {
+        byte[] value = controller.getCryptographyService().decrypt(secretKey, data);
+        return value;
+    }
+
+    /**
+     * @return the salt used for in-memory encryption
+     */
+    public byte[] getSalt()
+    {
+        return salt;
+    }
+
+    /**
+     * @return the rounds used for in-memory encryption
+     */
+    public int getRounds()
+    {
+        return rounds;
+    }
 
 }

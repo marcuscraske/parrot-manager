@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.model.node;
 
+import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.Database;
 
 import java.util.List;
@@ -11,29 +12,42 @@ import java.util.List;
  */
 public class DatabaseNode
 {
-    // The database to which this belongs
-    private Database database;
-
     // Any sub-nodes which belong to this node
     public List<DatabaseNode> children;
 
     // The name of the node
     private String name;
 
+    // The epoch time of when the node was last changed
+    private long lastModified;
+
     // The value stored at this node
     private EncryptedAesValue value;
 
-    public DatabaseNode(Database database, String name, EncryptedAesValue value)
+    private DatabaseNode(String name, long lastModified)
     {
-        this.database = database;
         this.name = name;
+        this.lastModified = lastModified;
+    }
+
+    /**
+     * Creates a new node with already encrypted data.
+     *
+     * @param name the name of this node
+     * @param lastModified the epoch time at which this node was last modified
+     * @param value the encrypted value
+     */
+    public DatabaseNode(String name, long lastModified, EncryptedAesValue value)
+    {
+        this(name, lastModified);
         this.value = value;
     }
 
-    public DatabaseNode(Database database, String name, byte[] data) throws Exception
+    public DatabaseNode(Database database, String name, long lastModified, byte[] data) throws Exception
     {
-        this.database = database;
-        this.name = name;
+        this(name, lastModified);
+
+        // Encrypt the data
         this.value = database.encrypt(data);
     }
 
