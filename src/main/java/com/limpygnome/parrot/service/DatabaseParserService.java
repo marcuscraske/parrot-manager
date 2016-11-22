@@ -169,8 +169,15 @@ public class DatabaseParserService
         JSONObject jsonChild = new JSONObject();
         jsonChild.put("name", node.getName());
         jsonChild.put("modified", node.getLastModified());
-        jsonChild.put("iv", node.getValue().getIv());
-        jsonChild.put("data", node.getValue().getValue());
+
+        EncryptedAesValue encryptedValue = node.getValue();
+        if (encryptedValue != null)
+        {
+            String ivStr = Base64.toBase64String(node.getValue().getIv());
+            String dataStr = Base64.toBase64String(node.getValue().getValue());
+            jsonChild.put("iv", ivStr);
+            jsonChild.put("data", dataStr);
+        }
 
         // Add to parent
         if (!jsonRoot.containsKey("children"))

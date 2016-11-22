@@ -20,19 +20,12 @@ import org.w3c.dom.html.HTMLElement;
 public class RuntimeService
 {
     private final Controller controller;
-    private final WebView webView;
+    private WebView webView = null;
     private Scene scene = null;
 
     public RuntimeService(Controller controller)
     {
         this.controller = controller;
-
-        // Create new web view and set it up
-        webView = new WebView();
-
-        setupDebugging();
-        setupContextMenu();
-        setupClientsideHooks();
     }
 
     /**
@@ -43,6 +36,16 @@ public class RuntimeService
     public synchronized Scene createScene()
     {
         // Load web view with client-side application
+        if (webView == null)
+        {
+            // Create new web view and set it up
+            webView = new WebView();
+
+            setupDebugging();
+            setupContextMenu();
+            setupClientsideHooks();
+        }
+
         webView.getEngine().load("http://localhost:8123/index.html");
 
         // Create scene if not already created
