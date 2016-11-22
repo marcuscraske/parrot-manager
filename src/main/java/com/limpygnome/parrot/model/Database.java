@@ -40,7 +40,7 @@ public class Database
         this.fileCryptoParams = fileCryptoParams;
 
         // Setup an initial blank root node
-        root = new DatabaseNode(null, 0, null);
+        root = new DatabaseNode(this, null, 0, (EncryptedAesValue) null);
     }
 
     /**

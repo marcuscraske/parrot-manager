@@ -13,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 import javax.crypto.SecretKey;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 /**
  * Used for parsing instances of databases. This acts as the layer for reading and writing actual instances of
@@ -132,7 +133,7 @@ public class DatabaseParserService
         if (jsonNode.containsKey("name") && jsonNode.containsKey("iv") && jsonNode.containsKey("data"))
         {
             String name = (String) jsonNode.get("name");
-            long lastModified = (long) jsonNode.get("lastModified");
+            long lastModified = (long) jsonNode.get("modified");
             byte[] iv = Base64.decode((String) jsonNode.get("iv"));
             byte[] data = Base64.decode((String) jsonNode.get("data"));
 
@@ -141,7 +142,7 @@ public class DatabaseParserService
             child = new DatabaseNode(database, name, lastModified, encryptedData);
 
             // Append to current parent
-            nodeParent.children.add(child);
+            nodeParent.getChildren().add(child);
         }
         else
         {
@@ -154,7 +155,8 @@ public class DatabaseParserService
             JSONArray jsonChildren = (JSONArray) jsonNode.get("children");
             JSONObject jsonChild;
 
-            for (Object rawChild : jsonChildren) {
+            for (Object rawChild : jsonChildren)
+            {
                 jsonChild = (JSONObject) rawChild;
                 convertJsonToNode(database, child, jsonChild);
             }
@@ -166,35 +168,64 @@ public class DatabaseParserService
         // Create new JSON object
         JSONObject jsonChild = new JSONObject();
         jsonChild.put("name", node.getName());
-        jsonChild.put("lastModified", node.get)
+        jsonChild.put("modified", node.getLastModified());
+        jsonChild.put("iv", node.getValue().getIv());
+        jsonChild.put("data", node.getValue().getValue());
+
+        // Add to parent
+        if (!jsonRoot.containsKey("children"))
+        {
+            jsonRoot.put("children", new JSONArray());
+        }
+
+        JSONArray rootChildren = (JSONArray) jsonRoot.get("children");
+        rootChildren.add(jsonChild);
 
         // Recurse child nodes
         for (DatabaseNode child : node.getChildren())
         {
-            convertNodeToJson(node, jsonChild);
+            convertNodeToJson(child, jsonChild);
         }
     }
 
     public byte[] saveMemoryEncrypted(Controller controller, Database database) throws Exception
     {
         // Convert to JSON object
-        JSONObject root = new JSONObject();
+        DatabaseNode rootNode = database.getRoot();
+        JSONObject jsonRoot = new JSONObject();
+        convertNodeToJson(rootNode, jsonRoot);
 
         // Convert JSON object to bytes
+        String jsonMemoryEncrypted = jsonRoot.toJSONString();
+        byte[] result = jsonMemoryEncrypted.getBytes("UTF-8");
+        return result;
     }
 
     public byte[] saveFileEncrypted(Controller controller, Database database) throws Exception
     {
         // Save as memory encrypted
+        byte[] memoryEncrypted = saveMemoryEncrypted(controller, database);
 
         // Apply file encryption
+        CryptoParams fileCryptoParams = database.getFileCryptoParams();
+        EncryptedAesValue fileEncrypted = controller.getCryptographyService().encrypt(fileCryptoParams.getSecretKey(), memoryEncrypted);
+
+        // Build JSON wrapper
+        JSONObject jsonFileEncrypted = new JSONObject();
+
+        // Convert JSON wrapper to bytes
+        String fileEncryptedStr = jsonFileEncrypted.toJSONString();
+        byte[] result = fileEncryptedStr.getBytes("UTF-8");
+        return result;
     }
 
     public void save(Controller controller, Database database, String path) throws Exception
     {
         // Save as file encrypted
+        byte[] fileEncrypted = saveFileEncrypted(controller, database);
 
         // Write to path
+        Files.write(new File(path).toPath(), fileEncrypted, StandardOpenOption.CREATE);
     }
 
     /**

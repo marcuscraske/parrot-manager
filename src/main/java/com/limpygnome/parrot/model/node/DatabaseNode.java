@@ -84,6 +84,14 @@ public class DatabaseNode
     }
 
     /**
+     * @return the encrypted value, as stored in memory
+     */
+    public EncryptedAesValue getValue()
+    {
+        return value;
+    }
+
+    /**
      * Decrypts the value stored at this node and returns the data.
      *
      * This can be an empty array if the node does not store a value i.e. acts as a directory/label for a set of child
@@ -92,7 +100,7 @@ public class DatabaseNode
      * @return the decrypted value stored at this node
      * @throws Exception
      */
-    public byte[] getValue() throws Exception
+    public byte[] getDecryptedValue() throws Exception
     {
         byte[] result = database.decrypt(value);
         return result;
