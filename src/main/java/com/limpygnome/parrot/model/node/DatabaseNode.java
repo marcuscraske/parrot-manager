@@ -1,8 +1,8 @@
 package com.limpygnome.parrot.model.node;
 
-import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.Database;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -12,8 +12,11 @@ import java.util.List;
  */
 public class DatabaseNode
 {
+    // The database to which this belongs
+    private Database database;
+
     // Any sub-nodes which belong to this node
-    public List<DatabaseNode> children;
+    private List<DatabaseNode> children;
 
     // The name of the node
     private String name;
@@ -24,28 +27,41 @@ public class DatabaseNode
     // The value stored at this node
     private EncryptedAesValue value;
 
-    private DatabaseNode(String name, long lastModified)
+    private DatabaseNode(Database database, String name, long lastModified)
     {
+        this.database = database;
         this.name = name;
         this.lastModified = lastModified;
+
+        this.children = new LinkedList<>();
     }
 
     /**
      * Creates a new node with already encrypted data.
      *
+     * @param database the DB to which this belongs
      * @param name the name of this node
      * @param lastModified the epoch time at which this node was last modified
      * @param value the encrypted value
      */
-    public DatabaseNode(String name, long lastModified, EncryptedAesValue value)
+    public DatabaseNode(Database database, String name, long lastModified, EncryptedAesValue value)
     {
-        this(name, lastModified);
+        this(database, name, lastModified);
         this.value = value;
     }
 
+    /**
+     * Creates a new node for unecrypted data, which is encrypted by this constructor.
+     *
+     * @param database the DB to whcih this belongs
+     * @param name the name of this node
+     * @param lastModified the epoch time at which this node was last modified
+     * @param data unencrypted data
+     * @throws Exception thrown if the data cannot be encrypted
+     */
     public DatabaseNode(Database database, String name, long lastModified, byte[] data) throws Exception
     {
-        this(name, lastModified);
+        this(database, name, lastModified);
 
         // Encrypt the data
         this.value = database.encrypt(data);
@@ -57,6 +73,14 @@ public class DatabaseNode
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * @return the last modified date
+     */
+    public long getLastModified()
+    {
+        return lastModified;
     }
 
     /**

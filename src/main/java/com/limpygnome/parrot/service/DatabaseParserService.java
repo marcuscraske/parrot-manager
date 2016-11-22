@@ -4,6 +4,7 @@ import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.Database;
 import com.limpygnome.parrot.model.node.DatabaseNode;
 import com.limpygnome.parrot.model.node.EncryptedAesValue;
+import com.limpygnome.parrot.model.params.CryptoParams;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -60,9 +61,9 @@ public class DatabaseParserService
         this.controller = controller;
     }
 
-    public Database create(char[] password, int rounds) throws Exception
+    public Database create(CryptoParams memoryCryptoParams, CryptoParams fileCryptoParams) throws Exception
     {
-        Database database = new Database(controller, password, rounds);
+        Database database = new Database(controller, memoryCryptoParams, fileCryptoParams);
         return database;
     }
 
@@ -82,22 +83,22 @@ public class DatabaseParserService
         JSONObject json = (JSONObject) jsonParser.parse(encryptedText);
 
         // Read params to decrypt database
-        byte[] salt = Base64.decode((String) json.get("salt"));
-        int rounds = (int) json.get("rounds");
+        CryptoParams fileCryptoParams = CryptoParams.parse(controller, json, password);
+
         byte[] iv = Base64.decode((String) json.get("iv"));
         byte[] data = Base64.decode((String) json.get("data"));
 
         // Decrypt it...
         CryptographyService cryptographyService = controller.getCryptographyService();
-        SecretKey secretKey = cryptographyService.createSecretKey(password, salt, rounds);
+        SecretKey secretKey = cryptographyService.createSecretKey(password, fileCryptoParams.getSalt(), fileCryptoParams.getRounds());
         byte[] decryptedData = cryptographyService.decrypt(secretKey, new EncryptedAesValue(iv, data));
 
         // Now open as memory encrypted database
-        Database database = openMemoryEncrypted(decryptedData, password);
+        Database database = openMemoryEncrypted(decryptedData, password, fileCryptoParams);
         return database;
     }
 
-    public Database openMemoryEncrypted(byte[] rawData, char[] password) throws Exception
+    public Database openMemoryEncrypted(byte[] rawData, char[] password, CryptoParams fileCryptoParams) throws Exception
     {
         // Convert to text
         String text = new String(rawData, "UTF-8");
@@ -106,15 +107,14 @@ public class DatabaseParserService
         JSONParser jsonParser = new JSONParser();
         JSONObject json = (JSONObject) jsonParser.parse(text);
 
-        // Read DB params
-        byte[] salt = Base64.decode((String) json.get("salt"));
-        int rounds = (int) json.get("rounds");
+        // Read params
+        CryptoParams memoryCryptoParams = CryptoParams.parse(controller, json, password);
 
         // Setup database
-        Database database = new Database(controller, salt, password, rounds);
+        Database database = new Database(controller, memoryCryptoParams, fileCryptoParams);
 
         // Traverse and parse node structure
-        DatabaseNode root = new DatabaseNode(database, null, (EncryptedAesValue) null);
+        DatabaseNode root = database.getRoot();
         JSONObject jsonRoot = (JSONObject) json.get("root");
         convertJsonToNode(database, root, jsonRoot);
 
@@ -124,7 +124,7 @@ public class DatabaseParserService
         return database;
     }
 
-    private void convertJsonToNode(Database database, DatabaseNode nodeParent, JSONObject jsonNode)
+    private void convertJsonToNode(Database database, DatabaseNode nodeParent, JSONObject jsonNode) throws Exception
     {
         // Read current node - skip if not defined; expected on initial read
         DatabaseNode child;
@@ -132,12 +132,13 @@ public class DatabaseParserService
         if (jsonNode.containsKey("name") && jsonNode.containsKey("iv") && jsonNode.containsKey("data"))
         {
             String name = (String) jsonNode.get("name");
+            long lastModified = (long) jsonNode.get("lastModified");
             byte[] iv = Base64.decode((String) jsonNode.get("iv"));
             byte[] data = Base64.decode((String) jsonNode.get("data"));
 
             // Create new DB node
             EncryptedAesValue encryptedData = new EncryptedAesValue(iv, data);
-            child = new DatabaseNode(database, name, encryptedData);
+            child = new DatabaseNode(database, name, lastModified, encryptedData);
 
             // Append to current parent
             nodeParent.children.add(child);
@@ -160,12 +161,26 @@ public class DatabaseParserService
         }
     }
 
+    private void convertNodeToJson(DatabaseNode node, JSONObject jsonRoot)
+    {
+        // Create new JSON object
+        JSONObject jsonChild = new JSONObject();
+        jsonChild.put("name", node.getName());
+        jsonChild.put("lastModified", node.get)
+
+        // Recurse child nodes
+        for (DatabaseNode child : node.getChildren())
+        {
+            convertNodeToJson(node, jsonChild);
+        }
+    }
+
     public byte[] saveMemoryEncrypted(Controller controller, Database database) throws Exception
     {
         // Convert to JSON object
         JSONObject root = new JSONObject();
 
-        // Fetch as string and convert to bytes
+        // Convert JSON object to bytes
     }
 
     public byte[] saveFileEncrypted(Controller controller, Database database) throws Exception

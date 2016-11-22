@@ -3,8 +3,7 @@ package com.limpygnome.parrot.model;
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.node.DatabaseNode;
 import com.limpygnome.parrot.model.node.EncryptedAesValue;
-
-import javax.crypto.SecretKey;
+import com.limpygnome.parrot.model.params.CryptoParams;
 
 /**
  * Represents a database for storing confidential details.
@@ -18,47 +17,30 @@ public class Database
     // An instance of the current controller
     private Controller controller;
 
-    // The salt randomly generated when the DB was created
-    private byte[] salt;
+    // Params used for file crypto
+    private CryptoParams fileCryptoParams;
 
-    // Number of rounds to perform
-    private int rounds;
-
-    // The actual secret key
-    private SecretKey secretKey;
+    // Params used for memory crypto
+    private CryptoParams memoryCryptoParams;
 
     // The root node of the database
     private DatabaseNode root;
 
-    private Database(Controller controller)
+    /**
+     * Creates a new instance.
+     *
+     * @param controller current instance
+     * @param memoryCryptoParams params for in-memory crypto
+     * @param fileCryptoParams params used for file crypto; only required for writing to file later, can be null
+     */
+    public Database(Controller controller, CryptoParams memoryCryptoParams, CryptoParams fileCryptoParams)
     {
         this.controller = controller;
-    }
+        this.memoryCryptoParams = memoryCryptoParams;
+        this.fileCryptoParams = fileCryptoParams;
 
-    public Database(Controller controller, char[] password, int rounds) throws Exception
-    {
-        this(controller);
-
-        this.rounds = rounds;
-
-        // Generate random salt (with random length - 32 to 64 bytes)
-        salt = controller.getCryptographyService().generateRandomSalt();
-
-        // Setup initial root node
+        // Setup an initial blank root node
         root = new DatabaseNode(null, 0, null);
-
-        // Setup secret key
-        secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
-    }
-
-    public Database(Controller controller, byte[] salt, char[] password, int rounds) throws Exception
-    {
-        this(controller);
-
-        this.salt = salt;
-        this.rounds = rounds;
-
-        secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
     }
 
     /**
@@ -74,7 +56,7 @@ public class Database
      *
      * @param node the node to become root
      */
-    public void setRoot(DatabaseNode node)
+    public synchronized void setRoot(DatabaseNode node)
     {
         this.root = node;
     }
@@ -88,9 +70,9 @@ public class Database
      * @return the encrypted wrapper
      * @throws Exception
      */
-    public EncryptedAesValue encrypt(byte[] data) throws Exception
+    public synchronized EncryptedAesValue encrypt(byte[] data) throws Exception
     {
-        EncryptedAesValue value = controller.getCryptographyService().encrypt(secretKey, data);
+        EncryptedAesValue value = controller.getCryptographyService().encrypt(memoryCryptoParams.getSecretKey(), data);
         return value;
     }
 
@@ -103,26 +85,26 @@ public class Database
      * @return the decrypted data
      * @throws Exception
      */
-    public byte[] decrypt(EncryptedAesValue data) throws Exception
+    public synchronized byte[] decrypt(EncryptedAesValue data) throws Exception
     {
-        byte[] value = controller.getCryptographyService().decrypt(secretKey, data);
+        byte[] value = controller.getCryptographyService().decrypt(memoryCryptoParams.getSecretKey(), data);
         return value;
     }
 
     /**
-     * @return the salt used for in-memory encryption
+     * @return params used for file crypto; can be null if this DB is not written to file
      */
-    public byte[] getSalt()
+    public CryptoParams getFileCryptoParams()
     {
-        return salt;
+        return fileCryptoParams;
     }
 
     /**
-     * @return the rounds used for in-memory encryption
+     * @return params used for in-memory crypto
      */
-    public int getRounds()
+    public CryptoParams getMemoryCryptoParams()
     {
-        return rounds;
+        return memoryCryptoParams;
     }
 
 }
