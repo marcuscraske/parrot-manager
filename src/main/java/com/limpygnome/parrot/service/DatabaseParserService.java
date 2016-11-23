@@ -264,7 +264,24 @@ public class DatabaseParserService
      */
     public void merge(Controller controller, Database source, Database destination)
     {
+        // Check if databases are the same, skip if so...
+        if (destination.equals(source))
+        {
+            return;
+        }
+
+        // Check if crypto has changed; if so, take newest DB...
+        // TODO: need field to say when crypto was last modified
+
+        // Check if nodes have changed
     }
 
+    private void mergeCryptoParams()
+    {
+    }
+
+    private void mergeNodes(DatabaseNode source, DatabaseNode destination)
+    {
+    }
 
 }
