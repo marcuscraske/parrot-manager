@@ -114,4 +114,27 @@ public class DatabaseNode
         return children;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DatabaseNode that = (DatabaseNode) o;
+
+        if (lastModified != that.lastModified) return false;
+        if (children != null ? !children.equals(that.children) : that.children != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return value != null ? value.equals(that.value) : that.value == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = children != null ? children.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (int) (lastModified ^ (lastModified >>> 32));
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
+
 }

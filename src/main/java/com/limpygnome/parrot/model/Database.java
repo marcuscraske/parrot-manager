@@ -107,4 +107,27 @@ public class Database
         return memoryCryptoParams;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Database database = (Database) o;
+
+        if (fileCryptoParams != null ? !fileCryptoParams.equals(database.fileCryptoParams) : database.fileCryptoParams != null)
+            return false;
+        if (memoryCryptoParams != null ? !memoryCryptoParams.equals(database.memoryCryptoParams) : database.memoryCryptoParams != null)
+            return false;
+        return root != null ? root.equals(database.root) : database.root == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fileCryptoParams != null ? fileCryptoParams.hashCode() : 0;
+        result = 31 * result + (memoryCryptoParams != null ? memoryCryptoParams.hashCode() : 0);
+        result = 31 * result + (root != null ? root.hashCode() : 0);
+        return result;
+    }
+
 }

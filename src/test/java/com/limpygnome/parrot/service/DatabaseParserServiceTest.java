@@ -12,10 +12,10 @@ import org.json.simple.parser.JSONParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -27,12 +27,8 @@ public class DatabaseParserServiceTest {
     // SUT
     private DatabaseParserService service;
 
-    // Mock dependencies
-    @Mock
-    private Controller controller;
-
     // Objects
-    private Controller realController = new Controller();
+    private Controller controller = new Controller();
     private CryptoParams memoryCryptoParams;
     private CryptoParams fileCryptoParams;
     byte[] iv = new byte[]{ 0x44 };
@@ -43,8 +39,8 @@ public class DatabaseParserServiceTest {
     {
         service = new DatabaseParserService(controller);
 
-        memoryCryptoParams = new CryptoParams(realController, PASSWORD, CryptographyService.ROUNDS_DEFAULT);
-        fileCryptoParams = new CryptoParams(realController, PASSWORD, CryptographyService.ROUNDS_DEFAULT / 2);
+        memoryCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT);
+        fileCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT / 2);
     }
 
     @Test
@@ -64,7 +60,7 @@ public class DatabaseParserServiceTest {
         Database database = createDatabaseWithChildren();
 
         // When
-        byte[] data = service.saveMemoryEncrypted(realController, database);
+        byte[] data = service.saveMemoryEncrypted(controller, database);
 
         // Then
         JSONObject json = convertToJson(data);
@@ -82,7 +78,7 @@ public class DatabaseParserServiceTest {
         Database database = createDatabaseWithChildren();
 
         // When
-        byte[] data = service.saveMemoryEncrypted(realController, database);
+        byte[] data = service.saveMemoryEncrypted(controller, database);
 
         // Then
         JSONObject json = convertToJson(data);
@@ -105,7 +101,7 @@ public class DatabaseParserServiceTest {
         Database database = createDatabaseWithChildren();
 
         // When
-        byte[] data = service.saveMemoryEncrypted(realController, database);
+        byte[] data = service.saveMemoryEncrypted(controller, database);
 
         // Then
         JSONObject json = convertToJson(data);
@@ -130,7 +126,7 @@ public class DatabaseParserServiceTest {
         Database database = createDatabaseWithChildren();
 
         // When
-        byte[] data = service.saveFileEncrypted(realController, database);
+        byte[] data = service.saveFileEncrypted(controller, database);
 
         // Then
         JSONObject json = convertToJson(data);
@@ -142,7 +138,7 @@ public class DatabaseParserServiceTest {
     }
 
     @Test
-    public void save_whenDatabaseWithChildren_expectFileExists() throws Exception
+    public void save_whenDatabaseWithChildren_thenExpectFileExists() throws Exception
     {
         // Given
         File tmp = File.createTempFile("test", null);
@@ -154,10 +150,72 @@ public class DatabaseParserServiceTest {
         assertFalse("Expecting file to not exist at " + path, tmp.exists());
 
         // When
-        service.save(realController, database, path);
+        service.save(controller, database, path);
 
         // Then
         assertTrue("Expecting file to exist at " + path, tmp.exists());
+    }
+
+    @Test(expected = IOException.class)
+    public void save_whenDatabaseWithChildrenButPathNonExistent_thenThrowsIOException() throws Exception
+    {
+        // Given
+        File nonExistentPath = new File("/non-existent/path/qwertyuiop");
+        assertFalse(nonExistentPath.exists());
+
+        Database database = createDatabaseWithChildren();
+
+        // When
+        service.save(controller, database, nonExistentPath.getAbsolutePath());
+    }
+
+    @Test
+    public void openMemoryEncrypted_worksAsExpected() throws Exception
+    {
+        // Given
+        Database database = createDatabaseWithChildren();
+        byte[] memoryEncrypted = service.saveMemoryEncrypted(controller, database);
+
+        // When
+        Database databaseOpened = service.openMemoryEncrypted(memoryEncrypted, PASSWORD, fileCryptoParams);
+
+        // Then
+        assertEquals("Databases should be exactly the same", databaseOpened, database);
+    }
+
+    @Test
+    public void openFileEncrypted_worksAsExpected() throws Exception
+    {
+        // Given
+        Database database = createDatabaseWithChildren();
+        byte[] fileEncrypted = service.saveFileEncrypted(controller, database);
+
+        // When
+        Database databaseOpened = service.openFileEncrypted(controller, fileEncrypted, PASSWORD);
+
+        // Then
+        assertEquals("Databases should be exactly the same", databaseOpened, database);
+    }
+
+    @Test
+    public void open_worksAsExpected() throws Exception
+    {
+        // Given
+        File tmp = File.createTempFile("test", null);
+        tmp.delete();
+
+        String path = tmp.getAbsolutePath();
+        Database database = createDatabaseWithChildren();
+
+        assertFalse("Expecting file to not exist at " + path, tmp.exists());
+        service.save(controller, database, path);
+        assertTrue("Expecting file to exist at " + path, tmp.exists());
+
+        // When
+        Database databaseOpened = service.open(controller, path, PASSWORD);
+
+        // Then
+        assertEquals("Databases should be exactly the same", databaseOpened, database);
     }
 
 

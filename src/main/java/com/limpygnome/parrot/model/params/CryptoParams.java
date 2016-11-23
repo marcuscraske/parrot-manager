@@ -5,6 +5,7 @@ import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONObject;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 
 /**
  * Stores, and able to sometimes generate, cryptography information.
@@ -87,6 +88,26 @@ public class CryptoParams
         return secretKey;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CryptoParams that = (CryptoParams) o;
+
+        if (rounds != that.rounds) return false;
+        if (!Arrays.equals(salt, that.salt)) return false;
+        return secretKey != null ? secretKey.equals(that.secretKey) : that.secretKey == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(salt);
+        result = 31 * result + rounds;
+        result = 31 * result + (secretKey != null ? secretKey.hashCode() : 0);
+        return result;
+    }
+
     /**
      * Parses an instance from JSON.
      *
@@ -99,7 +120,7 @@ public class CryptoParams
     public static CryptoParams parse(Controller controller, JSONObject object, char[] password) throws Exception
     {
         byte[] salt = Base64.decode((String) object.get("salt"));
-        int rounds = (int) object.get("rounds");
+        int rounds = (int) (long) object.get("rounds");
 
         CryptoParams params = new CryptoParams(controller, password, salt, rounds);
         return params;

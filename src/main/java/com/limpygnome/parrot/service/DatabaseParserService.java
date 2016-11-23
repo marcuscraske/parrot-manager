@@ -117,8 +117,7 @@ public class DatabaseParserService
 
         // Traverse and parse node structure
         DatabaseNode root = database.getRoot();
-        JSONObject jsonRoot = (JSONObject) json.get("root");
-        convertJsonToNode(database, root, jsonRoot, true);
+        convertJsonToNode(database, root, json, true);
 
         // Set root node of DB
         database.setRoot(root);
