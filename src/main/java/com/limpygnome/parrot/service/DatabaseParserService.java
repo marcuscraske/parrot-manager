@@ -27,6 +27,7 @@ import java.nio.file.StandardOpenOption;
  * {
  *     salt: base64 string of salt byte data used to encrypt 'data',
  *     rounds: integer,
+ *     iv: base64 string of byte-array
  *     data: base64 string of memory (encrypted) JSON structure (see below for structure),
  * }
  *
@@ -117,7 +118,7 @@ public class DatabaseParserService
         // Traverse and parse node structure
         DatabaseNode root = database.getRoot();
         JSONObject jsonRoot = (JSONObject) json.get("root");
-        convertJsonToNode(database, root, jsonRoot);
+        convertJsonToNode(database, root, jsonRoot, true);
 
         // Set root node of DB
         database.setRoot(root);
@@ -125,12 +126,12 @@ public class DatabaseParserService
         return database;
     }
 
-    private void convertJsonToNode(Database database, DatabaseNode nodeParent, JSONObject jsonNode) throws Exception
+    private void convertJsonToNode(Database database, DatabaseNode nodeParent, JSONObject jsonNode, boolean isRootNode) throws Exception
     {
         // Read current node - skip if not defined; expected on initial read
         DatabaseNode child;
 
-        if (jsonNode.containsKey("name") && jsonNode.containsKey("iv") && jsonNode.containsKey("data"))
+        if (!isRootNode)
         {
             String name = (String) jsonNode.get("name");
             long lastModified = (long) jsonNode.get("modified");
@@ -158,40 +159,47 @@ public class DatabaseParserService
             for (Object rawChild : jsonChildren)
             {
                 jsonChild = (JSONObject) rawChild;
-                convertJsonToNode(database, child, jsonChild);
+                convertJsonToNode(database, child, jsonChild, false);
             }
         }
     }
 
-    private void convertNodeToJson(DatabaseNode node, JSONObject jsonRoot)
+    private void convertNodeToJson(DatabaseNode node, JSONObject jsonRoot, boolean isRootNode)
     {
-        // Create new JSON object
-        JSONObject jsonChild = new JSONObject();
-        jsonChild.put("name", node.getName());
-        jsonChild.put("modified", node.getLastModified());
+        JSONObject jsonChild;
 
-        EncryptedAesValue encryptedValue = node.getValue();
-        if (encryptedValue != null)
+        if (!isRootNode)
         {
-            String ivStr = Base64.toBase64String(node.getValue().getIv());
-            String dataStr = Base64.toBase64String(node.getValue().getValue());
-            jsonChild.put("iv", ivStr);
-            jsonChild.put("data", dataStr);
-        }
+            // Create new JSON object
+            jsonChild = new JSONObject();
+            jsonChild.put("name", node.getName());
+            jsonChild.put("modified", node.getLastModified());
 
-        // Add to parent
-        if (!jsonRoot.containsKey("children"))
+            EncryptedAesValue encryptedValue = node.getValue();
+            if (encryptedValue != null) {
+                String ivStr = Base64.toBase64String(node.getValue().getIv());
+                String dataStr = Base64.toBase64String(node.getValue().getValue());
+                jsonChild.put("iv", ivStr);
+                jsonChild.put("data", dataStr);
+            }
+
+            // Add to parent
+            if (!jsonRoot.containsKey("children")) {
+                jsonRoot.put("children", new JSONArray());
+            }
+
+            JSONArray rootChildren = (JSONArray) jsonRoot.get("children");
+            rootChildren.add(jsonChild);
+        }
+        else
         {
-            jsonRoot.put("children", new JSONArray());
+            jsonChild = jsonRoot;
         }
-
-        JSONArray rootChildren = (JSONArray) jsonRoot.get("children");
-        rootChildren.add(jsonChild);
 
         // Recurse child nodes
         for (DatabaseNode child : node.getChildren())
         {
-            convertNodeToJson(child, jsonChild);
+            convertNodeToJson(child, jsonChild, false);
         }
     }
 
@@ -199,8 +207,13 @@ public class DatabaseParserService
     {
         // Convert to JSON object
         DatabaseNode rootNode = database.getRoot();
+        CryptoParams memoryCryptoParams = database.getMemoryCryptoParams();
+
         JSONObject jsonRoot = new JSONObject();
-        convertNodeToJson(rootNode, jsonRoot);
+        jsonRoot.put("salt", Base64.toBase64String(memoryCryptoParams.getSalt()));
+        jsonRoot.put("rounds", memoryCryptoParams.getRounds());
+
+        convertNodeToJson(rootNode, jsonRoot, true);
 
         // Convert JSON object to bytes
         String jsonMemoryEncrypted = jsonRoot.toJSONString();
@@ -219,6 +232,10 @@ public class DatabaseParserService
 
         // Build JSON wrapper
         JSONObject jsonFileEncrypted = new JSONObject();
+        jsonFileEncrypted.put("salt", Base64.toBase64String(fileCryptoParams.getSalt()));
+        jsonFileEncrypted.put("rounds", fileCryptoParams.getRounds());
+        jsonFileEncrypted.put("iv", Base64.toBase64String(fileEncrypted.getIv()));
+        jsonFileEncrypted.put("data", Base64.toBase64String(fileEncrypted.getValue()));
 
         // Convert JSON wrapper to bytes
         String fileEncryptedStr = jsonFileEncrypted.toJSONString();
