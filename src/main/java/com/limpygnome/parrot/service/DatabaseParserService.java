@@ -27,6 +27,7 @@ import java.nio.file.StandardOpenOption;
  * {
  *     salt: base64 string of salt byte data used to encrypt 'data',
  *     rounds: integer,
+ *     modified: long (epoch) (versioning of crypto params)
  *     iv: base64 string of byte-array
  *     data: base64 string of memory (encrypted) JSON structure (see below for structure),
  * }
@@ -41,6 +42,7 @@ import java.nio.file.StandardOpenOption;
  * {
  *     salt: base64 string of salt byte data,
  *     rounds: integer,
+ *     modified: long (epoch) (versioning of crypto params)
  *     children: [ node, ... ]
  * }
  *
@@ -211,6 +213,7 @@ public class DatabaseParserService
         JSONObject jsonRoot = new JSONObject();
         jsonRoot.put("salt", Base64.toBase64String(memoryCryptoParams.getSalt()));
         jsonRoot.put("rounds", memoryCryptoParams.getRounds());
+        jsonRoot.put("modified", memoryCryptoParams.getLastModified());
 
         convertNodeToJson(rootNode, jsonRoot, true);
 
@@ -233,6 +236,7 @@ public class DatabaseParserService
         JSONObject jsonFileEncrypted = new JSONObject();
         jsonFileEncrypted.put("salt", Base64.toBase64String(fileCryptoParams.getSalt()));
         jsonFileEncrypted.put("rounds", fileCryptoParams.getRounds());
+        jsonFileEncrypted.put("modified", fileCryptoParams.getLastModified());
         jsonFileEncrypted.put("iv", Base64.toBase64String(fileEncrypted.getIv()));
         jsonFileEncrypted.put("data", Base64.toBase64String(fileEncrypted.getValue()));
 

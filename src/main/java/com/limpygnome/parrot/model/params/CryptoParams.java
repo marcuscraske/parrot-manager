@@ -22,8 +22,11 @@ public class CryptoParams
     // Number of rounds to perform
     private int rounds;
 
-    // The actual secret key
-    private SecretKey secretKey;
+    // THe time at which the params were last modified
+    private long lastModified;
+
+    // Generated from above - the actual secret key
+    private transient SecretKey secretKey;
 
     /**
      * Construct an instance.
@@ -35,10 +38,11 @@ public class CryptoParams
      * @param rounds
      * @throws Exception
      */
-    public CryptoParams(Controller controller, char[] password, int rounds) throws Exception
+    public CryptoParams(Controller controller, char[] password, int rounds, long lastModified) throws Exception
     {
         this.salt = controller.getCryptographyService().generateRandomSalt();
         this.rounds = rounds;
+        this.lastModified = lastModified;
 
         // Generate secret key
         secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
@@ -55,10 +59,11 @@ public class CryptoParams
      * @param rounds
      * @throws Exception
      */
-    public CryptoParams(Controller controller, char[] password, byte[] salt, int rounds) throws Exception
+    public CryptoParams(Controller controller, char[] password, byte[] salt, int rounds, long lastModified) throws Exception
     {
         this.salt = salt;
         this.rounds = rounds;
+        this.lastModified = lastModified;
 
         // Generate secret key
         secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
@@ -81,6 +86,14 @@ public class CryptoParams
     }
 
     /**
+     * @return the epoch time at which these params were last modified
+     */
+    public long getLastModified()
+    {
+        return lastModified;
+    }
+
+    /**
      * @return the secret key used for encryption/decryption
      */
     public SecretKey getSecretKey()
@@ -96,14 +109,17 @@ public class CryptoParams
         CryptoParams that = (CryptoParams) o;
 
         if (rounds != that.rounds) return false;
+        if (lastModified != that.lastModified) return false;
         if (!Arrays.equals(salt, that.salt)) return false;
         return secretKey != null ? secretKey.equals(that.secretKey) : that.secretKey == null;
+
     }
 
     @Override
     public int hashCode() {
         int result = Arrays.hashCode(salt);
         result = 31 * result + rounds;
+        result = 31 * result + (int) (lastModified ^ (lastModified >>> 32));
         result = 31 * result + (secretKey != null ? secretKey.hashCode() : 0);
         return result;
     }
@@ -121,8 +137,9 @@ public class CryptoParams
     {
         byte[] salt = Base64.decode((String) object.get("salt"));
         int rounds = (int) (long) object.get("rounds");
+        long lastModified = (long) object.get("modified");
 
-        CryptoParams params = new CryptoParams(controller, password, salt, rounds);
+        CryptoParams params = new CryptoParams(controller, password, salt, rounds, lastModified);
         return params;
     }
 

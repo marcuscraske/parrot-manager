@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 public class DatabaseParserServiceTest {
 
     private static final char[] PASSWORD = "unit test password".toCharArray();
+    private static final long LAST_MODIFIED = 1234L;
 
     // SUT
     private DatabaseParserService service;
@@ -39,8 +40,8 @@ public class DatabaseParserServiceTest {
     {
         service = new DatabaseParserService(controller);
 
-        memoryCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT);
-        fileCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT / 2);
+        memoryCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT, LAST_MODIFIED);
+        fileCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT / 2, LAST_MODIFIED);
     }
 
     @Test
