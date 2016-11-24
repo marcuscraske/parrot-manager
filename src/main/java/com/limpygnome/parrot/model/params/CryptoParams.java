@@ -135,12 +135,24 @@ public class CryptoParams
      */
     public static CryptoParams parse(Controller controller, JSONObject object, char[] password) throws Exception
     {
-        byte[] salt = Base64.decode((String) object.get("salt"));
-        int rounds = (int) (long) object.get("rounds");
-        long lastModified = (long) object.get("modified");
+        byte[] salt = Base64.decode((String) object.get("cryptoParams.salt"));
+        int rounds = (int) (long) object.get("cryptoParams.rounds");
+        long lastModified = (long) object.get("cryptoParams.modified");
 
         CryptoParams params = new CryptoParams(controller, password, salt, rounds, lastModified);
         return params;
+    }
+
+    /**
+     * Writes the parameters of this instance to a JSON object.
+     *
+     * @param object the target object
+     */
+    public void write(JSONObject object)
+    {
+        object.put("cryptoParams.salt", Base64.toBase64String(salt));
+        object.put("cryptoParams.rounds", rounds);
+        object.put("cryptoParams.modified", lastModified);
     }
 
 }

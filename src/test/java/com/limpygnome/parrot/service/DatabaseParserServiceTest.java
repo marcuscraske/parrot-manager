@@ -67,8 +67,9 @@ public class DatabaseParserServiceTest {
         JSONObject json = convertToJson(data);
 
         // -- Assert properties of main document / JSON element
-        assertEquals("Expected base64 string of salt", Base64.toBase64String(memoryCryptoParams.getSalt()), json.get("salt"));
-        assertEquals("Expected rounds to be same as memory crypto rounds", memoryCryptoParams.getRounds(), (int) (long) json.get("rounds"));
+        assertEquals("Expected base64 string of salt", Base64.toBase64String(memoryCryptoParams.getSalt()), json.get("cryptoParams.salt"));
+        assertEquals("Expected rounds to be same as memory crypto rounds", memoryCryptoParams.getRounds(), (int) (long) json.get("cryptoParams.rounds"));
+        assertEquals("Expected last modified to be same as memory crypto last modified", memoryCryptoParams.getLastModified(), (long) json.get("cryptoParams.modified"));
         assertTrue("Expected root to have children element", json.containsKey("children"));
     }
 
@@ -132,8 +133,9 @@ public class DatabaseParserServiceTest {
         // Then
         JSONObject json = convertToJson(data);
 
-        assertEquals("Expected base64 of salt", Base64.toBase64String(fileCryptoParams.getSalt()), json.get("salt"));
-        assertEquals("Expected file crypto rounds", fileCryptoParams.getRounds(), (int) (long) json.get("rounds"));
+        assertEquals("Expected base64 of salt", Base64.toBase64String(fileCryptoParams.getSalt()), json.get("cryptoParams.salt"));
+        assertEquals("Expected file crypto rounds", fileCryptoParams.getRounds(), (int) (long) json.get("cryptoParams.rounds"));
+        assertEquals("Expected modified epoch", fileCryptoParams.getLastModified(), (long) json.get("cryptoParams.modified"));
         assertTrue("Expected IV", json.containsKey("iv"));
         assertTrue("Expected (encrypted) data", json.containsKey("data"));
     }
