@@ -2,6 +2,8 @@ package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.Database;
+import com.limpygnome.parrot.model.dbaction.Action;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.node.DatabaseNode;
 import com.limpygnome.parrot.model.node.EncryptedAesValue;
 import com.limpygnome.parrot.model.params.CryptoParams;
@@ -254,32 +256,67 @@ public class DatabaseParserService
     }
 
     /**
-     * Merges two databases together.
+     * Merges source to destination.
      *
-     * The current strategy is to open both databases and copy anything missing from the source to the destination.
-     * In the event the same item exists, the version with the latest modified timestamp is retained.
-     *
-     * The timestamp only affects an individual node and not its children.
+     * This will only update destination, hence two calls are needed for merging both ways. This is since the
+     * destination database should be the final result for both.
      *
      * @param source the database being merged into the destination
      * @param destination the database to have the final version of everything
+     * @return a log of actions performed on the database
+     * @throws Exception if a crypto operation fails
      */
-    public void merge(Controller controller, Database source, Database destination)
+    public ActionsLog merge(Controller controller, Database source, Database destination, char[] password) throws Exception
     {
+        ActionsLog actionsLog = new ActionsLog();
+
         // Check if databases are the same, skip if so...
         if (destination.equals(source))
         {
-            return;
+            actionsLog.add(new Action("No changes detected"));
+        }
+        else
+        {
+            actionsLog.add(new Action("Changes detected, merging..."));
+
+            // Merge crypto params...
+            mergeCryptoParams(actionsLog, source, destination, password);
+
+            // Merge nodes...
         }
 
-        // Check if crypto has changed; if so, take newest DB...
-        // TODO: need field to say when crypto was last modified
-
-        // Check if nodes have changed
+        return actionsLog;
     }
 
-    private void mergeCryptoParams()
+    private void mergeCryptoParams(ActionsLog actionsLog, Database source, Database destination, char[] password) throws Exception
     {
+        // File crypto params
+        CryptoParams src = source.getFileCryptoParams();
+        CryptoParams dest = destination.getFileCryptoParams();
+
+        if (src.getLastModified() > dest.getLastModified())
+        {
+            destination.updateFileCryptoParams(controller, src, password);
+            actionsLog.add(new Action("Merged file crypto params"));
+        }
+        else
+        {
+            actionsLog.add(new Action("File crypto params unchanged"));
+        }
+
+        // Dest crypto params
+        src = source.getMemoryCryptoParams();
+        dest = destination.getMemoryCryptoParams();
+
+        if (src.getLastModified() > dest.getLastModified())
+        {
+            destination.updateMemoryCryptoParams(controller, src, password);
+            actionsLog.add(new Action("Merged memory crypto params"));
+        }
+        else
+        {
+            actionsLog.add(new Action("Memory crypto params unchanged"));
+        }
     }
 
     private void mergeNodes(DatabaseNode source, DatabaseNode destination)

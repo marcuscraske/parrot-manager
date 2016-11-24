@@ -1,14 +1,16 @@
 package com.limpygnome.parrot.model.node;
 
 import com.limpygnome.parrot.model.Database;
+import com.limpygnome.parrot.model.params.CryptoParams;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a node in a database.
  *
  * Each node can then have children, which can have more nodes.
+ *
+ * TODO: database/UI should have option to purge old delete history on a DB...
  */
 public class DatabaseNode
 {
@@ -16,7 +18,13 @@ public class DatabaseNode
     private Database database;
 
     // Any sub-nodes which belong to this node
-    private List<DatabaseNode> children;
+    private Map<UUID, DatabaseNode> children;
+
+    // A list of previously deleted children; used for merging
+    private List<UUID> deletedChildren;
+
+    // A unique ID for this node
+    private UUID id;
 
     // The name of the node
     private String name;
@@ -27,26 +35,29 @@ public class DatabaseNode
     // The value stored at this node
     private EncryptedAesValue value;
 
-    private DatabaseNode(Database database, String name, long lastModified)
+    private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
         this.database = database;
+        this.id = id;
         this.name = name;
         this.lastModified = lastModified;
 
-        this.children = new LinkedList<>();
+        this.children = new HashMap<>(0);
+        this.deletedChildren = new LinkedList<>();
     }
 
     /**
      * Creates a new node with already encrypted data.
      *
      * @param database the DB to which this belongs
+     * @param id unique identifier
      * @param name the name of this node
      * @param lastModified the epoch time at which this node was last modified
      * @param value the encrypted value
      */
-    public DatabaseNode(Database database, String name, long lastModified, EncryptedAesValue value)
+    public DatabaseNode(Database database, UUID id, String name, long lastModified, EncryptedAesValue value)
     {
-        this(database, name, lastModified);
+        this(database, id, name, lastModified);
         this.value = value;
     }
 
@@ -54,14 +65,15 @@ public class DatabaseNode
      * Creates a new node for unecrypted data, which is encrypted by this constructor.
      *
      * @param database the DB to whcih this belongs
+     * @param id unique identifier
      * @param name the name of this node
      * @param lastModified the epoch time at which this node was last modified
      * @param data unencrypted data
      * @throws Exception thrown if the data cannot be encrypted
      */
-    public DatabaseNode(Database database, String name, long lastModified, byte[] data) throws Exception
+    public DatabaseNode(Database database, UUID id, String name, long lastModified, byte[] data) throws Exception
     {
-        this(database, name, lastModified);
+        this(database, id, name, lastModified);
 
         // Encrypt the data
         this.value = database.encrypt(data);
@@ -107,11 +119,121 @@ public class DatabaseNode
     }
 
     /**
-     * @return the child nodes
+     * @return child nodes
      */
-    public List<DatabaseNode> getChildren()
+    public Map<UUID, DatabaseNode> getChildren()
     {
         return children;
+    }
+
+    /**
+     * @return deleted children
+     */
+    public List<UUID> getDeletedChildren()
+    {
+        return deletedChildren;
+    }
+
+    // TODO: make protected and move into same package as DB, prolly put on DB but have it call a wrapper - keep it in a nice unit :)
+    public void rebuildCrypto(CryptoParams oldMemoryCryptoParams) throws Exception
+    {
+        // De-crypt current value
+        byte[] decrypted = database.decrypt(value, oldMemoryCryptoParams);
+
+        // Re-encrypt
+        value = database.encrypt(decrypted);
+
+        // Perform on child nodes
+        for (DatabaseNode child : children.values())
+        {
+            child.rebuildCrypto(oldMemoryCryptoParams);
+        }
+    }
+
+    /**
+     * @param database the database to contain the new cloned node
+     * @return a cloned instance of this node
+     */
+    public DatabaseNode clone(Database database)
+    {
+        DatabaseNode newNode = new DatabaseNode(database, id, name, lastModified);
+
+        // Perform same recursion on children
+        DatabaseNode clonedChild;
+        for (DatabaseNode child : children.values())
+        {
+            clonedChild = child.clone(database);
+            newNode.children.put(clonedChild.id, clonedChild);
+        }
+
+        return newNode;
+    }
+
+    // TODO: same as above or...
+    public void merge(DatabaseNode src)
+    {
+        // Check if this node was modified before/after
+        if (src.lastModified > lastModified)
+        {
+            // Compare/clone first level props
+            if (!name.equals(src.name))
+            {
+                name = src.name;
+            }
+
+            if (!value.equals(src.value))
+            {
+                value = new EncryptedAesValue(src.value.getIv(), src.value.getValue());
+            }
+
+            lastModified = src.lastModified;
+        }
+
+        // Compare our children against theirs
+        {
+            DatabaseNode child;
+            DatabaseNode otherNode;
+
+            Iterator<Map.Entry<UUID, DatabaseNode>> iterator = children.entrySet().iterator();
+            Map.Entry<UUID, DatabaseNode> kv;
+
+            while (iterator.hasNext())
+            {
+                kv = iterator.next();
+                child = kv.getValue();
+
+                otherNode = src.children.get(kv.getKey());
+
+                if (otherNode != null)
+                {
+                    // Recursively merge child
+                    kv.getValue().merge(otherNode);
+                }
+                else if (src.deletedChildren.contains(child.id))
+                {
+                    // Remove from our tree, this node has been deleted
+                    iterator.remove();
+                }
+            }
+        }
+
+        // Compare their children against ours
+        {
+            DatabaseNode otherChild;
+            DatabaseNode newNode;
+
+            for (Map.Entry<UUID, DatabaseNode> kv : src.children.entrySet())
+            {
+                otherChild = kv.getValue();
+
+                // Check if new node to add to our side (new node)...
+                if (!children.containsKey(otherChild.id) && !deletedChildren.contains(otherChild.id))
+                {
+                    newNode = otherChild.clone(database);
+                    children.put(newNode.id, newNode);
+                }
+            }
+        }
     }
 
     @Override

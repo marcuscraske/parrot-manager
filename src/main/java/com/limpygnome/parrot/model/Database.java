@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.model;
 
 import com.limpygnome.parrot.Controller;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.node.DatabaseNode;
 import com.limpygnome.parrot.model.node.EncryptedAesValue;
 import com.limpygnome.parrot.model.params.CryptoParams;
@@ -83,9 +84,25 @@ public class Database
      *
      * @param data the encrypted wrapper
      * @return the decrypted data
-     * @throws Exception
+     * @throws Exception if crypto fails
      */
     public synchronized byte[] decrypt(EncryptedAesValue data) throws Exception
+    {
+        byte[] result = decrypt(data, memoryCryptoParams);
+        return result;
+    }
+
+    /**
+     * Performs memory decryption.
+     *
+     * Intended for decrypting data for nodes.
+     *
+     * @param data the encrypted wrapper
+     * @param memoryCryptoParams the crypto params; allows using params not held in the database
+     * @return the decrypted data
+     * @throws Exception if crypto fails
+     */
+    public synchronized byte[] decrypt(EncryptedAesValue data, CryptoParams memoryCryptoParams) throws Exception
     {
         byte[] value = controller.getCryptographyService().decrypt(memoryCryptoParams.getSecretKey(), data);
         return value;
@@ -98,6 +115,51 @@ public class Database
     {
         return fileCryptoParams;
     }
+
+    /**
+     * Updates the file crypto params for this database.
+     *
+     * The passed instance is cloned.
+     *
+     * @param controller the current runtime controller
+     * @param fileCryptoParams the new params
+     * @param password the current password
+     * @throws Exception if crypto fails
+     */
+    public void updateFileCryptoParams(Controller controller, CryptoParams fileCryptoParams, char[] password) throws Exception
+    {
+        // Update params
+        this.fileCryptoParams = new CryptoParams(
+                controller, password, fileCryptoParams.getSalt(), fileCryptoParams.getRounds(), fileCryptoParams.getLastModified());
+
+        // No more actions required, as data is written during I/O...
+    }
+
+    /**
+     * Updates the memory crypto params for this database.
+     *
+     * The passed instance is cloned.
+     *
+     * WARNING: this will re-encrypt all in-memory data.
+     *
+     * @param controller the current runtime controller
+     * @param memoryCryptoParams the new params
+     * @param password the current password
+     * @throws Exception if crypto fails
+     */
+    public void updateMemoryCryptoParams(Controller controller, CryptoParams memoryCryptoParams, char[] password) throws Exception
+    {
+        // Keep ref of current params, we'll need it to re-encrypt
+        CryptoParams oldMemoryCryptoParams = this.memoryCryptoParams;
+
+        // Update to use new params
+        this.memoryCryptoParams = new CryptoParams(
+                controller, password, memoryCryptoParams.getSalt(), memoryCryptoParams.getRounds(), memoryCryptoParams.getLastModified());
+
+        // Re-encrypt in-memory data...
+        root.rebuildCrypto(oldMemoryCryptoParams);
+    }
+
 
     /**
      * @return params used for in-memory crypto
