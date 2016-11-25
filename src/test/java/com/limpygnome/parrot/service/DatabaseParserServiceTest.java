@@ -16,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -237,12 +238,12 @@ public class DatabaseParserServiceTest {
 
         // Add child under root
         EncryptedAesValue encrypted = new EncryptedAesValue(iv, encryptedData);
-        DatabaseNode node = new DatabaseNode(database, "test", 1234L, encrypted);
-        database.getRoot().getChildren().add(node);
+        DatabaseNode node = new DatabaseNode(database, UUID.randomUUID(), "test", 1234L, encrypted);
+        database.getRoot().getChildren().put(node.getId(), node);
 
         // Add a child to our child...
-        DatabaseNode node2 = new DatabaseNode(database, "test2", 9876L, encrypted);
-        node.getChildren().add(node2);
+        DatabaseNode node2 = new DatabaseNode(database, UUID.randomUUID(), "test2", 9876L, encrypted);
+        node.getChildren().put(node2.getId(), node2);
 
         return database;
     }

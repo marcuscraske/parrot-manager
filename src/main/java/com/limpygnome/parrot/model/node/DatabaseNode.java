@@ -21,7 +21,7 @@ public class DatabaseNode
     private Map<UUID, DatabaseNode> children;
 
     // A list of previously deleted children; used for merging
-    private List<UUID> deletedChildren;
+    private Set<UUID> deletedChildren;
 
     // A unique ID for this node
     private UUID id;
@@ -43,7 +43,7 @@ public class DatabaseNode
         this.lastModified = lastModified;
 
         this.children = new HashMap<>(0);
-        this.deletedChildren = new LinkedList<>();
+        this.deletedChildren = new HashSet<>();
     }
 
     /**
@@ -77,6 +77,22 @@ public class DatabaseNode
 
         // Encrypt the data
         this.value = database.encrypt(data);
+    }
+
+    /**
+     * @return unique identifier for this node
+     */
+    public UUID getId()
+    {
+        return id;
+    }
+
+    /**
+     * @param id the unique identifier to be assigned to this node
+     */
+    public void setId(UUID id)
+    {
+        this.id = id;
     }
 
     /**
@@ -129,7 +145,7 @@ public class DatabaseNode
     /**
      * @return deleted children
      */
-    public List<UUID> getDeletedChildren()
+    public Set<UUID> getDeletedChildren()
     {
         return deletedChildren;
     }
@@ -234,10 +250,14 @@ public class DatabaseNode
                 }
             }
         }
+
+        // Merge any deleted items
+        deletedChildren.addAll(src.deletedChildren);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -245,14 +265,19 @@ public class DatabaseNode
 
         if (lastModified != that.lastModified) return false;
         if (children != null ? !children.equals(that.children) : that.children != null) return false;
+        if (deletedChildren != null ? !deletedChildren.equals(that.deletedChildren) : that.deletedChildren != null)
+            return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         return value != null ? value.equals(that.value) : that.value == null;
-
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int result = children != null ? children.hashCode() : 0;
+        result = 31 * result + (deletedChildren != null ? deletedChildren.hashCode() : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (int) (lastModified ^ (lastModified >>> 32));
         result = 31 * result + (value != null ? value.hashCode() : 0);

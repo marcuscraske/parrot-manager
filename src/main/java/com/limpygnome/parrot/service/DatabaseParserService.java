@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.UUID;
 
 /**
  * Used for parsing instances of databases. This acts as the layer for reading and writing actual instances of
@@ -51,11 +52,13 @@ import java.nio.file.StandardOpenOption;
  * JSON structure of a node, which is recursive:
  *
  * {
+ *     id: uuid (String) (unique identifier)
  *     name: string,
  *     modified: long (epoch) (used for versioning),
  *     iv: base64 string of byte-array,
  *     data: base64 string of (encrypted) byte-array,
- *     children: [ node, ... ]
+ *     children: [ node, ... ],
+ *     deleted: [ list of uuid (string), ... ]
  * }
  */
 public class DatabaseParserService
@@ -134,6 +137,8 @@ public class DatabaseParserService
         // Read current node - skip if not defined; expected on initial read
         DatabaseNode child;
 
+        UUID id = UUID.fromString((String) jsonNode.get("id"));
+
         if (!isRootNode)
         {
             String name = (String) jsonNode.get("name");
@@ -143,14 +148,27 @@ public class DatabaseParserService
 
             // Create new DB node
             EncryptedAesValue encryptedData = new EncryptedAesValue(iv, data);
-            child = new DatabaseNode(database, name, lastModified, encryptedData);
+            child = new DatabaseNode(database, id, name, lastModified, encryptedData);
 
             // Append to current parent
-            nodeParent.getChildren().add(child);
+            nodeParent.getChildren().put(id, child);
         }
         else
         {
+            nodeParent.setId(id);
             child = nodeParent;
+        }
+
+        // Add deleted children
+        if (jsonNode.containsKey("deleted"))
+        {
+            JSONArray jsonDeleted = (JSONArray) jsonNode.get("deleted");
+
+            for (Object rawId : jsonDeleted)
+            {
+                id = UUID.fromString((String) rawId);
+                nodeParent.getDeletedChildren().add(id);;
+            }
         }
 
         // Recurse children
@@ -175,6 +193,8 @@ public class DatabaseParserService
         {
             // Create new JSON object
             jsonChild = new JSONObject();
+
+            jsonChild.put("id", node.getId().toString());
             jsonChild.put("name", node.getName());
             jsonChild.put("modified", node.getLastModified());
 
@@ -186,6 +206,13 @@ public class DatabaseParserService
                 jsonChild.put("data", dataStr);
             }
 
+            JSONArray jsonDeleted = new JSONArray();
+            for (UUID id : node.getDeletedChildren())
+            {
+                jsonDeleted.add(id.toString());
+            }
+            jsonChild.put("deleted", jsonDeleted);
+
             // Add to parent
             if (!jsonRoot.containsKey("children")) {
                 jsonRoot.put("children", new JSONArray());
@@ -196,11 +223,12 @@ public class DatabaseParserService
         }
         else
         {
+            jsonRoot.put("id", node.getId().toString());
             jsonChild = jsonRoot;
         }
 
         // Recurse child nodes
-        for (DatabaseNode child : node.getChildren())
+        for (DatabaseNode child : node.getChildren().values())
         {
             convertNodeToJson(child, jsonChild, false);
         }

@@ -6,6 +6,8 @@ import com.limpygnome.parrot.model.node.DatabaseNode;
 import com.limpygnome.parrot.model.node.EncryptedAesValue;
 import com.limpygnome.parrot.model.params.CryptoParams;
 
+import java.util.UUID;
+
 /**
  * Represents a database for storing confidential details.
  *
@@ -41,7 +43,7 @@ public class Database
         this.fileCryptoParams = fileCryptoParams;
 
         // Setup an initial blank root node
-        root = new DatabaseNode(this, null, 0, (EncryptedAesValue) null);
+        root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
     }
 
     /**
@@ -185,7 +187,8 @@ public class Database
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int result = fileCryptoParams != null ? fileCryptoParams.hashCode() : 0;
         result = 31 * result + (memoryCryptoParams != null ? memoryCryptoParams.hashCode() : 0);
         result = 31 * result + (root != null ? root.hashCode() : 0);
