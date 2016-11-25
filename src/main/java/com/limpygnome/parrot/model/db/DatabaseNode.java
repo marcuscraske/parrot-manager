@@ -1,14 +1,13 @@
-package com.limpygnome.parrot.model.node;
+package com.limpygnome.parrot.model.db;
 
-import com.limpygnome.parrot.model.Database;
 import com.limpygnome.parrot.model.params.CryptoParams;
 
 import java.util.*;
 
 /**
- * Represents a node in a database.
+ * Represents a db in a database.
  *
- * Each node can then have children, which can have more nodes.
+ * Each db can then have children, which can have more nodes.
  *
  * TODO: database/UI should have option to purge old delete history on a DB...
  */
@@ -17,22 +16,22 @@ public class DatabaseNode
     // The database to which this belongs
     private Database database;
 
-    // Any sub-nodes which belong to this node
+    // Any sub-nodes which belong to this db
     private Map<UUID, DatabaseNode> children;
 
     // A list of previously deleted children; used for merging
     private Set<UUID> deletedChildren;
 
-    // A unique ID for this node
+    // A unique ID for this db
     private UUID id;
 
-    // The name of the node
+    // The name of the db
     private String name;
 
-    // The epoch time of when the node was last changed
+    // The epoch time of when the db was last changed
     private long lastModified;
 
-    // The value stored at this node
+    // The value stored at this db
     private EncryptedAesValue value;
 
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
@@ -47,12 +46,12 @@ public class DatabaseNode
     }
 
     /**
-     * Creates a new node with already encrypted data.
+     * Creates a new db with already encrypted data.
      *
      * @param database the DB to which this belongs
      * @param id unique identifier
-     * @param name the name of this node
-     * @param lastModified the epoch time at which this node was last modified
+     * @param name the name of this db
+     * @param lastModified the epoch time at which this db was last modified
      * @param value the encrypted value
      */
     public DatabaseNode(Database database, UUID id, String name, long lastModified, EncryptedAesValue value)
@@ -62,12 +61,12 @@ public class DatabaseNode
     }
 
     /**
-     * Creates a new node for unecrypted data, which is encrypted by this constructor.
+     * Creates a new db for unecrypted data, which is encrypted by this constructor.
      *
      * @param database the DB to whcih this belongs
      * @param id unique identifier
-     * @param name the name of this node
-     * @param lastModified the epoch time at which this node was last modified
+     * @param name the name of this db
+     * @param lastModified the epoch time at which this db was last modified
      * @param data unencrypted data
      * @throws Exception thrown if the data cannot be encrypted
      */
@@ -80,7 +79,7 @@ public class DatabaseNode
     }
 
     /**
-     * @return unique identifier for this node
+     * @return unique identifier for this db
      */
     public UUID getId()
     {
@@ -88,7 +87,7 @@ public class DatabaseNode
     }
 
     /**
-     * @param id the unique identifier to be assigned to this node
+     * @param id the unique identifier to be assigned to this db
      */
     public void setId(UUID id)
     {
@@ -96,7 +95,7 @@ public class DatabaseNode
     }
 
     /**
-     * @return the name of the node; purely for presentation purposes
+     * @return the name of the db; purely for presentation purposes
      */
     public String getName()
     {
@@ -120,12 +119,12 @@ public class DatabaseNode
     }
 
     /**
-     * Decrypts the value stored at this node and returns the data.
+     * Decrypts the value stored at this db and returns the data.
      *
-     * This can be an empty array if the node does not store a value i.e. acts as a directory/label for a set of child
+     * This can be an empty array if the db does not store a value i.e. acts as a directory/label for a set of child
      * nodes.
      *
-     * @return the decrypted value stored at this node
+     * @return the decrypted value stored at this db
      * @throws Exception
      */
     public byte[] getDecryptedValue() throws Exception
@@ -150,8 +149,10 @@ public class DatabaseNode
         return deletedChildren;
     }
 
-    // TODO: make protected and move into same package as DB, prolly put on DB but have it call a wrapper - keep it in a nice unit :)
-    public void rebuildCrypto(CryptoParams oldMemoryCryptoParams) throws Exception
+    /*
+        Rebuilds the encrypted in-memory value of this node
+     */
+    protected void rebuildCrypto(CryptoParams oldMemoryCryptoParams) throws Exception
     {
         // De-crypt current value
         byte[] decrypted = database.decrypt(value, oldMemoryCryptoParams);
@@ -167,8 +168,8 @@ public class DatabaseNode
     }
 
     /**
-     * @param database the database to contain the new cloned node
-     * @return a cloned instance of this node
+     * @param database the database to contain the new cloned db
+     * @return a cloned instance of this db
      */
     public DatabaseNode clone(Database database)
     {
@@ -185,10 +186,14 @@ public class DatabaseNode
         return newNode;
     }
 
-    // TODO: same as above or...
-    public void merge(DatabaseNode src)
+    /*
+        Merges the passed node with this node.
+
+        Both nodes should be at the same level in their respected databases.
+     */
+    protected void merge(DatabaseNode src)
     {
-        // Check if this node was modified before/after
+        // Check if this db was modified before/after
         if (src.lastModified > lastModified)
         {
             // Compare/clone first level props
@@ -227,7 +232,7 @@ public class DatabaseNode
                 }
                 else if (src.deletedChildren.contains(child.id))
                 {
-                    // Remove from our tree, this node has been deleted
+                    // Remove from our tree, this db has been deleted
                     iterator.remove();
                 }
             }
@@ -242,7 +247,7 @@ public class DatabaseNode
             {
                 otherChild = kv.getValue();
 
-                // Check if new node to add to our side (new node)...
+                // Check if new db to add to our side (new db)...
                 if (!children.containsKey(otherChild.id) && !deletedChildren.contains(otherChild.id))
                 {
                     newNode = otherChild.clone(database);

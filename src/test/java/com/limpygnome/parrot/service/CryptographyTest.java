@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.service;
 
-import com.limpygnome.parrot.model.node.EncryptedAesValue;
+import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.junit.Assert;
 import org.junit.Before;

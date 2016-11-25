@@ -1,11 +1,11 @@
 package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.Controller;
-import com.limpygnome.parrot.model.Database;
+import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.dbaction.Action;
 import com.limpygnome.parrot.model.dbaction.ActionsLog;
-import com.limpygnome.parrot.model.node.DatabaseNode;
-import com.limpygnome.parrot.model.node.EncryptedAesValue;
+import com.limpygnome.parrot.model.db.DatabaseNode;
+import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 /**
  * Used for parsing instances of databases. This acts as the layer for reading and writing actual instances of
- * {@link com.limpygnome.parrot.model.Database}.
+ * {@link Database}.
  *
  * The current database, being operated upon, is stored in {@link DatabaseService}.
  *
@@ -48,10 +48,10 @@ import java.util.UUID;
  *     cryptoParams.salt: base64 string of salt byte data,
  *     cryptoParams.rounds: integer,
  *     cryptoParams.modified: long (epoch) (versioning of crypto params)
- *     children: [ node, ... ]
+ *     children: [ db, ... ]
  * }
  *
- * JSON structure of a node, which is recursive:
+ * JSON structure of a db, which is recursive:
  *
  * {
  *     id: uuid (String) (unique identifier)
@@ -59,7 +59,7 @@ import java.util.UUID;
  *     modified: long (epoch) (used for versioning),
  *     iv: base64 string of byte-array,
  *     data: base64 string of (encrypted) byte-array,
- *     children: [ node, ... ],
+ *     children: [ db, ... ],
  *     deleted: [ list of uuid (string), ... ]
  * }
  */
@@ -124,11 +124,11 @@ public class DatabaseParserService
         // Setup database
         Database database = new Database(controller, memoryCryptoParams, fileCryptoParams);
 
-        // Traverse and parse node structure
+        // Traverse and parse db structure
         DatabaseNode root = database.getRoot();
         convertJsonToNode(database, root, json, true);
 
-        // Set root node of DB
+        // Set root db of DB
         database.setRoot(root);
 
         return database;
@@ -136,7 +136,7 @@ public class DatabaseParserService
 
     private void convertJsonToNode(Database database, DatabaseNode nodeParent, JSONObject jsonNode, boolean isRootNode) throws Exception
     {
-        // Read current node - skip if not defined; expected on initial read
+        // Read current db - skip if not defined; expected on initial read
         DatabaseNode child;
 
         UUID id;
@@ -161,7 +161,7 @@ public class DatabaseParserService
             deletedChildren = new HashSet<>(0);
         }
 
-        // Parse actual ID of new node
+        // Parse actual ID of new db
         id = UUID.fromString((String) jsonNode.get("id"));
 
         // Add new child to parent if not root
@@ -172,7 +172,7 @@ public class DatabaseParserService
             byte[] iv = Base64.decode((String) jsonNode.get("iv"));
             byte[] data = Base64.decode((String) jsonNode.get("data"));
 
-            // Create new DB node
+            // Create new DB db
             EncryptedAesValue encryptedData = new EncryptedAesValue(iv, data);
             child = new DatabaseNode(database, id, name, lastModified, encryptedData);
             child.getDeletedChildren().addAll(deletedChildren);

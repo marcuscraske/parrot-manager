@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.model.node;
+package com.limpygnome.parrot.model.db;
 
 import java.util.Arrays;
 

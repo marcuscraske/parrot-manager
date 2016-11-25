@@ -1,9 +1,6 @@
-package com.limpygnome.parrot.model;
+package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.Controller;
-import com.limpygnome.parrot.model.dbaction.ActionsLog;
-import com.limpygnome.parrot.model.node.DatabaseNode;
-import com.limpygnome.parrot.model.node.EncryptedAesValue;
 import com.limpygnome.parrot.model.params.CryptoParams;
 
 import java.util.UUID;
@@ -11,7 +8,7 @@ import java.util.UUID;
 /**
  * Represents a database for storing confidential details.
  *
- * Simple tree structure with a root node, which breaks down into recursive child nodes.
+ * Simple tree structure with a root db, which breaks down into recursive child nodes.
  *
  * This is also responsible for all cryptography for the database.
  */
@@ -26,7 +23,7 @@ public class Database
     // Params used for memory crypto
     private CryptoParams memoryCryptoParams;
 
-    // The root node of the database
+    // The root db of the database
     private DatabaseNode root;
 
     /**
@@ -42,12 +39,12 @@ public class Database
         this.memoryCryptoParams = memoryCryptoParams;
         this.fileCryptoParams = fileCryptoParams;
 
-        // Setup an initial blank root node
+        // Setup an initial blank root db
         root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
     }
 
     /**
-     * @return the root node of this database
+     * @return the root db of this database
      */
     public DatabaseNode getRoot()
     {
@@ -55,9 +52,9 @@ public class Database
     }
 
     /**
-     * Sets the root node of this database.
+     * Sets the root db of this database.
      *
-     * @param node the node to become root
+     * @param node the db to become root
      */
     public synchronized void setRoot(DatabaseNode node)
     {

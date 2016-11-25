@@ -1,9 +1,9 @@
 package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.Controller;
-import com.limpygnome.parrot.model.Database;
-import com.limpygnome.parrot.model.node.DatabaseNode;
-import com.limpygnome.parrot.model.node.EncryptedAesValue;
+import com.limpygnome.parrot.model.db.Database;
+import com.limpygnome.parrot.model.db.DatabaseNode;
+import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
@@ -87,7 +87,7 @@ public class DatabaseParserServiceTest {
         JSONObject json = convertToJson(data);
 
         JSONArray array = (JSONArray) json.get("children");
-        assertEquals("Expected only one child node", 1, array.size());
+        assertEquals("Expected only one child db", 1, array.size());
 
         // -- Check child under root
         JSONObject jsonChildNode = (JSONObject) array.get(0);

@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.service;
 
-import com.limpygnome.parrot.model.node.EncryptedAesValue;
+import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
