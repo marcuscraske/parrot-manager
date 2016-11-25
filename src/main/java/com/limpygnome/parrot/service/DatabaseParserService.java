@@ -139,7 +139,7 @@ public class DatabaseParserService
         // Read current node - skip if not defined; expected on initial read
         DatabaseNode child;
 
-        UUID id = UUID.fromString((String) jsonNode.get("id"));
+        UUID id;
 
         // Parse list of deleted children
         Set<UUID> deletedChildren;
@@ -160,6 +160,9 @@ public class DatabaseParserService
         {
             deletedChildren = new HashSet<>(0);
         }
+
+        // Parse actual ID of new node
+        id = UUID.fromString((String) jsonNode.get("id"));
 
         // Add new child to parent if not root
         if (!isRootNode)
