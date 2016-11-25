@@ -236,13 +236,23 @@ public class DatabaseParserServiceTest {
     {
         Database database = createDatabase();
 
+        // Add some deleted children to root
+        DatabaseNode nodeRoot = database.getRoot();
+        nodeRoot.getDeletedChildren().add(UUID.randomUUID());
+
         // Add child under root
         EncryptedAesValue encrypted = new EncryptedAesValue(iv, encryptedData);
         DatabaseNode node = new DatabaseNode(database, UUID.randomUUID(), "test", 1234L, encrypted);
-        database.getRoot().getChildren().put(node.getId(), node);
+        node.getDeletedChildren().add(UUID.randomUUID());
+        node.getDeletedChildren().add(UUID.randomUUID());
+        nodeRoot.getChildren().put(node.getId(), node);
+
 
         // Add a child to our child...
         DatabaseNode node2 = new DatabaseNode(database, UUID.randomUUID(), "test2", 9876L, encrypted);
+        node2.getDeletedChildren().add(UUID.randomUUID());
+        node2.getDeletedChildren().add(UUID.randomUUID());
+        node2.getDeletedChildren().add(UUID.randomUUID());
         node.getChildren().put(node2.getId(), node2);
 
         return database;

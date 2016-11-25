@@ -16,6 +16,8 @@ import javax.crypto.SecretKey;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -139,6 +141,27 @@ public class DatabaseParserService
 
         UUID id = UUID.fromString((String) jsonNode.get("id"));
 
+        // Parse list of deleted children
+        Set<UUID> deletedChildren;
+
+        if (jsonNode.containsKey("deleted"))
+        {
+            // Parse deleted children
+            JSONArray jsonDeleted = (JSONArray) jsonNode.get("deleted");
+            deletedChildren = new HashSet<>(jsonDeleted.size());
+
+            for (Object rawId : jsonDeleted)
+            {
+                id = UUID.fromString((String) rawId);
+                deletedChildren.add(id);;
+            }
+        }
+        else
+        {
+            deletedChildren = new HashSet<>(0);
+        }
+
+        // Add new child to parent if not root
         if (!isRootNode)
         {
             String name = (String) jsonNode.get("name");
@@ -149,6 +172,7 @@ public class DatabaseParserService
             // Create new DB node
             EncryptedAesValue encryptedData = new EncryptedAesValue(iv, data);
             child = new DatabaseNode(database, id, name, lastModified, encryptedData);
+            child.getDeletedChildren().addAll(deletedChildren);
 
             // Append to current parent
             nodeParent.getChildren().put(id, child);
@@ -156,19 +180,8 @@ public class DatabaseParserService
         else
         {
             nodeParent.setId(id);
+            nodeParent.getDeletedChildren().addAll(deletedChildren);
             child = nodeParent;
-        }
-
-        // Add deleted children
-        if (jsonNode.containsKey("deleted"))
-        {
-            JSONArray jsonDeleted = (JSONArray) jsonNode.get("deleted");
-
-            for (Object rawId : jsonDeleted)
-            {
-                id = UUID.fromString((String) rawId);
-                nodeParent.getDeletedChildren().add(id);;
-            }
         }
 
         // Recurse children
@@ -189,6 +202,14 @@ public class DatabaseParserService
     {
         JSONObject jsonChild;
 
+        // Build list of deleted IDs
+        JSONArray jsonDeleted = new JSONArray();
+        for (UUID id : node.getDeletedChildren())
+        {
+            jsonDeleted.add(id.toString());
+        }
+
+        // Build child to append to root (if not root)...
         if (!isRootNode)
         {
             // Create new JSON object
@@ -206,11 +227,6 @@ public class DatabaseParserService
                 jsonChild.put("data", dataStr);
             }
 
-            JSONArray jsonDeleted = new JSONArray();
-            for (UUID id : node.getDeletedChildren())
-            {
-                jsonDeleted.add(id.toString());
-            }
             jsonChild.put("deleted", jsonDeleted);
 
             // Add to parent
@@ -224,6 +240,7 @@ public class DatabaseParserService
         else
         {
             jsonRoot.put("id", node.getId().toString());
+            jsonRoot.put("deleted", jsonDeleted);
             jsonChild = jsonRoot;
         }
 
