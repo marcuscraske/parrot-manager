@@ -59,9 +59,47 @@ public class DatabaseNodeTest {
 
         // Then
         assertEquals("Objects should be equal", node, clone);
-        assertTrue("Reference is not the same for parent node", System.identityHashCode(node) != System.identityHashCode(clone));
 
-        // TODO: need to go deeper (with ref checking)...
+        assertIdentityHashCode("Reference should not be the same for parent node", node, clone);
+
+        assertIdentityHashCode("Reference should not be the same for value", node.getValue(), clone.getValue());
+        assertIdentityHashCode("Reference should not be the same for children", node.getChildren(), clone.getChildren());
+        assertIdentityHashCode("Reference should not be the same for deleted children", node.getDeletedChildren(), clone.getDeletedChildren());
+    }
+
+    @Test
+    public void merge_whenSrcOlder_thenLocalPropertiesRemainSame() {
+
+    }
+
+    @Test
+    public void merge_whenSrcNewer_thenLocalPropertiesCopied() {
+
+    }
+
+    @Test
+    public void merge_whenChildModified_thenRecursivelyMerged() {
+
+    }
+
+    @Test
+    public void merge_whenChildDeleted_thenDeletedChildIsRemoved() {
+
+    }
+
+    @Test
+    public void merge_whenChildAdded_thenChildAdded() {
+
+    }
+
+    @Test
+    public void merge_whenDifferingListsOfDeletedItems_thenMerged() {
+
+    }
+
+    private void assertIdentityHashCode(String message, Object source, Object clone)
+    {
+        assertTrue(message, System.identityHashCode(source) != System.identityHashCode(clone));
     }
 
 }

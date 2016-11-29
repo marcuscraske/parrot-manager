@@ -168,6 +168,20 @@ public final class Database
         return memoryCryptoParams;
     }
 
+    /**
+     * Merges the two databases together.
+     *
+     * @param database the other database to be merged with this database
+     */
+    public void merge(Database database)
+    {
+        // Merge params
+        // TODO: finish this part...
+
+        // Merge nodes
+        this.root.merge(database.root);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

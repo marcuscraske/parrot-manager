@@ -16,12 +16,6 @@ public class DatabaseNode
     // The database to which this belongs
     private Database database;
 
-    // Any sub-nodes which belong to this db
-    private Map<UUID, DatabaseNode> children;
-
-    // A list of previously deleted children; used for merging
-    private Set<UUID> deletedChildren;
-
     // A unique ID for this db
     private UUID id;
 
@@ -33,6 +27,12 @@ public class DatabaseNode
 
     // The value stored at this db
     private EncryptedAesValue value;
+
+    // Any sub-nodes which belong to this db
+    private Map<UUID, DatabaseNode> children;
+
+    // A list of previously deleted children; used for merging
+    private Set<UUID> deletedChildren;
 
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
@@ -171,7 +171,7 @@ public class DatabaseNode
      * @param database the database to contain the new cloned db
      * @return a cloned instance of this db
      */
-    public DatabaseNode clone(Database database)
+    protected DatabaseNode clone(Database database)
     {
         DatabaseNode newNode = new DatabaseNode(database, id, name, lastModified);
         newNode.value = new EncryptedAesValue(value.getIv().clone(), value.getValue().clone());
