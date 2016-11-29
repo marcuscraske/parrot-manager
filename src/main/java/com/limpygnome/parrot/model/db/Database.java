@@ -12,19 +12,19 @@ import java.util.UUID;
  *
  * This is also responsible for all cryptography for the database.
  */
-public class Database
+public final class Database
 {
     // An instance of the current controller
     private Controller controller;
 
     // Params used for file crypto
-    private CryptoParams fileCryptoParams;
+    protected CryptoParams fileCryptoParams;
 
     // Params used for memory crypto
-    private CryptoParams memoryCryptoParams;
+    protected CryptoParams memoryCryptoParams;
 
     // The root db of the database
-    private DatabaseNode root;
+    protected DatabaseNode root;
 
     /**
      * Creates a new instance.

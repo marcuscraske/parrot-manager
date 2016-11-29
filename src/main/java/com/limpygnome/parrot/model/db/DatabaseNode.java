@@ -67,15 +67,15 @@ public class DatabaseNode
      * @param id unique identifier
      * @param name the name of this db
      * @param lastModified the epoch time at which this db was last modified
-     * @param data unencrypted data
+     * @param unecryptedData unencrypted data
      * @throws Exception thrown if the data cannot be encrypted
      */
-    public DatabaseNode(Database database, UUID id, String name, long lastModified, byte[] data) throws Exception
+    public DatabaseNode(Database database, UUID id, String name, long lastModified, byte[] unecryptedData) throws Exception
     {
         this(database, id, name, lastModified);
 
         // Encrypt the data
-        this.value = database.encrypt(data);
+        this.value = database.encrypt(unecryptedData);
     }
 
     /**
@@ -174,6 +174,7 @@ public class DatabaseNode
     public DatabaseNode clone(Database database)
     {
         DatabaseNode newNode = new DatabaseNode(database, id, name, lastModified);
+        newNode.value = new EncryptedAesValue(value.getIv().clone(), value.getValue().clone());
 
         // Perform same recursion on children
         DatabaseNode clonedChild;
