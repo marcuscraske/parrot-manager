@@ -172,14 +172,24 @@ public final class Database
      * Merges the two databases together.
      *
      * @param database the other database to be merged with this database
+     * @throws Exception when unable to merge
      */
-    public void merge(Database database)
+    public void merge(Database database, char[] password) throws Exception
     {
         // Merge params
+        if (fileCryptoParams.getLastModified() < database.fileCryptoParams.getLastModified()) {
+            fileCryptoParams = database.fileCryptoParams.clone(controller, password);
+        }
+
+        if (memoryCryptoParams.getLastModified() < database.memoryCryptoParams.getLastModified()) {
+            CryptoParams oldMemoryParams = memoryCryptoParams;
+            memoryCryptoParams = database.memoryCryptoParams.clone(controller, password);
+            root.rebuildCrypto(oldMemoryParams);
+        }
         // TODO: finish this part...
 
         // Merge nodes
-        this.root.merge(database.root);
+        root.merge(database.root);
     }
 
     @Override

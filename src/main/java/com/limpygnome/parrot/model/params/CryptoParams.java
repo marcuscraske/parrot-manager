@@ -101,26 +101,21 @@ public class CryptoParams
         return secretKey;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CryptoParams that = (CryptoParams) o;
-
-        if (rounds != that.rounds) return false;
-        if (lastModified != that.lastModified) return false;
-        if (!Arrays.equals(salt, that.salt)) return false;
-        return secretKey != null ? secretKey.equals(that.secretKey) : that.secretKey == null;
-
+    /**
+     * Writes the parameters of this instance to a JSON object.
+     *
+     * @param object the target object
+     */
+    public void write(JSONObject object)
+    {
+        object.put("cryptoParams.salt", Base64.toBase64String(salt));
+        object.put("cryptoParams.rounds", rounds);
+        object.put("cryptoParams.modified", lastModified);
     }
 
-    @Override
-    public int hashCode() {
-        int result = Arrays.hashCode(salt);
-        result = 31 * result + rounds;
-        result = 31 * result + (int) (lastModified ^ (lastModified >>> 32));
-        result = 31 * result + (secretKey != null ? secretKey.hashCode() : 0);
+    public CryptoParams clone(Controller controller, char[] password) throws Exception
+    {
+        CryptoParams result = new CryptoParams(controller, password, rounds, lastModified);
         return result;
     }
 
@@ -143,16 +138,27 @@ public class CryptoParams
         return params;
     }
 
-    /**
-     * Writes the parameters of this instance to a JSON object.
-     *
-     * @param object the target object
-     */
-    public void write(JSONObject object)
-    {
-        object.put("cryptoParams.salt", Base64.toBase64String(salt));
-        object.put("cryptoParams.rounds", rounds);
-        object.put("cryptoParams.modified", lastModified);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CryptoParams that = (CryptoParams) o;
+
+        if (rounds != that.rounds) return false;
+        if (lastModified != that.lastModified) return false;
+        if (!Arrays.equals(salt, that.salt)) return false;
+        return secretKey != null ? secretKey.equals(that.secretKey) : that.secretKey == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(salt);
+        result = 31 * result + rounds;
+        result = 31 * result + (int) (lastModified ^ (lastModified >>> 32));
+        result = 31 * result + (secretKey != null ? secretKey.hashCode() : 0);
+        return result;
     }
 
 }
