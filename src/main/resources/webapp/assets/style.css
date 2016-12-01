@@ -29,3 +29,19 @@ a
 {
     color: #025ff4;
 }
+
+/*
+    Bootstrap theme overrides
+*/
+
+.btn-primary
+{
+    background: #000;
+}
+
+.btn-primary:hover,
+.btn-primary:focus
+{
+    background: #666;
+    border-color: none;
+}

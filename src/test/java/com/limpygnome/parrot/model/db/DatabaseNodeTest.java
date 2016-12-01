@@ -1,16 +1,24 @@
 package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.Controller;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
+import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DatabaseNodeTest {
 
     private static final byte[] TEST_DECRYPTED_DATA = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
@@ -22,6 +30,10 @@ public class DatabaseNodeTest {
     private Controller controller;
     private CryptoParams memoryCryptoParams;
     private Database database;
+
+    // Mock objects
+    @Mock
+    private ActionsLog actionsLog;
 
     @Before
     public void setup() throws Exception
@@ -77,7 +89,7 @@ public class DatabaseNodeTest {
         DatabaseNode destBackup = dest.clone(database);
 
         // When
-        dest.merge(src);
+        dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
         assertEquals("Clone and original should remain the same", destBackup, dest);
@@ -90,7 +102,7 @@ public class DatabaseNodeTest {
         DatabaseNode dest = new DatabaseNode(database, UUID.randomUUID(), "old name", 1L, new byte[]{ 0x11, 0x44 });
 
         // When
-        dest.merge(src);
+        dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
         assertEquals("Expected name to have changed", "new name", dest.getName());
@@ -110,7 +122,7 @@ public class DatabaseNodeTest {
         dest.getChildren().put(destChild.getId(), destChild);
 
         // When
-        dest.merge(src);
+        dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
         // -- Top-level
@@ -141,7 +153,7 @@ public class DatabaseNodeTest {
         assertTrue("Dest should contain child as not yet merged", dest.getChildren().containsKey(uuidDeleted));
 
         // When
-        dest.merge(src);
+        dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
         assertFalse("Dest should not contain a child after merge because it was deleted in src", dest.getChildren().containsKey(uuidDeleted));
@@ -160,7 +172,7 @@ public class DatabaseNodeTest {
         assertTrue("Dest should not have any children", dest.getChildren().isEmpty());
 
         // When
-        dest.merge(src);
+        dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
         assertTrue("Expected dest to contain new child added at src", dest.getChildren().containsKey(srcNewChild.getId()));
@@ -193,7 +205,7 @@ public class DatabaseNodeTest {
         assertEquals("Expected only three deleted items in dest", 3, dest.getDeletedChildren().size());
 
         // When
-        dest.merge(src);
+        dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
         final HashSet<UUID> expectedItems = new HashSet<>(6);

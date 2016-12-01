@@ -10,35 +10,22 @@ public class MergeInfo {
 
     public final ActionsLog actionsLog;
 
-    public final String nodePathParent;
+    public final String nodePath;
 
-    public MergeInfo(MergeInfo parent, DatabaseNode parentNode, ActionsLog actionsLog) {
-        this.actionsLog = actionsLog;
-
-        nodePathParent = (parent != null ? parent.nodePathParent : "") + "/" + parentNode.getName();
-    }
-
-    public MergeInfo(ActionsLog actionsLog, DatabaseNode child)
-    {
-        this.actionsLog = actionsLog;
-    }
-
-    public MergeInfo(MergeInfo parent, DatabaseNode child)
+    public MergeInfo(MergeInfo parent, DatabaseNode currentNode)
     {
         this.actionsLog = parent.actionsLog;
+        nodePath = (parent != null ? parent.nodePath : "") + "/" + currentNode.getName();
+    }
+
+    public MergeInfo(ActionsLog actionsLog, DatabaseNode currentNode)
+    {
+        this.actionsLog = actionsLog;
+        nodePath = "/" + currentNode.getName();
     }
 
     public void addMergeMessage(String message) {
         actionsLog.add(new Action(nodePath + " - " + message));
-    }
-
-    /**
-     * @param currentNode the current node, a child of the parent node of this info
-     * @return the path of the node
-     */
-    public String getNodePath(DatabaseNode currentNode)
-    {
-        return nodePathParent + "/" + currentNode.getName();
     }
 
 }

@@ -1,12 +1,11 @@
 package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
+import java.util.Base64;
+import javax.crypto.SecretKey;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.crypto.SecretKey;
 
 public class CryptographyTest {
 
@@ -52,10 +51,10 @@ public class CryptographyTest {
         SecretKey secretKey = service.createSecretKey("test password".toCharArray(), service.generateRandomSalt(), CryptographyService.ROUNDS_DEFAULT);
 
         EncryptedAesValue encrypted = service.encrypt(secretKey, MAGIC_WORD_RAW);
-        System.out.println("encrypted: " + Base64.encode(encrypted.getValue()) + " (iv: " + Base64.encode(encrypted.getIv()) + ")");
+        System.out.println("encrypted: " + Base64.getEncoder().encode(encrypted.getValue()) + " (iv: " + Base64.getEncoder().encode(encrypted.getIv()) + ")");
 
         byte[] decrypted = service.decrypt(secretKey, encrypted);
-        System.out.println("decrypted: " + Base64.encode(decrypted));
+        System.out.println("decrypted: " + Base64.getEncoder().encode(decrypted));
 
         String result = new String(decrypted, 0, decrypted.length, "UTF-8");
         System.out.println("decrypted str: " + result);

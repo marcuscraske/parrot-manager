@@ -7,6 +7,7 @@ import { TopBarComponent } from './topbar/topbar.component'
 
 import { ErrorComponent } from './content/error/error.component'
 import { HomeComponent } from './content/home/home.component'
+import { CreateComponent } from './content/create/create.component'
 import { HelpComponent } from './content/help/help.component'
 
 import { NavigatorComponent } from './content/navigator/navigator.component'
@@ -16,6 +17,7 @@ import { ViewerComponent } from './content/navigator/viewer/viewer.component'
 const appRoutes: Routes = [
   { path: 'home',                                   component: NavigatorComponent },
   { path: 'viewer',                                 component: NavigatorComponent },
+  { path: 'create',                                 component: CreateComponent },
 
   { path: 'help',                                   component: HelpComponent },
   { path: 'navigator',                              component: NavigatorComponent },
@@ -29,7 +31,7 @@ const appRoutes: Routes = [
   ],
   declarations: [
     AppComponent, TopBarComponent,
-    ErrorComponent, HomeComponent, HelpComponent,
+    ErrorComponent, HomeComponent, CreateComponent, HelpComponent,
     NavigatorComponent, SidebarComponent, ViewerComponent
   ],
   bootstrap: [

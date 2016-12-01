@@ -3,6 +3,7 @@ package com.limpygnome.parrot.model.db;
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.dbaction.Action;
 import com.limpygnome.parrot.model.dbaction.ActionsLog;
+import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
 
 import java.util.UUID;
@@ -194,7 +195,7 @@ public final class Database
         }
 
         // Merge nodes
-        root.merge(database.root);
+        root.merge(new MergeInfo(actionsLog, database.root), database.root);
     }
 
     @Override

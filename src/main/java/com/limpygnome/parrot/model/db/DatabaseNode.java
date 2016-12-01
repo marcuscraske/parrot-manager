@@ -1,11 +1,13 @@
 package com.limpygnome.parrot.model.db;
 
-import com.limpygnome.parrot.model.dbaction.Action;
-import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a db in a database.
@@ -202,8 +204,6 @@ public class DatabaseNode
      */
     protected synchronized void merge(MergeInfo mergeInfo, DatabaseNode src)
     {
-        String currentNodePath = mergeInfo.getNodePath(this);
-
         // Check if this db was modified before/after
         if (src.lastModified > lastModified)
         {
@@ -211,6 +211,7 @@ public class DatabaseNode
             if (!name.equals(src.name))
             {
                 name = src.name;
+                mergeInfo.addMergeMessage("changing name to '" + src.name + "'");
             }
 
             if (!value.equals(src.value))
@@ -220,7 +221,7 @@ public class DatabaseNode
 
             lastModified = src.lastModified;
 
-            mergeInfo.actionsLog.add(new Action(currentNodePath + " - updated node properties"));
+            mergeInfo.addMergeMessage("updated node properties");
         }
 
         // Compare our children against theirs
@@ -241,12 +242,13 @@ public class DatabaseNode
                 if (otherNode != null)
                 {
                     // Recursively merge child
-                    kv.getValue().merge(actionsLog, otherNode);
+                    child.merge(new MergeInfo(mergeInfo, child), otherNode);
                 }
                 else if (src.deletedChildren.contains(child.id))
                 {
                     // Remove from our tree, this db has been deleted
                     iterator.remove();
+                    mergeInfo.addMergeMessage("removed child - " + child.getName());
                 }
             }
         }
@@ -265,6 +267,7 @@ public class DatabaseNode
                 {
                     newNode = otherChild.clone(database);
                     children.put(newNode.id, newNode);
+                    mergeInfo.addMergeMessage("added child - " + newNode.name);
                 }
             }
         }

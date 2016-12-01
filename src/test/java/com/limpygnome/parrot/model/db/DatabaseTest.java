@@ -1,6 +1,8 @@
 package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.Controller;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
+import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +15,9 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * TODO: test MergeInfo
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseTest {
 
@@ -24,6 +29,8 @@ public class DatabaseTest {
     private Database database;
 
     // Mock objects
+    @Mock
+    private ActionsLog actionsLog;
     @Mock
     private DatabaseNode node;
     @Mock
@@ -114,7 +121,7 @@ public class DatabaseTest {
         long currentHash = System.identityHashCode(database.fileCryptoParams);
 
         // When
-        databaseRemote.merge(databaseRemote, PASSWORD);
+        databaseRemote.merge(actionsLog, databaseRemote, PASSWORD);
 
         // Then
         long updatedHash = System.identityHashCode(database.fileCryptoParams);
@@ -129,7 +136,7 @@ public class DatabaseTest {
         long currentHash = System.identityHashCode(databaseRemote.fileCryptoParams);
 
         // When
-        database.merge(databaseRemote, PASSWORD);
+        database.merge(actionsLog, databaseRemote, PASSWORD);
 
         // Then
         long updatedHash = System.identityHashCode(database.fileCryptoParams);
@@ -151,7 +158,7 @@ public class DatabaseTest {
         long currentHash = System.identityHashCode(database.memoryCryptoParams);
 
         // When
-        databaseRemote.merge(databaseRemote, PASSWORD);
+        databaseRemote.merge(actionsLog, databaseRemote, PASSWORD);
 
         // Then
         long updatedHash = System.identityHashCode(database.memoryCryptoParams);
@@ -168,7 +175,7 @@ public class DatabaseTest {
         byte[] oldSalt = database.memoryCryptoParams.getSalt();
 
         // When
-        database.merge(databaseRemote, PASSWORD);
+        database.merge(actionsLog, databaseRemote, PASSWORD);
 
         // Then
         long updatedHash = System.identityHashCode(database.memoryCryptoParams);
@@ -191,10 +198,10 @@ public class DatabaseTest {
         databaseRemote.root = node2;
 
         // When
-        database.merge(databaseRemote, PASSWORD);
+        database.merge(actionsLog, databaseRemote, PASSWORD);
 
         // Then
-        verify(node).merge(node2);
+        verify(node).merge(any(MergeInfo.class), eq(node2));
     }
 
     private Database createDatabase(char[] password, long lastModifiedMemoryCryptoParams, long lastModifiedFileCryptoParams) throws Exception
