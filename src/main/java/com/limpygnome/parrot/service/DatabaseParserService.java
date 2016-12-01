@@ -311,10 +311,11 @@ public class DatabaseParserService
      *
      * @param source the database being merged into the destination
      * @param destination the database to have the final version of everything
+     * @param password the password for the destination database
      * @return a log of actions performed on the database
      * @throws Exception if a crypto operation fails
      */
-    public ActionsLog merge(Controller controller, Database source, Database destination, char[] password) throws Exception
+    public ActionsLog merge(Database source, Database destination, char[] password) throws Exception
     {
         ActionsLog actionsLog = new ActionsLog();
 
@@ -327,48 +328,10 @@ public class DatabaseParserService
         {
             actionsLog.add(new Action("Changes detected, merging..."));
 
-            // Merge crypto params...
-            mergeCryptoParams(actionsLog, source, destination, password);
-
-            // Merge nodes...
+            destination.merge(actionsLog, source, password);
         }
 
         return actionsLog;
-    }
-
-    private void mergeCryptoParams(ActionsLog actionsLog, Database source, Database destination, char[] password) throws Exception
-    {
-        // File crypto params
-        CryptoParams src = source.getFileCryptoParams();
-        CryptoParams dest = destination.getFileCryptoParams();
-
-        if (src.getLastModified() > dest.getLastModified())
-        {
-            destination.updateFileCryptoParams(controller, src, password);
-            actionsLog.add(new Action("Merged file crypto params"));
-        }
-        else
-        {
-            actionsLog.add(new Action("File crypto params unchanged"));
-        }
-
-        // Dest crypto params
-        src = source.getMemoryCryptoParams();
-        dest = destination.getMemoryCryptoParams();
-
-        if (src.getLastModified() > dest.getLastModified())
-        {
-            destination.updateMemoryCryptoParams(controller, src, password);
-            actionsLog.add(new Action("Merged memory crypto params"));
-        }
-        else
-        {
-            actionsLog.add(new Action("Memory crypto params unchanged"));
-        }
-    }
-
-    private void mergeNodes(DatabaseNode source, DatabaseNode destination)
-    {
     }
 
 }

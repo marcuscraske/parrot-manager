@@ -1,5 +1,8 @@
 package com.limpygnome.parrot.model.db;
 
+import com.limpygnome.parrot.model.dbaction.Action;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
+import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
 
 import java.util.*;
@@ -197,8 +200,10 @@ public class DatabaseNode
 
         Both nodes should be at the same level in their respected databases.
      */
-    protected synchronized void merge(DatabaseNode src)
+    protected synchronized void merge(MergeInfo mergeInfo, DatabaseNode src)
     {
+        String currentNodePath = mergeInfo.getNodePath(this);
+
         // Check if this db was modified before/after
         if (src.lastModified > lastModified)
         {
@@ -214,6 +219,8 @@ public class DatabaseNode
             }
 
             lastModified = src.lastModified;
+
+            mergeInfo.actionsLog.add(new Action(currentNodePath + " - updated node properties"));
         }
 
         // Compare our children against theirs
@@ -234,7 +241,7 @@ public class DatabaseNode
                 if (otherNode != null)
                 {
                     // Recursively merge child
-                    kv.getValue().merge(otherNode);
+                    kv.getValue().merge(actionsLog, otherNode);
                 }
                 else if (src.deletedChildren.contains(child.id))
                 {

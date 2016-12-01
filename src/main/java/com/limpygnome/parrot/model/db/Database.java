@@ -1,6 +1,8 @@
 package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.Controller;
+import com.limpygnome.parrot.model.dbaction.Action;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.params.CryptoParams;
 
 import java.util.UUID;
@@ -173,18 +175,22 @@ public final class Database
     /**
      * Merges the two databases together.
      *
+     * @param actionsLog used to log any actions/changes to the database during the merge
      * @param database the other database to be merged with this database
+     * @param password the password for the current database
      * @throws Exception when unable to merge
      */
-    public synchronized void merge(Database database, char[] password) throws Exception
+    public synchronized void merge(ActionsLog actionsLog, Database database, char[] password) throws Exception
     {
         // Merge params
         if (fileCryptoParams.getLastModified() < database.fileCryptoParams.getLastModified()) {
             updateFileCryptoParams(controller, database.fileCryptoParams, password);
+            actionsLog.add(new Action("updated file crypto parameters"));
         }
 
         if (memoryCryptoParams.getLastModified() < database.memoryCryptoParams.getLastModified()) {
             updateMemoryCryptoParams(controller, database.memoryCryptoParams, password);
+            actionsLog.add(new Action("updated memory crypto parameters"));
         }
 
         // Merge nodes

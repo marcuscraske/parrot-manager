@@ -40,33 +40,70 @@ public class DatabaseTest {
     }
 
     @Test
-    public void encrypt_decrypt_whenGivenValue_thenCanGoInAndOut()
+    public void encrypt_decrypt_whenGivenValue_thenCanGoInAndOut() throws Exception
     {
-        // Given
-
         // When
+        EncryptedAesValue encrypted = database.encrypt(TEST_DATA);
+        byte[] decrypted = database.decrypt(encrypted);
 
         // Then
+        assertArrayEquals("Decrypted data should be same as original input", TEST_DATA, decrypted);
+        assertTrue("Encrypted data should not be same as input", !TEST_DATA.equals(encrypted.getValue()));
     }
 
     @Test
-    public void updateFileCryptoParams_whenChanged_thenHasDiffRef()
+    public void updateFileCryptoParams_whenChanged_thenHasDiffRef() throws Exception
     {
         // Given
+        CryptoParams oldFileCryptoParams = database.fileCryptoParams;
+        CryptoParams newFileCryptoParams = new CryptoParams(controller, "new pass".toCharArray(), 123, 0);
+        long previousHash = System.identityHashCode(oldFileCryptoParams);
 
         // When
+        database.updateFileCryptoParams(controller, newFileCryptoParams, PASSWORD);
 
         // Then
+        assertTrue("Expected file crypto params to have changed from old", !oldFileCryptoParams.equals(database.fileCryptoParams));
+
+        long newParamsHash = System.identityHashCode(newFileCryptoParams);
+        long currentHash = System.identityHashCode(database.fileCryptoParams);
+        assertTrue("Expected identity hash to not be the same as new params i.e. made new instance", currentHash != newParamsHash);
+        assertTrue("Expected identity hash to be different to old params hash", currentHash != previousHash);
     }
 
     @Test
-    public void updateMemoryCryptoParams_whenChanged_thenHasDiffRefAndUpdatesRootNodeEncryption()
+    public void updateMemoryCryptoParams_whenChanged_thenHasDiffRef() throws Exception
     {
         // Given
+        CryptoParams oldMemoryCryptoParams = database.memoryCryptoParams;
+        CryptoParams newMemoryCryptoParams = new CryptoParams(controller, "new pass".toCharArray(), 123, 0);
+        long previousHash = System.identityHashCode(oldMemoryCryptoParams);
 
         // When
+        database.updateMemoryCryptoParams(controller, newMemoryCryptoParams, PASSWORD);
 
         // Then
+        assertTrue("Expected memory crypto params to have changed from old", !oldMemoryCryptoParams.equals(database.memoryCryptoParams));
+
+        long newParamsHash = System.identityHashCode(newMemoryCryptoParams);
+        long currentHash = System.identityHashCode(database.memoryCryptoParams);
+        assertTrue("Expected identity hash to not be the same as new params i.e. made new instance", currentHash != newParamsHash);
+        assertTrue("Expected identity hash to be different to old params hash", currentHash != previousHash);
+    }
+
+    @Test
+    public void updateMemoryCryptoParams_whenChanged_thenUpdatesRootNode() throws Exception
+    {
+        // Given
+        CryptoParams oldMemoryCryptoParams = database.memoryCryptoParams;
+        CryptoParams newMemoryCryptoParams = new CryptoParams(controller, "new pass".toCharArray(), 123, 0);
+        database.root = node;
+
+        // When
+        database.updateMemoryCryptoParams(controller, newMemoryCryptoParams, PASSWORD);
+
+        // Then
+        verify(node).rebuildCrypto(oldMemoryCryptoParams);
     }
 
     @Test
