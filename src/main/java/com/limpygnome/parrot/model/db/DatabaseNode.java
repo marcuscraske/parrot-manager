@@ -10,6 +10,8 @@ import java.util.*;
  * Each db can then have children, which can have more nodes.
  *
  * TODO: database/UI should have option to purge old delete history on a DB...
+ *
+ * Thread safe.
  */
 public class DatabaseNode
 {
@@ -127,7 +129,7 @@ public class DatabaseNode
      * @return the decrypted value stored at this db
      * @throws Exception
      */
-    public byte[] getDecryptedValue() throws Exception
+    public synchronized byte[] getDecryptedValue() throws Exception
     {
         byte[] result = database.decrypt(value);
         return result;
@@ -152,13 +154,16 @@ public class DatabaseNode
     /*
         Rebuilds the encrypted in-memory value of this node
      */
-    protected void rebuildCrypto(CryptoParams oldMemoryCryptoParams) throws Exception
+    protected synchronized void rebuildCrypto(CryptoParams oldMemoryCryptoParams) throws Exception
     {
         // De-crypt current value
-        byte[] decrypted = database.decrypt(value, oldMemoryCryptoParams);
+        if (value != null)
+        {
+            byte[] decrypted = database.decrypt(value, oldMemoryCryptoParams);
 
-        // Re-encrypt
-        value = database.encrypt(decrypted);
+            // Re-encrypt
+            value = database.encrypt(decrypted);
+        }
 
         // Perform on child nodes
         for (DatabaseNode child : children.values())
@@ -171,7 +176,7 @@ public class DatabaseNode
      * @param database the database to contain the new cloned db
      * @return a cloned instance of this db
      */
-    protected DatabaseNode clone(Database database)
+    protected synchronized DatabaseNode clone(Database database)
     {
         DatabaseNode newNode = new DatabaseNode(database, id, name, lastModified);
         newNode.value = new EncryptedAesValue(value.getIv().clone(), value.getValue().clone());
@@ -192,7 +197,7 @@ public class DatabaseNode
 
         Both nodes should be at the same level in their respected databases.
      */
-    protected void merge(DatabaseNode src)
+    protected synchronized void merge(DatabaseNode src)
     {
         // Check if this db was modified before/after
         if (src.lastModified > lastModified)

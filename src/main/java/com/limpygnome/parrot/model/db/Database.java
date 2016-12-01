@@ -11,6 +11,8 @@ import java.util.UUID;
  * Simple tree structure with a root db, which breaks down into recursive child nodes.
  *
  * This is also responsible for all cryptography for the database.
+ *
+ * Thread safe.
  */
 public final class Database
 {
@@ -146,7 +148,7 @@ public final class Database
      * @param password the current password
      * @throws Exception if crypto fails
      */
-    public void updateMemoryCryptoParams(Controller controller, CryptoParams memoryCryptoParams, char[] password) throws Exception
+    public synchronized void updateMemoryCryptoParams(Controller controller, CryptoParams memoryCryptoParams, char[] password) throws Exception
     {
         // Keep ref of current params, we'll need it to re-encrypt
         CryptoParams oldMemoryCryptoParams = this.memoryCryptoParams;
@@ -174,19 +176,16 @@ public final class Database
      * @param database the other database to be merged with this database
      * @throws Exception when unable to merge
      */
-    public void merge(Database database, char[] password) throws Exception
+    public synchronized void merge(Database database, char[] password) throws Exception
     {
         // Merge params
         if (fileCryptoParams.getLastModified() < database.fileCryptoParams.getLastModified()) {
-            fileCryptoParams = database.fileCryptoParams.clone(controller, password);
+            updateFileCryptoParams(controller, database.fileCryptoParams, password);
         }
 
         if (memoryCryptoParams.getLastModified() < database.memoryCryptoParams.getLastModified()) {
-            CryptoParams oldMemoryParams = memoryCryptoParams;
-            memoryCryptoParams = database.memoryCryptoParams.clone(controller, password);
-            root.rebuildCrypto(oldMemoryParams);
+            updateMemoryCryptoParams(controller, database.memoryCryptoParams, password);
         }
-        // TODO: finish this part...
 
         // Merge nodes
         root.merge(database.root);
