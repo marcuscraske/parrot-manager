@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.service.server;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.db.Database;

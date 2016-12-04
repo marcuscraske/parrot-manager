@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
+import com.limpygnome.parrot.service.server.CryptographyService;
 import java.util.Base64;
 import javax.crypto.SecretKey;
 import org.junit.Assert;

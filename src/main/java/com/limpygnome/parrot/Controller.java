@@ -1,48 +1,39 @@
 package com.limpygnome.parrot;
 
-import com.limpygnome.parrot.service.*;
-import com.limpygnome.parrot.service.exposed.ClientsideController;
+import com.limpygnome.parrot.service.server.AccessTokenService;
+import com.limpygnome.parrot.service.server.CryptographyService;
+import com.limpygnome.parrot.service.server.DatabaseIOService;
+import com.limpygnome.parrot.service.server.JettyService;
+import com.limpygnome.parrot.service.server.PresentationService;
 
 /**
  * The facade for holding instances of all services and components.
  */
 public class Controller
 {
-    private RuntimeService runtimeService;
+    private PresentationService presentationService;
     private JettyService jettyService;
-    private DatabaseService databaseService;
     private AccessTokenService accessTokenService;
     private CryptographyService cryptographyService;
     private DatabaseIOService databaseIOService;
 
-    // Exposed
-    private ClientsideController clientsideController;
-
     public Controller()
     {
-        this.runtimeService = new RuntimeService(this);
+        this.presentationService = new PresentationService(this);
         this.jettyService = new JettyService();
-        this.databaseService = new DatabaseService();
         this.accessTokenService = new AccessTokenService();
         this.cryptographyService = new CryptographyService();
         this.databaseIOService = new DatabaseIOService(this);
-
-        this.clientsideController = new ClientsideController();
     }
 
-    public RuntimeService getRuntimeService()
+    public PresentationService getPresentationService()
     {
-        return runtimeService;
+        return presentationService;
     }
 
     public JettyService getJettyService()
     {
         return jettyService;
-    }
-
-    public DatabaseService getDatabaseService()
-    {
-        return databaseService;
     }
 
     public AccessTokenService getAccessTokenService()
@@ -56,11 +47,6 @@ public class Controller
 
     public DatabaseIOService getDatabaseIOService() {
         return databaseIOService;
-    }
-
-    public ClientsideController getClientsideController()
-    {
-        return clientsideController;
     }
 
 }

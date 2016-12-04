@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 export class RuntimeService {
 
     exit() : void {
-         (window as any).controller.exit();
+         (window as any).runtimeService.exit();
     }
 
 }

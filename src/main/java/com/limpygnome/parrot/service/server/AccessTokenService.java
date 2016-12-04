@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.service.server;
 
 import java.util.Base64;
 import java.util.Random;

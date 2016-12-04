@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.service.server;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;

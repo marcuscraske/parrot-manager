@@ -1,7 +1,7 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.service.server;
 
 import com.limpygnome.parrot.Controller;
-import com.limpygnome.parrot.service.exposed.ClientsideController;
+import com.limpygnome.parrot.service.rest.DatabaseService;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -17,13 +17,13 @@ import org.w3c.dom.html.HTMLElement;
  *
  * Any communication hooking should be done through this service.
  */
-public class RuntimeService
+public class PresentationService
 {
     private final Controller controller;
     private WebView webView = null;
     private Scene scene = null;
 
-    public RuntimeService(Controller controller)
+    public PresentationService(Controller controller)
     {
         this.controller = controller;
     }
@@ -143,9 +143,9 @@ public class RuntimeService
         // Setup hooks after each navigation
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 
-            // Expose client-side controller
-            ClientsideController clientsideController = controller.getClientsideController();
-            exposeJsObject("controller", clientsideController);
+            // Create+expose REST services
+            exposeJsObject("runtimeService", new com.limpygnome.parrot.service.rest.RuntimeService());
+            exposeJsObject("databaseService", new DatabaseService());
 
             // TODO: use logger
             System.out.println("### hooked global vars ###");
