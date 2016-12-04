@@ -4,24 +4,37 @@
         create
     </h1>
 
-    <form>
+    <form [formGroup]="createForm" (ngSubmit)="create($event)">
         <div class="form-group">
             <label for="location">
                 Location
             </label>
-            <input id="location" type="file" class="form-control-file" />
+            <div class="input-group">
+                <input id="location" formControlName="location" type="text" class="form-control" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button">
+                    Find (does nothing)
+                </button>
+            </span>
+            </div>
         </div>
         <div class="form-group">
             <label for="password">
                 Password
             </label>
-            <input id="password" type="password" class="form-control" placeholder="Make it secure!" />
+            <input id="password" formControlName="password" type="password" class="form-control" placeholder="Make it secure!" />
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">
+                Confirm Password
+            </label>
+            <input id="confirmPassword" formControlName="confirmPassword" type="password" class="form-control" placeholder="Type it again..." />
         </div>
         <div class="form-group">
             <label for="rounds">
                 Rounds
             </label>
-            <input id="rounds" type="number" class="form-control" value="65536" min="10" max="65536" />
+            <input id="rounds" formControlName="rounds" type="number" class="form-control" value="65536" min="10" max="65536" placeholder="65536" />
         </div>
         <button type="submit" class="btn btn-primary">
             Create

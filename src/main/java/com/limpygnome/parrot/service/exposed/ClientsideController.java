@@ -7,6 +7,13 @@ public class ClientsideController
 {
 
     /**
+     * Creates database.
+     */
+    public void create(String location, String password, int rounds)
+    {
+    }
+
+    /**
      * Exits the application.
      */
     public void exit()

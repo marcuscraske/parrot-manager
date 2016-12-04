@@ -13,7 +13,7 @@ public class Controller
     private DatabaseService databaseService;
     private AccessTokenService accessTokenService;
     private CryptographyService cryptographyService;
-    private DatabaseParserService databaseParserService;
+    private DatabaseIOService databaseIOService;
 
     // Exposed
     private ClientsideController clientsideController;
@@ -25,7 +25,7 @@ public class Controller
         this.databaseService = new DatabaseService();
         this.accessTokenService = new AccessTokenService();
         this.cryptographyService = new CryptographyService();
-        this.databaseParserService = new DatabaseParserService(this);
+        this.databaseIOService = new DatabaseIOService(this);
 
         this.clientsideController = new ClientsideController();
     }
@@ -54,8 +54,8 @@ public class Controller
         return cryptographyService;
     }
 
-    public DatabaseParserService getDatabaseParserService() {
-        return databaseParserService;
+    public DatabaseIOService getDatabaseIOService() {
+        return databaseIOService;
     }
 
     public ClientsideController getClientsideController()

@@ -21,13 +21,14 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DatabaseParserServiceTest {
+public class DatabaseIOServiceTest
+{
 
     private static final char[] PASSWORD = "unit test password".toCharArray();
     private static final long LAST_MODIFIED = 1234L;
 
     // SUT
-    private DatabaseParserService service;
+    private DatabaseIOService service;
 
     // Objects
     private Controller controller = new Controller();
@@ -39,7 +40,7 @@ public class DatabaseParserServiceTest {
     @Before
     public void setup() throws Exception
     {
-        service = new DatabaseParserService(controller);
+        service = new DatabaseIOService(controller);
 
         memoryCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT, LAST_MODIFIED);
         fileCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT / 2, LAST_MODIFIED);

@@ -63,11 +63,11 @@ import java.util.UUID;
  *     deleted: [ list of uuid (string), ... ]
  * }
  */
-public class DatabaseParserService
+public class DatabaseIOService
 {
     private Controller controller;
 
-    public DatabaseParserService(Controller controller)
+    public DatabaseIOService(Controller controller)
     {
         this.controller = controller;
     }

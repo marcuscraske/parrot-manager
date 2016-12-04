@@ -1,13 +1,19 @@
 import { Component } from '@angular/core';
+import { RuntimeService } from '/app/service/runtime.service'
 
 @Component({
+  moduleId: module.id,
   selector: 'topbar',
-  templateUrl: './app/topbar/topbar.component.html'
+  templateUrl: 'topbar.component.html',
+  styleUrls: ['topbar.component.css'],
+  providers: [RuntimeService]
 })
 export class TopBarComponent {
 
+    constructor(private runtimeService: RuntimeService) { }
+
     exit() {
-        (window as any).controller.exit();
+        this.runtimeService.exit();
     }
 
 }
