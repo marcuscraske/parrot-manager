@@ -145,7 +145,7 @@ public class PresentationService
 
             // Create+expose REST services
             exposeJsObject("runtimeService", new com.limpygnome.parrot.service.rest.RuntimeService());
-            exposeJsObject("databaseService", new DatabaseService());
+            exposeJsObject("databaseService", new DatabaseService(controller));
 
             // TODO: use logger
             System.out.println("### hooked global vars ###");

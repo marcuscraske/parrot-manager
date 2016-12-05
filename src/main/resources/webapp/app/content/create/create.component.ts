@@ -23,6 +23,7 @@ export class CreateComponent {
         console.log(this.createForm.value);
         console.log(this.createForm["location"]);
         console.log(this.createForm["password"]);
+        console.log(this.createForm["rounds"]);
 
         // TODO: validation...
 
