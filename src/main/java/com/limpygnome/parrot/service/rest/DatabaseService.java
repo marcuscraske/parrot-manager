@@ -1,14 +1,20 @@
 package com.limpygnome.parrot.service.rest;
 
+import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.db.Database;
+import com.limpygnome.parrot.service.AbstractService;
 
 /**
  * REST service for database service.
  */
-public class DatabaseService
+public class DatabaseService extends AbstractService
 {
     // The current database open...
     private Database database;
+
+    public DatabaseService(Controller controller) {
+        super(controller);
+    }
 
     /**
      * Creates a new database.

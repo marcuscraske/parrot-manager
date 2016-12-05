@@ -1,6 +1,6 @@
 <header>
     <p class="actions">
-        <a routerLink="viewer">
+        <a routerLink="viewer" *ngIf="databaseService.isOpen">
             <span class="icon icon-search"></span>
             viewer
         </a>
@@ -12,11 +12,11 @@
             <span class="icon icon-folder"></span>
             open
         </a>
-        <a routerLink="save">
+        <a routerLink="save" *ngIf="databaseService.isOpen">
             <span class="icon icon-floppy-disk"></span>
             save
         </a>
-        <a routerLink="options">
+        <a routerLink="options" *ngIf="databaseService.isOpen">
             <span class="icon icon-cog"></span>
             options
         </a>
@@ -25,8 +25,8 @@
             exit
         </a>
     </p>
-    <p class="current-file">
-        current-file.parrot
+    <p class="current-file" [innerText]="databaseService.test()">
+        undefined file
     </p>
     <p class="options">
                 <span class="version">
