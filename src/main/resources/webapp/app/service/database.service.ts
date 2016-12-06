@@ -16,11 +16,16 @@ export class DatabaseService {
 
     test() : string {
         //new Date() + " - " + (window as any).databaseService;
-        return this.databaseService.isOpen();
+        //return this.databaseService.isOpen();
+        return "test";
+    }
+
+    getFileName() : string {
+        return this.databaseService.getFileName();
     }
 
     isOpen() : boolean {
-        return false;//this.databaseService.isOpen();
+        return this.databaseService.isOpen();
     }
 
 }

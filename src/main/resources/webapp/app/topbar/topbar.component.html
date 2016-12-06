@@ -1,39 +1,46 @@
 <header>
-    <p class="actions">
-        <a routerLink="viewer" *ngIf="databaseService.isOpen">
-            <span class="icon icon-search"></span>
-            viewer
-        </a>
-        <a routerLink="create">
-            <span class="icon icon-newspaper"></span>
-            create
-        </a>
-        <a routerLink="open">
-            <span class="icon icon-folder"></span>
-            open
-        </a>
-        <a routerLink="save" *ngIf="databaseService.isOpen">
-            <span class="icon icon-floppy-disk"></span>
-            save
-        </a>
-        <a routerLink="options" *ngIf="databaseService.isOpen">
-            <span class="icon icon-cog"></span>
-            options
-        </a>
-        <a (click)="exit()">
-            <span class="icon icon-exit"></span>
-            exit
-        </a>
-    </p>
-    <p class="current-file" [innerText]="databaseService.test()">
+    <div class="actions">
+
+        <div class="general-file">
+            <a routerLink="create" title="Create">
+                <span class="icon icon-file-text2"></span>
+            </a>
+            <a routerLink="open" title="Open">
+                <span class="icon icon-folder"></span>
+            </a>
+        </div>
+
+        <div class="db-open" *ngIf="databaseService.isOpen()">
+            <a routerLink="viewer" title="Viewer">
+                <span class="icon icon-search"></span>
+            </a>
+            <a routerLink="save" title="Save">
+                <span class="icon icon-floppy-disk"></span>
+            </a>
+            <a routerLink="options" title="Options">
+                <span class="icon icon-cog"></span>
+            </a>
+            <a routerLink="close" title="Close">
+                <span class="icon icon-cross"></span>
+            </a>
+        </div>
+
+        <div class="general">
+            <a (click)="exit()" title="Exit">
+                <span class="icon icon-exit"></span>
+            </a>
+        </div>
+
+    </div>
+    <div class="current-file" [innerText]="databaseService.getFileName()">
         undefined file
-    </p>
-    <p class="options">
+    </div>
+    <div class="options">
                 <span class="version">
                     version 1.x.x
                 </span>
         <a routerLink="help">
             <span class="icon icon-question"></span>
         </a>
-    </p>
+    </div>
 </header>

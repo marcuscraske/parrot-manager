@@ -5,6 +5,8 @@ import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import com.limpygnome.parrot.service.AbstractService;
 
+import java.io.File;
+
 /**
  * REST service for database service.
  */
@@ -12,7 +14,7 @@ public class DatabaseService extends AbstractService
 {
     // The current database open...
     private Database database;
-    private String filePath;
+    private File currentFile;
 
     public DatabaseService(Controller controller) {
         super(controller);
@@ -35,7 +37,15 @@ public class DatabaseService extends AbstractService
         this.database = controller.getDatabaseIOService().create(memoryCryptoParams, fileCryptoParams);
 
         // Update internal state
-        this.filePath = location;
+        this.currentFile = new File(location);
+    }
+
+    /**
+     * @return the name of the file currently open
+     */
+    public String getFileName()
+    {
+        return currentFile != null ? currentFile.getName() : "";
     }
 
     /**

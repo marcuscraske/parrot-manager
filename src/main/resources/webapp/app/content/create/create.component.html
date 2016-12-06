@@ -18,11 +18,19 @@
             </span>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-danger">
             <label for="password">
                 Password
             </label>
             <input id="password" formControlName="password" type="password" class="form-control" placeholder="Make it secure!" />
+
+            <div class="form-control-feedback">
+                error
+            </div>
+
+            <small class="form-text text-muted">
+                Your password should be 3 to 128 characters
+            </small>
         </div>
         <div class="form-group">
             <label for="confirmPassword">
@@ -35,6 +43,10 @@
                 Rounds
             </label>
             <input id="rounds" formControlName="rounds" type="tel" class="form-control" value="65536" min="10" max="65536" placeholder="65536" />
+
+            <small class="form-text text-muted">
+                The iteration count / transformation rounds used for PBKDF2 crypto. The bigger, the better, although more CPU is required. Leave if unsure.
+            </small>
         </div>
         <button type="submit" class="btn btn-primary">
             Create

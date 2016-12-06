@@ -8,28 +8,50 @@ header
     overflow: hidden;
 }
 
-header p
+header > div
 {
-    display: table-cell
+    display: table-cell;
+    white-space: nowrap;
 }
 
-header p.actions
+/* The inner groups of the div blocks i.e. buttons to the left. */
+header > div > div
+{
+    display: inline-block;
+}
+
+/* Inner group separators */
+header > div > div:after
+{
+    content: "|";
+}
+
+header > div > div:last-child:after
+{
+    content: "";
+}
+
+
+
+header .actions
 {
     text-align: left;
 }
 
-header p.current-file
+header .current-file
 {
     text-align: center;
     color: #999;
+    white-space: normal;
+    width: 100%;
 }
 
-header p.options
+header .options
 {
     text-align: right;
 }
 
-header p.options .version
+header .options .version
 {
     position: relative;
     font-size: 0.7em;
@@ -37,7 +59,7 @@ header p.options .version
 }
 
 
-header p a
+header div a
 {
     display: inline-block;
     color: inherit;
@@ -46,13 +68,13 @@ header p a
     cursor: pointer;
 }
 
-header p a span.icon
+header div a span.icon
 {
     vertical-align: middle;
 }
 
-header p a:hover,
-header p a:focus
+header div a:hover,
+header div a:focus
 {
     color: #fff;
     background: #666;

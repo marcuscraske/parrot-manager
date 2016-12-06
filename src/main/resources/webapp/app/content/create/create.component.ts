@@ -11,8 +11,8 @@ export class CreateComponent {
 
     public createForm = this.fb.group({
         location: ["", Validators.required],
-        password: ["", Validators.required],
-        confirmPassword: ["", Validators.required],
+        password: ["", Validators.required, Validators.minLength(3), Validators.maxLength(128)],
+        confirmPassword: ["", Validators.required, Validators.minLength(3), Validators.maxLength(128)],
         rounds: ["", Validators.required]
     });
 
