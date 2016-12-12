@@ -23,7 +23,7 @@ public class Program extends Application
         controller.getJettyService().start();
 
         // Setup scene
-        Scene scene = controller.getPresentationService().createScene();
+        Scene scene = controller.getPresentationService().getScene();
         primaryStage.setScene(scene);
         primaryStage.setTitle("parrot - version 1.x.x");
 

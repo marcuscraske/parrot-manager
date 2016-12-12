@@ -33,7 +33,7 @@ public class PresentationService
      *
      * Can only be invoked once, otherwise same scene is returned.
      */
-    public synchronized Scene createScene()
+    public synchronized Scene getScene()
     {
         // Load web view with client-side application
         if (webView == null)
@@ -144,7 +144,7 @@ public class PresentationService
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 
             // Create+expose REST services
-            exposeJsObject("runtimeService", new com.limpygnome.parrot.service.rest.RuntimeService());
+            exposeJsObject("runtimeService", new com.limpygnome.parrot.service.rest.RuntimeService(controller));
             exposeJsObject("databaseService", new DatabaseService(controller));
 
             // TODO: use logger
