@@ -4,8 +4,8 @@
         create
     </h1>
 
-    <form [formGroup]="createForm" (ngSubmit)="create($event)">
-        <div class="form-group" [ngClass]="{ 'has-error' : !createForm.controls['location'].valid }">
+    <form [formGroup]="createForm" (ngSubmit)="create($event)" #form="ngForm">
+        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !createForm.controls['location'].valid }">
             <label class="form-label" for="location">
                 Location
             </label>
@@ -18,7 +18,7 @@
                 </span>
             </div>
         </div>
-        <div class="form-group" [ngClass]="{ 'has-error' : !createForm.controls['password'].valid }">
+        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !createForm.controls['password'].valid }">
             <label class="form-control-label" for="password">
                 Password
             </label>
@@ -31,7 +31,7 @@
                    minlength="3" maxlength="128"
             />
 
-            <div class="form-control-feedback">
+            <div class="form-control-feedback" *ngIf="createForm.valid">
                 error
             </div>
 
@@ -39,7 +39,7 @@
                 Your password should be 3 to 128 characters
             </small>
         </div>
-        <div class="form-group" [ngClass]="{ 'has-error' : !createForm.controls['confirmPassword'].valid }">
+        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !createForm.controls['confirmPassword'].valid }">
             <label for="confirmPassword">
                 Confirm Password
             </label>
@@ -53,7 +53,7 @@
             />
 
         </div>
-        <div class="form-group" [ngClass]="{ 'has-error' : !createForm.controls['rounds'].valid }">
+        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !createForm.controls['rounds'].valid }">
             <label for="rounds">
                 Rounds
             </label>
@@ -63,7 +63,7 @@
                 The iteration count / transformation rounds used for PBKDF2 crypto. The bigger, the better, although more CPU is required. Leave if unsure.
             </small>
         </div>
-        <button type="submit" class="btn btn-primary" *ngIf="createForm.valid">
+        <button type="submit" class="btn btn-primary">
             Create
         </button>
     </form>

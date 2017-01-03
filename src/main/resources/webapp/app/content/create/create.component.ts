@@ -19,23 +19,20 @@ export class CreateComponent {
     constructor(public fb: FormBuilder, private databaseService: DatabaseService) {}
 
     create(event) {
-        console.log(event);
-        console.log(this.createForm.value);
-        console.log(this.createForm["location"]);
-        console.log(this.createForm["password"]);
-        console.log(this.createForm["rounds"]);
-
-        // TODO: validation...
 
         var form = this.createForm.value;
 
-        var location = form["location"];
-        var password = form["password"];
-        var rounds = form["rounds"];
+        if (form.valid) {
 
-        console.log("creating db... - location: " + location + ", password: " + password + ", rounds: " + rounds);
+            var location = form["location"];
+            var password = form["password"];
+            var rounds = form["rounds"];
 
-        this.databaseService.create(location, password, rounds);
+            console.log("creating db... - location: " + location + ", password: " + password + ", rounds: " + rounds);
+
+            this.databaseService.create(location, password, rounds);
+        }
+
     }
 
 }
