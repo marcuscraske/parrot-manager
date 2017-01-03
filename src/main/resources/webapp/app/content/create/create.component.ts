@@ -11,8 +11,8 @@ export class CreateComponent {
 
     public createForm = this.fb.group({
         location: ["", Validators.required],
-        password: ["", Validators.required, Validators.minLength(3), Validators.maxLength(128)],
-        confirmPassword: ["", Validators.required, Validators.minLength(3), Validators.maxLength(128)],
+        password: ["", Validators.required],
+        confirmPassword: ["", Validators.required],
         rounds: ["", Validators.required]
     });
 
@@ -32,6 +32,8 @@ export class CreateComponent {
         var location = form["location"];
         var password = form["password"];
         var rounds = form["rounds"];
+
+        console.log("creating db... - location: " + location + ", password: " + password + ", rounds: " + rounds);
 
         this.databaseService.create(location, password, rounds);
     }
