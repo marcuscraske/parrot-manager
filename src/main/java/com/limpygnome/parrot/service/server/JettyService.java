@@ -27,12 +27,12 @@ public class JettyService
         handlerList.setHandlers(new Handler[]{ resourceHandler });
         server.setHandler(handlerList);
 
-        server.start();
+        //server.start();
     }
 
     public void stop() throws Exception
     {
-        server.stop();
+        //server.stop();
     }
 
 }

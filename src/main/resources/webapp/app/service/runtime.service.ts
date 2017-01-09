@@ -16,12 +16,17 @@ export class RuntimeService {
         var elementHtml = document.documentElement;
         var elementBody = document.body;
 
-        var newHeight = document.getElementById("app").scrollHeight;
+        var newHeight = document.getElementById("app").offsetHeight;
 
         if (this.oldHeight != newHeight)
         {
+            console.log("changing height: " + newHeight);
+
             this.oldHeight = newHeight;
             this.changeHeight(newHeight);
+
+            console.log("invoked");
+
         }
     }
     changeHeight(newHeight) : void {

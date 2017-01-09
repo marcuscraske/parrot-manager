@@ -3,7 +3,6 @@ package com.limpygnome.parrot.service.rest;
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.AbstractService;
 import javafx.scene.Scene;
-import javafx.scene.web.WebView;
 import javafx.stage.Window;
 
 /**
@@ -25,20 +24,17 @@ public class RuntimeService extends AbstractService
      */
     public void changeHeight(int newHeight)
     {
-        if (newHeight < MINIMUM_WINDOW_HEIGHT_THRESHOLD)
-        {
-            throw new IllegalArgumentException("Height cannot be less than threshold - height: " + newHeight);
-        }
-
         Scene scene = controller.getPresentationService().getScene();
+
         Window window = scene.getWindow();
 
-        WebView webView = (WebView) scene.getRoot();
+        int targetHeight = newHeight + (int) scene.getY() + 1;
 
-        int frameHeight = (int) window.getHeight() - ( (int) scene.getHeight() + (int) scene.getY() );
-        scene.getWindow().setHeight(100 + frameHeight);
-
-        System.out.println("CHANGING HEIGHT TO " + newHeight);
+        if (targetHeight > 0)
+        {
+            window.setHeight(targetHeight);
+            System.out.println("CHANGING HEIGHT TO " + targetHeight);
+        }
     }
 
     /**
