@@ -3,6 +3,8 @@ package com.limpygnome.parrot.service.rest;
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.AbstractService;
 import javafx.scene.Scene;
+import javafx.scene.web.WebView;
+import javafx.stage.Window;
 
 /**
  * REST service for runtime service.
@@ -29,7 +31,14 @@ public class RuntimeService extends AbstractService
         }
 
         Scene scene = controller.getPresentationService().getScene();
-        scene.getWindow().setHeight(newHeight);
+        Window window = scene.getWindow();
+
+        WebView webView = (WebView) scene.getRoot();
+
+        int frameHeight = (int) window.getHeight() - ( (int) scene.getHeight() + (int) scene.getY() );
+        scene.getWindow().setHeight(100 + frameHeight);
+
+        System.out.println("CHANGING HEIGHT TO " + newHeight);
     }
 
     /**

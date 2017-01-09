@@ -44,9 +44,9 @@ public class PresentationService
             setupDebugging();
             setupContextMenu();
             setupClientsideHooks();
-        }
 
-        webView.getEngine().load("http://localhost:8123/index.html");
+            webView.getEngine().load("http://localhost:8123/index.html");
+        }
 
         // Create scene if not already created
         if (scene == null)
