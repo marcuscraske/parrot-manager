@@ -3,7 +3,7 @@ package com.limpygnome.parrot;
 import com.limpygnome.parrot.service.server.AccessTokenService;
 import com.limpygnome.parrot.service.server.CryptographyService;
 import com.limpygnome.parrot.service.server.DatabaseIOService;
-import com.limpygnome.parrot.service.server.JettyService;
+import com.limpygnome.parrot.service.server.ResourcesService;
 import com.limpygnome.parrot.service.server.PresentationService;
 
 /**
@@ -12,7 +12,7 @@ import com.limpygnome.parrot.service.server.PresentationService;
 public class Controller
 {
     private PresentationService presentationService;
-    private JettyService jettyService;
+    private ResourcesService resourcesService;
     private AccessTokenService accessTokenService;
     private CryptographyService cryptographyService;
     private DatabaseIOService databaseIOService;
@@ -20,7 +20,7 @@ public class Controller
     public Controller()
     {
         this.presentationService = new PresentationService(this);
-        this.jettyService = new JettyService();
+        this.resourcesService = new ResourcesService();
         this.accessTokenService = new AccessTokenService();
         this.cryptographyService = new CryptographyService();
         this.databaseIOService = new DatabaseIOService(this);
@@ -31,9 +31,9 @@ public class Controller
         return presentationService;
     }
 
-    public JettyService getJettyService()
+    public ResourcesService getResourcesService()
     {
-        return jettyService;
+        return resourcesService;
     }
 
     public AccessTokenService getAccessTokenService()

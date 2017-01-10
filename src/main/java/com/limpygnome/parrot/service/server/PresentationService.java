@@ -2,12 +2,15 @@ package com.limpygnome.parrot.service.server;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.rest.DatabaseService;
+import com.limpygnome.parrot.service.rest.RuntimeService;
 import com.sun.javafx.webkit.WebConsoleListener;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+
+import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -144,48 +147,25 @@ public class PresentationService
         });
     }
 
-    private void setupClientsideHooks()
+    /**
+     * Sets up client-side hooks on web view.
+     */
+    protected void setupClientsideHooks()
     {
         // Setup hooks after each navigation
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
         {
-            if (newValue == Worker.State.SUCCEEDED)
-            {
-                // Create+expose REST services
-                exposeJsObject("runtimeService", new com.limpygnome.parrot.service.rest.RuntimeService(controller));
+            // Ensure this runs on the JavaFX thread...
+            Platform.runLater(() -> {
+
+                // Expose rest service objects
+                exposeJsObject("runtimeService", new RuntimeService(controller));
                 exposeJsObject("databaseService", new DatabaseService(controller));
 
                 // TODO: use logger
                 System.out.println("### hooked global vars ###");
-            }
-        });
 
-        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory()
-        {
-            @Override
-            public URLStreamHandler createURLStreamHandler(String protocol)
-            {
-                if (!protocol.equals("http"))
-                {
-                    System.err.println("IGNORING PROTO: " + protocol);
-                    return null;
-                }
-                return new URLStreamHandler()
-                {
-                    @Override
-                    protected URLConnection openConnection(URL u) throws IOException
-                    {
-                        System.err.println("REQUESTING: " + u.toString());
-                        String url = u.toString();
-                        url = "webapp" + url.replace("http://localhost:8123", "");
-
-                        System.err.println("translating to: " + url);
-
-                        URL clazzpath = getClass().getClassLoader().getResource(url);
-                        return clazzpath.openConnection();
-                    }
-                };
-            }
+            });
         });
     }
 

@@ -19,19 +19,20 @@ public class Program extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        // Start local Jetty server
-        controller.getJettyService().start();
+        // Start serving resources
+        controller.getResourcesService().start(controller);
 
         // Setup scene
         Scene scene = controller.getPresentationService().getScene();
         primaryStage.setScene(scene);
         primaryStage.setTitle("parrot - version 1.x.x");
+        primaryStage.setHeight(150.0);
 
         // Hook to shutdown jetty on close
         primaryStage.setOnCloseRequest(event -> {
             try
             {
-                controller.getJettyService().stop();
+                controller.getResourcesService().stop();
             }
             catch (Exception e) { }
         });
