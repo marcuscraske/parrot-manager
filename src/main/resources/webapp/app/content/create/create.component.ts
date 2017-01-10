@@ -21,17 +21,15 @@ export class CreateComponent {
 
     create(event) {
 
-        var form = this.createForm.value;
+        var form = this.createForm;
 
         if (form.valid) {
 
-            console.log("creating database...");
+            var location = form.value["location"];
+            var password = form.value["password"];
+            var rounds = form.value["rounds"];
 
-            var location = form["location"];
-            var password = form["password"];
-            var rounds = form["rounds"];
-
-            console.log("creating db... - location: " + location + ", password: " + password + ", rounds: " + rounds);
+            console.log("creating database... - location: " + location + ", password: " + password + ", rounds: " + rounds);
 
             var result = this.databaseService.create(location, password, rounds);
 

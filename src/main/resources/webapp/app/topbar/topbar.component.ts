@@ -13,6 +13,7 @@ export class TopBarComponent {
 
     constructor(private runtimeService: RuntimeService, private databaseService: DatabaseService) { }
 
+    // Currently unused...
     exit() {
         this.runtimeService.exit();
     }

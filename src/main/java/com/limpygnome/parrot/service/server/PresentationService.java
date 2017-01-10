@@ -4,13 +4,6 @@ import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.rest.DatabaseService;
 import com.limpygnome.parrot.service.rest.RuntimeService;
 import com.sun.javafx.webkit.WebConsoleListener;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
-
-import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -147,25 +140,20 @@ public class PresentationService
         });
     }
 
-    /**
-     * Sets up client-side hooks on web view.
-     */
-    protected void setupClientsideHooks()
+    private void setupClientsideHooks()
     {
         // Setup hooks after each navigation
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
         {
-            // Ensure this runs on the JavaFX thread...
-            Platform.runLater(() -> {
-
+            if (newValue == Worker.State.SUCCEEDED)
+            {
                 // Expose rest service objects
                 exposeJsObject("runtimeService", new RuntimeService(controller));
                 exposeJsObject("databaseService", new DatabaseService(controller));
 
                 // TODO: use logger
                 System.out.println("### hooked global vars ###");
-
-            });
+            }
         });
     }
 
