@@ -9,9 +9,9 @@ export class DatabaseService {
         this.databaseService = (window as any).databaseService;
     }
 
-    create(location, password, rounds) : void {
+    create(location, password, rounds) : boolean {
         // Create database
-        this.databaseService.create(location, password, rounds);
+        return this.databaseService.create(location, password, rounds);
     }
 
     test() : string {
