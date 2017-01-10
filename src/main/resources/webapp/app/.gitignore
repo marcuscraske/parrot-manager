@@ -1,2 +1,5 @@
 *.js
 *.js.map
+
+# Files to be allowed
+!mocks.js
