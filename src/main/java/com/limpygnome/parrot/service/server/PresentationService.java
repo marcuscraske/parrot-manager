@@ -4,7 +4,7 @@ import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.rest.DatabaseService;
 import com.limpygnome.parrot.service.rest.RuntimeService;
 import com.sun.javafx.webkit.WebConsoleListener;
-import javafx.concurrent.Worker;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -22,12 +22,20 @@ import org.w3c.dom.html.HTMLElement;
 public class PresentationService
 {
     private final Controller controller;
+
+    private RuntimeService runtimeService;
+    private DatabaseService databaseService;
+
     private WebView webView = null;
     private Scene scene = null;
 
     public PresentationService(Controller controller)
     {
         this.controller = controller;
+
+        // Setup JS REST services
+        this.runtimeService = new RuntimeService(controller);
+        this.databaseService = new DatabaseService(controller);
     }
 
     /**
@@ -140,20 +148,25 @@ public class PresentationService
         });
     }
 
-    private void setupClientsideHooks()
+    /**
+     * Sets up client-side hooks on web view.
+     */
+    protected void setupClientsideHooks()
     {
         // Setup hooks after each navigation
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
         {
-            if (newValue == Worker.State.SUCCEEDED)
-            {
+            // Ensure this runs on the JavaFX thread...
+            Platform.runLater(() -> {
+
                 // Expose rest service objects
-                exposeJsObject("runtimeService", new RuntimeService(controller));
-                exposeJsObject("databaseService", new DatabaseService(controller));
+                exposeJsObject("runtimeService", runtimeService);
+                exposeJsObject("databaseService", databaseService);
 
                 // TODO: use logger
                 System.out.println("### hooked global vars ###");
-            }
+
+            });
         });
     }
 
