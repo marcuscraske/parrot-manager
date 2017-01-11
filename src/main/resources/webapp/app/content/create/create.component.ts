@@ -36,7 +36,7 @@ export class CreateComponent {
             if (result)
             {
                 console.log("navigating to home...");
-                this.router.navigate(["/home"]);
+                this.router.navigate(["/viewer"]);
             }
             else
             {

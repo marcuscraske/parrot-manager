@@ -47,16 +47,16 @@ public class RuntimeService
     }
 
     /**
-     * Opens a native dialogue to open a database file.
+     * Opens a native dialogue to open a file.
      *
      * @param initialPath
      * @return the path to the file to open
      */
-    public String openDatabaseFile(String initialPath)
+    public String openFile(String initialPath)
     {
         // Build dialogue
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open existing database");
+        fileChooser.setTitle("Open existing file");
 
         if (initialPath != null && initialPath.length() > 0)
         {
@@ -68,13 +68,17 @@ public class RuntimeService
 
         String resultPath = null;
 
-        try
+        // Check we got a result (can be null if cancelled)
+        if (result != null)
         {
-            result.getCanonicalPath();
-        }
-        catch (IOException e)
-        {
-            LOG.error("failed to convert file to path - file: {}", result, e);
+            try
+            {
+                resultPath = result.getCanonicalPath();
+            }
+            catch (IOException e)
+            {
+                LOG.error("failed to convert file to path - file: {}", result, e);
+            }
         }
 
         return resultPath;

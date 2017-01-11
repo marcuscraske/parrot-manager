@@ -9,8 +9,6 @@ export class RuntimeService {
         setInterval( () => { this.updateHeight(); }, 50);
     }
 
-
-
     updateHeight() : void {
 
         var elementHtml = document.documentElement;
@@ -29,9 +27,15 @@ export class RuntimeService {
 
         }
     }
+
     changeHeight(newHeight) : void {
          (window as any).runtimeService.changeHeight(newHeight);
      }
+
+    openFile(initialPath) : string {
+        var path = (window as any).runtimeService.openFile(initialPath);
+        return path;
+    }
 
     exit() : void {
          (window as any).runtimeService.exit();

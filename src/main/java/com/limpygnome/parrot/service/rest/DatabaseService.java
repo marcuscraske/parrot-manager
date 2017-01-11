@@ -65,6 +65,18 @@ public class DatabaseService extends AbstractService
     }
 
     /**
+     * Opens a database from the file system.
+     *
+     * @param path the path of the database
+     * @param password the password to open the database
+     * @return error message, or null if successfully opened
+     */
+    public String open(String path, String password)
+    {
+        return "not implemented";
+    }
+
+    /**
      * @return the name of the file currently open
      */
     public String getFileName()
