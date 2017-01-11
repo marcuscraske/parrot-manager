@@ -1,5 +1,7 @@
 package com.limpygnome.parrot;
 
+import com.limpygnome.parrot.ui.WebViewStage;
+import com.limpygnome.parrot.ui.urlstream.ResourceUrlConfig;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -19,26 +21,13 @@ public class Program extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        // Start serving resources
-        controller.getResourcesService().start(controller);
+        // Serve resources from class path
+        ResourceUrlConfig resourceUrlConfig = new ResourceUrlConfig();
+        resourceUrlConfig.enable();
 
-        // Setup scene
-        Scene scene = controller.getPresentationService().getScene();
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("parrot - version 1.x.x");
-        primaryStage.setHeight(150.0);
-
-        // Hook to shutdown jetty on close
-        primaryStage.setOnCloseRequest(event -> {
-            try
-            {
-                controller.getResourcesService().stop();
-            }
-            catch (Exception e) { }
-        });
-
-        // Show view
-        primaryStage.show();
+        // Create and show stage
+        WebViewStage stage = new WebViewStage(controller);
+        stage.show();
     }
 
     public static void main(String[] args)

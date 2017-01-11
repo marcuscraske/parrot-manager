@@ -1,20 +1,19 @@
 package com.limpygnome.parrot.service.rest;
 
-import com.limpygnome.parrot.Controller;
-import com.limpygnome.parrot.service.AbstractService;
+import com.limpygnome.parrot.ui.WebViewStage;
 import javafx.scene.Scene;
 import javafx.stage.Window;
 
 /**
  * REST service for runtime service.
  */
-public class RuntimeService extends AbstractService
+public class RuntimeService
 {
-    private static final int MINIMUM_WINDOW_HEIGHT_THRESHOLD = 32;
+    private final WebViewStage stage;
 
-    public RuntimeService(Controller controller)
+    public RuntimeService(WebViewStage stage)
     {
-        super(controller);
+        this.stage = stage;
     }
 
     /**
@@ -24,10 +23,11 @@ public class RuntimeService extends AbstractService
      */
     public void changeHeight(int newHeight)
     {
-        Scene scene = controller.getPresentationService().getScene();
-
+        // Fetch actual window
+        Scene scene = stage.getScene();
         Window window = scene.getWindow();
 
+        // Set the new height, factoring size of window frame
         int targetHeight = newHeight + (int) scene.getY() + 1;
 
         if (targetHeight > 0)

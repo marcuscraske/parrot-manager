@@ -1,86 +1,78 @@
-package com.limpygnome.parrot.service.server;
+package com.limpygnome.parrot.ui;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.rest.DatabaseService;
 import com.limpygnome.parrot.service.rest.RuntimeService;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
+import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import netscape.javascript.JSObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.html.HTMLElement;
 
 /**
- * A service for controlling a bridge between service and presentation layers.
+ * A JavaFX web view stage.
  *
- * Any communication hooking should be done through this service.
+ * - Debugging for web view
+ * - Native context menus
+ * - Injects POJOs as JavaScript objects
  */
-public class PresentationService
+public class WebViewStage extends Stage
 {
-    private final Controller controller;
+    private static final Logger LOG = LogManager.getLogger(WebViewStage.class);
 
+    // JavaFX controls
+    private Scene scene;
+    private WebView webView;
+
+    // Injected POJOs
     private RuntimeService runtimeService;
     private DatabaseService databaseService;
 
-    private WebView webView = null;
-    private Scene scene = null;
-
-    public PresentationService(Controller controller)
+    public WebViewStage(Controller controller)
     {
-        this.controller = controller;
-
-        // Setup JS REST services
-        this.runtimeService = new RuntimeService(controller);
+        // Setup injected POJOs
+        this.runtimeService = new RuntimeService(this);
         this.databaseService = new DatabaseService(controller);
-    }
 
-    /**
-     * Creates a new scene with a web view, loaded with the client-side interface.
-     *
-     * Can only be invoked once, otherwise same scene is returned.
-     */
-    public synchronized Scene getScene()
-    {
-        // Load web view with client-side application
-        if (webView == null)
-        {
-            // Create new web view and set it up
-            webView = new WebView();
+        // Setup webview
+        webView = new WebView();
 
-            setupDebugging();
-            setupContextMenu();
-            setupClientsideHooks();
+        setupDebugging();
+        setupContextMenu();
+        setupClientsideHooks();
 
-            webView.getEngine().load("http://localhost:8123/index.html");
-        }
+        webView.getEngine().load("http://localhost/index.html");
 
-        // Create scene if not already created
-        if (scene == null)
-        {
-            scene = new Scene(webView);
-        }
+        // Build scene for web view
+        scene = new Scene(webView);
 
-        return scene;
+        // General window config
+        setScene(scene);
+        setTitle("parrot");
+        setHeight(150.0);
     }
 
     private void setupDebugging()
     {
-        // TODO: move to logger
         WebEngine engine = webView.getEngine();
 
         WebConsoleListener.setDefaultListener((webView1, message, lineNumber, sourceId) -> {
-            System.out.println("[WEB OUT] " + sourceId + " : " + message + " : line num: " + lineNumber);
+            LOG.info("web console message - src: {}, line num: {}, message: {}", sourceId, lineNumber, message);
         });
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("WebView state change : " + oldValue + " -> " + newValue);
+            LOG.info("WebView state has changed - old: {}, new: {}", oldValue, newValue);
         });
         engine.setOnError(event -> {
-            System.out.println("ERROR : " + event.getMessage());
-            event.getException().printStackTrace(System.out);
+            LOG.error("wehview error - message: {}", event.getMessage(), event.getException());
         });
     }
 
@@ -156,27 +148,33 @@ public class PresentationService
         // Setup hooks after each navigation
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
         {
-            // Ensure this runs on the JavaFX thread...
-            Platform.runLater(() -> {
+            if (newValue == Worker.State.SUCCEEDED)
+            {
+                // Ensure this runs on the JavaFX thread...
+                Platform.runLater(() ->
+                {
+                    // Expose rest service objects
+                    exposeJsObject("runtimeService", runtimeService);
+                    exposeJsObject("databaseService", databaseService);
 
-                // Expose rest service objects
-                exposeJsObject("runtimeService", runtimeService);
-                exposeJsObject("databaseService", databaseService);
-
-                // TODO: use logger
-                System.out.println("### hooked global vars ###");
-
-            });
+                    LOG.info("injected REST POJOs into window");
+                });
+            }
         });
     }
 
-    /*
-     * Exposes an object in the currently set web-view.
+    /**
+     * Exposes a POJO object as a field on 'window' for use by JavaScript.
+     *
+     * @param variableName
+     * @param object
      */
-    private void exposeJsObject(String variableName, Object object)
+    public void exposeJsObject(String variableName, Object object)
     {
         JSObject obj = (JSObject) webView.getEngine().executeScript("window");
         obj.setMember(variableName, object);
+
+        LOG.info("injected POJO as JS object - var name: {}, class: {}", variableName, object.getClass());
     }
 
 }

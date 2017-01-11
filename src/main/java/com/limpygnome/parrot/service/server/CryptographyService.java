@@ -16,7 +16,7 @@ import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 
 /**
- * A service for performing cryptography.
+ * A service for performing common cryptography functions.
  */
 public class CryptographyService {
 
