@@ -4,6 +4,7 @@ import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import com.limpygnome.parrot.service.AbstractService;
+import com.limpygnome.parrot.service.server.DatabaseIOService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,6 +35,8 @@ public class DatabaseService extends AbstractService
      */
     public boolean create(String location, String password, int rounds)
     {
+        DatabaseIOService databaseIOService = controller.getDatabaseIOService();
+
         try
         {
             LOG.info("creating new database - location: {}, rounds: {}", location, rounds);
@@ -42,8 +45,10 @@ public class DatabaseService extends AbstractService
             CryptoParams memoryCryptoParams = new CryptoParams(controller, password.toCharArray(), rounds, System.currentTimeMillis());
             CryptoParams fileCryptoParams = new CryptoParams(controller, password.toCharArray(), rounds, System.currentTimeMillis());
 
-            // TODO: needs to pass back result...
-            this.database = controller.getDatabaseIOService().create(memoryCryptoParams, fileCryptoParams);
+            this.database = databaseIOService.create(memoryCryptoParams, fileCryptoParams);
+
+            // Attempt to save...
+            databaseIOService.save(controller, database, location);
 
             // Update internal state
             this.currentFile = new File(location);

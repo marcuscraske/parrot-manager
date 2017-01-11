@@ -1,12 +1,12 @@
 <header>
     <div class="actions">
 
-        <div class="general-file">
-            <a routerLink="create" title="Create">
-                <span class="icon icon-file-text2"></span>
-            </a>
+        <div class="general-file" *ngIf="!databaseService.isOpen()">
             <a routerLink="open" title="Open">
                 <span class="icon icon-folder"></span>
+            </a>
+            <a routerLink="create" title="Create">
+                <span class="icon icon-file-text2"></span>
             </a>
         </div>
 
@@ -26,9 +26,11 @@
         </div>
 
     </div>
+
     <div class="current-file" [innerText]="databaseService.getFileName()">
         undefined file
     </div>
+
     <div class="options">
                 <span class="version">
                     version 1.x.x
@@ -37,4 +39,5 @@
             <span class="icon icon-question"></span>
         </a>
     </div>
+
 </header>
