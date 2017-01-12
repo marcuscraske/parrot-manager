@@ -79,3 +79,8 @@ header div a:focus
     color: #fff;
     background: #666;
 }
+
+header div a.dirty
+{
+    color: yellow;
+}

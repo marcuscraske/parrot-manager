@@ -19,9 +19,11 @@ if (window.databaseService == null)
 
         return {
             isOpen: function() { return true; },
+            isDirty: function() { return true; },
             getFileName: function() { return "test.parrot"; },
             create: function() { return true; },
-            open: function() { return "test error"; }
+            open: function() { return "test error"; },
+            close: function() { }
         };
 
     })();

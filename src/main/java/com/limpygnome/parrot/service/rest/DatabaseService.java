@@ -21,8 +21,10 @@ public class DatabaseService extends AbstractService
     // The current database open...
     private Database database;
     private File currentFile;
+    private boolean isDirty;
 
-    public DatabaseService(Controller controller) {
+    public DatabaseService(Controller controller)
+    {
         super(controller);
     }
 
@@ -34,7 +36,7 @@ public class DatabaseService extends AbstractService
      * @param rounds rounds for AES cryptography
      * @return true = success (new DB created and opened), false = failed/error...
      */
-    public boolean create(String location, String password, int rounds)
+    public synchronized boolean create(String location, String password, int rounds)
     {
         DatabaseIOService databaseIOService = controller.getDatabaseIOService();
 
@@ -72,7 +74,7 @@ public class DatabaseService extends AbstractService
      * @param password the password to open the database
      * @return error message, or null if successfully opened
      */
-    public String open(String path, String password)
+    public synchronized String open(String path, String password)
     {
         String result;
 
@@ -91,9 +93,20 @@ public class DatabaseService extends AbstractService
     }
 
     /**
+     * Unloads the current database, closing it.
+     *
+     * WARNING: this does not save the database.
+     */
+    public synchronized void close()
+    {
+        database = null;
+        currentFile = null;
+    }
+
+    /**
      * @return the name of the file currently open
      */
-    public String getFileName()
+    public synchronized String getFileName()
     {
         return currentFile != null ? currentFile.getName() : "";
     }
@@ -101,9 +114,17 @@ public class DatabaseService extends AbstractService
     /**
      * @return true = a database is open, false = not open
      */
-    public boolean isOpen()
+    public synchronized boolean isOpen()
     {
         return database != null;
+    }
+
+    /**
+     * @return true = database has been modified/dirty, false = unchanged database
+     */
+    public synchronized boolean isDirty()
+    {
+        return true;//isDirty;
     }
 
 }

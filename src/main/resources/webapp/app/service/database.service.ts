@@ -19,12 +19,24 @@ export class DatabaseService {
         return this.databaseService.open(path, password);
     }
 
-    getFileName() : string {
+    close()
+    {
+        this.databaseService.close();
+    }
+
+    getFileName() : string
+    {
         return this.databaseService.getFileName();
     }
 
-    isOpen() : boolean {
+    isOpen() : boolean
+    {
         return this.databaseService.isOpen();
+    }
+
+    isDirty() : boolean
+    {
+        return this.databaseService.isDirty();
     }
 
 }
