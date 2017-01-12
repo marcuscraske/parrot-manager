@@ -2,10 +2,10 @@ package com.limpygnome.parrot.service.server;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.db.Database;
-import com.limpygnome.parrot.model.dbaction.Action;
-import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.db.DatabaseNode;
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
+import com.limpygnome.parrot.model.dbaction.Action;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
@@ -15,7 +15,6 @@ import org.json.simple.parser.JSONParser;
 import javax.crypto.SecretKey;
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -23,8 +22,6 @@ import java.util.UUID;
 /**
  * Used for parsing instances of databases. This acts as the layer for reading and writing actual instances of
  * {@link Database}.
- *
- * The current database, being operated upon, is stored in {@link DatabaseService}.
  *
  * File (Encrypted) JSON Structure
  * -----------------------------------
@@ -300,7 +297,7 @@ public class DatabaseIOService
         byte[] fileEncrypted = saveFileEncrypted(controller, database);
 
         // Write to path
-        Files.write(new File(path).toPath(), fileEncrypted, StandardOpenOption.CREATE);
+        Files.write(new File(path).toPath(), fileEncrypted);
     }
 
     /**
