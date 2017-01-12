@@ -47,16 +47,18 @@ public class RuntimeService
     }
 
     /**
-     * Opens a native dialogue to open a file.
+     * Opens a native dialogue to open or save a file.
      *
-     * @param initialPath
+     * @param title the title used for the dialogue
+     * @param initialPath the initial directory displayed; can be null
+     * @param isSave indicates if to show a save dialogue (true), otherwise an open dialogue (false)
      * @return the path to the file to open
      */
-    public String openFile(String initialPath)
+    public String pickFile(String title, String initialPath, boolean isSave)
     {
         // Build dialogue
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open existing file");
+        fileChooser.setTitle(title);
 
         if (initialPath != null && initialPath.length() > 0)
         {
@@ -64,7 +66,15 @@ public class RuntimeService
         }
 
         // Display and capture file
-        File result = fileChooser.showOpenDialog(stage);
+        File result;
+        if (isSave)
+        {
+            result = fileChooser.showSaveDialog(stage);
+        }
+        else
+        {
+            result = fileChooser.showOpenDialog(stage);
+        }
 
         String resultPath = null;
 

@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { DatabaseService } from '../../service/database.service'
+import { RuntimeService } from '../../service/runtime.service'
 import { Router } from '@angular/router';
 
 @Component({
     moduleId: module.id,
     templateUrl: 'create.component.html',
-    providers: [DatabaseService]
+    providers: [DatabaseService, RuntimeService]
 })
 export class CreateComponent {
 
@@ -17,7 +18,10 @@ export class CreateComponent {
         rounds: ["", Validators.required]
     });
 
-    constructor(public fb: FormBuilder, private databaseService: DatabaseService, private router: Router) {}
+    constructor(
+        public fb: FormBuilder, private databaseService: DatabaseService, private runtimeService: RuntimeService,
+        private router: Router
+    ) {}
 
     create(event) {
 
@@ -48,6 +52,24 @@ export class CreateComponent {
             console.log("invalid form");
         }
 
+    }
+
+    openSaveFileDialogue() {
+        // Display native dialogue to pick file to save
+        var path = this.runtimeService.pickFile("Select file for database", null, true);
+
+        // Update field
+        if (path != null)
+        {
+            console.log("path chosen in dialogue: " + path);
+
+            var form = this.createForm;
+            form.value["location"] = path;
+        }
+        else
+        {
+            console.log("no path received, user must have cancelled");
+        }
     }
 
 }

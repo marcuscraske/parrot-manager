@@ -8,7 +8,7 @@ if (window.runtimeService == null)
         return {
             exit: function() { alert("tried to exit"); },
             changeHeight: function() { },
-            openFile: function() { return "test.parrot" }
+            pickFile: function() { return "test.parrot" }
         }
     })();
 }
@@ -21,7 +21,7 @@ if (window.databaseService == null)
             isOpen: function() { return true; },
             getFileName: function() { return "test.parrot"; },
             create: function() { return true; },
-            open: function() { return null; }
+            open: function() { return "test error"; }
         };
 
     })();

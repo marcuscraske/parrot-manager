@@ -12,12 +12,14 @@ import "app/global-vars"
 })
 export class OpenComponent {
 
+    errorMessage: string;
+
     constructor(private databaseService: DatabaseService, private runtimeService: RuntimeService, private router: Router) { }
 
     chooseDatabaseFile() : void
     {
         // Open dialogue and read file
-        var path = this.runtimeService.openFile(null);
+        var path = this.runtimeService.pickFile("Open existing database", null, false);
 
         if (path != null)
         {
@@ -55,6 +57,7 @@ export class OpenComponent {
             }
             else
             {
+                this.errorMessage = message;
                 console.log("failed to open database - " + message);
             }
         }

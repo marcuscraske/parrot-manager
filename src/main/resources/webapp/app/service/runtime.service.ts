@@ -32,8 +32,8 @@ export class RuntimeService {
          (window as any).runtimeService.changeHeight(newHeight);
      }
 
-    openFile(initialPath) : string {
-        var path = (window as any).runtimeService.openFile(initialPath);
+    pickFile(title, initialPath, isSave) : string {
+        var path = (window as any).runtimeService.pickFile(title, initialPath, isSave);
         return path;
     }
 

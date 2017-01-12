@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * REST service for database service.
@@ -73,7 +74,20 @@ public class DatabaseService extends AbstractService
      */
     public String open(String path, String password)
     {
-        return "not implemented";
+        String result;
+
+        try
+        {
+            database = controller.getDatabaseIOService().open(controller, path, password.toCharArray());
+            result = null;
+        }
+        catch (Exception e)
+        {
+            result = "Failed to open file - " + e.getMessage();
+            LOG.error("Failed to open database - path: {}, pass len: {}", path, (password != null ? password.length() : "null"), e);
+        }
+
+        return result;
     }
 
     /**
