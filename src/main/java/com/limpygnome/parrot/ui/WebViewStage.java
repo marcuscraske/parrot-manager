@@ -59,6 +59,15 @@ public class WebViewStage extends Stage
         setScene(scene);
         setTitle("parrot");
         setHeight(150.0);
+
+        // Prevent window from closing to prevent data loss for dirty databases
+        setOnCloseRequest(event -> {
+            // Prevent exit by consuming event...
+            event.consume();
+
+            // Trigger event for JS to handle action
+            triggerEvent("document", "nativeExit");
+        });
     }
 
     private void setupDebugging()
@@ -175,6 +184,20 @@ public class WebViewStage extends Stage
         obj.setMember(variableName, object);
 
         LOG.info("injected POJO as JS object - var name: {}, class: {}", variableName, object.getClass());
+    }
+
+    /**
+     * Triggers an event on the specified element.
+     *
+     * @param domElement the element e.g. document
+     * @param eventName the event name e.g. nativeExit
+     */
+    public void triggerEvent(String domElement, String eventName)
+    {
+        String script = domElement + ".dispatchEvent(new CustomEvent(\"" + eventName + "\"))";
+        webView.getEngine().executeScript(script);
+
+        LOG.info("triggered event - dom element: {}, event name: {}", domElement, eventName);
     }
 
 }

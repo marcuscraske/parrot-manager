@@ -5,11 +5,10 @@ import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import com.limpygnome.parrot.service.AbstractService;
 import com.limpygnome.parrot.service.server.DatabaseIOService;
+import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 
 /**
  * REST service for database service.
@@ -83,10 +82,47 @@ public class DatabaseService extends AbstractService
             database = controller.getDatabaseIOService().open(controller, path, password.toCharArray());
             result = null;
         }
+        catch (InvalidCipherTextException e)
+        {
+            result = "Incorrect password or corrupted file";
+            LOG.error("Failed to open database due to invalid crypto (wrong password / corrupted)", e);
+        }
         catch (Exception e)
         {
             result = "Failed to open file - " + e.getMessage();
             LOG.error("Failed to open database - path: {}, pass len: {}", path, (password != null ? password.length() : "null"), e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Saves the current database.
+     *
+     * This will also reset the dirty flag to false.
+     *
+     * @return error message if unsuccessful, otherwise null if successful
+     */
+    public synchronized String save()
+    {
+        String result = null;
+
+        try
+        {
+            String path = currentFile.getCanonicalPath();
+            LOG.info("saving database - path: {}", path);
+
+            // Save the database
+            controller.getDatabaseIOService().save(controller, database, path);
+
+            // Reset dirty flag
+            isDirty = false;
+
+            LOG.info("successfully saved database");
+        }
+        catch (Exception e)
+        {
+            result = e.getMessage();
         }
 
         return result;
@@ -124,7 +160,7 @@ public class DatabaseService extends AbstractService
      */
     public synchronized boolean isDirty()
     {
-        return true;//isDirty;
+        return isDirty;
     }
 
 }

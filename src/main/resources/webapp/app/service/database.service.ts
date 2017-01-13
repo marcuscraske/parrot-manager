@@ -19,6 +19,11 @@ export class DatabaseService {
         return this.databaseService.open(path, password);
     }
 
+    save() : string
+    {
+        return this.databaseService.save();
+    }
+
     close()
     {
         this.databaseService.close();

@@ -39,8 +39,7 @@ const appRoutes: Routes = [
     NavigatorComponent, SidebarComponent, ViewerComponent
   ],
   bootstrap: [
-    AppComponent,
-    TopBarComponent
+    AppComponent
   ]
 })
 

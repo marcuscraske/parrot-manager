@@ -23,6 +23,7 @@ if (window.databaseService == null)
             getFileName: function() { return "test.parrot"; },
             create: function() { return true; },
             open: function() { return "test error"; },
+            save: function() { return "test save error"; },
             close: function() { }
         };
 

@@ -14,13 +14,13 @@
             <a routerLink="viewer" title="Viewer">
                 <span class="icon icon-search"></span>
             </a>
-            <a routerLink="save" title="Save" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
+            <a title="Save" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
             <a routerLink="options" title="Options">
                 <span class="icon icon-cog"></span>
             </a>
-            <a title="Close" (click)="attemptToCloseDatabase()">
+            <a title="Close" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>
             </a>
         </div>
