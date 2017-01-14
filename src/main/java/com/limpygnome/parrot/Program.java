@@ -3,7 +3,6 @@ package com.limpygnome.parrot;
 import com.limpygnome.parrot.ui.WebViewStage;
 import com.limpygnome.parrot.ui.urlstream.ResourceUrlConfig;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**

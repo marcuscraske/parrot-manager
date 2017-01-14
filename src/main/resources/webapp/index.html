@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
+
         <meta charset="UTF-8">
-        <base href="/webapp">
+        <base href="/">
 
         <!-- prevent device scaling -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,6 +21,10 @@
         <!-- bootbox bootstrap dialogues -->
         <script src="node_modules/bootbox/bootbox.min.js"></script>
 
+        <!-- jstree -->
+        <script src="node_modules/jstree/dist/jstree.min.js"></script>
+        <link href="node_modules/jstree/dist/themes/default/style.css" type="text/css" rel="stylesheet" />
+
         <!-- styling -->
         <link href="assets/style.css" type="text/css" rel="stylesheet" />
         <link href="assets/loading-box.css" type="text/css" rel="stylesheet" />
@@ -34,7 +39,6 @@
 
         <!-- -- Configure SystemJS -->
         <script src="systemjs.config.js"></script>
-
 
         <script>
             System.import('app').catch(function(err){ console.error(err); });

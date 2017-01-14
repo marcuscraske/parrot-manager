@@ -12,18 +12,16 @@ import { CreateComponent } from './content/create/create.component'
 import { OpenComponent } from './content/open/open.component'
 import { HelpComponent } from './content/help/help.component'
 
-import { NavigatorComponent } from './content/navigator/navigator.component'
-import { SidebarComponent } from './content/navigator/sidebar/sidebar.component'
-import { ViewerComponent } from './content/navigator/viewer/viewer.component'
+import { ViewerComponent } from './content/viewer/viewer.component'
 
 const appRoutes: Routes = [
-  { path: 'viewer',                                 component: NavigatorComponent },
-  { path: 'create',                                 component: CreateComponent },
+  { path: '',                                       component: ViewerComponent },
   { path: 'open',                                   component: OpenComponent },
-  { path: '',                                       component: OpenComponent },
+  { path: 'create',                                 component: CreateComponent },
+
+  { path: 'viewer',                                 component: ViewerComponent },
 
   { path: 'help',                                   component: HelpComponent },
-  { path: 'navigator',                              component: NavigatorComponent },
   { path: '**',                                     component: ErrorComponent }
 ];
 
@@ -36,7 +34,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent, TopBarComponent,
     ErrorComponent, HomeComponent, CreateComponent, OpenComponent, HelpComponent,
-    NavigatorComponent, SidebarComponent, ViewerComponent
+    ViewerComponent
   ],
   bootstrap: [
     AppComponent

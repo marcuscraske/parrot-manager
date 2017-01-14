@@ -1,0 +1,22 @@
+.viewer
+{
+    display: table-row;
+}
+
+.viewer .sidebar,
+.viewer .editor
+{
+    vertical-align: top;
+}
+
+.viewer .sidebar
+{
+    display: table-cell;
+    padding: 0.5em 1em 1em 0;
+}
+
+.viewer .editor
+{
+    display: table-cell;
+    padding: 0 1em 1em 1em;
+}
