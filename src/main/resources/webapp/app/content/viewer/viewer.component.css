@@ -1,6 +1,6 @@
 .viewer
 {
-    display: table-row;
+    display: table;
 }
 
 .viewer .sidebar,
@@ -12,11 +12,11 @@
 .viewer .sidebar
 {
     display: table-cell;
-    padding: 0.5em 1em 1em 0;
+    padding: 1em 1em 1em 0;
 }
 
 .viewer .editor
 {
     display: table-cell;
-    padding: 0 1em 1em 1em;
+    padding-left: 1em;
 }

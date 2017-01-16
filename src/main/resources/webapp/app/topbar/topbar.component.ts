@@ -12,7 +12,8 @@ import "app/global-vars"
   styleUrls: ['topbar.component.css'],
   providers: [RuntimeService, DatabaseService]
 })
-export class TopBarComponent {
+export class TopBarComponent
+{
 
     private nativeExitListener: Function;
 
@@ -30,6 +31,7 @@ export class TopBarComponent {
 
     ngOnDestroy()
     {
+        // Dispose events
         this.nativeExitListener();
     }
 

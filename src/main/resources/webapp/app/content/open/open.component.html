@@ -1,30 +1,26 @@
-<main>
+<h1>
+    open
+</h1>
 
-    <h1>
-        open
-    </h1>
+<div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null }">
+    <button class="btn btn-default form-control" type="button" (click)="chooseDatabaseFile()">
+        Load from File
+    </button>
 
-    <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null }">
-        <button class="btn btn-default form-control" type="button" (click)="chooseDatabaseFile()">
-            Load from File
-        </button>
+    <span class="help-block">{{ errorMessage }}</span>
 
-        <span class="help-block">{{ errorMessage }}</span>
+</div>
 
-    </div>
+<h2>
+    recent
+</h2>
 
-    <h2>
-        recent
-    </h2>
+<p>
+    add button in future to toggle disabling this feature
+</p>
 
-    <p>
-        add button in future to toggle disabling this feature
-    </p>
-
-    <ul>
-        <li>
-            example.parrot
-        </li>
-    </ul>
-
-</main>
+<ul>
+    <li>
+        example.parrot
+    </li>
+</ul>

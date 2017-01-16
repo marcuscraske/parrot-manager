@@ -24,7 +24,20 @@ if (window.databaseService == null)
             create: function() { return true; },
             open: function() { return "test error"; },
             save: function() { return "test save error"; },
-            close: function() { }
+            close: function() { },
+            //getDatabase: function() { }
+            getDatabase: function()
+            {
+                return {
+                    getRoot : function() {
+                        return {
+                            getId : function() { return "d1b07836-83d0-486e-b329-4c41d317295d" },
+                            getName : function() { return "hello" },
+                            getChildren : function() { return [] }
+                        }
+                    }
+                }
+            }
         };
 
     })();

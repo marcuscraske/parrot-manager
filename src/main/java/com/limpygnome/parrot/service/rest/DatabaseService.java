@@ -163,4 +163,12 @@ public class DatabaseService extends AbstractService
         return isDirty;
     }
 
+    /**
+     * @return retrieves current database; null if not open
+     */
+    public synchronized Database getDatabase()
+    {
+        return database;
+    }
+
 }
