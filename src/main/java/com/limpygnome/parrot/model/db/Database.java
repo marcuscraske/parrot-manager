@@ -5,7 +5,12 @@ import com.limpygnome.parrot.model.dbaction.Action;
 import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
+import com.limpygnome.parrot.ui.WebViewStage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -19,6 +24,8 @@ import java.util.UUID;
  */
 public final class Database
 {
+    private static final Logger LOG = LogManager.getLogger(Database.class);
+
     // An instance of the current controller
     private Controller controller;
 
@@ -30,6 +37,9 @@ public final class Database
 
     // The root db of the database
     protected DatabaseNode root;
+
+    // Quick ref map of UUID (String) to node; this must be updated in places where nodes are added/removed etc
+    protected Map<UUID, DatabaseNode> lookup;
 
     /**
      * Creates a new instance.
@@ -43,6 +53,7 @@ public final class Database
         this.controller = controller;
         this.memoryCryptoParams = memoryCryptoParams;
         this.fileCryptoParams = fileCryptoParams;
+        this.lookup = new HashMap<>();
 
         // Setup an initial blank root db
         root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
@@ -54,6 +65,46 @@ public final class Database
     public DatabaseNode getRoot()
     {
         return root;
+    }
+
+    /**
+     * Retrieves a node by its identifier.
+     *
+     * TODO: add tests
+     *
+     * @param rawUuid the id/uuid as raw text
+     * @return the node, or null if not found or the id cannot be parsed as a uuid
+     */
+    public DatabaseNode getNode(String rawUuid)
+    {
+        DatabaseNode result;
+
+        try
+        {
+            UUID uuid = UUID.fromString(rawUuid);
+            result = getNode(uuid);
+        }
+        catch (IllegalArgumentException e)
+        {
+            result = null;
+            LOG.warn("Failed to retrieve node due to invalid uuid - raw uuid: {}", rawUuid, e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Retrieves a node by its identifier.
+     *
+     * TODO: add tests
+     *
+     * @param uuid the node identifier
+     * @return the node, or null if not found
+     */
+    public DatabaseNode getNode(UUID uuid)
+    {
+        DatabaseNode result = lookup.get(uuid);
+        return result;
     }
 
     /**

@@ -2,6 +2,8 @@ package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,6 +24,9 @@ public class DatabaseNode
 {
     // The database to which this belongs
     private Database database;
+
+    // The parent of this node
+    private DatabaseNode parent;
 
     // A unique ID for this db
     private UUID id;
@@ -44,12 +49,16 @@ public class DatabaseNode
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
         this.database = database;
+        this.parent = null;
         this.id = id;
         this.name = name;
         this.lastModified = lastModified;
 
         this.children = new HashMap<>(0);
         this.deletedChildren = new HashSet<>();
+
+        // Add ref to database lookup
+        database.lookup.put(id, this);
     }
 
     /**
@@ -143,9 +152,17 @@ public class DatabaseNode
     /**
      * @return child nodes
      */
-    public Map<UUID, DatabaseNode> getChildren()
+    public Set<DatabaseNode> getChildren()
     {
-        return children;
+        return new HashSet<>(children.values());
+    }
+
+    /**
+     * @return retrieves read-only underlying map of children
+     */
+    public Map<UUID, DatabaseNode> getChildrenMap()
+    {
+        return Collections.unmodifiableMap(children);
     }
 
     /**
@@ -191,7 +208,7 @@ public class DatabaseNode
         for (DatabaseNode child : children.values())
         {
             clonedChild = child.clone(database);
-            newNode.children.put(clonedChild.id, clonedChild);
+            newNode.add(clonedChild);
         }
 
         return newNode;
@@ -248,6 +265,7 @@ public class DatabaseNode
                 {
                     // Remove from our tree, this db has been deleted
                     iterator.remove();
+                    database.lookup.remove(child.id);
                     mergeInfo.addMergeMessage("removed child - " + child.getName());
                 }
             }
@@ -266,7 +284,7 @@ public class DatabaseNode
                 if (!children.containsKey(otherChild.id) && !deletedChildren.contains(otherChild.id))
                 {
                     newNode = otherChild.clone(database);
-                    children.put(newNode.id, newNode);
+                    add(newNode);
                     mergeInfo.addMergeMessage("added child - " + newNode.name);
                 }
             }
@@ -274,6 +292,48 @@ public class DatabaseNode
 
         // Merge any deleted items
         deletedChildren.addAll(src.deletedChildren);
+    }
+
+    /**
+     * Adds a child node.
+     *
+     * TODO: add tests
+     *
+     * @param node the new child node
+     * @return the node added
+     */
+    public synchronized DatabaseNode add(DatabaseNode node)
+    {
+        // Add as child
+        children.put(node.id, node);
+
+        // Update parent
+        node.parent = this;
+
+        return node;
+    }
+
+    /**
+     * Removes this node from the database, unless this is a root node (cannot ever be removed).
+     *
+     * TODO: add tests
+     */
+    public synchronized DatabaseNode remove()
+    {
+        if (parent != null)
+        {
+            // Remove from parent
+            parent.children.remove(id);
+            parent.deletedChildren.add(id);
+
+            // Remove from lookup
+            database.lookup.remove(id);
+
+            // Set as orphan
+            parent = null;
+        }
+
+        return this;
     }
 
     @Override

@@ -175,7 +175,7 @@ public class DatabaseIOService
             child.getDeletedChildren().addAll(deletedChildren);
 
             // Append to current parent
-            nodeParent.getChildren().put(id, child);
+            nodeParent.add(child);
         }
         else
         {
@@ -245,7 +245,7 @@ public class DatabaseIOService
         }
 
         // Recurse child nodes
-        for (DatabaseNode child : node.getChildren().values())
+        for (DatabaseNode child : node.getChildren())
         {
             convertNodeToJson(child, jsonChild, false);
         }

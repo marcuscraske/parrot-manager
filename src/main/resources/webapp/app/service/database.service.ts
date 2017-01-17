@@ -69,15 +69,17 @@ export class DatabaseService
         }
         else
         {
-            json = [ { "text" : "empty" } ];
+            json = [ { "id" : "empty-root-node", "text" : "empty" } ];
             console.log("database is not open / null, cannot rebuild tree");
         }
 
         return json;
     }
 
-    buildNode(currentJsonNode, databaseNode)
+    private buildNode(currentJsonNode, databaseNode)
     {
+        // Note: this JSON is based upon the expected format for JSTree (module for displaying trees)
+
         // -- Translate from database to JSON
         var newJsonNode = {
             "id" : databaseNode.getId(),
@@ -89,9 +91,9 @@ export class DatabaseService
 
         // -- Add children iteratively
         var childDatabaseNode;
-        for (var childDatabaseNodeKv in databaseNode.getChildren())
+
+        for (childDatabaseNode in databaseNode.getChildren())
         {
-            childDatabaseNode = childDatabaseNodeKv.getValue();
             this.buildNode(newJsonNode, childDatabaseNode);
         }
     }

@@ -34,16 +34,21 @@ export class ViewerComponent
 
     initTree()
     {
-        // Setup tree with drag-drop enabled
         $(function(){
 
-            var tree = $('#sidebar').jstree({
+            // Setup tree with drag-and-drop enabled
+            var tree = $("#sidebar").jstree({
                 core: {
                     check_callback: true,
                     data: {}
                 },
                 dnd : { },
                 plugins: [ "dnd" ]
+            });
+
+            // Hook tree for select event
+            $("#sidebar").on("select_node.jstree", function(e, data) {
+                console.log("SELECTED TREE ITEM: " + data.node.id);
             });
 
         });

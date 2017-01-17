@@ -115,11 +115,11 @@ public class DatabaseNodeTest {
         // Given
         DatabaseNode src = new DatabaseNode(database, UUID.randomUUID(), "old name", 3000L, TEST_DECRYPTED_DATA);
         DatabaseNode srcChild = new DatabaseNode(database, UUID.randomUUID(), "child name new", 2000L, TEST_DECRYPTED_DATA);
-        src.getChildren().put(srcChild.getId(), srcChild);
+        src.add(srcChild);
 
         DatabaseNode dest = new DatabaseNode(database, UUID.randomUUID(), "unchanged name", 5000L, new byte[]{ 0x11, 0x44 });
         DatabaseNode destChild = new DatabaseNode(database, srcChild.getId(), "child name old", 1000L, new byte[]{ 0x22, 0x33, 0x44 });
-        dest.getChildren().put(destChild.getId(), destChild);
+        dest.add(destChild);
 
         // When
         dest.merge(new MergeInfo(actionsLog, dest), src);
@@ -147,16 +147,16 @@ public class DatabaseNodeTest {
 
         DatabaseNode dest = new DatabaseNode(database, UUID.randomUUID(), "unchanged name", 1234L, TEST_DECRYPTED_DATA);
         DatabaseNode destChild = new DatabaseNode(database, uuidDeleted, "deleted node", 1234L, TEST_DECRYPTED_DATA);
-        dest.getChildren().put(uuidDeleted, destChild);
+        dest.add(destChild);
 
         // -- Quick sanity check...
-        assertTrue("Dest should contain child as not yet merged", dest.getChildren().containsKey(uuidDeleted));
+        assertTrue("Dest should contain child as not yet merged", dest.getChildrenMap().containsKey(uuidDeleted));
 
         // When
         dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
-        assertFalse("Dest should not contain a child after merge because it was deleted in src", dest.getChildren().containsKey(uuidDeleted));
+        assertFalse("Dest should not contain a child after merge because it was deleted in src", dest.getChildrenMap().containsKey(uuidDeleted));
     }
 
     @Test

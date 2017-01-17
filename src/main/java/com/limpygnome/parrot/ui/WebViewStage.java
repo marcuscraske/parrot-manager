@@ -121,19 +121,20 @@ public class WebViewStage extends Stage
                 // Fetch element clicked
                 netscape.javascript.JSObject object = (netscape.javascript.JSObject) webView.getEngine().executeScript("document.elementFromPoint(" + e.getX() + "," + e.getY() + ");");
                 HTMLElement element = (HTMLElement) object;
-                String itemType = element.getAttribute("data-type");
+                String itemType = element.getAttribute("id");
 
                 if (itemType != null)
                 {
-                    switch (itemType)
-                    {
-                        case "folder":
-                            ctxMenuToShow = contextMenuFolder;
-                            break;
-                        case "entry":
-                            ctxMenuToShow = contextMenuEntry;
-                            break;
-                    }
+                    LOG.error("ITEM TYPE: {}", itemType);
+//                    switch (itemType)
+//                    {
+//                        case "folder":
+//                            ctxMenuToShow = contextMenuFolder;
+//                            break;
+//                        case "entry":
+//                            ctxMenuToShow = contextMenuEntry;
+//                            break;
+//                    }
                 }
             }
 
