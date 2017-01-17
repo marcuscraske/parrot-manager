@@ -4,12 +4,27 @@
     </div>
 
     <div class="editor">
-        <h1>
-            test
-        </h1>
-        <p>
-            test
-        </p>
+
+        <!-- Home/unselected node page -->
+        <div class="home" *ngIf="currentNode == null">
+            <h1>
+                {{ databaseService.getFileName() }}
+            </h1>
+            <p>
+                Select a node to begin editing.
+            </p>
+        </div>
+
+        <!-- Page to edit a node -->
+        <div class="view" *ngIf="currentNode != null">
+            <h1>
+                {{ currentNode.name }}
+            </h1>
+            <p>
+                test
+            </p>
+        </div>
+
     </div>
 
 </div>

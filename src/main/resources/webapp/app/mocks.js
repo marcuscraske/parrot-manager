@@ -25,7 +25,6 @@ if (window.databaseService == null)
             open: function() { return "test error"; },
             save: function() { return "test save error"; },
             close: function() { },
-            //getDatabase: function() { }
             getDatabase: function()
             {
                 return {
@@ -35,6 +34,14 @@ if (window.databaseService == null)
                             getName : function() { return "hello" },
                             getChildren : function() { return [] }
                         }
+                    },
+
+                    getNode: function(nodeId) {
+                        return {
+                           getId : function() { return "d1b07836-83d0-486e-b329-4c41d317295d" },
+                           getName : function() { return "hello" },
+                           getChildren : function() { return [] }
+                       }
                     }
                 }
             }

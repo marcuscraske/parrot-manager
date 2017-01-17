@@ -95,9 +95,17 @@ public class DatabaseNode
     }
 
     /**
-     * @return unique identifier for this db
+     * @return unique identifier for this node
      */
-    public UUID getId()
+    public String getId()
+    {
+        return id.toString();
+    }
+
+    /**
+     * @return unique identifier for this node
+     */
+    public UUID getUuid()
     {
         return id;
     }
@@ -166,6 +174,9 @@ public class DatabaseNode
     }
 
     /**
+     * This will return a reference to the set of deleted children IDs/UUIDs. Operations are permitted against the
+     * returned instance.
+     *
      * @return deleted children
      */
     public Set<UUID> getDeletedChildren()

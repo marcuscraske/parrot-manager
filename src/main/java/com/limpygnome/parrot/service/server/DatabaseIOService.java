@@ -215,7 +215,7 @@ public class DatabaseIOService
             // Create new JSON object
             jsonChild = new JSONObject();
 
-            jsonChild.put("id", node.getId().toString());
+            jsonChild.put("id", node.getUuid().toString());
             jsonChild.put("name", node.getName());
             jsonChild.put("modified", node.getLastModified());
 
@@ -239,7 +239,7 @@ public class DatabaseIOService
         }
         else
         {
-            jsonRoot.put("id", node.getId().toString());
+            jsonRoot.put("id", node.getUuid().toString());
             jsonRoot.put("deleted", jsonDeleted);
             jsonChild = jsonRoot;
         }

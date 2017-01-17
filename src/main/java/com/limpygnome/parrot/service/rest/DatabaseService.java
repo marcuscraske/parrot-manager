@@ -2,10 +2,13 @@ package com.limpygnome.parrot.service.rest;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.db.Database;
+import com.limpygnome.parrot.model.db.DatabaseNode;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import com.limpygnome.parrot.service.AbstractService;
 import com.limpygnome.parrot.service.server.DatabaseIOService;
 import java.io.File;
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -80,6 +83,7 @@ public class DatabaseService extends AbstractService
         try
         {
             database = controller.getDatabaseIOService().open(controller, path, password.toCharArray());
+            currentFile = new File(path);
             result = null;
         }
         catch (InvalidCipherTextException e)

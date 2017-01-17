@@ -14,6 +14,9 @@ export class ViewerComponent
     // Event handle for "databaseUpdated" events
     private nativeDatabaseUpdatedEvent: Function;
 
+    // The current node being edited
+    currentNode: any;
+
     constructor(private databaseService: DatabaseService, private renderer: Renderer)
     {
         // Setup tree
@@ -47,8 +50,15 @@ export class ViewerComponent
             });
 
             // Hook tree for select event
-            $("#sidebar").on("select_node.jstree", function(e, data) {
-                console.log("SELECTED TREE ITEM: " + data.node.id);
+            $("#sidebar").on("select_node.jstree", (e, data) => {
+                // Fetch UUID/ID of node from tree
+                var nodeId = data.node.id;
+
+                // Update current node being edited
+                var database = this.databaseService.getDatabase();
+                this.currentNode = database.getNode(nodeId);
+
+                console.log("updated current node being edited: " + nodeId + " - result not null: " + (this.currentNode != null));
             });
 
         });
