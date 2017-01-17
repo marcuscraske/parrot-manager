@@ -164,7 +164,7 @@ public class DatabaseNodeTest {
         // Given
         DatabaseNode src = new DatabaseNode(database, UUID.randomUUID(), "unchanged name", 1234L, TEST_DECRYPTED_DATA);
         DatabaseNode srcNewChild = new DatabaseNode(database, UUID.randomUUID(), "new child", 5000L, new byte[]{ 0x11, 0x22, 0x44 });
-        src.getChildren().put(srcNewChild.getId(), srcNewChild);
+        src.add(srcNewChild);
 
         DatabaseNode dest = new DatabaseNode(database, UUID.randomUUID(), "unchanged name", 1234L, TEST_DECRYPTED_DATA);
 
@@ -175,8 +175,8 @@ public class DatabaseNodeTest {
         dest.merge(new MergeInfo(actionsLog, dest), src);
 
         // Then
-        assertTrue("Expected dest to contain new child added at src", dest.getChildren().containsKey(srcNewChild.getId()));
-        assertEquals("Expected dest to contain node which is equal to child node at src", srcNewChild, dest.getChildren().get(srcNewChild.getId()));
+        assertTrue("Expected dest to contain new child added at src", dest.getChildrenMap().containsKey(srcNewChild.getId()));
+        assertEquals("Expected dest to contain node which is equal to child node at src", srcNewChild, dest.getChildrenMap().get(srcNewChild.getId()));
     }
 
     @Test

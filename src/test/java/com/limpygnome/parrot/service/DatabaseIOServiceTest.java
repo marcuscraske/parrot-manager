@@ -248,7 +248,7 @@ public class DatabaseIOServiceTest
         DatabaseNode node = new DatabaseNode(database, UUID.randomUUID(), "test", 1234L, encrypted);
         node.getDeletedChildren().add(UUID.randomUUID());
         node.getDeletedChildren().add(UUID.randomUUID());
-        nodeRoot.getChildren().put(node.getId(), node);
+        nodeRoot.add(node);
 
 
         // Add a child to our child...
@@ -256,7 +256,7 @@ public class DatabaseIOServiceTest
         node2.getDeletedChildren().add(UUID.randomUUID());
         node2.getDeletedChildren().add(UUID.randomUUID());
         node2.getDeletedChildren().add(UUID.randomUUID());
-        node.getChildren().put(node2.getId(), node2);
+        node.add(node2);
 
         return database;
     }

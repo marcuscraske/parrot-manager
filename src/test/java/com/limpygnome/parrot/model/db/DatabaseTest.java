@@ -183,7 +183,7 @@ public class DatabaseTest {
         assertTrue("Expected new object for updated memory crypto params", updatedHash != remoteHash);
         assertTrue("Expected salt to be different", !oldSalt.equals(database.memoryCryptoParams.getSalt()));
 
-        DatabaseNode child = database.getRoot().getChildren().values().iterator().next();
+        DatabaseNode child = database.getRoot().getChildrenMap().values().iterator().next();
         // TODO: pad block corrupted - seen for line below, investigate if seen again...
         assertArrayEquals("Expected to be able to decrypt child data", TEST_DATA, child.getDecryptedValue());
     }
@@ -215,7 +215,7 @@ public class DatabaseTest {
 
         // Give it a basic child
         DatabaseNode child = new DatabaseNode(database, UUID.randomUUID(), "child name", 0L, TEST_DATA);
-        database.getRoot().getChildren().put(child.getId(), child);
+        database.getRoot().add(child);
 
         return database;
     }

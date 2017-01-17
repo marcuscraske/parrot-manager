@@ -160,7 +160,7 @@ public class DatabaseNode
     /**
      * @return retrieves read-only underlying map of children
      */
-    public Map<UUID, DatabaseNode> getChildrenMap()
+    Map<UUID, DatabaseNode> getChildrenMap()
     {
         return Collections.unmodifiableMap(children);
     }
