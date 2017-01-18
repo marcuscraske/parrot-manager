@@ -2,6 +2,9 @@ package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,6 +118,11 @@ public class DatabaseNode
      */
     public void setId(UUID id)
     {
+        // Update lookup
+        database.lookup.remove(this.id);
+        database.lookup.put(id, this);
+
+        // Update ID
         this.id = id;
     }
 
@@ -132,6 +140,20 @@ public class DatabaseNode
     public long getLastModified()
     {
         return lastModified;
+    }
+
+    /**
+     * TOOD: unit test
+     * @return the last modified date or time period, which ever is more human readable
+     */
+    public String getHumanLastModified()
+    {
+        Period period = new Period(System.currentTimeMillis(), lastModified);
+        period.
+    }
+
+    public String getFormattedLastModified()
+    {
     }
 
     /**

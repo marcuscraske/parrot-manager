@@ -81,9 +81,11 @@ export class DatabaseService
         // Note: this JSON is based upon the expected format for JSTree (module for displaying trees)
 
         // -- Translate from database to JSON
+        var name = databaseNode.getName();
+
         var newJsonNode = {
             "id" : databaseNode.getId(),
-            "text" : databaseNode.getName(),
+            "text" : name != null ? name : "(unnamed)",
             "children" : []
         };
 
@@ -96,6 +98,23 @@ export class DatabaseService
         {
             this.buildNode(newJsonNode, childDatabaseNode);
         }
+    }
+
+    getNode(id) : any
+    {
+        var database = this.databaseService.getDatabase();
+        var node = null;
+
+        if (database != null)
+        {
+            node = database.getNode(id);
+        }
+        else
+        {
+            console.log("database is not open / null, cannot fetch node");
+        }
+
+        return node;
     }
 
 }

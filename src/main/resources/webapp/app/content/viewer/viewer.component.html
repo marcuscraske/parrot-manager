@@ -18,10 +18,10 @@
         <!-- Page to edit a node -->
         <div class="view" *ngIf="currentNode != null">
             <h1>
-                {{ currentNode.name }}
+                {{ currentNode.getName() != null ? currentNode.getName() : "(unnamed)" }}
             </h1>
             <p>
-                test
+                Last modified: {{ currentNode.getHumanLastModified() }}
             </p>
         </div>
 

@@ -37,7 +37,7 @@ export class ViewerComponent
 
     initTree()
     {
-        $(function(){
+        $(() => {
 
             // Setup tree with drag-and-drop enabled
             var tree = $("#sidebar").jstree({
@@ -55,10 +55,9 @@ export class ViewerComponent
                 var nodeId = data.node.id;
 
                 // Update current node being edited
-                var database = this.databaseService.getDatabase();
-                this.currentNode = database.getNode(nodeId);
+                this.currentNode = this.databaseService.getNode(nodeId);
 
-                console.log("updated current node being edited: " + nodeId + " - result not null: " + (this.currentNode != null));
+                console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
             });
 
         });
