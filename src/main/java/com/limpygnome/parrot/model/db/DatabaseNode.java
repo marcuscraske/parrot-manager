@@ -2,6 +2,7 @@ package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Period;
@@ -142,18 +143,14 @@ public class DatabaseNode
         return lastModified;
     }
 
-    /**
-     * TOOD: unit test
-     * @return the last modified date or time period, which ever is more human readable
-     */
-    public String getHumanLastModified()
-    {
-        Period period = new Period(System.currentTimeMillis(), lastModified);
-        period.
-    }
 
+    /**
+     * @return formatted date time
+     */
     public String getFormattedLastModified()
     {
+        DateTime dateTime = new DateTime(lastModified);
+        return dateTime.toString("dd-MM-yyyy HH:mm:ss");
     }
 
     /**

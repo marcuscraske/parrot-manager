@@ -1,4 +1,5 @@
 import { Component, Renderer } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { DatabaseService } from '../../service/database.service'
 
 @Component({
@@ -17,7 +18,12 @@ export class ViewerComponent
     // The current node being edited
     currentNode: any;
 
-    constructor(private databaseService: DatabaseService, private renderer: Renderer)
+    public addEntryForm = this.fb.group({
+        name: ["", Validators.required],
+        value: ["", Validators.required]
+    });
+
+    constructor(private databaseService: DatabaseService, private renderer: Renderer, public fb: FormBuilder)
     {
         // Setup tree
         this.initTree();

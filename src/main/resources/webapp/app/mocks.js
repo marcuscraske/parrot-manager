@@ -41,7 +41,8 @@ if (window.databaseService == null)
                            getId : function() { return "d1b07836-83d0-486e-b329-4c41d317295d" },
                            getName : function() { return "hello" },
                            getChildren : function() { return [] },
-                           getLastModified: function() { return 1484723619 }
+                           getLastModified: function() { return 1484723619 },
+                           getFormattedLastModified: function() { return "XX-XX-XXXX XX:XX:XX" }
                        }
                     }
                 }
