@@ -85,4 +85,42 @@ export class ViewerComponent
         });
     }
 
+    toggleMask(target, nodeId, isInput)
+    {
+        var field = $(target);
+        var masked = field.data("data-masked");
+
+        // Determine new value
+        var newValue;
+
+        if (masked == null || masked)
+        {
+            // Switch to unmasked
+            if (nodeId == null)
+            {
+                newValue = this.currentNode.getDecryptedValueString();
+            }
+            else
+            {
+            }
+            field.data("data-masked", false);
+        }
+        else
+        {
+            // Switch to masked
+            newValue = "********";
+            field.data("data-masked", true);
+        }
+
+        // Update element with new value
+        if (isInput)
+        {
+            field.val(newValue);
+        }
+        else
+        {
+            field.text(newValue);
+        }
+    }
+
 }

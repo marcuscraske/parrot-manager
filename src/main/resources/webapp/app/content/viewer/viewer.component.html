@@ -44,7 +44,7 @@
                 <button class="btn btn-primary">
                     Update
                 </button>
-                <button class="btn btn-default">
+                <button class="btn btn-default" (click)="toggleMask('#currentValue', null, true)">
                     Toggle Masking
                 </button>
                 <button class="btn btn-default">
@@ -122,7 +122,7 @@
                     </th>
                 </tr>
 
-                <tr>
+                <tr *ngIf="this.currentNode.getChildCount() == 0">
                     <td colspan="3">
                         None
                     </td>
@@ -133,10 +133,11 @@
                         example
                     </td>
                     <td>
-                        ********
+                        <span id="-value">
+                        </span>
                     </td>
                     <td>
-                        <button class="btn btn-default">
+                        <button class="btn btn-default" (click)="toggleMask('#currentValue', null, true)">
                             Toggle Masking
                         </button>
                         <button class="btn btn-default">

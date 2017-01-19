@@ -42,7 +42,9 @@ if (window.databaseService == null)
                            getName : function() { return "hello" },
                            getChildren : function() { return [] },
                            getLastModified: function() { return 1484723619 },
-                           getFormattedLastModified: function() { return "XX-XX-XXXX XX:XX:XX" }
+                           getFormattedLastModified: function() { return "XX-XX-XXXX XX:XX:XX" },
+                           getDecryptedValueString: function() { return "mock decrypted value" },
+                           getChildCount: function() { return 2 }
                        }
                     }
                 }

@@ -162,18 +162,28 @@ public class DatabaseNode
     }
 
     /**
-     * Decrypts the value stored at this db and returns the data.
+     * Decrypts the value stored at this node and returns the data.
      *
-     * This can be an empty array if the db does not store a value i.e. acts as a directory/label for a set of child
+     * This can be an empty array if the node does not store a value i.e. acts as a directory/label for a set of child
      * nodes.
      *
-     * @return the decrypted value stored at this db
+     * @return the decrypted value stored at this node
      * @throws Exception
      */
     public synchronized byte[] getDecryptedValue() throws Exception
     {
         byte[] result = database.decrypt(value);
         return result;
+    }
+
+    /**
+     * @return decrypted value stored at this node, as string
+     * @throws Exception when the value cannot be decrypted
+     */
+    public synchronized String getDecryptedValueString() throws Exception
+    {
+        byte[] decrypted = getDecryptedValue();
+        return new String(decrypted);
     }
 
     /**
@@ -190,6 +200,14 @@ public class DatabaseNode
     Map<UUID, DatabaseNode> getChildrenMap()
     {
         return Collections.unmodifiableMap(children);
+    }
+
+    /**
+     * @return the number of child nodes / entries
+     */
+    public int getChildCount()
+    {
+        return children.size();
     }
 
     /**
