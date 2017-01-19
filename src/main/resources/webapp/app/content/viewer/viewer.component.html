@@ -26,12 +26,48 @@
                 Last modified: {{ currentNode.getFormattedLastModified() }}
             </p>
 
-            <!-- Add entry -->
+            <!-- Current value -->
+            <div class="form-group">
+                <label class="form-control-label" for="currentValue">
+                    Current Value
+                </label>
+
+                <textarea id="currentValue"
+                          class="form-control"
+                          placeholder="*******"
+                          rows="2"
+                ></textarea>
+            </div>
+
+            <!-- Add/edit entry -->
+            <div class="form-group">
+                <button class="btn btn-primary">
+                    Update
+                </button>
+                <button class="btn btn-default">
+                    Toggle Masking
+                </button>
+                <button class="btn btn-default">
+                    Delete
+                </button>
+                <button class="btn btn-default">
+                    Copy to Clipboard
+                </button>
+            </div>
+
+            <!-- List entries -->
             <h2>
-                Add Entry
+                Entries
             </h2>
 
-            <form [formGroup]="addEntryForm" (ngSubmit)="addEntry($event)" #form="ngForm">
+            <div class="form-group">
+                <button class="btn btn-default" data-toggle="collapse" data-target="#addEntryForm">
+                    Add/Update a Child Entry
+                </button>
+            </div>
+
+            <form id="addEntryForm" class="collapse" [formGroup]="addEntryForm" (ngSubmit)="addEntry($event)" #form="ngForm">
+
                 <div class="form-group">
                     <label class="form-control-label" for="name">
                         Name
@@ -45,39 +81,33 @@
                            minlength="3" maxlength="128"
                     />
                 </div>
+
                 <div class="form-group">
                     <label class="form-control-label" for="name">
                         Value
                     </label>
 
-                    <div class="input-group">
-                        <textarea id="value"
-                                  formControlName="value"
-                                  class="form-control"
-                                  placeholder="The secret value to be stored (this input is not masked)"
-                                  rows="2"
-                        ></textarea>
-                        <span class="input-group-btn">
-                            <button class="btn btn-default form-control" type="button" (click)="openSaveFileDialogue()">
-                                Switch to Masked
-                            </button>
-                        </span>
-                    </div>
-
+                    <textarea id="value"
+                              formControlName="value"
+                              class="form-control"
+                              placeholder="This input is plain text / not masked"
+                              rows="2"
+                    ></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    Add
-                </button>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        Add/Update
+                    </button>
+                    <button class="btn btn-default">
+                        Toggle Masking
+                    </button>
+                    <button class="btn btn-default">
+                        Generate Random
+                    </button>
+                </div>
+
             </form>
-
-            <!-- List entries -->
-            <h2>
-                Entries
-            </h2>
-
-            <p>
-                Click a value to reveal.
-            </p>
 
             <table class="table">
                 <tr>
@@ -95,6 +125,26 @@
                 <tr>
                     <td colspan="3">
                         None
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        example
+                    </td>
+                    <td>
+                        ********
+                    </td>
+                    <td>
+                        <button class="btn btn-default">
+                            Toggle Masking
+                        </button>
+                        <button class="btn btn-default">
+                            Delete
+                        </button>
+                        <button class="btn btn-default">
+                            Copy to Clipboard
+                        </button>
                     </td>
                 </tr>
 
