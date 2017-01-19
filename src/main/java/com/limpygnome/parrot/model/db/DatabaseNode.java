@@ -9,6 +9,7 @@ import org.joda.time.Period;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -191,9 +192,10 @@ public class DatabaseNode
     /**
      * @return child nodes
      */
-    public Set<DatabaseNode> getChildren()
+    public DatabaseNode[] getChildren()
     {
-        return new HashSet<>(children.values());
+        Collection<DatabaseNode> childNodes = children.values();
+        return childNodes.toArray(new DatabaseNode[childNodes.size()]);
     }
 
     /**

@@ -169,7 +169,7 @@ public class DatabaseNodeTest {
         DatabaseNode dest = new DatabaseNode(database, UUID.randomUUID(), "unchanged name", 1234L, TEST_DECRYPTED_DATA);
 
         // -- Quick sanity check...
-        assertTrue("Dest should not have any children", dest.getChildren().isEmpty());
+        assertEquals("Dest should not have any children", dest.getChildren().length, 0);
 
         // When
         dest.merge(new MergeInfo(actionsLog, dest), src);

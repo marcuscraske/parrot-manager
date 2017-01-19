@@ -136,9 +136,10 @@ export class ViewerComponent
 
         // Change view to new node
         var nodeId = newNode.getId();
-        changeNodeBeingViewed(nodeId);
+        this.changeNodeBeingViewed(nodeId);
 
         // Update tree
+        // TODO: implement events on server side....
         this.updateTree();
 
         console.log("added new entry - id: " + nodeId);
