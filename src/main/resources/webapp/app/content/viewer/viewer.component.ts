@@ -61,15 +61,19 @@ export class ViewerComponent
                 var nodeId = data.node.id;
 
                 // Update current node being edited
-                this.currentNode = this.databaseService.getNode(nodeId);
-
-                console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
+                this.changeNodeBeingViewed(nodeId);
             });
 
         });
 
         // Update actual data
         this.updateTree();
+    }
+
+    changeNodeBeingViewed(nodeId)
+    {
+        this.currentNode = this.databaseService.getNode(nodeId);
+        console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
     }
 
     updateTree()
@@ -85,7 +89,7 @@ export class ViewerComponent
         });
     }
 
-    toggleMask(target, nodeId, isInput)
+    toggleMask(target, targetNode, isInput)
     {
         var field = $(target);
         var masked = field.data("data-masked");
@@ -96,13 +100,15 @@ export class ViewerComponent
         if (masked == null || masked)
         {
             // Switch to unmasked
-            if (nodeId == null)
+            if (targetNode == null)
             {
                 newValue = this.currentNode.getDecryptedValueString();
             }
             else
             {
+                newValue = targetNode.getDecryptedValueString();
             }
+
             field.data("data-masked", false);
         }
         else
@@ -121,6 +127,21 @@ export class ViewerComponent
         {
             field.text(newValue);
         }
+    }
+
+    addNewEntry()
+    {
+        // Add new node to current node
+        var newNode = this.currentNode.add();
+
+        // Change view to new node
+        var nodeId = newNode.getId();
+        changeNodeBeingViewed(nodeId);
+
+        // Update tree
+        this.updateTree();
+
+        console.log("added new entry - id: " + nodeId);
     }
 
 }

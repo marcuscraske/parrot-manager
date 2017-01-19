@@ -6,6 +6,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Period;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -362,6 +364,17 @@ public class DatabaseNode
     }
 
     /**
+     * @return creates and adds a new node as a child
+     */
+    public DatabaseNode add()
+    {
+        UUID randomUuid = UUID.randomUUID();
+        DatabaseNode node = new DatabaseNode(database, randomUuid, null, System.currentTimeMillis());
+        add(node);
+        return node;
+    }
+
+    /**
      * Removes this node from the database, unless this is a root node (cannot ever be removed).
      *
      * TODO: add tests
@@ -382,6 +395,22 @@ public class DatabaseNode
         }
 
         return this;
+    }
+
+    /**
+     * @return true = this is hte highest level node, false = has a parent
+     */
+    public boolean isRoot()
+    {
+        return parent == null;
+    }
+
+    /**
+     * @return retrieves the parent of this node; null if this is orphaned or the root of the tree
+     */
+    public DatabaseNode getParent()
+    {
+        return parent;
     }
 
     @Override
