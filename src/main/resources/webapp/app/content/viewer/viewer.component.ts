@@ -188,4 +188,8 @@ export class ViewerComponent
         return node ? node.getId() : null;
     }
 
+    updateCurrentEntry()
+    {
+    }
+
 }

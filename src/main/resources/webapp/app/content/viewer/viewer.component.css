@@ -22,6 +22,19 @@
     width: 100%;
 }
 
+.viewer .editor .title
+{
+    border: none;
+    padding: 0.1em 0.2em;
+    width: 100%;
+}
+
+.viewer .editor .title:hover,
+.viewer .editor .title:focus
+{
+    outline: solid 1px #ccc;
+}
+
 .viewer .editor table.entries tr td
 {
     white-space: nowrap;
