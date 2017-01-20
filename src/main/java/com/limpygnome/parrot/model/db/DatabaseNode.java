@@ -370,9 +370,14 @@ public class DatabaseNode
      */
     public DatabaseNode add()
     {
+        // Add node
         UUID randomUuid = UUID.randomUUID();
         DatabaseNode node = new DatabaseNode(database, randomUuid, null, System.currentTimeMillis());
         add(node);
+
+        // Set dirty flag
+        // TODO: set...
+
         return node;
     }
 

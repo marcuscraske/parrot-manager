@@ -58,6 +58,7 @@ public class WebViewStage extends Stage
         // General window config
         setScene(scene);
         setTitle("parrot");
+        setWidth(900.0);
         setHeight(150.0);
 
         // Prevent window from closing to prevent data loss for dirty databases

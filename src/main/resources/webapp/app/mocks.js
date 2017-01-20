@@ -32,7 +32,15 @@ if (window.databaseService == null)
                         return {
                             getId : function() { return "d1b07836-83d0-486e-b329-4c41d317295d" },
                             getName : function() { return "hello" },
-                            getChildren : function() { return [] }
+                            getChildren : function() { return [
+
+                                {
+                                    getId : function() { return "a1b07836-83d0-486e-b329-4c41d317295d" },
+                                    getName : function() { return "hello" },
+                                    getChildren : function() { return [] }
+                                }
+
+                            ] }
                         }
                     },
 

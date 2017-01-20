@@ -70,9 +70,22 @@ export class ViewerComponent
         this.updateTree();
     }
 
+    // Updates the selected node in the tree with the current node
+    updateTreeSelection()
+    {
+        $(() => {
+            // TODO: see if this can be improved with single call
+            $("#sidebar").jstree("deselect_all");
+            $("#sidebar").jstree("select_node", "#" + this.currentNode.getId());
+        });
+    }
+
     changeNodeBeingViewed(nodeId)
     {
+        // Update node being viewed
         this.currentNode = this.databaseService.getNode(nodeId);
+        this.updateTreeSelection();
+
         console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
     }
 
@@ -81,12 +94,17 @@ export class ViewerComponent
         // Fetch JSON data
         var data = this.databaseService.getJson();
 
-        // Update tree
         $(function(){
-            var tree = $('#sidebar').jstree(true);
+            // Update tree
+            var tree = $("#sidebar").jstree(true);
             tree.settings.core.data = data;
             tree.refresh();
+
+            // Expand all nodes
+            $("#sidebar").jstree("open_all");
         });
+
+        this.updateTreeSelection();
     }
 
     toggleMask(target, targetNode, isInput)
@@ -143,6 +161,13 @@ export class ViewerComponent
         this.updateTree();
 
         console.log("added new entry - id: " + nodeId);
+    }
+
+    // Used by ngFor for custom tracking of nodes, otherwise DOM is spammed with create/destroy of children
+    // http://blog.angular-university.io/angular-2-ngfor/
+    trackChildren(index, node)
+    {
+        return node ? node.getId() : null;
     }
 
 }

@@ -91,11 +91,13 @@ export class DatabaseService
 
         currentJsonNode.children.push(newJsonNode);
 
-        // -- Add children iteratively
+        // -- Add children
+        var children = databaseNode.getChildren();
         var childDatabaseNode;
 
-        for (childDatabaseNode in databaseNode.getChildren())
+        for (var i = 0; i < children.length; i++)
         {
+            childDatabaseNode = children[i];
             this.buildNode(newJsonNode, childDatabaseNode);
         }
     }

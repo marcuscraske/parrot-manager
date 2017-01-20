@@ -85,13 +85,13 @@
                     </th>
                 </tr>
 
-                <tr *ngIf="this.currentNode.getChildCount() == 0">
+                <tr *ngIf="currentNode.getChildCount() == 0">
                     <td colspan="3">
                         None
                     </td>
                 </tr>
 
-                <tr *ngFor="let node of currentNode.getChildren()">
+                <tr *ngFor="let node of currentNode.getChildren(); trackBy: trackChildren">
                     <td>
                         {{ node.getName() }}
                     </td>
@@ -101,6 +101,9 @@
                         </span>
                     </td>
                     <td>
+                        <button class="btn btn-primary" (click)="changeNodeBeingViewed(node.getId())">
+                            View
+                        </button>
                         <button class="btn btn-default" (click)="toggleMask('#' + node.getId() + '-value', node, false)">
                             Toggle Masking
                         </button>
