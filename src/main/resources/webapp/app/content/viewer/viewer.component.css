@@ -21,3 +21,13 @@
     padding-left: 1em;
     width: 100%;
 }
+
+.viewer .editor table.entries tr td
+{
+    white-space: nowrap;
+}
+
+.viewer .editor table.entries tr td:nth-child(2)
+{
+    width: 100%;
+}

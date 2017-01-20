@@ -165,6 +165,7 @@ public class DatabaseNode
     }
 
     /**
+     * TODO: unit test null value
      * Decrypts the value stored at this node and returns the data.
      *
      * This can be an empty array if the node does not store a value i.e. acts as a directory/label for a set of child
@@ -175,18 +176,32 @@ public class DatabaseNode
      */
     public synchronized byte[] getDecryptedValue() throws Exception
     {
-        byte[] result = database.decrypt(value);
+        byte[] result = null;
+
+        if (value != null)
+        {
+            result = database.decrypt(value);;
+        }
+
         return result;
     }
 
     /**
+     * TODO: unit test null value
      * @return decrypted value stored at this node, as string
      * @throws Exception when the value cannot be decrypted
      */
     public synchronized String getDecryptedValueString() throws Exception
     {
+        String result = null;
         byte[] decrypted = getDecryptedValue();
-        return new String(decrypted);
+
+        if (decrypted != null)
+        {
+            result = new String(decrypted);
+        }
+
+        return result;
     }
 
     /**

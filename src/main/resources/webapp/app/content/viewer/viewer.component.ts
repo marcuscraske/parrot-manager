@@ -74,9 +74,27 @@ export class ViewerComponent
     updateTreeSelection()
     {
         $(() => {
-            // TODO: see if this can be improved with single call
-            $("#sidebar").jstree("deselect_all");
-            $("#sidebar").jstree("select_node", "#" + this.currentNode.getId());
+            var currentSelected = $("#sidebar").jstree("get_selected");
+
+            // Update selected item to match current node being viewed
+            if (this.currentNode != null)
+            {
+                var targetNodeId = this.currentNode.getId();
+
+                // Check the node is not already selected
+                if (currentSelected == null || targetNodeId != currentSelected)
+                {
+                    // TODO: see if this can be improved with single call
+                    $("#sidebar").jstree("deselect_all");
+                    $("#sidebar").jstree("select_node", "#" + targetNodeId);
+                    console.log("updated tree selection - id: " + targetNodeId);
+                }
+            }
+            else
+            {
+                // Reset selected node
+                $("#sidebar").jstree("deselect_all");
+            }
         });
     }
 
