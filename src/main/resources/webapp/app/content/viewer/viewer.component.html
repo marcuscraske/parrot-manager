@@ -73,10 +73,14 @@
                 <button class="btn btn-default" (click)="addNewEntry()">
                     Add New Entry
                 </button>
+                <button class="btn btn-danger" (click)="deleteSelected()">
+                    Delete Selected
+                </button>
             </div>
 
             <table class="table entries">
                 <tr>
+                    <th></th>
                     <th>
                         Name
                     </th>
@@ -89,12 +93,15 @@
                 </tr>
 
                 <tr *ngIf="currentNode.getChildCount() == 0">
-                    <td colspan="3">
+                    <td colspan="4">
                         None
                     </td>
                 </tr>
 
                 <tr *ngFor="let node of currentNode.getChildren(); trackBy: trackChildren">
+                    <td>
+                        <input type="checkbox" />
+                    </td>
                     <td>
                         {{ node.getName() != null ? node.getName() : "(unnamed)" }}
                     </td>
