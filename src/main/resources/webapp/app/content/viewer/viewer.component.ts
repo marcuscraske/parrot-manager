@@ -18,9 +18,9 @@ export class ViewerComponent
     // The current node being edited
     currentNode: any;
 
-    public addEntryForm = this.fb.group({
-        name: ["", Validators.required],
-        value: ["", Validators.required]
+    public updateEntryForm = this.fb.group({
+        title: ["", Validators.required],
+        currentValue: ["", Validators.required]
     });
 
     constructor(private databaseService: DatabaseService, private renderer: Renderer, public fb: FormBuilder)
@@ -188,8 +188,22 @@ export class ViewerComponent
         return node ? node.getId() : null;
     }
 
-    updateCurrentEntry()
+    updateCurrentEntry(event)
     {
+        var form = this.updateEntryForm;
+
+        if (form.valid)
+        {
+            var title = form.value["title"];
+            var currentValue = form.value["currentValue"];
+
+            console.log("updateCurrentEntry - updating entry - title: " + title);
+            
+        }
+        else
+        {
+            console.log("updateCurrentEntry - invalid form");
+        }
     }
 
 }

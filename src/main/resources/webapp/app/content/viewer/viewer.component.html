@@ -18,51 +18,55 @@
         <!-- Page to edit a node -->
         <div class="view" *ngIf="currentNode != null">
 
-            <div class="header">
-                <div class="button">
-                    <button class="btn btn-default" *ngIf="!this.currentNode.isRoot()" (click)="changeNodeBeingViewed(currentNode.getParent().getId())">
-                        <span class="icon icon-arrow-up2"></span>
+            <form [formGroup]="updateEntryForm" (ngSubmit)="updateCurrentEntry($event)" #form="ngForm">
+                <div class="header">
+                    <div class="button">
+                        <button class="btn btn-default" *ngIf="!this.currentNode.isRoot()" (click)="changeNodeBeingViewed(currentNode.getParent().getId())">
+                            <span class="icon icon-arrow-up2"></span>
+                        </button>
+                    </div>
+                    <div class="title">
+                        <input type="text" formControlName="title" class="title-input" value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}" />
+                    </div>
+                </div>
+
+                <p title="currentNode.getFormattedLastModified()">
+                    Last modified: {{ currentNode.getFormattedLastModified() }}
+                </p>
+
+                <!-- Current value -->
+                <div class="form-group">
+                    <label class="form-control-label" for="currentValue">
+                        Current Value
+                    </label>
+
+                    <textarea id="currentValue"
+                              class="form-control"
+                              rows="(empty)"
+                              formControlName="currentValue"
+                    >********</textarea>
+                </div>
+
+                <!-- Add/edit entry -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        Update
+                    </button>
+                    <button class="btn btn-danger">
+                        Delete
+                    </button>
+                    <button class="btn btn-default" (click)="toggleMask('#currentValue', null, true)">
+                        Toggle Masking
+                    </button>
+                    <button class="btn btn-default">
+                        Copy to Clipboard
+                    </button>
+                    <button class="btn btn-default">
+                        Generate Random
                     </button>
                 </div>
-                <div class="title">
-                    <input type="text" class="title-input" value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}" />
-                </div>
-            </div>
 
-            <p title="currentNode.getFormattedLastModified()">
-                Last modified: {{ currentNode.getFormattedLastModified() }}
-            </p>
-
-            <!-- Current value -->
-            <div class="form-group">
-                <label class="form-control-label" for="currentValue">
-                    Current Value
-                </label>
-
-                <textarea id="currentValue"
-                          class="form-control"
-                          rows="(empty)"
-                >********</textarea>
-            </div>
-
-            <!-- Add/edit entry -->
-            <div class="form-group">
-                <button class="btn btn-primary">
-                    Update
-                </button>
-                <button class="btn btn-danger">
-                    Delete
-                </button>
-                <button class="btn btn-default" (click)="toggleMask('#currentValue', null, true)">
-                    Toggle Masking
-                </button>
-                <button class="btn btn-default">
-                    Copy to Clipboard
-                </button>
-                <button class="btn btn-default">
-                    Generate Random
-                </button>
-            </div>
+            </form>
 
             <!-- List entries -->
             <h2>
