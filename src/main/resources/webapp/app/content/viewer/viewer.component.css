@@ -1,3 +1,7 @@
+/*
+    Main layout
+*/
+
 .viewer
 {
     display: table;
@@ -22,19 +26,54 @@
     width: 100%;
 }
 
-.viewer .editor .title
+
+/*
+    Layout of editor header
+*/
+
+.viewer .editor .header
+{
+    display: table;
+    font-size: 2em;
+    padding: 0.5em 0.2em 0.5em 0;
+    width: 100%;
+}
+
+.viewer .editor .header .button,
+.viewer .editor .header .title
+{
+    display: table-cell;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.viewer .editor .header .title
+{
+    width: 100%;
+}
+
+
+/*
+    Title input field in header
+*/
+
+.viewer .editor .header .title .title-input
 {
     border: none;
     padding: 0.1em 0.2em;
     width: 100%;
 }
 
-.viewer .editor .title:hover,
-.viewer .editor .title:focus
+.viewer .editor .header .title .title-input:hover,
+.viewer .editor .header .title .title-input:focus
 {
     outline: solid 1px #ccc;
 }
 
+
+/*
+    List of entires at bottom
+*/
 .viewer .editor table.entries tr td
 {
     white-space: nowrap;
