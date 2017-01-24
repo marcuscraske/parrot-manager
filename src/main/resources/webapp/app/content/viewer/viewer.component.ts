@@ -185,6 +185,51 @@ export class ViewerComponent
         console.log("added new entry - id: " + nodeId);
     }
 
+    deleteSelected()
+    {
+        // Fetch each node selected and delete
+        var self = this;
+        var entries = $("#currentValueEntries input[type=checkbox]");
+
+        console.log("deleting multiple entries - selected count: " + entries.length);
+
+        entries.each(function() {
+            if (this.checked)
+            {
+                var nodeId = $(this).attr("data-node-id");
+                console.log("deleting node - id: " + nodeId);
+
+                var node = this.databaseService.getNode(nodeId);
+                node.remove();
+            }
+        });
+
+        // Update tree
+        this.updateTree();
+    }
+
+    deleteEntry(nodeId)
+    {
+        console.log("deleting entry - node id: " + nodeId);
+
+        // Fetch node and save parent
+        var node = this.databaseService.getNode(nodeId);
+        var parentNodeId = node.getParent().getId();
+
+        // Delete the node
+        node.remove();
+
+        // Update tree
+        this.updateTree();
+
+        // Navigate to parent node if current node is deleted, otherwise update tree
+        if (node.getId() == this.currentNode.getId())
+        {
+            console.log("navigating to parent node...");
+            this.changeNodeBeingViewed(parentNodeId);
+        }
+    }
+
     // Used by ngFor for custom tracking of nodes, otherwise DOM is spammed with create/destroy of children
     // http://blog.angular-university.io/angular-2-ngfor/
     trackChildren(index, node)

@@ -464,6 +464,7 @@ public class DatabaseNode
      */
     public synchronized DatabaseNode remove()
     {
+        // Only remove if parent i.e. not root element (cant remove root element)
         if (parent != null)
         {
             // Remove from parent

@@ -60,7 +60,7 @@
                     <button class="btn btn-primary" (click)="saveValue()">
                         Save Value
                     </button>
-                    <button class="btn btn-danger">
+                    <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteEntry(currentNode.getId())">
                         Delete
                     </button>
                     <button class="btn btn-default" (click)="hideValue()">
@@ -90,7 +90,7 @@
                 </button>
             </div>
 
-            <table class="table entries">
+            <table class="table entries" id="currentValueEntries">
                 <tr>
                     <th></th>
                     <th>
@@ -112,7 +112,7 @@
 
                 <tr *ngFor="let node of currentNode.getChildren(); trackBy: trackChildren">
                     <td>
-                        <input type="checkbox" />
+                        <input type="checkbox" data-node-id="{{ node.getId() }]" />
                     </td>
                     <td>
                         {{ node.getName() != null ? node.getName() : "(unnamed)" }}
@@ -129,7 +129,7 @@
                         <button class="btn btn-primary" (click)="changeNodeBeingViewed(node.getId())">
                             View
                         </button>
-                        <button class="btn btn-danger">
+                        <button class="btn btn-danger" (click)="deleteEntry(node.getId())">
                             Delete
                         </button>
                         <button class="btn btn-default">
