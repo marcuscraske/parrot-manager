@@ -104,6 +104,9 @@ export class ViewerComponent
             this.currentNode = this.databaseService.getNode(nodeId);
             this.updateTreeSelection();
 
+            // Reset form
+            this.updateEntryForm.reset();
+
             console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
         });
     }
@@ -243,8 +246,11 @@ export class ViewerComponent
     saveValue()
     {
         // Fetch value and update current node
-        var value = $("#currentValue").value;
+        var value = $("#currentValue").val();
         this.currentNode.setValueString(value);
+
+        // Reset form as untouched
+        this.updateEntryForm.reset();
     }
 
     hideValue(target, ignoreDirty)
@@ -274,23 +280,6 @@ export class ViewerComponent
         // Resize box to fit content; reset to avoid inf. growing box
         field.style.height = "0px";
         field.style.height = field.scrollHeight + "px";
-    }
-
-    updateCurrentEntry(event)
-    {
-        var form = this.updateEntryForm;
-
-        if (form.valid)
-        {
-            var title = form.value["title"];
-            var currentValue = form.value["currentValue"];
-
-            console.log("updateCurrentEntry - updating entry - title: " + title);
-        }
-        else
-        {
-            console.log("updateCurrentEntry - invalid form");
-        }
     }
 
     // TODO: doesnt work for global exit of application, need to think of good way to approach this...

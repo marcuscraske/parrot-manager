@@ -2,13 +2,6 @@ package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
-import org.joda.time.Period;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.joda.time.DateTime;
 
 /**
  * Represents a db in a database.
@@ -225,7 +219,7 @@ public class DatabaseNode
     public synchronized void setValueString(String value) throws Exception
     {
         // TODO: move as configurable property for database?
-        byte[] plainValue = value.getBytes("UTF-8");
+        byte[] plainValue = value.length() > 0 ? value.getBytes("UTF-8") : null;
         setValue(plainValue);
     }
 
@@ -236,7 +230,14 @@ public class DatabaseNode
      */
     public synchronized void setValue(byte[] value) throws Exception
     {
-        this.value = database.encrypt(value);
+        if (value != null)
+        {
+            this.value = database.encrypt(value);
+        }
+        else
+        {
+            this.value = null;
+        }
 
         // Set dirty flag...
         database.setDirty(true);

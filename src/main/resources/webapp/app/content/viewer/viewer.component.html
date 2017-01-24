@@ -18,7 +18,7 @@
         <!-- Page to edit a node -->
         <div class="view" *ngIf="currentNode != null">
 
-            <form [formGroup]="updateEntryForm" (ngSubmit)="updateCurrentEntry($event)" #form="ngForm">
+            <form [formGroup]="updateEntryForm" #form="ngForm">
                 <div class="header">
                     <div class="button">
                         <button class="btn btn-default" *ngIf="!this.currentNode.isRoot()" (click)="changeNodeBeingViewed(currentNode.getParent().getId())">
@@ -57,7 +57,7 @@
 
                 <!-- Add/edit entry -->
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">
+                    <button class="btn btn-primary" (click)="saveValue()">
                         Save Value
                     </button>
                     <button class="btn btn-danger">
