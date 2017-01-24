@@ -120,7 +120,7 @@ public class DatabaseNode
     /**
      * @param id the unique identifier to be assigned to this db
      */
-    public void setId(UUID id)
+    public synchronized void setId(UUID id)
     {
         // Update lookup
         database.lookup.remove(this.id);
@@ -128,6 +128,9 @@ public class DatabaseNode
 
         // Update ID
         this.id = id;
+
+        // Set dirty flag
+        database.setDirty(true);
     }
 
     /**
@@ -136,6 +139,15 @@ public class DatabaseNode
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * @param name the name for this node
+     */
+    public synchronized void setName(String name)
+    {
+        this.name = name;
+        database.setDirty(true);
     }
 
     /**
@@ -207,7 +219,7 @@ public class DatabaseNode
     /**
      * @return child nodes
      */
-    public DatabaseNode[] getChildren()
+    public synchronized DatabaseNode[] getChildren()
     {
         Collection<DatabaseNode> childNodes = children.values();
         return childNodes.toArray(new DatabaseNode[childNodes.size()]);
@@ -252,6 +264,9 @@ public class DatabaseNode
 
             // Re-encrypt
             value = database.encrypt(decrypted);
+
+            // Set dirty flag
+            database.setDirty(true);
         }
 
         // Perform on child nodes
@@ -262,7 +277,11 @@ public class DatabaseNode
     }
 
     /**
-     * @param database the database to contain the new cloned db
+     * Clones current node.
+     *
+     * This does not add it to the target database, nor does this operation set the dirty flag.
+     *
+     * @param database the database to contain the new cloned node
      * @return a cloned instance of this db
      */
     protected synchronized DatabaseNode clone(Database database)
@@ -304,6 +323,8 @@ public class DatabaseNode
             }
 
             lastModified = src.lastModified;
+            // TODO: add test
+            database.setDirty(true);
 
             mergeInfo.addMergeMessage("updated node properties");
         }
@@ -330,9 +351,12 @@ public class DatabaseNode
                 }
                 else if (src.deletedChildren.contains(child.id))
                 {
-                    // Remove from our tree, this db has been deleted
+                    // Remove from our tree, this node has been deleted
                     iterator.remove();
                     database.lookup.remove(child.id);
+                    // TODO: add test
+                    database.setDirty(true);
+
                     mergeInfo.addMergeMessage("removed child - " + child.getName());
                 }
             }
@@ -347,7 +371,7 @@ public class DatabaseNode
             {
                 otherChild = kv.getValue();
 
-                // Check if new db to add to our side (new db)...
+                // Check if new db to add to our side (new node)...
                 if (!children.containsKey(otherChild.id) && !deletedChildren.contains(otherChild.id))
                 {
                     newNode = otherChild.clone(database);
@@ -358,7 +382,15 @@ public class DatabaseNode
         }
 
         // Merge any deleted items
-        deletedChildren.addAll(src.deletedChildren);
+        boolean change = deletedChildren.addAll(src.deletedChildren);
+
+        // Set dirty flag
+        // TODO: add test
+        if (change)
+        {
+            database.setDirty(true);
+            mergeInfo.addMergeMessage("updated list of deleted nodes");
+        }
     }
 
     /**
@@ -377,21 +409,23 @@ public class DatabaseNode
         // Update parent
         node.parent = this;
 
+        // Set dirty flag
+        database.setDirty(true);
+
         return node;
     }
 
     /**
      * @return creates and adds a new node as a child
+     *
+     * TODO: add tests
      */
-    public DatabaseNode add()
+    public synchronized DatabaseNode add()
     {
         // Add node
         UUID randomUuid = UUID.randomUUID();
         DatabaseNode node = new DatabaseNode(database, randomUuid, null, System.currentTimeMillis());
         add(node);
-
-        // Set dirty flag
-        // TODO: set...
 
         return node;
     }
@@ -414,6 +448,9 @@ public class DatabaseNode
 
             // Set as orphan
             parent = null;
+
+            // Set dirty flag
+            database.setDirty(true);
         }
 
         return this;

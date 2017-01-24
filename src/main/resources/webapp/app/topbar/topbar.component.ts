@@ -48,10 +48,12 @@ export class TopBarComponent
 
         if (isDirty)
         {
+            console.log("database is dirty, showing close dialogue...");
             this.triggerCloseDialogue(isExit);
         }
         else
         {
+            console.log("database is not dirty, proceeding to close database...");
             this.closeDatabase(isExit);
         }
     }

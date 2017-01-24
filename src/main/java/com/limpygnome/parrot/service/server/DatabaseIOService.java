@@ -128,6 +128,10 @@ public class DatabaseIOService
         // Set root db of DB
         database.setRoot(root);
 
+        // Unset dirty flag, as we've just loaded it...
+        // TODO: add test
+        database.setDirty(false);
+
         return database;
     }
 
@@ -166,11 +170,18 @@ public class DatabaseIOService
         {
             String name = (String) jsonNode.get("name");
             long lastModified = (long) jsonNode.get("modified");
-            byte[] iv = Base64.decode((String) jsonNode.get("iv"));
-            byte[] data = Base64.decode((String) jsonNode.get("data"));
+
+            EncryptedAesValue encryptedData = null;
+
+            // TODO: add test for when value is null / not specified
+            if (jsonNode.containsKey("iv") && jsonNode.containsKey("data"))
+            {
+                byte[] iv = Base64.decode((String) jsonNode.get("iv"));
+                byte[] data = Base64.decode((String) jsonNode.get("data"));
+                encryptedData = new EncryptedAesValue(iv, data);
+            }
 
             // Create new DB db
-            EncryptedAesValue encryptedData = new EncryptedAesValue(iv, data);
             child = new DatabaseNode(database, id, name, lastModified, encryptedData);
             child.getDeletedChildren().addAll(deletedChildren);
 
@@ -220,7 +231,8 @@ public class DatabaseIOService
             jsonChild.put("modified", node.getLastModified());
 
             EncryptedAesValue encryptedValue = node.getValue();
-            if (encryptedValue != null) {
+            if (encryptedValue != null)
+            {
                 String ivStr = Base64.toBase64String(node.getValue().getIv());
                 String dataStr = Base64.toBase64String(node.getValue().getValue());
                 jsonChild.put("iv", ivStr);

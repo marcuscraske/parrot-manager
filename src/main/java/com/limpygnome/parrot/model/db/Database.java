@@ -26,6 +26,9 @@ public final class Database
 {
     private static final Logger LOG = LogManager.getLogger(Database.class);
 
+    // Indicates if the database has been modified
+    private boolean isDirty;
+
     // An instance of the current controller
     private Controller controller;
 
@@ -247,6 +250,22 @@ public final class Database
 
         // Merge nodes
         root.merge(new MergeInfo(actionsLog, database.root), database.root);
+    }
+
+    /**
+     * @param dirty sets whether database is dirty; true = dirty/changed, false = unchanged/saved
+     */
+    public void setDirty(boolean dirty)
+    {
+        isDirty = dirty;
+    }
+
+    /**
+     * @return true = dirty/modified, false = unchanged
+     */
+    public boolean isDirty()
+    {
+        return isDirty;
     }
 
     @Override

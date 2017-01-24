@@ -23,7 +23,6 @@ public class DatabaseService extends AbstractService
     // The current database open...
     private Database database;
     private File currentFile;
-    private boolean isDirty;
 
     public DatabaseService(Controller controller)
     {
@@ -120,7 +119,7 @@ public class DatabaseService extends AbstractService
             controller.getDatabaseIOService().save(controller, database, path);
 
             // Reset dirty flag
-            isDirty = false;
+            database.setDirty(false);
 
             LOG.info("successfully saved database");
         }
@@ -164,7 +163,7 @@ public class DatabaseService extends AbstractService
      */
     public synchronized boolean isDirty()
     {
-        return isDirty;
+        return database.isDirty();
     }
 
     /**

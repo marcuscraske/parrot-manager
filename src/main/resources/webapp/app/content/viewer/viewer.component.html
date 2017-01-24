@@ -26,7 +26,7 @@
                         </button>
                     </div>
                     <div class="title">
-                        <input type="text" formControlName="title" class="title-input" value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}" />
+                        <input type="text" class="title-input" (change)="updateName($event)" (click)="preUpdateName($event)" value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}" />
                     </div>
                 </div>
 
@@ -50,7 +50,7 @@
                 <!-- Add/edit entry -->
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">
-                        Update
+                        Save Value
                     </button>
                     <button class="btn btn-danger">
                         Delete

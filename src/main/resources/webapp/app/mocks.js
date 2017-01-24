@@ -47,7 +47,7 @@ if (window.databaseService == null)
                     getNode: function(nodeId) {
                         return {
                            getId : function() { return "d1b07836-83d0-486e-b329-4c41d317295d" },
-                           getName : function() { return "hello" },
+                           getName : function() { return "(unnamed)" },
                            getLastModified: function() { return 1484723619 },
                            getFormattedLastModified: function() { return "XX-XX-XXXX XX:XX:XX" },
                            getDecryptedValueString: function() { return "mock decrypted value" },

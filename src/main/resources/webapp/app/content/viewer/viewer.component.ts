@@ -19,8 +19,7 @@ export class ViewerComponent
     currentNode: any;
 
     public updateEntryForm = this.fb.group({
-        title: ["", Validators.required],
-        currentValue: ["", Validators.required]
+        currentValue: [""]
     });
 
     constructor(private databaseService: DatabaseService, private renderer: Renderer, public fb: FormBuilder)
@@ -188,6 +187,29 @@ export class ViewerComponent
         return node ? node.getId() : null;
     }
 
+    preUpdateName(event)
+    {
+        var field = event.target;
+        var currentValue = field.value;
+
+        // Wipe the name of unnamed nodes
+        if (currentValue == "(unnamed)")
+        {
+            field.value = "";
+        }
+    }
+
+    updateName(event)
+    {
+        // Update name
+        var newName = event.target.value;
+        this.currentNode.setName(newName);
+        console.log("updateTitle - new name: " + newName);
+
+        // Update tree
+        this.updateTree();
+    }
+
     updateCurrentEntry(event)
     {
         var form = this.updateEntryForm;
@@ -198,7 +220,6 @@ export class ViewerComponent
             var currentValue = form.value["currentValue"];
 
             console.log("updateCurrentEntry - updating entry - title: " + title);
-            
         }
         else
         {
