@@ -50,7 +50,7 @@ if (window.databaseService == null)
                            getName : function() { return "(unnamed)" },
                            getLastModified: function() { return 1484723619 },
                            getFormattedLastModified: function() { return "XX-XX-XXXX XX:XX:XX" },
-                           getDecryptedValueString: function() { return "mock decrypted value" },
+                           getDecryptedValueString: function() { return "mock decrypted value\ntest\nline3\nline4\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na" },
                            getChildCount: function() { return 2 },
                            getChildren : function() { return [
 

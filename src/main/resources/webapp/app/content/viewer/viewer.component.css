@@ -70,6 +70,15 @@
     outline: solid 1px #ccc;
 }
 
+/*
+    Input for an entry's value
+*/
+.viewer .editor #currentValue
+{
+    min-height: 1em;
+    max-height: 30em;
+}
+
 
 /*
     List of entires at bottom

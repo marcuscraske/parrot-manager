@@ -210,10 +210,36 @@ public class DatabaseNode
 
         if (decrypted != null)
         {
-            result = new String(decrypted);
+            // TODO: move as configurable property for database?
+            result = new String(decrypted, "UTF-8");
         }
 
         return result;
+    }
+
+    /**
+     * TODO: unit test
+     * @param value the desired value
+     * @throws Exception thrown if crypto exception
+     */
+    public synchronized void setValueString(String value) throws Exception
+    {
+        // TODO: move as configurable property for database?
+        byte[] plainValue = value.getBytes("UTF-8");
+        setValue(plainValue);
+    }
+
+    /**
+     * TODO: unit test
+     * @param value the desired value
+     * @throws Exception thrown if crypto exception
+     */
+    public synchronized void setValue(byte[] value) throws Exception
+    {
+        this.value = database.encrypt(value);
+
+        // Set dirty flag...
+        database.setDirty(true);
     }
 
     /**

@@ -99,11 +99,13 @@ export class ViewerComponent
 
     changeNodeBeingViewed(nodeId)
     {
-        // Update node being viewed
-        this.currentNode = this.databaseService.getNode(nodeId);
-        this.updateTreeSelection();
+        this.continueActionWithPromptForDirtyValue(() => {
+            // Update node being viewed
+            this.currentNode = this.databaseService.getNode(nodeId);
+            this.updateTreeSelection();
 
-        console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
+            console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
+        });
     }
 
     updateTree()
@@ -210,6 +212,70 @@ export class ViewerComponent
         this.updateTree();
     }
 
+    postUpdateName(event)
+    {
+        var field = event.target;
+
+        // Reset name to "(unnamed)" if empty
+        if (field.value.length == 0)
+        {
+            field.value = "(unnamed)";
+        }
+    }
+
+    preUpdateValue(event)
+    {
+        var field = event.target;
+
+        // Only populate if empty
+        if (field.value.length == 0)
+        {
+            this.populateValueTextAreaWithDecryptedStringValue(field);
+        }
+    }
+
+    updateValue(event)
+    {
+        var field = event.target;
+        this.resizeValueTextAreaToFitContent(field);
+    }
+
+    saveValue()
+    {
+        // Fetch value and update current node
+        var value = $("#currentValue").value;
+        this.currentNode.setValueString(value);
+    }
+
+    hideValue(target, ignoreDirty)
+    {
+        var field = $("#currentValue")[0];
+
+        this.continueActionWithPromptForDirtyValue(() => {
+            // Reset to empty and resize
+            field.value = "";
+            this.resizeValueTextAreaToFitContent(field);
+        });
+    }
+
+    // Populates field with decrypted string value
+    populateValueTextAreaWithDecryptedStringValue(field)
+    {
+        var decryptedValue = this.currentNode.getDecryptedValueString();
+        field.value = decryptedValue;
+        console.log("populated value field with actual decrypted value");
+
+        this.resizeValueTextAreaToFitContent(field);
+    }
+
+    // Resize field to fit value/content
+    resizeValueTextAreaToFitContent(field)
+    {
+        // Resize box to fit content; reset to avoid inf. growing box
+        field.style.height = "0px";
+        field.style.height = field.scrollHeight + "px";
+    }
+
     updateCurrentEntry(event)
     {
         var form = this.updateEntryForm;
@@ -224,6 +290,38 @@ export class ViewerComponent
         else
         {
             console.log("updateCurrentEntry - invalid form");
+        }
+    }
+
+    // TODO: doesnt work for global exit of application, need to think of good way to approach this...
+    continueActionWithPromptForDirtyValue(callbackContinue)
+    {
+        if (this.updateEntryForm.dirty)
+        {
+            bootbox.dialog({
+                message: "Unsaved changes to value, these will be lost!",
+                buttons: {
+                    cancel: {
+                        label: "Cancel",
+                        className: "btn-default",
+                        callback: () => { }
+                    },
+                    ignore: {
+                        label: "Ignore",
+                        className: "btn-default",
+                        callback: () => { callbackContinue(); }
+                    },
+                    saveAndContinue: {
+                        label: "Save and Continue",
+                        className: "btn-primary",
+                        callback: () => { this.saveValue(); callbackContinue(); }
+                    }
+                }
+            });
+        }
+        else
+        {
+            callbackContinue();
         }
     }
 

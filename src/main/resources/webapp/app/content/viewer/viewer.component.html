@@ -26,7 +26,12 @@
                         </button>
                     </div>
                     <div class="title">
-                        <input type="text" class="title-input" (change)="updateName($event)" (click)="preUpdateName($event)" value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}" />
+                        <input type="text" class="title-input"
+                               (change)="updateName($event)"
+                               (click)="preUpdateName($event)"
+                               (blur)="postUpdateName($event)"
+                               value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}"
+                        />
                     </div>
                 </div>
 
@@ -42,8 +47,11 @@
 
                     <textarea id="currentValue"
                               class="form-control"
-                              rows="(empty)"
+                              rows="1"
+                              placeholder="Click to reveal value"
                               formControlName="currentValue"
+                              (click)="preUpdateValue($event)"
+                              (keydown)="updateValue($event)"
                     >********</textarea>
                 </div>
 
@@ -55,8 +63,8 @@
                     <button class="btn btn-danger">
                         Delete
                     </button>
-                    <button class="btn btn-default" (click)="toggleMask('#currentValue', null, true)">
-                        Toggle Masking
+                    <button class="btn btn-default" (click)="hideValue()">
+                        Hide Value
                     </button>
                     <button class="btn btn-default">
                         Copy to Clipboard
