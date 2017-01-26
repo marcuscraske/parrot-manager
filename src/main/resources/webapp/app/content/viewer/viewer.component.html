@@ -39,23 +39,7 @@
                     Last modified: {{ currentNode.getFormattedLastModified() }}
                 </p>
 
-                <!-- Current value -->
-                <div class="form-group">
-                    <label class="form-control-label" for="currentValue">
-                        Current Value
-                    </label>
-
-                    <textarea id="currentValue"
-                              class="form-control"
-                              rows="1"
-                              placeholder="Click to reveal value"
-                              formControlName="currentValue"
-                              (click)="preUpdateValue($event)"
-                              (keydown)="updateValue($event)"
-                    >********</textarea>
-                </div>
-
-                <!-- Add/edit entry -->
+                <!-- Value Options -->
                 <div class="form-group">
                     <button class="btn btn-primary" (click)="saveValue()">
                         Save Value
@@ -72,6 +56,34 @@
                     <button class="btn btn-default">
                         Generate Random
                     </button>
+                    <button class="btn btn-default">
+                        History
+                    </button>
+                </div>
+
+                <!-- Generate Random Value Options   -->
+                <div class="form-group">
+                    <label class="checkbox">
+                        <input type="checkbox" /> Numbers
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" /> Letters
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" /> Special Characters
+                    </label>
+                </div>
+
+                <!-- Current value -->
+                <div class="form-group">
+                    <textarea id="currentValue"
+                              class="form-control"
+                              rows="1"
+                              placeholder="Click to reveal value"
+                              formControlName="currentValue"
+                              (click)="preUpdateValue($event)"
+                              (keydown)="updateValue($event)"
+                    >********</textarea>
                 </div>
 
             </form>
