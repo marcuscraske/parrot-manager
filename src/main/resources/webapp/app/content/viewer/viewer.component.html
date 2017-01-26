@@ -92,7 +92,9 @@
 
             <table class="table entries" id="currentValueEntries">
                 <tr>
-                    <th></th>
+                    <th>
+                        <input type="checkbox" *ngIf="currentNode.getChildCount() != 0" (change)="deleteSelectAll($event)" />
+                    </th>
                     <th>
                         Name
                     </th>
@@ -112,7 +114,7 @@
 
                 <tr *ngFor="let node of currentNode.getChildren(); trackBy: trackChildren">
                     <td>
-                        <input type="checkbox" data-node-id="{{ node.getId() }]" />
+                        <input type="checkbox" attr.data-node-id="{{ node.getId() }}" />
                     </td>
                     <td>
                         {{ node.getName() != null ? node.getName() : "(unnamed)" }}

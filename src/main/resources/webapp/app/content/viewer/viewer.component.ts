@@ -185,23 +185,40 @@ export class ViewerComponent
         console.log("added new entry - id: " + nodeId);
     }
 
+    deleteSelectAll(event)
+    {
+        var control = event.target;
+        var value = $(control).prop("checked");
+
+        var checkboxes = $("#currentValueEntries input[type=checkbox]").prop("checked", value);
+        console.log("changing state of all delete checkboxes - value: " + value + ", count: " + checkboxes.length);
+    }
+
     deleteSelected()
     {
         // Fetch each node selected and delete
-        var self = this;
-        var entries = $("#currentValueEntries input[type=checkbox]");
+        var entries = $("#currentValueEntries input[type=checkbox]:checked");
 
         console.log("deleting multiple entries - selected count: " + entries.length);
 
+        var self = this;
         entries.each(function() {
-            if (this.checked)
-            {
-                var nodeId = $(this).attr("data-node-id");
-                console.log("deleting node - id: " + nodeId);
 
-                var node = this.databaseService.getNode(nodeId);
+            var nodeId = $(this).attr("data-node-id");
+            console.log("deleting node - id: " + nodeId);
+
+            var node = self.databaseService.getNode(nodeId);
+
+            if (node != null)
+            {
                 node.remove();
+                console.log("node removed - id: " + nodeId);
             }
+            else
+            {
+                console.log("node not found for removal - id: " + nodeId);
+            }
+
         });
 
         // Update tree
