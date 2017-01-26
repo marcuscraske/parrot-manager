@@ -4,12 +4,16 @@ import { Injectable } from '@angular/core';
 export class RuntimeService {
 
     oldHeight: number;
+    runtimeService : any;
 
-    constructor() {
+    constructor()
+    {
         setInterval( () => { this.updateHeight(); }, 50);
+        this.runtimeService = (window as any).runtimeService;
     }
 
-    updateHeight() : void {
+    updateHeight()
+    {
 
         var elementHtml = document.documentElement;
         var elementBody = document.body;
@@ -22,23 +26,28 @@ export class RuntimeService {
 
             this.oldHeight = newHeight;
             this.changeHeight(newHeight);
-
-            console.log("invoked");
-
         }
     }
 
-    changeHeight(newHeight) : void {
-         (window as any).runtimeService.changeHeight(newHeight);
+    changeHeight(newHeight)
+    {
+         this.runtimeService.changeHeight(newHeight);
      }
 
-    pickFile(title, initialPath, isSave) : string {
-        var path = (window as any).runtimeService.pickFile(title, initialPath, isSave);
+    pickFile(title, initialPath, isSave) : string
+    {
+        var path = this.runtimeService.pickFile(title, initialPath, isSave);
         return path;
     }
 
-    exit() : void {
-         (window as any).runtimeService.exit();
+    exit()
+    {
+         this.runtimeService.exit();
+    }
+
+    setClipboard(value)
+    {
+        this.runtimeService.setClipboard(value);
     }
 
 }

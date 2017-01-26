@@ -1,13 +1,14 @@
 import { Component, Renderer } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { DatabaseService } from '../../service/database.service'
+import { RuntimeService } from '../../service/runtime.service'
 
 @Component({
     moduleId: module.id,
     selector: 'viewer',
     templateUrl: 'viewer.component.html',
     styleUrls: ['viewer.component.css'],
-    providers: [DatabaseService]
+    providers: [DatabaseService, RuntimeService]
 })
 export class ViewerComponent
 {
@@ -22,7 +23,8 @@ export class ViewerComponent
         currentValue: [""]
     });
 
-    constructor(private databaseService: DatabaseService, private renderer: Renderer, public fb: FormBuilder)
+    constructor(private databaseService: DatabaseService, private runtimeService: RuntimeService,
+                private renderer: Renderer, public fb: FormBuilder)
     {
         // Setup tree
         this.initTree();
@@ -342,6 +344,43 @@ export class ViewerComponent
         // Resize box to fit content; reset to avoid inf. growing box
         field.style.height = "0px";
         field.style.height = field.scrollHeight + "px";
+    }
+
+    copyValueToClipboard(nodeId)
+    {
+        var node;
+
+        // Determine node we're using
+        if (nodeId == null)
+        {
+            node = this.currentNode;
+        }
+        else
+        {
+            node = this.databaseService.getNode(nodeId);
+        }
+
+        // Update clipboard
+        if (node != null)
+        {
+            console.log("copying value to clipboard - node id: " + nodeId);
+
+            var decryptedValue = node.getDecryptedValueString();
+
+            if (decryptedValue != null)
+            {
+                this.runtimeService.setClipboard(decryptedValue);
+                console.log("updated clipboard with value from node - node id: " + nodeId + ", value length: " + decryptedValue.length);
+            }
+            else
+            {
+                console.log("skipped copying to clipboard, value is empty/null - node id: " + nodeId);
+            }
+        }
+        else
+        {
+            console.log("unable to copy to clipboard, node not found - node id: " + nodeId);
+        }
     }
 
     // TODO: doesnt work for global exit of application, need to think of good way to approach this...

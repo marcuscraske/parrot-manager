@@ -66,7 +66,7 @@
                     <button class="btn btn-default" (click)="hideValue()">
                         Hide Value
                     </button>
-                    <button class="btn btn-default">
+                    <button class="btn btn-default" (click)="copyValueToClipboard()">
                         Copy to Clipboard
                     </button>
                     <button class="btn btn-default">
@@ -134,7 +134,7 @@
                         <button class="btn btn-danger" (click)="deleteEntry(node.getId())">
                             Delete
                         </button>
-                        <button class="btn btn-default">
+                        <button class="btn btn-default" (click)="copyValueToClipboard(node.getId())">
                             Copy to Clipboard
                         </button>
                     </td>

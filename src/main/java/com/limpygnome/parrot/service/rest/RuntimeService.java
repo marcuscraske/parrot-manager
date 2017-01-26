@@ -7,6 +7,8 @@ import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 
@@ -101,6 +103,25 @@ public class RuntimeService
     {
         // Just exit the application...
         System.exit(0);
+    }
+
+    /**
+     * @param value the text value to be set as the clipboard contents
+     */
+    public void setClipboard(String value)
+    {
+        if (value != null)
+        {
+            // TODO: make single use? might not be easily possible...
+            StringSelection selection = new StringSelection(value);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+
+            LOG.info("copied value to clipboard - length: {}", value.length());
+        }
+        else
+        {
+            LOG.warn("attempted to set null value as clipboard");
+        }
     }
 
 }
