@@ -17,7 +17,7 @@ export class ViewerComponent
     private nativeDatabaseUpdatedEvent: Function;
 
     // The current node being edited
-    currentNode: any;
+    public currentNode: any;
 
     public updateEntryForm = this.fb.group({
         currentValue: [""]

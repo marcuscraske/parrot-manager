@@ -20,17 +20,17 @@ public class RandomGeneratorService
     {
         // TODO: clean this up, move to descriptive constants...
         // Upper-case
-        UPPERCASE = new char[90-65];
+        UPPERCASE = new char[90-65+1];
         for (int i = 65; i <= 90; i++)
         {
-            UPPERCASE[i] = (char) i;
+            UPPERCASE[i-65] = (char) i;
         }
 
         // Lower-case
-        LOWERCASE = new char[122-97];
+        LOWERCASE = new char[122-97+1];
         for (int i = 97; i <= 122; i++)
         {
-            LOWERCASE[i] = (char) i;
+            LOWERCASE[i-97] = (char) i;
         }
     }
 

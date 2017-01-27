@@ -61,7 +61,7 @@
             </div>
 
             <!-- Generate Random Value Options -->
-            <generate-random id="generateRandomContainer" class="collapse"></generate-random>
+            <generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode"></generate-random>
 
             <form [formGroup]="updateEntryForm" #form="ngForm">
                 <!-- Current value -->

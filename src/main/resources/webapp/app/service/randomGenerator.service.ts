@@ -12,7 +12,7 @@ export class RandomGeneratorService {
 
     generate(useNumbers, useUppercase, useLowercase, useSpecialChars, minLength, maxLength) : string
     {
-        this.randomGeneratorService.generate(useNumbers, useUppercase, useLowercase, useSpecialChars, minLength, maxLength);
+        return this.randomGeneratorService.generate(useNumbers, useUppercase, useLowercase, useSpecialChars, minLength, maxLength);
     }
 
 }
