@@ -18,91 +18,52 @@
         <!-- Page to edit a node -->
         <div class="view" *ngIf="currentNode != null">
 
+            <div class="header">
+                <div class="button">
+                    <button class="btn btn-default" *ngIf="!this.currentNode.isRoot()" (click)="changeNodeBeingViewed(currentNode.getParent().getId())">
+                        <span class="icon icon-arrow-up2"></span>
+                    </button>
+                </div>
+                <div class="title">
+                    <input type="text" class="title-input"
+                           (change)="updateName($event)"
+                           (click)="preUpdateName($event)"
+                           (blur)="postUpdateName($event)"
+                           value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}"
+                    />
+                </div>
+            </div>
+
+            <p title="currentNode.getFormattedLastModified()">
+                Last modified: {{ currentNode.getFormattedLastModified() }}
+            </p>
+
+            <!-- Value Options -->
+            <div class="form-group">
+                <button class="btn btn-primary" (click)="saveValue()">
+                    Save Value
+                </button>
+                <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteEntry(currentNode.getId())">
+                    Delete
+                </button>
+                <button class="btn btn-default" (click)="hideValue()">
+                    Hide Value
+                </button>
+                <button class="btn btn-default" (click)="copyValueToClipboard()">
+                    Copy to Clipboard
+                </button>
+                <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer">
+                    Generate Random
+                </button>
+                <button class="btn btn-default">
+                    History
+                </button>
+            </div>
+
+            <!-- Generate Random Value Options -->
+            <generate-random id="generateRandomContainer" class="collapse"></generate-random>
+
             <form [formGroup]="updateEntryForm" #form="ngForm">
-                <div class="header">
-                    <div class="button">
-                        <button class="btn btn-default" *ngIf="!this.currentNode.isRoot()" (click)="changeNodeBeingViewed(currentNode.getParent().getId())">
-                            <span class="icon icon-arrow-up2"></span>
-                        </button>
-                    </div>
-                    <div class="title">
-                        <input type="text" class="title-input"
-                               (change)="updateName($event)"
-                               (click)="preUpdateName($event)"
-                               (blur)="postUpdateName($event)"
-                               value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}"
-                        />
-                    </div>
-                </div>
-
-                <p title="currentNode.getFormattedLastModified()">
-                    Last modified: {{ currentNode.getFormattedLastModified() }}
-                </p>
-
-                <!-- Value Options -->
-                <div class="form-group">
-                    <button class="btn btn-primary" (click)="saveValue()">
-                        Save Value
-                    </button>
-                    <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteEntry(currentNode.getId())">
-                        Delete
-                    </button>
-                    <button class="btn btn-default" (click)="hideValue()">
-                        Hide Value
-                    </button>
-                    <button class="btn btn-default" (click)="copyValueToClipboard()">
-                        Copy to Clipboard
-                    </button>
-                    <button class="btn btn-default">
-                        Generate Random
-                    </button>
-                    <button class="btn btn-default">
-                        History
-                    </button>
-                </div>
-
-                <!-- Generate Random Value Options   -->
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label class="checkbox-inline">
-                                <input type="checkbox" checked /> Numbers
-                            </label>
-                            <label class="checkbox-inline">
-                                <input type="checkbox" checked /> Upper-case
-                            </label>
-                            <label class="checkbox-inline">
-                                <input type="checkbox" checked /> Lower-case
-                            </label>
-                            <label class="checkbox-inline">
-                                <input type="checkbox" checked /> Special Characters
-                            </label>
-                            <div class="form-inline">
-                                <div class="form-group">
-                                    <label for="randomMinLength">
-                                        Min. Length
-                                    </label>
-                                    <input type="number" id="randomMinLength" class="form-control" value="8" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="randomMaxLength">
-                                        Max. Length
-                                    </label>
-                                    <input type="number" id="randomMaxLength" class="form-control" value="12" />
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn btn-primary">
-                                        Generate
-                                    </button>
-                                    <button class="btn btn-default">
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Current value -->
                 <div class="form-group">
                     <textarea id="currentValue"

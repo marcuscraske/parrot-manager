@@ -13,6 +13,7 @@ import { OpenComponent } from './content/open/open.component'
 import { HelpComponent } from './content/help/help.component'
 
 import { ViewerComponent } from './content/viewer/viewer.component'
+import { GenerateRandomComponent } from './content/viewer/generate-random/generate-random.component'
 
 const appRoutes: Routes = [
   { path: '',                                       component: ViewerComponent },
@@ -34,7 +35,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent, TopBarComponent,
     ErrorComponent, HomeComponent, CreateComponent, OpenComponent, HelpComponent,
-    ViewerComponent
+    ViewerComponent, GenerateRandomComponent
   ],
   bootstrap: [
     AppComponent
