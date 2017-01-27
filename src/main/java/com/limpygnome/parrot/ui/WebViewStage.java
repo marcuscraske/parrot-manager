@@ -2,6 +2,7 @@ package com.limpygnome.parrot.ui;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.rest.DatabaseService;
+import com.limpygnome.parrot.service.rest.RandomGeneratorService;
 import com.limpygnome.parrot.service.rest.RuntimeService;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
@@ -36,12 +37,14 @@ public class WebViewStage extends Stage
     // Injected POJOs
     private RuntimeService runtimeService;
     private DatabaseService databaseService;
+    private RandomGeneratorService randomGeneratorService;
 
     public WebViewStage(Controller controller)
     {
         // Setup injected POJOs
         this.runtimeService = new RuntimeService(this);
         this.databaseService = new DatabaseService(controller);
+        this.randomGeneratorService = new RandomGeneratorService();
 
         // Setup webview
         webView = new WebView();
@@ -113,6 +116,7 @@ public class WebViewStage extends Stage
         }
 
         // Hook
+        // TODO: consider removal
         webView.setOnMousePressed(e -> {
             ContextMenu ctxMenuToShow = null;
 
@@ -162,11 +166,13 @@ public class WebViewStage extends Stage
             if (newValue == Worker.State.SUCCEEDED)
             {
                 // Ensure this runs on the JavaFX thread...
+                // TODO: separate from this stage, make it generic
                 Platform.runLater(() ->
                 {
                     // Expose rest service objects
                     exposeJsObject("runtimeService", runtimeService);
                     exposeJsObject("databaseService", databaseService);
+                    exposeJsObject("randomGeneratorService", randomGeneratorService);
 
                     LOG.info("injected REST POJOs into window");
                 });
