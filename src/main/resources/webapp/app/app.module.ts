@@ -14,6 +14,7 @@ import { HelpComponent } from './content/help/help.component'
 
 import { ViewerComponent } from './content/viewer/viewer.component'
 import { GenerateRandomComponent } from './content/viewer/generate-random/generate-random.component'
+import { ViewerEntriesComponent } from 'app/content/viewer/entries/entries.component'
 
 const appRoutes: Routes = [
   { path: '',                                       component: ViewerComponent },
@@ -33,9 +34,16 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes)
   ],
   declarations: [
+
+    // Global
     AppComponent, TopBarComponent,
+
+    // Pages
     ErrorComponent, HomeComponent, CreateComponent, OpenComponent, HelpComponent,
-    ViewerComponent, GenerateRandomComponent
+
+    // Viewer
+    ViewerComponent, GenerateRandomComponent, ViewerEntriesComponent
+
   ],
   bootstrap: [
     AppComponent

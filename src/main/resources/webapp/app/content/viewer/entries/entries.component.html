@@ -1,0 +1,64 @@
+<h2>
+    Entries
+</h2>
+
+<div class="form-group">
+    <button class="btn btn-default" (click)="addNewEntry()">
+        Add New Entry
+    </button>
+    <button class="btn btn-danger" (click)="deleteSelected()">
+        Delete Selected
+    </button>
+</div>
+
+<table class="table entries" id="currentValueEntries">
+    <tr>
+        <th>
+            <input type="checkbox" *ngIf="currentNode.getChildCount() != 0" (change)="deleteSelectAll($event)" />
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Value
+        </th>
+        <th>
+            Options
+        </th>
+    </tr>
+
+    <tr *ngIf="currentNode.getChildCount() == 0">
+        <td colspan="4">
+            None
+        </td>
+    </tr>
+
+    <tr *ngFor="let node of currentNode.getChildren(); trackBy: trackChildren">
+        <td>
+            <input type="checkbox" attr.data-node-id="{{ node.getId() }}" />
+        </td>
+        <td>
+            {{ node.getName() != null ? node.getName() : "(unnamed)" }}
+        </td>
+        <td>
+            <button class="btn btn-default" (click)="toggleMask('#' + node.getId() + '-value', node, false)">
+                Toggle Masking
+            </button>
+            <span id="{{ node.getId() }}-value">
+                            ********
+                        </span>
+        </td>
+        <td>
+            <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())">
+                View
+            </button>
+            <button class="btn btn-danger" (click)="deleteEntry(node.getId())">
+                Delete
+            </button>
+            <button class="btn btn-default" (click)="runtimeService.copyNodeValueToClipboard(node)">
+                Copy to Clipboard
+            </button>
+        </td>
+    </tr>
+
+</table>

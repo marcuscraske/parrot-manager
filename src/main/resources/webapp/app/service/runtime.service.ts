@@ -50,4 +50,30 @@ export class RuntimeService {
         this.runtimeService.setClipboard(value);
     }
 
+    copyNodeValueToClipboard(node)
+    {
+        // Update clipboard
+        if (node != null)
+        {
+            var nodeId = node.getId();
+            console.log("copying value to clipboard - node id: " + nodeId);
+
+            var decryptedValue = node.getDecryptedValueString();
+
+            if (decryptedValue != null)
+            {
+                this.runtimeService.setClipboard(decryptedValue);
+                console.log("updated clipboard with value from node - node id: " + nodeId + ", value length: " + decryptedValue.length);
+            }
+            else
+            {
+                console.log("skipped copying to clipboard, value is empty/null - node id: " + nodeId);
+            }
+        }
+        else
+        {
+            console.log("unable to copy to clipboard - null node passed");
+        }
+    }
+
 }
