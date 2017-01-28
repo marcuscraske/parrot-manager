@@ -239,6 +239,9 @@ public class DatabaseNode
             this.value = null;
         }
 
+        // Update modified time
+        lastModified = System.currentTimeMillis();
+
         // Set dirty flag...
         database.setDirty(true);
     }

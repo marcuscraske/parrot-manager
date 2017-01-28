@@ -7,12 +7,13 @@ export class RandomGeneratorService {
 
     constructor()
     {
-        this.randomGeneratorService = (window as any).runtimeService;
+        this.randomGeneratorService = (window as any).randomGeneratorService;
     }
 
-    generate(useNumbers, useUppercase, useLowercase, useSpecialChars, minLength, maxLength) : string
+    generate(useNumbers : boolean, useUppercase : boolean, useLowercase : boolean, useSpecialChars : boolean, minLength : number, maxLength : number) : string
     {
-        return this.randomGeneratorService.generate(useNumbers, useUppercase, useLowercase, useSpecialChars, minLength, maxLength);
+        var result = this.randomGeneratorService.generate(useNumbers, useUppercase, useLowercase, useSpecialChars, minLength, maxLength);
+        return result;
     }
 
 }

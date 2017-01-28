@@ -38,22 +38,25 @@ export class GenerateRandomComponent
         // Retrieve form data
         var form = this.randomOptions;
 
-        var useNumbers = form.values["useNumbers"];
-        var useUppercase = form.value["useUppercase"];
-        var useLowercase = form.value["useLowercase"];
-        var useSpecialChars = form.value["useSpecialChars"];
+        var useNumbers = form.value["useNumbers"] == "true";
+        var useUppercase = form.value["useUppercase"] == "true";
+        var useLowercase = form.value["useLowercase"] == "true";
+        var useSpecialChars = form.value["useSpecialChars"] == "true";
         var minLength = form.value["minLength"];
         var maxLength = form.value["maxLength"];
+
+        console.log("generating random password... - numbers: " + useNumbers + ", upper: " + useUppercase + ", lower: " +
+                        useLowercase + ", special: " + useSpecialChars + ", min: " + minLength + ", max: " + maxLength);
 
         // Generate value
         var randomPassword = this.randomGeneratorService.generate(useNumbers, useUppercase, useLowercase, useSpecialChars, minLength, maxLength);
 
         if (randomPassword != null)
         {
-            console.log("generating random password...");
-
             // Update value of current node
             this.currentNode.setValueString(randomPassword);
+
+            console.log("current password updated with random string - node id: " + this.currentNode.getId());
         }
         else
         {

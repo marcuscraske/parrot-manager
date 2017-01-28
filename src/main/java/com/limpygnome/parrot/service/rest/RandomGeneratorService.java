@@ -1,5 +1,8 @@
 package com.limpygnome.parrot.service.rest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.SecureRandom;
 
 /**
@@ -9,6 +12,7 @@ import java.security.SecureRandom;
  */
 public class RandomGeneratorService
 {
+    private static final Logger LOG = LogManager.getLogger(RandomGeneratorService.class);
 
     private static final char[] NUMBERS = { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58 };
 
@@ -42,18 +46,31 @@ public class RandomGeneratorService
         secureRandom = new SecureRandom();
     }
 
-    public char[] generate(boolean useNumbers, boolean useUppercase, boolean useLowercase, boolean useSpecialChars,
+    /**
+     * Generates a random string, using characters from the enabled groups of chars.
+     *
+     * @param useNumbers Enables number chars
+     * @param useUppercase Enables upper-case chars
+     * @param useLowercase Enables lower-case chars
+     * @param useSpecialChars Enables special chars
+     * @param minLength The minimum length of the string
+     * @param maxLength The maximum length of the string
+     * @return the generated text, or null if invalid params
+     */
+    public String generate(boolean useNumbers, boolean useUppercase, boolean useLowercase, boolean useSpecialChars,
                            int minLength, int maxLength)
     {
-        char[] result;
+        String result;
 
         if (!useNumbers && !useUppercase && !useLowercase && !useSpecialChars)
         {
             result = null;
+            LOG.warn("failed to generate random string - no char groups selected");
         }
-        else if (minLength < maxLength || minLength < 1)
+        else if (minLength >= maxLength || minLength < 1)
         {
             result = null;
+            LOG.warn("failed to generate random string - invalid min/max");
         }
         else
         {
@@ -73,14 +90,16 @@ public class RandomGeneratorService
             }
 
             // Pick random chars
-            result = new char[length];
+            char[] randomText = new char[length];
             int randomIndex;
 
             for (int i = 0; i < length; i++)
             {
                 randomIndex = secureRandom.nextInt(possibleChars.length);
-                result[i] = possibleChars[randomIndex];
+                randomText[i] = possibleChars[randomIndex];
             }
+
+            result = new String(randomText);
         }
 
         return result;

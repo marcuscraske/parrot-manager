@@ -13,6 +13,19 @@ if (window.runtimeService == null)
     })();
 }
 
+if (window.randomGeneratorService == null)
+{
+    window.randomGeneratorService = (function(){
+
+        return {
+
+            generate : function() { return "random string" }
+
+        }
+
+    })();
+}
+
 if (window.databaseService == null)
 {
     window.databaseService = (function(){
@@ -64,7 +77,8 @@ if (window.databaseService == null)
                                 }
 
                            ] },
-                           isRoot : function() { return true }
+                           isRoot : function() { return true },
+                           setValueString : function() {}
                        }
                     }
                 }
