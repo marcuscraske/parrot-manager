@@ -1,4 +1,4 @@
-import { Component, Renderer, Input } from '@angular/core';
+import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { DatabaseService } from 'app/service/database.service'
 import { RandomGeneratorService } from 'app/service/randomGenerator.service'
@@ -14,6 +14,9 @@ export class GenerateRandomComponent
 
     // The current node being changed; passed from parent
     @Input() currentNode : any;
+
+    // Triggers value to be refreshed (if being actively viewed)
+    @Output() refreshValue = new EventEmitter();
 
     // Form of options for random value generator
     public randomOptions : any;
@@ -57,6 +60,9 @@ export class GenerateRandomComponent
             this.currentNode.setValueString(randomPassword);
 
             console.log("current password updated with random string - node id: " + this.currentNode.getId());
+
+            // Refresh value
+            this.refreshValue.emit();
         }
         else
         {

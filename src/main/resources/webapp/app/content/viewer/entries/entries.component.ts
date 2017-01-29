@@ -6,6 +6,7 @@ import { DatabaseService } from 'app/service/database.service'
     moduleId: module.id,
     selector: 'viewer-entries',
     templateUrl: 'entries.component.html',
+    styleUrls: ['entries.component.css'],
     providers: [RuntimeService, DatabaseService],
 })
 export class ViewerEntriesComponent

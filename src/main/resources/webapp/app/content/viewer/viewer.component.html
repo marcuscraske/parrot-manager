@@ -1,11 +1,16 @@
 <div class="viewer">
 
     <div class="sidebar" id="sidebar">
+        <!--
+            Populated by JSTree in component controller
+        -->
     </div>
 
     <div class="editor">
 
-        <!-- Home/unselected node page -->
+        <!--
+            No node selected - display home page
+        -->
         <div class="home" *ngIf="currentNode == null">
             <h1>
                 {{ databaseService.getFileName() }}
@@ -15,7 +20,9 @@
             </p>
         </div>
 
-        <!-- Page to edit a node -->
+        <!--
+            Node selected
+        -->
         <div class="view" *ngIf="currentNode != null">
 
             <div class="header">
@@ -61,7 +68,7 @@
             </div>
 
             <!-- Generate Random Value Options -->
-            <generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode"></generate-random>
+            <generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode" (refreshValue)="refreshValue()"></generate-random>
 
             <form [formGroup]="updateEntryForm" #form="ngForm">
                 <!-- Current value -->

@@ -78,17 +78,3 @@
     min-height: 1em;
     max-height: 30em;
 }
-
-
-/*
-    List of entires at bottom
-*/
-.viewer .editor table.entries tr td
-{
-    white-space: nowrap;
-}
-
-.viewer .editor table.entries tr td:nth-child(3)
-{
-    width: 100%;
-}

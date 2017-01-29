@@ -190,14 +190,33 @@ export class ViewerComponent
         // Only populate if empty
         if (field.value.length == 0)
         {
-            this.populateValueTextAreaWithDecryptedStringValue(field);
+            this.displayValue();
         }
+    }
+
+    refreshValue()
+    {
+        var field = $("#currentValue")[0];
+
+        if (field.value.length != 0)
+        {
+            this.displayValue();
+        }
+    }
+
+    displayValue()
+    {
+        var decryptedValue = this.currentNode.getDecryptedValueString();
+        $("#currentValue").val(decryptedValue);
+        console.log("populated value field with actual decrypted value");
+
+        this.resizeValueTextAreaToFitContent();
     }
 
     updateValue(event)
     {
         var field = event.target;
-        this.resizeValueTextAreaToFitContent(field);
+        this.resizeValueTextAreaToFitContent();
     }
 
     saveValue()
@@ -217,23 +236,15 @@ export class ViewerComponent
         this.continueActionWithPromptForDirtyValue(() => {
             // Reset to empty and resize
             field.value = "";
-            this.resizeValueTextAreaToFitContent(field);
+            this.resizeValueTextAreaToFitContent();
         });
     }
 
-    // Populates field with decrypted string value
-    populateValueTextAreaWithDecryptedStringValue(field)
-    {
-        var decryptedValue = this.currentNode.getDecryptedValueString();
-        field.value = decryptedValue;
-        console.log("populated value field with actual decrypted value");
-
-        this.resizeValueTextAreaToFitContent(field);
-    }
-
     // Resize field to fit value/content
-    resizeValueTextAreaToFitContent(field)
+    resizeValueTextAreaToFitContent()
     {
+        var field = $("#currentValue")[0];
+
         // Resize box to fit content; reset to avoid inf. growing box
         field.style.height = "0px";
         field.style.height = field.scrollHeight + "px";
