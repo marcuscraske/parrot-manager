@@ -1,24 +1,30 @@
-import { NgModule }      from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
+// AngularJS
+import { NgModule }                 from '@angular/core';
+import { BrowserModule }            from '@angular/platform-browser';
+import { ReactiveFormsModule }      from '@angular/forms';
+import { RouterModule, Routes }     from '@angular/router';
 
-import { AppComponent }     from './app.component';
-import { TopBarComponent } from './topbar/topbar.component'
+// Global
+import { AppComponent }             from 'app/app.component';
+import { TopBarComponent }          from 'app/topbar/topbar.component'
 
-import { ErrorComponent } from './content/error/error.component'
-import { HomeComponent } from './content/home/home.component'
-import { CreateComponent } from './content/create/create.component'
-import { OpenComponent } from './content/open/open.component'
-import { HelpComponent } from './content/help/help.component'
+// Pages
+import { ErrorComponent }           from 'app/content/error/error.component'
+import { HomeComponent }            from 'app/content/home/home.component'
+import { CreateComponent }          from 'app/content/create/create.component'
+import { OpenComponent }            from 'app/content/open/open.component'
+import { OpenRemoteSshComponent }   from 'app/content/open-remote-ssh/open-remote-ssh.component'
+import { HelpComponent }            from 'app/content/help/help.component'
 
-import { ViewerComponent } from './content/viewer/viewer.component'
-import { GenerateRandomComponent } from './content/viewer/generate-random/generate-random.component'
-import { ViewerEntriesComponent } from 'app/content/viewer/entries/entries.component'
+// Viewer
+import { ViewerComponent }          from 'app/content/viewer/viewer.component'
+import { GenerateRandomComponent }  from 'app/content/viewer/generate-random/generate-random.component'
+import { ViewerEntriesComponent }   from 'app/content/viewer/entries/entries.component'
 
 const appRoutes: Routes = [
-  { path: '',                                       component: ViewerComponent },
+  { path: '',                                       component: OpenComponent },
   { path: 'open',                                   component: OpenComponent },
+  { path: 'open/remote/ssh',                        component: OpenRemoteSshComponent },
   { path: 'create',                                 component: CreateComponent },
 
   { path: 'viewer',                                 component: ViewerComponent },
@@ -39,7 +45,7 @@ const appRoutes: Routes = [
     AppComponent, TopBarComponent,
 
     // Pages
-    ErrorComponent, HomeComponent, CreateComponent, OpenComponent, HelpComponent,
+    ErrorComponent, HomeComponent, CreateComponent, OpenComponent, OpenRemoteSshComponent, HelpComponent,
 
     // Viewer
     ViewerComponent, GenerateRandomComponent, ViewerEntriesComponent

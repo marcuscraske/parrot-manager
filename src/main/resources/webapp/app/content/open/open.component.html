@@ -2,15 +2,36 @@
     open
 </h1>
 
+<!--
+    Open from file
+-->
 <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null }">
+
     <button class="btn btn-default form-control" type="button" (click)="chooseDatabaseFile()">
-        Load from File
+        Local File
     </button>
 
     <span class="help-block">{{ errorMessage }}</span>
 
 </div>
 
+
+<!--
+    Open from SSH
+-->
+
+<div class="form-group">
+
+    <button routerLink="/open/remote/ssh" class="btn btn-default form-control" type="button">
+        Remote File - SSH
+    </button>
+
+</div>
+
+
+<!--
+    TODO: split bottom into own component
+-->
 <h2>
     recent
 </h2>

@@ -17,6 +17,9 @@
             <a title="Save" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
+            <a title="Remote Sync">
+                <span class="icon icon-loop2"></span>
+            </a>
             <a routerLink="options" title="Options">
                 <span class="icon icon-cog"></span>
             </a>
