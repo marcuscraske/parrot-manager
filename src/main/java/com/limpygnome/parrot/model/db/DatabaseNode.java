@@ -2,6 +2,8 @@ package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +45,10 @@ public class DatabaseNode
 
     // Any sub-nodes which belong to this db
     private Map<UUID, DatabaseNode> children;
+
+    // Cached array of children retrieved; this is because to provide an array, we need to keep a permanent reference
+    // to avoid garbage collection
+    private DatabaseNode[] childrenCached;
 
     // A list of previously deleted children; used for merging
     private Set<UUID> deletedChildren;
@@ -247,12 +253,16 @@ public class DatabaseNode
     }
 
     /**
-     * @return child nodes
+     * @return child nodes (cached array)
      */
     public synchronized DatabaseNode[] getChildren()
     {
+        // TODO: consider a more elegant solution...
+        // Build array and assign locally to avoid garbage collection
         Collection<DatabaseNode> childNodes = children.values();
-        return childNodes.toArray(new DatabaseNode[childNodes.size()]);
+        childrenCached = childNodes.toArray(new DatabaseNode[childNodes.size()]);
+
+        return childrenCached;
     }
 
     /**
@@ -532,4 +542,14 @@ public class DatabaseNode
         return result;
     }
 
+    @Override
+    public String toString()
+    {
+        return "DatabaseNode{" +
+                "  parent=" + (parent != null ? parent.getId() : "null") +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", lastModified="    + lastModified +
+                '}';
+    }
 }

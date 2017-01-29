@@ -170,6 +170,7 @@ public class WebViewStage extends Stage
                 Platform.runLater(() ->
                 {
                     // Expose rest service objects
+                    // WARNING: due to JDK bug, do not pass newly constructed instances here...
                     exposeJsObject("runtimeService", runtimeService);
                     exposeJsObject("databaseService", databaseService);
                     exposeJsObject("randomGeneratorService", randomGeneratorService);

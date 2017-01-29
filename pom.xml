@@ -17,6 +17,13 @@
             <version>1.55</version>
         </dependency>
 
+        <!-- SSH -->
+        <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.54</version>
+        </dependency>
+
         <!-- JSON -->
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>

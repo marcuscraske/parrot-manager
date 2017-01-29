@@ -104,6 +104,8 @@ export class ViewerComponent
         this.continueActionWithPromptForDirtyValue(() => {
             // Update node being viewed
             this.currentNode = this.databaseService.getNode(nodeId);
+
+            // Update node selected in tree
             this.updateTreeSelection();
 
             // Reset form
