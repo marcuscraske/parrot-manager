@@ -41,12 +41,12 @@
                 </div>
             </div>
 
-            <p title="currentNode.getFormattedLastModified()">
+            <p title="{{ currentNode.getFormattedLastModified() }}">
                 Last modified: {{ currentNode.getFormattedLastModified() }}
             </p>
 
             <!-- Value Options -->
-            <div class="form-group">
+            <div class="form-group options">
                 <button class="btn btn-primary" (click)="saveValue()">
                     Save Value
                 </button>

@@ -78,3 +78,13 @@
     min-height: 1em;
     max-height: 30em;
 }
+
+
+/*
+    Option buttons
+*/
+
+.options
+{
+    max-height: 2em;
+}
