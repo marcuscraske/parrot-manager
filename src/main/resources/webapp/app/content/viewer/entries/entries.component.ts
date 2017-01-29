@@ -1,4 +1,4 @@
-import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 
@@ -8,6 +8,7 @@ import { DatabaseService } from 'app/service/database.service'
     templateUrl: 'entries.component.html',
     styleUrls: ['entries.component.css'],
     providers: [RuntimeService, DatabaseService],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ViewerEntriesComponent
 {
