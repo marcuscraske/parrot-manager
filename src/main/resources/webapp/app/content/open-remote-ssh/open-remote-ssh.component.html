@@ -6,11 +6,6 @@
     This will copy a remote database, using SSH, to your local filesystem.
 </p>
 
-<p>
-    If you choose to save your details to the local database, you can later synchronize your local database with
-    with the remote instance.
-</p>
-
 <div class="form-group">
 
     <label class="form-control-label">
@@ -89,11 +84,11 @@
 </div>
 
 <div class="form-group">
-    <label class="form-label" for="savepath">
-        Save Path
+    <label class="form-label" for="path">
+        Destination Path
     </label>
     <div class="input-group">
-        <input id="savepath"
+        <input id="path"
                type="text"
                class="form-control"
                placeholder="The path of where the local instance will be saved..."
@@ -108,7 +103,7 @@
 
 <div class="form-group">
     <label class="checkbox-inline">
-        <input type="checkbox" /> Save Details
+        <input type="checkbox" /> Save auth (key and password) to database
     </label>
 </div>
 
