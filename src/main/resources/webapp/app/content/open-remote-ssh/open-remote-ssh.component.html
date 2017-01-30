@@ -2,24 +2,44 @@
     open - remote (ssh)
 </h1>
 
+<p>
+    This will copy a remote database, using SSH, to your local filesystem.
+</p>
+
+<p>
+    If you choose to save your details to the local database, you can later synchronize your local database with
+    with the remote instance.
+</p>
+
 <div class="form-group">
-    <label class="form-control-label" for="host">
+
+    <label class="form-control-label">
         Host
     </label>
 
-    <div class="input-group">
-        <input id="host"
-               type="text"
-               class="form-control"
-               placeholder="Full hostname..."
-               minlength="1" maxlength="128"
-        />
-        <input id="pass"
-               type="number"
-               class="form-control"
-               placeholder="Port"
-               minlength="1" maxlength="5"
-        />
+    <div class="form-inline">
+        <div class="form-group">
+            <label class="sr-only" for="host">
+                Host
+            </label>
+            <input id="host"
+                   type="text"
+                   class="form-control"
+                   placeholder="Hostname..."
+                   minlength="1" maxlength="128"
+            />
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="port">
+                Port
+            </label>
+            <input id="port"
+                   type="number"
+                   class="form-control"
+                   placeholder="Port..."
+                   minlength="1" maxlength="5"
+            />
+        </div>
     </div>
 
 </div>
@@ -32,7 +52,7 @@
     <input id="user"
            type="text"
            class="form-control"
-           placeholder="The full hostname..."
+           placeholder="Username..."
            minlength="1" maxlength="128"
     />
 </div>
@@ -55,11 +75,51 @@
         Key File
     </label>
     <div class="input-group">
-        <input id="keyfile" type="text" class="form-control" />
+        <input id="keyfile"
+               type="text"
+               class="form-control"
+               placeholder="Only required for key file auth..."
+        />
         <span class="input-group-btn">
             <button class="btn btn-default form-control" type="button">
-                Find
+                Choose
             </button>
         </span>
     </div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="savepath">
+        Save Path
+    </label>
+    <div class="input-group">
+        <input id="savepath"
+               type="text"
+               class="form-control"
+               placeholder="The path of where the local instance will be saved..."
+        />
+        <span class="input-group-btn">
+            <button class="btn btn-default form-control" type="button">
+                Choose
+            </button>
+        </span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="checkbox-inline">
+        <input type="checkbox" /> Save Details
+    </label>
+</div>
+
+<div class="form-group">
+
+    <button type="submit" class="btn btn-primary">
+        Open
+    </button>
+
+    <button type="submit" class="btn btn-default">
+        Cancel
+    </button>
+
 </div>
