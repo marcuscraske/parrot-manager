@@ -15,9 +15,6 @@ For each remote host, a child key is created, with the name irrelevant and chang
 
 When performing a remote sync with a host, the local database is merged with the remote copy.
 
-Before merging begins, a lock file is created using the hostname of this machine. If the file already exists, the
-sync is skipped.
-
 
 ## Host Key
 For every host key, the value is a JSON object with the following configuration:
@@ -29,6 +26,12 @@ For every host key, the value is a JSON object with the following configuration:
     "user"          : "string, mandatory",
     "pass"          : "string, optional",
     "key"           : "string, optional",
+    
+    "proxy" : {
+        "host"      : "string, optional",
+        "port"      : "number, optional",
+        "type"      : "string, optional - either SOCKS4, SOCKS5 or HTTP"
+    }
 }
 ````
 
