@@ -5,7 +5,9 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
+import com.limpygnome.parrot.model.remote.FileStatus;
 import java.io.File;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,15 +21,26 @@ public class RemoteSshFileService
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
+    private Map<String, Long>
+
     public static void main(String[] args)
     {
         RemoteSshFileService s = new RemoteSshFileService();
-        s.download("localhost", 22, "limpygnome", null, null, "~/test.html", "~/dest-test.html");
+        s.download("xxx", "localhost", 22, "limpygnome", null, null, "~/test2.html", "~/dest-test.html");
+    }
+
+    public FileStatus getDownloadBytes(String randomToken)
+    {
+
     }
 
     /**
      * Begins downloading a file from an SSH host.
      *
+     * Invocation is synchronous, but the status of a file can be retrieved using {@link #getDownloadStatus}, using the
+     * provided token.
+     *
+     * @param randomToken
      * @param host
      * @param port
      * @param user
@@ -36,7 +49,7 @@ public class RemoteSshFileService
      * @param destinationPath
      * @return error message, otherwise null if successful
      */
-    public String download(String host, int port, String user, String pass, String keyPath, String remotePath, String destinationPath)
+    public String download(String randomToken, String host, int port, String user, String pass, String keyPath, String remotePath, String destinationPath)
     {
         // Replace destination path ~/ with home directory
         if (destinationPath.startsWith("~/") && destinationPath.length() > 2)
@@ -50,6 +63,9 @@ public class RemoteSshFileService
 
         LOG.info("transfer - starting - user: {}, port: {}, remote path: {}, dest path: {}", user, port, remotePath, destinationPath);
 
+        Session session = null;
+        ChannelSftp channelSftp = null;
+
         try
         {
             JSch jsch = new JSch();
@@ -59,7 +75,7 @@ public class RemoteSshFileService
             // TODO: consider if we should do this...
             properties.put("StrictHostKeyChecking", "no");
 
-            Session session = jsch.getSession(user, host, port);
+            session = jsch.getSession(user, host, port);
             session.setPassword("test123");
             session.setConfig(properties);
             session.connect();
@@ -67,7 +83,7 @@ public class RemoteSshFileService
             Channel channel = session.openChannel("sftp");
             channel.connect();
 
-            ChannelSftp channelSftp = (ChannelSftp) channel;
+            channelSftp = (ChannelSftp) channel;
 
             // Replace ~/ with home directory
             if (remotePath.startsWith("~/") && remotePath.length() > 2)
@@ -113,13 +129,23 @@ public class RemoteSshFileService
                     LOG.info("transfer - finished");
                 }
             });
-
-            channelSftp.disconnect();
-            session.disconnect();
         }
         catch (Exception e)
         {
             LOG.error("transfer - failed", e);
+        }
+        finally
+        {
+            // Dispose session and sftp channel
+            if (session != null)
+            {
+                session.disconnect();
+            }
+
+            if (channelSftp != null)
+            {
+                channelSftp.exit();
+            }
         }
 
         return null;
