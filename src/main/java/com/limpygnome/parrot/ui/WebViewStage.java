@@ -3,6 +3,7 @@ package com.limpygnome.parrot.ui;
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.service.rest.DatabaseService;
 import com.limpygnome.parrot.service.rest.RandomGeneratorService;
+import com.limpygnome.parrot.service.rest.RemoteSshFileService;
 import com.limpygnome.parrot.service.rest.RuntimeService;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
@@ -34,10 +35,11 @@ public class WebViewStage extends Stage
     private Scene scene;
     private WebView webView;
 
-    // Injected POJOs
+    // Injected services
     private RuntimeService runtimeService;
     private DatabaseService databaseService;
     private RandomGeneratorService randomGeneratorService;
+    private RemoteSshFileService remoteSshFileService;
 
     public WebViewStage(Controller controller)
     {
@@ -45,6 +47,7 @@ public class WebViewStage extends Stage
         this.runtimeService = new RuntimeService(this);
         this.databaseService = new DatabaseService(controller);
         this.randomGeneratorService = new RandomGeneratorService();
+        this.remoteSshFileService = new RemoteSshFileService();
 
         // Setup webview
         webView = new WebView();
@@ -174,6 +177,7 @@ public class WebViewStage extends Stage
                     exposeJsObject("runtimeService", runtimeService);
                     exposeJsObject("databaseService", databaseService);
                     exposeJsObject("randomGeneratorService", randomGeneratorService);
+                    exposeJsObject("remoteSshFileService", remoteSshFileService);
 
                     LOG.info("injected REST POJOs into window");
                 });

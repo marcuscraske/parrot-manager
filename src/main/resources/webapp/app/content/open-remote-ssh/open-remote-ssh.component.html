@@ -40,6 +40,12 @@
 </div>
 
 <div class="form-group">
+    <label class="checkbox-inline">
+        <input type="checkbox" /> Strict host key checking
+    </label>
+</div>
+
+<div class="form-group">
     <label class="form-control-label" for="user">
         User
     </label>
@@ -63,24 +69,6 @@
            placeholder="Only required for pass authentication"
            minlength="1" maxlength="128"
     />
-</div>
-
-<div class="form-group">
-    <label class="form-label" for="keyfile">
-        Key File
-    </label>
-    <div class="input-group">
-        <input id="keyfile"
-               type="text"
-               class="form-control"
-               placeholder="Only required for key file auth..."
-        />
-        <span class="input-group-btn">
-            <button class="btn btn-default form-control" type="button">
-                Choose
-            </button>
-        </span>
-    </div>
 </div>
 
 <div class="form-group">
@@ -112,10 +100,37 @@
     </div>
 </div>
 
-<div class="form-group">
-    <label class="checkbox-inline">
-        <input type="checkbox" /> Save auth (key and password) to database
-    </label>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="form-group">
+            <label class="form-label" for="privateKey">
+                Private Key
+            </label>
+            <div class="input-group">
+                <input id="privateKey"
+                       type="text"
+                       class="form-control"
+                       placeholder="Only required for key file auth..."
+                />
+                <span class="input-group-btn">
+            <button class="btn btn-default form-control" type="button">
+                Choose
+            </button>
+        </span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="privateKeyPass">
+                Password
+            </label>
+            <input id="privateKeyPass"
+                   type="password"
+                   class="form-control"
+                   placeholder="The password for your private key..."
+            />
+        </div>
+    </div>
 </div>
 
 <div class="panel panel-default">
@@ -166,6 +181,12 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="form-group">
+    <label class="checkbox-inline">
+        <input type="checkbox" /> Save auth (key and password) to database
+    </label>
 </div>
 
 <div class="form-group">

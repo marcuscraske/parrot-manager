@@ -5,12 +5,15 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
+import com.limpygnome.parrot.model.remote.DownloadSshOptions;
 import com.limpygnome.parrot.model.remote.FileStatus;
-import java.io.File;
-import java.util.Map;
-import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * A service for downloading and uploading remote files using SSH.
@@ -21,36 +24,59 @@ public class RemoteSshFileService
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
-    private Map<String, Long>
+    private Map<String, FileStatus> fileStatusMap;
 
-    public static void main(String[] args)
+    public RemoteSshFileService()
     {
-        RemoteSshFileService s = new RemoteSshFileService();
-        s.download("xxx", "localhost", 22, "limpygnome", null, null, "~/test2.html", "~/dest-test.html");
+        this.fileStatusMap = new HashMap<>();
     }
 
-    public FileStatus getDownloadBytes(String randomToken)
+    public DownloadSshOptions createDownloadOptions(String randomToken, String host, int port, String user, String remotePath, String destinationPath)
     {
+        return new DownloadSshOptions(randomToken, host, port, user, remotePath, destinationPath);
+    }
 
+    /**
+     * Retrieves the status of a file download/upload.
+     *
+     * @param randomToken the same token used to initiate a download/upload
+     * @return the status, or null if not found / transfer has ended
+     */
+    public FileStatus getStatus(String randomToken)
+    {
+        FileStatus fileStatus;
+
+        synchronized (fileStatusMap)
+        {
+            fileStatus = fileStatusMap.get(randomToken);
+        }
+
+        return fileStatus;
     }
 
     /**
      * Begins downloading a file from an SSH host.
      *
-     * Invocation is synchronous, but the status of a file can be retrieved using {@link #getDownloadStatus}, using the
+     * Invocation is synchronous, but the status of a file can be retrieved using {@link #getStatus}, using the
      * provided token.
      *
-     * @param randomToken
-     * @param host
-     * @param port
-     * @param user
-     * @param pass
-     * @param keyPath
-     * @param destinationPath
+     * @param options the config for a download
      * @return error message, otherwise null if successful
      */
-    public String download(String randomToken, String host, int port, String user, String pass, String keyPath, String remotePath, String destinationPath)
+    public String download(DownloadSshOptions options)
     {
+        String result = null;
+
+        final String randomToken = options.getRandomToken();
+        String destinationPath = options.getDestinationPath();
+        String remotePath = options.getRemotePath();
+
+        // Add status for transfer
+        synchronized (fileStatusMap)
+        {
+            fileStatusMap.put(randomToken, new FileStatus());
+        }
+
         // Replace destination path ~/ with home directory
         if (destinationPath.startsWith("~/") && destinationPath.length() > 2)
         {
@@ -61,7 +87,7 @@ public class RemoteSshFileService
             destinationPath = homeDirectory + pathSeparator + destinationPath.substring(2);
         }
 
-        LOG.info("transfer - starting - user: {}, port: {}, remote path: {}, dest path: {}", user, port, remotePath, destinationPath);
+        LOG.info("transfer - {} - starting - options: {}", randomToken, options);
 
         Session session = null;
         ChannelSftp channelSftp = null;
@@ -69,17 +95,30 @@ public class RemoteSshFileService
         try
         {
             JSch jsch = new JSch();
-//            jsch.addIdentity("~/.ssh/id_rsa");
 
+            // Setup key
+            if (options.isPrivateKey())
+            {
+                jsch.addIdentity(options.getPrivateKeyPath(), options.getPrivateKeyPass());
+            }
+
+            // Disable strict host checking (if not enabled)
             Properties properties = new Properties();
-            // TODO: consider if we should do this...
-            properties.put("StrictHostKeyChecking", "no");
 
-            session = jsch.getSession(user, host, port);
-            session.setPassword("test123");
+            if (!options.isStrictHostKeyChecking())
+            {
+                properties.put("StrictHostKeyChecking", "no");
+            }
+
+            // Connect to host...
+            session = jsch.getSession(options.getUser(), options.getHost(), options.getPort());
+            session.setPassword(options.getPass());
             session.setConfig(properties);
+            session.setProxy(options.getProxy());
+
             session.connect();
 
+            // Start sftp in session
             Channel channel = session.openChannel("sftp");
             channel.connect();
 
@@ -90,7 +129,7 @@ public class RemoteSshFileService
             {
                 String home = channelSftp.getHome();
                 remotePath = home + "/" + remotePath.substring(2);
-                LOG.info("transfer - replacing ~/ with home directory - new remote path: {}", remotePath);
+                LOG.info("transfer - {} - replacing ~/ with home directory - new remote path: {}", randomToken, remotePath);
             }
 
             // Move to containing directory
@@ -101,25 +140,39 @@ public class RemoteSshFileService
             {
                 String remoteFileParentPath = remoteFileParent.getAbsolutePath();
 
-                LOG.info("transfer - changing directory - path: {}", remoteFileParentPath);
+                LOG.info("transfer - {} - changing directory - path: {}", randomToken, remoteFileParentPath);
                 channelSftp.cd(remoteFileParentPath);
             }
 
+            // Start the transfer...
             String remoteFileName = remoteFile.getName();
-            LOG.info("transfer - initiating transfer - fileName: {}", remoteFileName);
+            LOG.info("transfer - {} - initiating transfer - fileName: {}", randomToken, remoteFileName);
 
             channelSftp.get(remoteFileName, destinationPath, new SftpProgressMonitor()
             {
                 @Override
                 public void init(int op, String src, String dest, long maxBytes)
                 {
-                    LOG.info("transfer - start - max bytes: {}", maxBytes);
+                    LOG.info("transfer - {} - init - max bytes: {}", randomToken, maxBytes);
+
+                    synchronized (fileStatusMap)
+                    {
+                        FileStatus status = fileStatusMap.get(randomToken);
+                        status.setMax(maxBytes);
+                    }
                 }
 
                 @Override
                 public boolean count(long bytes)
                 {
-                    LOG.info("transfer - progress - bytes: {}", bytes);
+                    LOG.info("transfer - {} - progress - bytes: {}", randomToken, bytes);
+
+                    synchronized (fileStatusMap)
+                    {
+                        FileStatus status = fileStatusMap.get(randomToken);
+                        status.setCurrent(bytes);
+                    }
+
                     return true;
                 }
 
@@ -132,7 +185,8 @@ public class RemoteSshFileService
         }
         catch (Exception e)
         {
-            LOG.error("transfer - failed", e);
+            LOG.error("transfer - {} - failed", randomToken, e);
+            result = e.getMessage();
         }
         finally
         {
@@ -146,14 +200,18 @@ public class RemoteSshFileService
             {
                 channelSftp.exit();
             }
+
+            // Remove progress
+            if (randomToken != null)
+            {
+                synchronized (fileStatusMap)
+                {
+                    fileStatusMap.remove(randomToken);
+                }
+            }
         }
 
-        return null;
-    }
-
-    public String upload(String host, int port, String user, String pass, String keyPath, String destinationPath)
-    {
-        return null;
+        return result;
     }
 
 }
