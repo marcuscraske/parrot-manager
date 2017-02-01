@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class OpenRemoteSshComponent {
 
-    public createForm = this.fb.group({
+    public openForm = this.fb.group({
         host: ["", Validators.required],
         port: ["", Validators.required],
         strictKeyChecking : [""],
@@ -27,7 +27,7 @@ export class OpenRemoteSshComponent {
 
     constructor(private remoteSshFileService: RemoteSshFileService, private router: Router, public fb: FormBuilder) { }
 
-    open()
+    open(event)
     {
         var form = event.form;
 

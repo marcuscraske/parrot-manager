@@ -6,197 +6,199 @@
     This will copy a remote database, using SSH, to your local filesystem.
 </p>
 
-<div class="form-group">
+<form [formGroup]="openForm" (ngSubmit)="open($event)" #form="ngForm">
+    <div class="form-group">
 
-    <label class="form-control-label">
-        Host
-    </label>
+        <label class="form-control-label">
+            Host
+        </label>
 
-    <div class="form-inline">
-        <div class="form-group">
-            <label class="sr-only" for="host">
-                Host
-            </label>
-            <input id="host"
-                   type="text"
-                   class="form-control"
-                   placeholder="Hostname..."
-                   minlength="1" maxlength="128"
-            />
-        </div>
-        <div class="form-group">
-            <label class="sr-only" for="port">
-                Port
-            </label>
-            <input id="port"
-                   type="number"
-                   class="form-control"
-                   placeholder="Port..."
-                   minlength="1" maxlength="5"
-            />
-        </div>
-    </div>
-
-</div>
-
-<div class="form-group">
-    <label class="checkbox-inline">
-        <input type="checkbox" id="strictKeyChecking" /> Strict host key checking
-    </label>
-</div>
-
-<div class="form-group">
-    <label class="form-control-label" for="user">
-        User
-    </label>
-
-    <input id="user"
-           type="text"
-           class="form-control"
-           placeholder="Username..."
-           minlength="1" maxlength="128"
-    />
-</div>
-
-<div class="form-group">
-    <label class="form-control-label" for="pass">
-        Pass
-    </label>
-
-    <input id="pass"
-           type="text"
-           class="form-control"
-           placeholder="Only required for pass authentication"
-           minlength="1" maxlength="128"
-    />
-</div>
-
-<div class="form-group">
-    <label class="form-label" for="remotePath">
-        Remote Path
-    </label>
-    <input id="remotePath"
-           type="text"
-           class="form-control"
-           placeholder="The remote path to the database file..."
-    />
-</div>
-
-<div class="form-group">
-    <label class="form-label" for="destinationPath">
-        Destination Path
-    </label>
-    <div class="input-group">
-        <input id="destinationPath"
-               type="text"
-               class="form-control"
-               placeholder="The path of where the local instance will be saved..."
-        />
-        <span class="input-group-btn">
-            <button class="btn btn-default form-control" type="button">
-                Choose
-            </button>
-        </span>
-    </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div class="form-group">
-            <label class="form-label" for="privateKey">
-                Private Key
-            </label>
-            <div class="input-group">
-                <input id="privateKey"
+        <div class="form-inline">
+            <div class="form-group">
+                <label class="sr-only" for="host">
+                    Host
+                </label>
+                <input id="host"
                        type="text"
                        class="form-control"
-                       placeholder="Only required for key file auth..."
+                       placeholder="Hostname..."
+                       minlength="1" maxlength="128"
                 />
-                <span class="input-group-btn">
-            <button class="btn btn-default form-control" type="button">
-                Choose
-            </button>
-        </span>
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="port">
+                    Port
+                </label>
+                <input id="port"
+                       type="number"
+                       class="form-control"
+                       placeholder="Port..."
+                       minlength="1" maxlength="5"
+                />
             </div>
         </div>
 
-        <div class="form-group">
-            <label class="form-label" for="privateKeyPass">
-                Password
-            </label>
-            <input id="privateKeyPass"
-                   type="password"
+    </div>
+
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox" id="strictKeyChecking" /> Strict host key checking
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label class="form-control-label" for="user">
+            User
+        </label>
+
+        <input id="user"
+               type="text"
+               class="form-control"
+               placeholder="Username..."
+               minlength="1" maxlength="128"
+        />
+    </div>
+
+    <div class="form-group">
+        <label class="form-control-label" for="pass">
+            Pass
+        </label>
+
+        <input id="pass"
+               type="text"
+               class="form-control"
+               placeholder="Only required for pass authentication"
+               minlength="1" maxlength="128"
+        />
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="remotePath">
+            Remote Path
+        </label>
+        <input id="remotePath"
+               type="text"
+               class="form-control"
+               placeholder="The remote path to the database file..."
+        />
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="destinationPath">
+            Destination Path
+        </label>
+        <div class="input-group">
+            <input id="destinationPath"
+                   type="text"
                    class="form-control"
-                   placeholder="The password for your private key..."
+                   placeholder="The path of where the local instance will be saved..."
             />
+            <span class="input-group-btn">
+                <button class="btn btn-default form-control" type="button">
+                    Choose
+                </button>
+            </span>
         </div>
     </div>
-</div>
 
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div class="form-group">
-            <label class="form-control-label">
-                Proxy
-            </label>
-
-            <div class="form-inline">
-                <div class="form-group">
-                    <label class="sr-only" for="host">
-                        Proxy Host
-                    </label>
-                    <input id="proxyHost"
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="form-label" for="privateKey">
+                    Private Key
+                </label>
+                <div class="input-group">
+                    <input id="privateKey"
                            type="text"
                            class="form-control"
-                           placeholder="Proxy hostname..."
-                           minlength="1" maxlength="128"
+                           placeholder="Only required for key file auth..."
                     />
+                    <span class="input-group-btn">
+                <button class="btn btn-default form-control" type="button">
+                    Choose
+                </button>
+            </span>
                 </div>
-                <div class="form-group">
-                    <label class="sr-only" for="port">
-                        Proxy Port
-                    </label>
-                    <input id="proxyPort"
-                           type="number"
-                           class="form-control"
-                           placeholder="Proxy port..."
-                           minlength="1" maxlength="5"
-                    />
-                </div>
-                <div class="form-group">
-                    <label class="sr-only" for="port">
-                        Proxy Type
-                    </label>
-                    <select id="proxyType"
-                            type="number"
-                            class="form-control"
-                            placeholder="Proxy port..."
-                            minlength="1" maxlength="5"
-                    >
-                        <option>SOCKS4</option>
-                        <option>SOCKS5</option>
-                        <option>HTTP</option>
-                    </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="privateKeyPass">
+                    Password
+                </label>
+                <input id="privateKeyPass"
+                       type="password"
+                       class="form-control"
+                       placeholder="The password for your private key..."
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="form-control-label">
+                    Proxy
+                </label>
+
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="sr-only" for="host">
+                            Proxy Host
+                        </label>
+                        <input id="proxyHost"
+                               type="text"
+                               class="form-control"
+                               placeholder="Proxy hostname..."
+                               minlength="1" maxlength="128"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="port">
+                            Proxy Port
+                        </label>
+                        <input id="proxyPort"
+                               type="number"
+                               class="form-control"
+                               placeholder="Proxy port..."
+                               minlength="1" maxlength="5"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="port">
+                            Proxy Type
+                        </label>
+                        <select id="proxyType"
+                                type="number"
+                                class="form-control"
+                                placeholder="Proxy port..."
+                                minlength="1" maxlength="5"
+                        >
+                            <option>SOCKS4</option>
+                            <option>SOCKS5</option>
+                            <option>HTTP</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="form-group">
-    <label class="checkbox-inline">
-        <input type="checkbox" /> Save auth (key and password) to database
-    </label>
-</div>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox" /> Save auth (key and password) to database
+        </label>
+    </div>
 
-<div class="form-group">
+    <div class="form-group">
 
-    <button type="submit" class="btn btn-primary">
-        Open
-    </button>
+        <button type="submit" class="btn btn-primary">
+            Open
+        </button>
 
-    <button type="submit" class="btn btn-default">
-        Cancel
-    </button>
+        <button type="submit" class="btn btn-default">
+            Cancel
+        </button>
 
-</div>
+    </div>
+</form>
