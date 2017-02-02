@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.service.rest;
 
 import com.limpygnome.parrot.Controller;
+import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import com.limpygnome.parrot.service.AbstractService;
@@ -17,6 +18,8 @@ public class DatabaseService extends AbstractService
 {
     private static final Logger LOG = LogManager.getLogger(DatabaseService.class);
 
+    private FileComponent fileComponent;
+
     // The current database open...
     private Database database;
     private File currentFile;
@@ -24,6 +27,8 @@ public class DatabaseService extends AbstractService
     public DatabaseService(Controller controller)
     {
         super(controller);
+
+        this.fileComponent = new FileComponent();
     }
 
     /**
@@ -75,6 +80,10 @@ public class DatabaseService extends AbstractService
     public synchronized String open(String path, String password)
     {
         String result;
+
+        // Ensure path is fully resolved
+        // TODO: unit test resolving?
+        path = fileComponent.resolvePath(path);
 
         try
         {

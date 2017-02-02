@@ -5,6 +5,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
+import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.model.remote.DownloadSshOptions;
 import com.limpygnome.parrot.model.remote.FileStatus;
 import org.apache.logging.log4j.LogManager;
@@ -25,10 +26,12 @@ public class RemoteSshFileService
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
     private Map<String, FileStatus> fileStatusMap;
+    private FileComponent fileComponent;
 
     public RemoteSshFileService()
     {
         this.fileStatusMap = new HashMap<>();
+        this.fileComponent = new FileComponent();
     }
 
     public DownloadSshOptions createDownloadOptions(String randomToken, String host, int port, String user, String remotePath, String destinationPath)
@@ -77,15 +80,8 @@ public class RemoteSshFileService
             fileStatusMap.put(randomToken, new FileStatus());
         }
 
-        // Replace destination path ~/ with home directory
-        if (destinationPath.startsWith("~/") && destinationPath.length() > 2)
-        {
-            // TODO: test on windows, could be flawed...
-            String homeDirectory = System.getProperty("user.home");
-            String pathSeparator = System.getProperty("file.separator");
-
-            destinationPath = homeDirectory + pathSeparator + destinationPath.substring(2);
-        }
+        // Ensure path is fully resolved
+        destinationPath = fileComponent.resolvePath(destinationPath);
 
         LOG.info("transfer - {} - starting - options: {}", randomToken, options);
 
