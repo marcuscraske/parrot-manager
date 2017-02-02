@@ -9,6 +9,20 @@
 <form id="openRemoteSsh" [formGroup]="openForm" (ngSubmit)="open($event)" #form="ngForm">
     <div class="form-group">
 
+        <div class="form-group">
+            <label class="form-control-label" for="pass">
+                Name
+            </label>
+
+            <input id="name"
+                   formControlName="name"
+                   type="text"
+                   class="form-control"
+                   placeholder="The name of this remote sync configuration..."
+                   minlength="1" maxlength="128"
+            />
+        </div>
+
         <label class="form-control-label">
             Host
         </label>

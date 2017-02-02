@@ -4,7 +4,10 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
+import com.limpygnome.parrot.model.db.Database;
+import com.limpygnome.parrot.model.db.DatabaseNode;
 import org.apache.logging.log4j.util.Strings;
+import org.json.simple.JSONObject;
 
 /**
  * Options for downloading a remote SSH file.
@@ -14,6 +17,7 @@ public class DownloadSshOptions
     private String randomToken;
 
     // Mandatory
+    private String name;
     private String host;
     private int port;
     private String user;
@@ -31,15 +35,25 @@ public class DownloadSshOptions
     private int proxyPort;
     private String proxyType;
 
-
-    public DownloadSshOptions(String randomToken, String host, int port, String user, String remotePath, String destinationPath)
+    public DownloadSshOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
     {
         this.randomToken = randomToken;
+        this.name = name;
         this.host = host;
         this.port = port;
         this.user = user;
         this.remotePath = remotePath;
         this.destinationPath = destinationPath;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     public String getRandomToken()
@@ -202,23 +216,63 @@ public class DownloadSshOptions
         return result;
     }
 
+    /**
+     * Persists the current configuration to a database in the standard remote-sync format.
+     *
+     * TODO: unit test
+     * @param database the current database
+     * @throws Exception when cannot persist
+     */
+    public void persist(Database database) throws Exception
+    {
+        // TODO: need way to ban / reserve names, as multiple nodes can share same name...
+        // Should be saved to /remote-sync/<name> - overwrite by default
+        DatabaseNode root = database.getRoot();
+        DatabaseNode remoteSyncNode = root.getByName("remote-sync");
+
+        // Add node for remote-sync if it does not exist
+        if (remoteSyncNode == null)
+        {
+            remoteSyncNode = new DatabaseNode(database, "remote-sync");
+            root.add(remoteSyncNode);
+        }
+
+        // Fetch any nodes with same name, remove them
+        DatabaseNode similarNode = remoteSyncNode.getByName(name);
+
+        if (similarNode != null)
+        {
+            similarNode.remove();
+        }
+
+        // Serialize as JSON object
+        JSONObject json = new JSONObject();
+
+        // Store as node
+        DatabaseNode newNode = new DatabaseNode(database, name);
+        newNode.setValueJson(json);
+        remoteSyncNode.add(newNode);
+    }
+
     @Override
     public String toString()
     {
         return "DownloadSshOptions{" +
                 "randomToken='" + randomToken + '\'' +
+                ", name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
                 ", user='" + user + '\'' +
                 ", destinationPath='" + destinationPath + '\'' +
                 ", remotePath='" + remotePath + '\'' +
-                ", pass=" + (!Strings.isEmpty(pass)) +
+                ", pass='" + pass + '\'' +
                 ", strictHostKeyChecking=" + strictHostKeyChecking +
                 ", privateKeyPath='" + privateKeyPath + '\'' +
-                ", privateKeyPass='" + (!Strings.isEmpty(privateKeyPass)) +
+                ", privateKeyPass='" + privateKeyPass + '\'' +
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 ", proxyType='" + proxyType + '\'' +
                 '}';
     }
+
 }

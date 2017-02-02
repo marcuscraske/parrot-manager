@@ -14,6 +14,7 @@ export class OpenRemoteSshComponent {
     errorMessage : string;
 
     public openForm = this.fb.group({
+        name: [""]
         host: ["localhost", Validators.required],
         port: ["22", Validators.required],
         strictHostChecking : [""],
@@ -36,26 +37,43 @@ export class OpenRemoteSshComponent {
     {
         var form = this.openForm;
 
-        // Build random token for tracking download status
-        var randomToken = "not so random";
+        if (form.valid)
+        {
+            // Set default name if empty
+            var name = form.value["name"];
 
-        // Create download options
-        var options = this.remoteSshFileService.createDownloadOptions(
-            randomToken,
-            form.value["host"],
-            form.value["port"],
-            form.value["user"],
-            form.value["remotePath"],
-            form.value["destinationPath"]
-        );
+            if (name == null || name.length() == 0)
+            {
+                console.log("setting default name");
+                name = form.value["host"] + ":" + form.value["port"];
+            }
 
-        options.setPass(form.value["pass"]);
+            // Build random token for tracking download status
+            var randomToken = "not so random";
+
+            // Create download options
+            var options = this.remoteSshFileService.createDownloadOptions(
+                randomToken,
+                form.value["name"],
+                form.value["host"],
+                form.value["port"],
+                form.value["user"],
+                form.value["remotePath"],
+                form.value["destinationPath"]
+            );
+
+            options.setPass(form.value["pass"]);
 
 
-        // Perform download...
-        console.log("download options: " + options.toString());
-
-        this.performOpen(options);
+            // Perform download...
+            // TODO: consider converting to a promise with a loading box...
+            console.log("download options: " + options.toString());
+            this.performOpen(options);
+        }
+        else
+        {
+            console.log("form is not valid");
+        }
     }
 
     setFormDisabled(isDisabled)
@@ -87,6 +105,9 @@ export class OpenRemoteSshComponent {
                 }
                 else
                 {
+                    // Persist configuration to database
+
+                    // Navigate to viewer
                     this.router.navigate(["/viewer"]);
                 }
 

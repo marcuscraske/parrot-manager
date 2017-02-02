@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.joda.time.DateTime;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 /**
  * Represents a db in a database.
@@ -86,7 +88,7 @@ public class DatabaseNode
     /**
      * Creates a new db for unecrypted data, which is encrypted by this constructor.
      *
-     * @param database the DB to whcih this belongs
+     * @param database the DB to which this belongs
      * @param id unique identifier
      * @param name the name of this db
      * @param lastModified the epoch time at which this db was last modified
@@ -99,6 +101,17 @@ public class DatabaseNode
 
         // Encrypt the data
         this.value = database.encrypt(unecryptedData);
+    }
+
+    /**
+     * Creates a new node, using the current system time for last modified time and generates a random UUID.
+     *
+     * @param database the DB to which this belongs
+     * @param name the name of the node
+     */
+    public DatabaseNode(Database database, String name)
+    {
+        this(database, UUID.randomUUID(), name, System.currentTimeMillis());
     }
 
     /**
@@ -219,8 +232,39 @@ public class DatabaseNode
 
     /**
      * TODO: unit test
+     * @return json object, or null
+     * @throws Exception when crypto exception or cannot parse as JSON
+     */
+    public synchronized JSONObject getDecryptedValueJson() throws Exception
+    {
+        JSONObject result = null;
+        String text = getDecryptedValueString();
+
+        if (text != null)
+        {
+            JSONParser parser = new JSONParser();
+            result = (JSONObject) parser.parse(text);
+        }
+
+        return result;
+    }
+
+    /**
+     * TODO: unit test
+     * @param json the desired value
+     * @throws Exception when crypto exception
+     */
+    public synchronized void setValueJson(JSONObject json) throws Exception
+    {
+        // Convert to string and store
+        String text = json.toJSONString();
+        setValueString(text);
+    }
+
+    /**
+     * TODO: unit test
      * @param value the desired value
-     * @throws Exception thrown if crypto exception
+     * @throws Exception when crypto exception
      */
     public synchronized void setValueString(String value) throws Exception
     {
@@ -263,6 +307,32 @@ public class DatabaseNode
         childrenCached = childNodes.toArray(new DatabaseNode[childNodes.size()]);
 
         return childrenCached;
+    }
+
+    /**
+     * TODO: test
+     * @param name the name of the child node
+     * @return the instance, if found, or null
+     */
+    public synchronized DatabaseNode getByName(String name)
+    {
+        DatabaseNode result = null;
+
+        if (name != null)
+        {
+            DatabaseNode node;
+            for (int i = 0; result == null && i < childrenCached.length; i++)
+            {
+                node = childrenCached[i];
+
+                if (name.equals(node.getName()))
+                {
+                    result = node;
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -456,7 +526,7 @@ public class DatabaseNode
     }
 
     /**
-     * @return creates and adds a new node as a child
+     * @return creates a new instance and adds it as a child of this current node
      *
      * TODO: add tests
      */
