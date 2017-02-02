@@ -4,6 +4,7 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
+import org.apache.logging.log4j.util.Strings;
 
 /**
  * Options for downloading a remote SSH file.
@@ -201,4 +202,23 @@ public class DownloadSshOptions
         return result;
     }
 
+    @Override
+    public String toString()
+    {
+        return "DownloadSshOptions{" +
+                "randomToken='" + randomToken + '\'' +
+                ", host='" + host + '\'' +
+                ", port=" + port +
+                ", user='" + user + '\'' +
+                ", destinationPath='" + destinationPath + '\'' +
+                ", remotePath='" + remotePath + '\'' +
+                ", pass=" + (!Strings.isEmpty(pass)) +
+                ", strictHostKeyChecking=" + strictHostKeyChecking +
+                ", privateKeyPath='" + privateKeyPath + '\'' +
+                ", privateKeyPass='" + (!Strings.isEmpty(privateKeyPass)) +
+                ", proxyHost='" + proxyHost + '\'' +
+                ", proxyPort=" + proxyPort +
+                ", proxyType='" + proxyType + '\'' +
+                '}';
+    }
 }

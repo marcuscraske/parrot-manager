@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import "app/global-vars"
+
 @Injectable()
 export class DatabaseService
 {
@@ -21,6 +23,48 @@ export class DatabaseService
     open(path, password) : string
     {
         return this.databaseService.open(path, password);
+    }
+
+    openWithPrompt(path, successCallback) : void
+    {
+        if (path != null)
+        {
+            // Prompt for database password...
+            console.log("prompting for database password... - path: " + path);
+
+            bootbox.prompt({
+                title: "Enter password:",
+                inputType: "password",
+                callback: (password) => {
+                    console.log("password entered, opening database file...");
+                    this.openWithPassword(path, password, successCallback);
+                }
+            });
+        }
+        else
+        {
+            console.log("no path received from prompt, must have cancelled");
+        }
+    }
+
+    openWithPassword(path, password, successCallback) : void
+    {
+        var message;
+
+        if (path != null && password != null)
+        {
+            // Open database
+            console.log("opening database... - path: " + path);
+            message = this.databaseService.open(path, password);
+        }
+        else
+        {
+            console.log("path or password null, ignoring request to open database file");
+            message = "Invalid password";
+        }
+
+        // Invoking callback with message
+        successCallback(message);
     }
 
     save() : string
