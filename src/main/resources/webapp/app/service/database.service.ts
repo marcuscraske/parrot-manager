@@ -163,4 +163,10 @@ export class DatabaseService
         return node;
     }
 
+    getDatabase() : any
+    {
+        var database = this.databaseService.getDatabase();
+        return database;
+    }
+
 }

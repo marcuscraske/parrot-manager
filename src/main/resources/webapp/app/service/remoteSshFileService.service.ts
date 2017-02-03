@@ -10,9 +10,16 @@ export class RemoteSshFileService {
         this.remoteSshFileService = (window as any).remoteSshFileService;
     }
 
-    createDownloadOptions(randomToken, host, port, user, remotePath, destinationPath)
+    createOptions(randomToken, name, host, port, user, remotePath, destinationPath)
     {
-        return this.remoteSshFileService.createDownloadOptions(randomToken, host, port, user, remotePath, destinationPath);
+        var options = this.remoteSshFileService.createOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+        return options;
+    }
+
+    createOptionsFromNode(node)
+    {
+        var options = this.remoteSshFileService.createOptionsFromNode(node);
+        return options;
     }
 
     getStatus(randomToken)

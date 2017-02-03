@@ -6,7 +6,9 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
 import com.limpygnome.parrot.component.FileComponent;
-import com.limpygnome.parrot.model.remote.DownloadSshOptions;
+import com.limpygnome.parrot.model.db.Database;
+import com.limpygnome.parrot.model.db.DatabaseNode;
+import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.FileStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,8 +27,8 @@ public class RemoteSshFileService
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
-    private Map<String, FileStatus> fileStatusMap;
     private FileComponent fileComponent;
+    private Map<String, FileStatus> fileStatusMap;
 
     public RemoteSshFileService()
     {
@@ -34,9 +36,35 @@ public class RemoteSshFileService
         this.fileComponent = new FileComponent();
     }
 
-    public DownloadSshOptions createDownloadOptions(String randomToken, String host, int port, String user, String remotePath, String destinationPath)
+    /**
+     * Creates options from a set of mandatory values.
+     *
+     * @param randomToken a random token for retrieving the download/upload status, equivalent to e.g. a ticket or tx id
+     * @param name the name of the options, used later for persistence
+     * @param host the remote host
+     * @param port the remote port
+     * @param user the remote logon user
+     * @param remotePath the remote path of the database
+     * @param destinationPath the local path of where to save a local copy of the database
+     * @return a new instance
+     */
+    public SshOptions createOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
     {
-        return new DownloadSshOptions(randomToken, host, port, user, remotePath, destinationPath);
+        return new SshOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+    }
+
+    /**
+     * Creates options from a database node, which is under the standard remote-sync key and saved in the standard
+     * JSON format.
+     *
+     * @param node the node with remote-sync config saved as its value
+     * @return the options
+     * @throws Exception {@see SshOptions}
+     */
+    public SshOptions createOptionsFromNode(DatabaseNode node) throws Exception
+    {
+        SshOptions options = SshOptions.read(node);
+        return options;
     }
 
     /**
@@ -66,7 +94,7 @@ public class RemoteSshFileService
      * @param options the config for a download
      * @return error message, otherwise null if successful
      */
-    public String download(DownloadSshOptions options)
+    public String download(SshOptions options)
     {
         String result = null;
 

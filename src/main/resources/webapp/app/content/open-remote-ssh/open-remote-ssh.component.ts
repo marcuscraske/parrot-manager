@@ -14,7 +14,7 @@ export class OpenRemoteSshComponent {
     errorMessage : string;
 
     public openForm = this.fb.group({
-        name: [""]
+        name: [""],
         host: ["localhost", Validators.required],
         port: ["22", Validators.required],
         strictHostChecking : [""],
@@ -42,17 +42,17 @@ export class OpenRemoteSshComponent {
             // Set default name if empty
             var name = form.value["name"];
 
-            if (name == null || name.length() == 0)
+            if (name == null || !name.length)
             {
                 console.log("setting default name");
-                name = form.value["host"] + ":" + form.value["port"];
+                form.value["name"] = form.value["host"] + ":" + form.value["port"];
             }
 
             // Build random token for tracking download status
             var randomToken = "not so random";
 
             // Create download options
-            var options = this.remoteSshFileService.createDownloadOptions(
+            var options = this.remoteSshFileService.createOptions(
                 randomToken,
                 form.value["name"],
                 form.value["host"],
@@ -62,6 +62,7 @@ export class OpenRemoteSshComponent {
                 form.value["destinationPath"]
             );
 
+            // TODO: set rest of values
             options.setPass(form.value["pass"]);
 
 
@@ -105,7 +106,8 @@ export class OpenRemoteSshComponent {
                 }
                 else
                 {
-                    // Persist configuration to database
+                    // Persist options
+                    options.persist(this.databaseService.getDatabase());
 
                     // Navigate to viewer
                     this.router.navigate(["/viewer"]);
