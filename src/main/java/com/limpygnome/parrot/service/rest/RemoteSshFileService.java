@@ -3,10 +3,10 @@ package com.limpygnome.parrot.service.rest;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
 import com.limpygnome.parrot.component.FileComponent;
-import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.db.DatabaseNode;
 import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.FileStatus;
@@ -129,14 +129,14 @@ public class RemoteSshFileService
             // Disable strict host checking (if not enabled)
             Properties properties = new Properties();
 
-            if (!options.isStrictHostKeyChecking())
+            if (!options.isStrictHostChecking())
             {
                 properties.put("StrictHostKeyChecking", "no");
             }
 
             // Connect to host...
             session = jsch.getSession(options.getUser(), options.getHost(), options.getPort());
-            session.setPassword(options.getPass());
+            session.setPassword(options.getUserPass());
             session.setConfig(properties);
             session.setProxy(options.getProxy());
 
@@ -209,8 +209,16 @@ public class RemoteSshFileService
         }
         catch (Exception e)
         {
+            String message = e.getMessage();
+
+            // Improved error messages
+            if (e instanceof JSchException && "Auth fail".equals(message))
+            {
+                message = "Auth failed - unable to connect using specified credentials";
+            }
+
             LOG.error("transfer - {} - failed", randomToken, e);
-            result = e.getMessage();
+            result = message;
         }
         finally
         {

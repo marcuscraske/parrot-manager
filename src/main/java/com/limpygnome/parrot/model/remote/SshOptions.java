@@ -6,17 +6,18 @@ import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
 import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.db.DatabaseNode;
-import org.apache.logging.log4j.util.Strings;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.io.Serializable;
 
 /**
  * Options for downloading a remote SSH file.
  *
  * TODO: unit test
  */
-public class SshOptions
+public class SshOptions implements Serializable, Cloneable
 {
     private String randomToken;
 
@@ -29,8 +30,7 @@ public class SshOptions
     private String remotePath;
 
     // Optional - auth
-    private String pass;
-    private boolean strictHostKeyChecking;
+    private String userPass;
     private String privateKeyPath;
     private String privateKeyPass;
 
@@ -38,6 +38,12 @@ public class SshOptions
     private String proxyHost;
     private int proxyPort;
     private String proxyType;
+
+    // Options
+    private boolean promptUserPass;
+    private boolean promptKeyPass;
+    private boolean strictHostChecking;
+    private boolean saveAuth;
 
     public SshOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
     {
@@ -120,24 +126,24 @@ public class SshOptions
         this.remotePath = remotePath;
     }
 
-    public String getPass()
+    public String getUserPass()
     {
-        return pass;
+        return userPass;
     }
 
-    public void setPass(String pass)
+    public void setUserPass(String userPass)
     {
-        this.pass = pass;
+        this.userPass = userPass;
     }
 
-    public boolean isStrictHostKeyChecking()
+    public boolean isStrictHostChecking()
     {
-        return strictHostKeyChecking;
+        return strictHostChecking;
     }
 
-    public void setStrictHostKeyChecking(boolean strictHostKeyChecking)
+    public void setStrictHostChecking(boolean strictHostChecking)
     {
-        this.strictHostKeyChecking = strictHostKeyChecking;
+        this.strictHostChecking = strictHostChecking;
     }
 
     public boolean isPrivateKey()
@@ -199,10 +205,12 @@ public class SshOptions
     {
         Proxy result = null;
 
-        if (proxyType != null)
+        if (proxyType != null && proxyType.length() > 0)
         {
             switch (proxyType)
             {
+                case "None":
+                    break;
                 case "SOCKS4":
                     result = new ProxySOCKS4(proxyHost, proxyPort);
                     break;
@@ -218,6 +226,36 @@ public class SshOptions
         }
 
         return result;
+    }
+
+    public boolean isSaveAuth()
+    {
+        return saveAuth;
+    }
+
+    public void setSaveAuth(boolean saveAuth)
+    {
+        this.saveAuth = saveAuth;
+    }
+
+    public boolean isPromptUserPass()
+    {
+        return promptUserPass;
+    }
+
+    public void setPromptUserPass(boolean promptUserPass)
+    {
+        this.promptUserPass = promptUserPass;
+    }
+
+    public boolean isPromptKeyPass()
+    {
+        return promptKeyPass;
+    }
+
+    public void setPromptKeyPass(boolean promptKeyPass)
+    {
+        this.promptKeyPass = promptKeyPass;
     }
 
     /**
@@ -268,9 +306,18 @@ public class SshOptions
             similarNode.remove();
         }
 
+        // Create new instance, wipe auth if needed
+        SshOptions clone = (SshOptions) this.clone();
+
+        if (!saveAuth)
+        {
+            clone.setUserPass(null);
+            clone.setPrivateKeyPass(null);
+        }
+
         // Serialize as JSON string
         ObjectMapper mapper = new ObjectMapper();
-        String rawJson = mapper.writeValueAsString(this);
+        String rawJson = mapper.writeValueAsString(clone);
 
         // Parse as JSON for sanity
         // TODO: we could just use pretty printer and save to node as string, may be a lot less efficient doing this...
@@ -286,7 +333,7 @@ public class SshOptions
     @Override
     public String toString()
     {
-        return "DownloadSshOptions{" +
+        return "SshOptions{" +
                 "randomToken='" + randomToken + '\'' +
                 ", name='" + name + '\'' +
                 ", host='" + host + '\'' +
@@ -294,13 +341,14 @@ public class SshOptions
                 ", user='" + user + '\'' +
                 ", destinationPath='" + destinationPath + '\'' +
                 ", remotePath='" + remotePath + '\'' +
-                ", pass='" + pass + '\'' +
-                ", strictHostKeyChecking=" + strictHostKeyChecking +
+                ", pass='" + userPass + '\'' +
+                ", strictHostChecking=" + strictHostChecking +
                 ", privateKeyPath='" + privateKeyPath + '\'' +
                 ", privateKeyPass='" + privateKeyPass + '\'' +
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 ", proxyType='" + proxyType + '\'' +
+                ", saveAuth=" + saveAuth +
                 '}';
     }
 

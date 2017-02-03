@@ -58,10 +58,7 @@
 
     <div class="form-group">
         <label class="checkbox-inline">
-            <input type="checkbox"
-                   id="strictHostChecking"
-                   formControlName="strictHostChecking"
-            />
+            <input type="checkbox" id="strictHostChecking" formControlName="strictHostChecking" />
             Strict host key checking
         </label>
     </div>
@@ -81,12 +78,12 @@
     </div>
 
     <div class="form-group">
-        <label class="form-control-label" for="pass">
+        <label class="form-control-label" for="userPass">
             Pass
         </label>
 
-        <input id="pass"
-               formControlName="pass"
+        <input id="userPass"
+               formControlName="userPass"
                type="password"
                class="form-control"
                placeholder="Only required for pass authentication"
@@ -203,6 +200,7 @@
                                 placeholder="Proxy port..."
                                 minlength="1" maxlength="5"
                         >
+                            <option>None</option>
                             <option>SOCKS4</option>
                             <option>SOCKS5</option>
                             <option>HTTP</option>
@@ -215,11 +213,16 @@
 
     <div class="form-group">
         <label class="checkbox-inline">
-            <input type="checkbox"
-                   id="saveAuth"
-                   formControlName="saveAuth"
-            />
+            <input type="checkbox" id="saveAuth" formControlName="saveAuth" />
             Save auth (key and password) to database
+        </label>
+        <label class="checkbox-inline" *ngIf="!openForm.value['saveAuth']">
+            <input type="checkbox" id="promptUserPass" formControlName="promptPass" />
+            Prompt for user password
+        </label>
+        <label class="checkbox-inline" *ngIf="!openForm.value['saveAuth']">
+            <input type="checkbox"  id="promptKeyPass" formControlName="promptKeyPass" />
+            Prompt for key password
         </label>
     </div>
 

@@ -19,7 +19,7 @@ export class OpenRemoteSshComponent {
         port: ["22", Validators.required],
         strictHostChecking : [""],
         user : ["limpygnome", Validators.required],
-        pass : ["test123"],
+        userPass : ["test123"],
         remotePath : ["~/git-remote/parrot/test.parrot", Validators.required],
         destinationPath : ["~/sync.parrot", Validators.required],
         privateKey : [""],
@@ -27,7 +27,9 @@ export class OpenRemoteSshComponent {
         proxyHost : [""],
         proxyPort : [""],
         proxyType : [""],
-        saveAuth : [""]
+        saveAuth : [""],
+        promptPass : [""],
+        promptKeyPass : [""]
     });
 
     constructor(private remoteSshFileService: RemoteSshFileService, private databaseService: DatabaseService,
@@ -62,9 +64,16 @@ export class OpenRemoteSshComponent {
                 form.value["destinationPath"]
             );
 
-            // TODO: set rest of values
-            options.setPass(form.value["pass"]);
-
+            options.setStrictHostChecking(form.value["strictHostChecking"]);
+            options.setUserPass(form.value["userPass"]);
+            options.setPrivateKeyPath(form.value["privateKey"]);
+            options.setPrivateKeyPass(form.value["privateKeyPass"]);
+            options.setProxyHost(form.value["proxyHost"]);
+            options.setProxyPort(form.value["proxyPort"]);
+            options.setProxyType(form.value["proxyType"]);
+            options.setSaveAuth(form.value["saveAuth"]);
+            options.setPromptUserPass(form.value["promptUserPass"]);
+            options.setPromptKeyPass(form.value["promptKeyPass"]);
 
             // Perform download...
             // TODO: consider converting to a promise with a loading box...
@@ -87,29 +96,89 @@ export class OpenRemoteSshComponent {
         // Disable form
         this.setFormDisabled(true);
 
-        // Request download in promise
+        // Begin chain to async prompt for passwords
+        this.chainPromptUserPass(options);
+    }
+
+    chainPromptUserPass(options)
+    {
+        if (options.isPromptUserPass())
+        {
+            bootbox.prompt({
+                title: "Enter SSH user password:",
+                inputType: "password",
+                callback: (password) => {
+                    // Update options
+                    options.setUserPass(password);
+
+                    // Continue next stage in the chain...
+                    console.log("continuing to key pass chain...");
+                    this.chainPromptKeyPass(options);
+                }
+            });
+        }
+        else
+        {
+            this.chainPromptKeyPass(options);
+        }
+    }
+
+    chainPromptKeyPass(options)
+    {
+        if (options.isPromptUserPass())
+        {
+            bootbox.prompt({
+                title: "Enter key password:",
+                inputType: "password",
+                callback: (password) => {
+                    // Update options
+                    options.setKeyPass(password);
+
+                    // Continue next stage in the chain...
+                    console.log("continuing to perform actual download and open...");
+                    this.performDownloadAndOpen(options);
+                }
+            });
+        }
+        else
+        {
+            this.performDownloadAndOpen(options);
+        }
+    }
+
+    performDownloadAndOpen(options)
+    {
+        console.log("going to start download of remote database...");
+
+        // Request download...
         this.errorMessage = this.remoteSshFileService.download(options);
 
         // Check if download failed...
         if (this.errorMessage != null)
         {
             this.setFormDisabled(false);
+            console.log("download failed - " + this.errorMessage);
         }
         else
         {
+            console.log("downloaded file, now performing async prompt for database password...");
+
             // Attempt to open file
             this.databaseService.openWithPrompt(options.getDestinationPath(), (message) => {
 
                 if (message != null)
                 {
+                    console.log("failed to open database - " + message);
                     this.errorMessage = message;
                 }
                 else
                 {
                     // Persist options
+                    console.log("persisting options");
                     options.persist(this.databaseService.getDatabase());
 
                     // Navigate to viewer
+                    console.log("navigating to viewer...");
                     this.router.navigate(["/viewer"]);
                 }
 
