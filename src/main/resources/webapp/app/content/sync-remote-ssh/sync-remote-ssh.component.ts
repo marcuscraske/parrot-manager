@@ -26,8 +26,8 @@ export class SyncRemoteSshComponent {
        proxyPort : [""],
        proxyType : ["None"],
        saveAuth : [true],
-       promptUserPass : [false],
-       promptKeyPass : [false]
+       promptUserPass : [true],
+       promptKeyPass : [true]
     });
 
     errorMessage : string;
@@ -224,6 +224,7 @@ export class SyncRemoteSshComponent {
         }
     }
 
+    /* Updates prompt checkboxes to be true if a value is specified for user or key pass; helps assisting the user. */
     updatePromptForPasswordCheckboxes()
     {
         var form = this.openForm;
@@ -231,8 +232,15 @@ export class SyncRemoteSshComponent {
         var isUserPassNotEmpty = (form.value["userPass"] != "");
         var isKeyPassNotEmpty = (form.value["privateKeyPass"] != "");
 
-        form.value["promptUserPass"] = isUserPassNotEmpty;
-        form.value["promptKeyPass"] = isKeyPassNotEmpty;
+        if (isUserPassNotEmpty)
+        {
+            form.value["promptUserPass"] = true;
+        }
+
+        if (isKeyPassNotEmpty)
+        {
+            form.value["promptKeyPass"] = true;
+        }
 
         console.log("updated prompt options - user pass: " + form.value["promptUserPass"] + ", key pass: " + form.value["promptKeyPass"]);
     }
