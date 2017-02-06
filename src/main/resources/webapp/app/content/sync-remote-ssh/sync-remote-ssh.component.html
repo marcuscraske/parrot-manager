@@ -92,6 +92,7 @@
                class="form-control"
                placeholder="Only required for pass authentication"
                minlength="1" maxlength="128"
+               (change)="updatePromptForPasswordCheckboxes()"
         />
     </div>
 
@@ -156,6 +157,7 @@
                        type="password"
                        class="form-control"
                        placeholder="The password for your private key..."
+                       (change)="updatePromptForPasswordCheckboxes()"
                 />
             </div>
         </div>
@@ -216,15 +218,15 @@
 
     <div class="form-group">
         <label class="checkbox-inline">
-            <input type="checkbox" id="saveAuth" formControlName="saveAuth" />
+            <input type="checkbox" id="saveAuth" formControlName="saveAuth" (change)="updatePromptForPasswordCheckboxes()" />
             Save auth (key and password) to database
         </label>
-        <label class="checkbox-inline" *ngIf="!openForm.value['saveAuth']">
-            <input type="checkbox" id="promptUserPass" formControlName="promptPass" />
+        <label class="checkbox-inline" *ngIf="!openForm.value['saveAuth']d">
+            <input type="checkbox" id="promptUserPass" formControlName="promptUserPass" [(ngModel)]="openForm.value['promptUserPass']" />
             Prompt for user password
         </label>
         <label class="checkbox-inline" *ngIf="!openForm.value['saveAuth']">
-            <input type="checkbox"  id="promptKeyPass" formControlName="promptKeyPass" />
+            <input type="checkbox" id="promptKeyPass" formControlName="promptKeyPass" [(ngModel)]="openForm.value['promptKeyPass']" />
             Prompt for key password
         </label>
     </div>

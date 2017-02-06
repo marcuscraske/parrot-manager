@@ -33,7 +33,7 @@ export class DatabaseService
             console.log("prompting for database password... - path: " + path);
 
             bootbox.prompt({
-                title: "Enter password:",
+                title: "Enter database password:",
                 inputType: "password",
                 callback: (password) => {
                     console.log("password entered, opening database file...");
@@ -60,7 +60,7 @@ export class DatabaseService
         else
         {
             console.log("path or password null, ignoring request to open database file");
-            message = "Invalid password";
+            message = "Invalid database password";
         }
 
         // Invoking callback with message

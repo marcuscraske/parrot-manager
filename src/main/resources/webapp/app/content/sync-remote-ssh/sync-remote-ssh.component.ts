@@ -25,9 +25,9 @@ export class SyncRemoteSshComponent {
        proxyHost : [""],
        proxyPort : [""],
        proxyType : ["None"],
-       saveAuth : ["true"],
-       promptPass : [""],
-       promptKeyPass : [""]
+       saveAuth : [true],
+       promptUserPass : [false],
+       promptKeyPass : [false]
     });
 
     errorMessage : string;
@@ -48,6 +48,9 @@ export class SyncRemoteSshComponent {
            console.log("current node changed: " + this.currentNode);
 
            // TODO: populate form here for existing config...
+
+           // Update prompt options
+           this.updatePromptForPasswordCheckboxes();
         });
     }
 
@@ -69,17 +72,6 @@ export class SyncRemoteSshComponent {
             {
                 console.log("setting default name");
                 form.value["name"] = form.value["host"] + ":" + form.value["port"];
-            }
-
-            // Override prompts if passwords specified
-            if (form.value["userPass"].length > 0)
-            {
-                form.value["promptPass"] = true;
-            }
-
-            if (form.value["privateKeyPass"].length > 0)
-            {
-                form.value["promptKeyPass"] = true;
             }
 
             // Build random token for tracking download status
@@ -104,8 +96,8 @@ export class SyncRemoteSshComponent {
             options.setProxyPort(form.value["proxyPort"]);
             options.setProxyType(form.value["proxyType"]);
             options.setSaveAuth(form.value["saveAuth"]);
-            options.setPromptUserPass(form.value["promptUserPass"]);
-            options.setPromptKeyPass(form.value["promptKeyPass"]);
+            options.setPromptUserPass(form.value["saveAuth"] || form.value["promptUserPass"]);
+            options.setPromptKeyPass(form.value["saveAuth"] || form.value["promptKeyPass"]);
 
             // Perform download...
             // TODO: consider converting to a promise with a loading box...
@@ -230,6 +222,19 @@ export class SyncRemoteSshComponent {
         {
             this.router.navigate(["/open"]);
         }
+    }
+
+    updatePromptForPasswordCheckboxes()
+    {
+        var form = this.openForm;
+
+        var isUserPassNotEmpty = (form.value["userPass"] != "");
+        var isKeyPassNotEmpty = (form.value["privateKeyPass"] != "");
+
+        form.value["promptUserPass"] = isUserPassNotEmpty;
+        form.value["promptKeyPass"] = isKeyPassNotEmpty;
+
+        console.log("updated prompt options - user pass: " + form.value["promptUserPass"] + ", key pass: " + form.value["promptKeyPass"]);
     }
 
 }
