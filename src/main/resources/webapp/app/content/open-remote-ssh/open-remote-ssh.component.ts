@@ -170,6 +170,7 @@ export class OpenRemoteSshComponent {
                 {
                     console.log("failed to open database - " + message);
                     this.errorMessage = message;
+                    this.setFormDisabled(false);
                 }
                 else
                 {
