@@ -6,6 +6,7 @@ import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
 import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.db.DatabaseNode;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,6 +27,9 @@ public class SshOptions implements Serializable, Cloneable
     private String host;
     private int port;
     private String user;
+    // -- Don't serialize the local/destination path, allow database to be dynamically moved around, as this is
+    //    stored in the database service during runtime
+    @JsonIgnore
     private String destinationPath;
     private String remotePath;
 

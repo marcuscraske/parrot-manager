@@ -2,38 +2,59 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     moduleId: module.id,
-    templateUrl: 'open-remote-ssh.component.html',
+    templateUrl: 'sync-remote-ssh.component.html',
     providers: [RemoteSshFileService, DatabaseService]
 })
-export class OpenRemoteSshComponent {
+export class SyncRemoteSshComponent {
+
+    public openForm = this.fb.group({
+       name: [""],
+       host: ["localhost", Validators.required],
+       port: ["22", Validators.required],
+       strictHostChecking : ["false"],
+       user : ["limpygnome", Validators.required],
+       userPass : ["test123"],
+       remotePath : ["~/git-remote/parrot/test.parrot", Validators.required],
+       destinationPath : ["~/sync.parrot", Validators.required],
+       privateKey : [""],
+       privateKeyPass : [""],
+       proxyHost : [""],
+       proxyPort : [""],
+       proxyType : ["None"],
+       saveAuth : ["true"],
+       promptPass : [""],
+       promptKeyPass : [""]
+    });
 
     errorMessage : string;
 
-    public openForm = this.fb.group({
-        name: [""],
-        host: ["localhost", Validators.required],
-        port: ["22", Validators.required],
-        strictHostChecking : [""],
-        user : ["limpygnome", Validators.required],
-        userPass : ["test123"],
-        remotePath : ["~/git-remote/parrot/test.parrot", Validators.required],
-        destinationPath : ["~/sync.parrot", Validators.required],
-        privateKey : [""],
-        privateKeyPass : [""],
-        proxyHost : [""],
-        proxyPort : [""],
-        proxyType : [""],
-        saveAuth : [""],
-        promptPass : [""],
-        promptKeyPass : [""]
-    });
+    // Observable subscription for params
+    subParams: any;
+
+    // The name (key stored under remote-sync) of the current node being changed; passed by routing config
+    currentNode : string;
 
     constructor(private remoteSshFileService: RemoteSshFileService, private databaseService: DatabaseService,
-                private router: Router, public fb: FormBuilder) { }
+                private router: Router, public fb: FormBuilder, private route: ActivatedRoute) { }
+
+    ngOnInit()
+    {
+        this.subParams = this.route.params.subscribe(params => {
+           this.currentNode = params['currentNode'];
+           console.log("current node changed: " + this.currentNode);
+
+           // TODO: populate form here for existing config...
+        });
+    }
+
+    ngOnDestroy()
+    {
+        this.subParams.unsubscribe();
+    }
 
     open(event)
     {
@@ -48,6 +69,17 @@ export class OpenRemoteSshComponent {
             {
                 console.log("setting default name");
                 form.value["name"] = form.value["host"] + ":" + form.value["port"];
+            }
+
+            // Override prompts if passwords specified
+            if (form.value["userPass"].length > 0)
+            {
+                form.value["promptPass"] = true;
+            }
+
+            if (form.value["privateKeyPass"].length > 0)
+            {
+                form.value["promptKeyPass"] = true;
             }
 
             // Build random token for tracking download status
@@ -184,6 +216,19 @@ export class OpenRemoteSshComponent {
                 }
 
             });
+        }
+    }
+
+    /* Handler for cancel button (navigates to appropriate previous page in flow */
+    actionCancel()
+    {
+        if (this.currentNode != null)
+        {
+            this.router.navigate(["/remote-sync"]);
+        }
+        else
+        {
+            this.router.navigate(["/open"]);
         }
     }
 
