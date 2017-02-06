@@ -5,6 +5,10 @@
         <meta charset="UTF-8">
         <base href="/">
 
+        <title>
+            parrot
+        </title>
+
         <!-- prevent device scaling -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -53,6 +57,20 @@
                     <span class="icon icon-cog"></span>
                     loading...
                 </div>
+
+                <div style="opacity: 0.01">
+                    <!--
+                        Fix for suspected common native Webkit bug across JDKs.
+
+                        Observed on two machines with JDK 1.8.0_111 (Oracle).
+
+                        Seems potentially similar to the following OpenJDK bugs:
+                        - https://bugs.openjdk.java.net/browse/JDK-8129800
+                        - https://bugs.openjdk.java.net/browse/JDK-8112328
+                    -->
+                    <input type="checkbox" checked="checked" />
+                </div>
+
             </my-app>
         </div>
 

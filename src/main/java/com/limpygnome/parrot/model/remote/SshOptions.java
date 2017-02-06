@@ -47,7 +47,6 @@ public class SshOptions implements Serializable, Cloneable
     private boolean promptUserPass;
     private boolean promptKeyPass;
     private boolean strictHostChecking;
-    private boolean saveAuth;
 
     public SshOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
     {
@@ -232,16 +231,6 @@ public class SshOptions implements Serializable, Cloneable
         return result;
     }
 
-    public boolean isSaveAuth()
-    {
-        return saveAuth;
-    }
-
-    public void setSaveAuth(boolean saveAuth)
-    {
-        this.saveAuth = saveAuth;
-    }
-
     public boolean isPromptUserPass()
     {
         return promptUserPass;
@@ -310,14 +299,8 @@ public class SshOptions implements Serializable, Cloneable
             similarNode.remove();
         }
 
-        // Create new instance, wipe auth if needed
+        // Create new instance
         SshOptions clone = (SshOptions) this.clone();
-
-        if (!saveAuth)
-        {
-            clone.setUserPass(null);
-            clone.setPrivateKeyPass(null);
-        }
 
         // Serialize as JSON string
         ObjectMapper mapper = new ObjectMapper();
@@ -345,14 +328,15 @@ public class SshOptions implements Serializable, Cloneable
                 ", user='" + user + '\'' +
                 ", destinationPath='" + destinationPath + '\'' +
                 ", remotePath='" + remotePath + '\'' +
-                ", pass='" + userPass + '\'' +
-                ", strictHostChecking=" + strictHostChecking +
+                ", userPass='" + userPass + '\'' +
                 ", privateKeyPath='" + privateKeyPath + '\'' +
                 ", privateKeyPass='" + privateKeyPass + '\'' +
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 ", proxyType='" + proxyType + '\'' +
-                ", saveAuth=" + saveAuth +
+                ", promptUserPass=" + promptUserPass +
+                ", promptKeyPass=" + promptKeyPass +
+                ", strictHostChecking=" + strictHostChecking +
                 '}';
     }
 
