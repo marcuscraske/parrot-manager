@@ -38,11 +38,11 @@ public class RuntimeService
     }
 
     /**
-     * Refreshes/reloads the current page.
+     * Loads specified URL.
      */
-    public void refreshPage()
+    public void loadPage(String currentUrl)
     {
-        stage.refreshPage();
+        stage.loadPage(currentUrl);
     }
 
     /**

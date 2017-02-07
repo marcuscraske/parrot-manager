@@ -33,7 +33,7 @@
         </div>
 
         <div class="development" *ngIf="runtimeService.isDevelopmentMode()">
-            <a title="Refresh" (click)="runtimeService.refreshPage()">
+            <a title="Refresh" (click)="runtimeService.refreshPage(router.url)">
                 <span class="icon icon-loop2"></span>
             </a>
         </div>

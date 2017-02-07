@@ -31,7 +31,24 @@ class LocalResourceStreamHandler extends URLStreamHandler
      */
     private static final String LOCAL_RESOURCES_BASE_PATH = "webapp/";
 
+    /*
+        The base file path of where resources are read for requests during development mode.
+
+        This should be a path of actively transpiled assets.
+     */
     private static final String DEVELOPMENT_RESOURCES_BASE_PATH = "src/main/resources/webapp/";
+
+    /*
+        The pattern for URLs to not be rewritten.
+     */
+    private static final String DONT_REWRITE_PATTERN = ".";
+
+    /*
+        The URL for rewritten requests when DONT_REWRITE_PATTTERN is not matched.
+
+        This is for AngularJS routing.
+     */
+    private static final String REWRITTEN_URL = "http://localhost/index.html";
 
     /*
         Used to change the location from where resources are loaded.
@@ -57,6 +74,11 @@ class LocalResourceStreamHandler extends URLStreamHandler
 
             if (requestedUrl != null && requestedUrl.startsWith(LOCAL_URL_REQUESTS))
             {
+                // See if to rewrite to index.html...
+                if (!requestedUrl.contains(DONT_REWRITE_PATTERN)) {
+                    requestedUrl = REWRITTEN_URL;
+                }
+
                 // Convert to relative path
                 String classPathUrl = requestedUrl.substring(LOCAL_URL_REQUESTS.length());
 

@@ -215,12 +215,12 @@ public class WebViewStage extends Stage
     }
 
     /**
-     * Refreshes/reloads the current page.
+     * Loads specified URL.
      */
-    public void refreshPage()
+    public void loadPage(String url)
     {
-        String currentUrl = webView.getEngine().getLocation();
-        webView.getEngine().load(currentUrl);
+        LOG.info("loading page - url: {}", url);
+        webView.getEngine().load(url);
     }
 
 }

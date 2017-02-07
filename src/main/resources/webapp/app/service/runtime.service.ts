@@ -81,9 +81,9 @@ export class RuntimeService {
         return this.runtimeService.isDevelopmentMode();
     }
 
-    refreshPage()
+    refreshPage(relativeCurrentUrl)
     {
-        this.runtimeService.refreshPage();
+        this.runtimeService.loadPage("http://localhost" + relativeCurrentUrl);
     }
 
 }
