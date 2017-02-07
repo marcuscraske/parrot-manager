@@ -7,6 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 @Component({
     moduleId: module.id,
     templateUrl: 'remote-sync.component.html',
+    styleUrls: ['remote-sync.component.css'],
     providers: [RemoteSshFileService, DatabaseService]
 })
 export class RemoteSyncComponent {

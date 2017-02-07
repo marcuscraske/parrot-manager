@@ -1,0 +1,14 @@
+table.remote-sync tr td
+{
+    white-space: nowrap;
+}
+
+table.remote-sync tr td:nth-child(2)
+{
+    width: 50%;
+}
+
+table.remote-sync tr td:nth-child(3)
+{
+    width: 50%;
+}
