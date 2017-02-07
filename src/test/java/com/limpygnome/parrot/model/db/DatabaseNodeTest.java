@@ -39,7 +39,7 @@ public class DatabaseNodeTest {
     public void setup() throws Exception
     {
         // Setup SUT dependencies
-        controller = new Controller();
+        controller = new Controller(false);
         memoryCryptoParams = new CryptoParams(controller, "PASSWORD".toCharArray(), 1234, 0);
         database = new Database(controller, memoryCryptoParams, null);
 

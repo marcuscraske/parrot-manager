@@ -33,7 +33,7 @@ public class DatabaseIOServiceTest
     private DatabaseIOService service;
 
     // Objects
-    private Controller controller = new Controller();
+    private Controller controller = new Controller(false);
     private CryptoParams memoryCryptoParams;
     private CryptoParams fileCryptoParams;
     byte[] iv = new byte[]{ 0x44 };

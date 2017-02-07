@@ -13,7 +13,8 @@ import { ErrorComponent }           from 'app/content/error/error.component'
 import { HomeComponent }            from 'app/content/home/home.component'
 import { CreateComponent }          from 'app/content/create/create.component'
 import { OpenComponent }            from 'app/content/open/open.component'
-import { SyncRemoteSshComponent }   from 'app/content/sync-remote-ssh/sync-remote-ssh.component'
+import { RemoteSyncComponent }      from 'app/content/remote-sync/remote-sync.component'
+import { RemoteSyncSshComponent }   from 'app/content/remote-sync-ssh/remote-sync-ssh.component'
 import { HelpComponent }            from 'app/content/help/help.component'
 
 // Viewer
@@ -24,8 +25,9 @@ import { ViewerEntriesComponent }   from 'app/content/viewer/entries/entries.com
 const appRoutes: Routes = [
   { path: '',                                       component: OpenComponent },
   { path: 'open',                                   component: OpenComponent },
-  { path: 'remote-sync/ssh',                        component: SyncRemoteSshComponent },
-  { path: 'remote-sync/ssh/:currentNode',           component: SyncRemoteSshComponent },
+  { path: 'remote-sync',                            component: RemoteSyncComponent },
+  { path: 'remote-sync/ssh',                        component: RemoteSyncSshComponent },
+  { path: 'remote-sync/ssh/:currentNode',           component: RemoteSyncSshComponent },
   { path: 'create',                                 component: CreateComponent },
 
   { path: 'viewer',                                 component: ViewerComponent },
@@ -46,7 +48,7 @@ const appRoutes: Routes = [
     AppComponent, TopBarComponent,
 
     // Pages
-    ErrorComponent, HomeComponent, CreateComponent, OpenComponent, SyncRemoteSshComponent, HelpComponent,
+    ErrorComponent, HomeComponent, CreateComponent, OpenComponent, RemoteSyncComponent, RemoteSyncSshComponent, HelpComponent,
 
     // Viewer
     ViewerComponent, GenerateRandomComponent, ViewerEntriesComponent

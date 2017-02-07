@@ -3,7 +3,9 @@ package com.limpygnome.parrot.ui.urlstream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -12,6 +14,8 @@ import java.net.URLStreamHandler;
  * A URL stream handler implementation to serve resources from the class-path.
  *
  * When a URL matches "http://localhost", the path of the request is used against the root of the resources.
+ *
+ * TODO: unit test
  */
 class LocalResourceStreamHandler extends URLStreamHandler
 {
@@ -27,6 +31,21 @@ class LocalResourceStreamHandler extends URLStreamHandler
      */
     private static final String LOCAL_RESOURCES_BASE_PATH = "webapp/";
 
+    private static final String DEVELOPMENT_RESOURCES_BASE_PATH = "src/main/resources/webapp/";
+
+    /*
+        Used to change the location from where resources are loaded.
+
+        In development mode, the front-end UI is loaded from the resources directory, as to avoid the need to restart
+        the application.
+     */
+    private final boolean developmentMode;
+
+    LocalResourceStreamHandler(boolean developmentMode)
+    {
+        this.developmentMode = developmentMode;
+    }
+
     @Override
     protected URLConnection openConnection(URL url) throws IOException
     {
@@ -38,9 +57,11 @@ class LocalResourceStreamHandler extends URLStreamHandler
 
             if (requestedUrl != null && requestedUrl.startsWith(LOCAL_URL_REQUESTS))
             {
+                // Convert to relative path
                 String classPathUrl = requestedUrl.substring(LOCAL_URL_REQUESTS.length());
 
-                URL resourceUrl = getClass().getClassLoader().getResource(LOCAL_RESOURCES_BASE_PATH + classPathUrl);
+                // Locate the resource and convert to a connection
+                URL resourceUrl = determineResource(classPathUrl);
 
                 if (resourceUrl != null)
                 {
@@ -63,6 +84,53 @@ class LocalResourceStreamHandler extends URLStreamHandler
         }
 
         return connection;
+    }
+
+    private URL determineResource(String classPathUrl)
+    {
+        URL url;
+
+        // Determine location of resource based on development mode
+        if (developmentMode)
+        {
+            url = determineResourceDevelopment(classPathUrl);
+        }
+        else
+        {
+            url = determineResourceClassPath(classPathUrl);
+        }
+
+        return url;
+    }
+
+    private URL determineResourceClassPath(String classPathUrl)
+    {
+        URL resourceUrl = getClass().getClassLoader().getResource(LOCAL_RESOURCES_BASE_PATH + classPathUrl);
+        return resourceUrl;
+    }
+
+    private URL determineResourceDevelopment(String classPathUrl)
+    {
+        URL resourceUrl = null;
+        File file = new File(DEVELOPMENT_RESOURCES_BASE_PATH + classPathUrl);
+
+        if (file.exists())
+        {
+            try
+            {
+                resourceUrl = file.toURI().toURL();
+            }
+            catch (MalformedURLException e)
+            {
+                LOG.debug("failed to locate development file", e);
+            }
+        }
+        else
+        {
+            LOG.debug("failed to locate development file - path: {}", file.getAbsolutePath());
+        }
+
+        return resourceUrl;
     }
 
 }

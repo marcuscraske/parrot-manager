@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.service.rest;
 
+import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.ui.WebViewStage;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
@@ -19,11 +20,29 @@ public class RuntimeService
 {
     private static final Logger LOG = LogManager.getLogger(RuntimeService.class);
 
+    private Controller controller;
     private final WebViewStage stage;
 
-    public RuntimeService(WebViewStage stage)
+    public RuntimeService(Controller controller, WebViewStage stage)
     {
+        this.controller = controller;
         this.stage = stage;
+    }
+
+    /**
+     * @return indicates if running in development mode
+     */
+    public boolean isDevelopmentMode()
+    {
+        return controller.isDevelopmentMode();
+    }
+
+    /**
+     * Refreshes/reloads the current page.
+     */
+    public void refreshPage()
+    {
+        stage.refreshPage();
     }
 
     /**

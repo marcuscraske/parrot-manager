@@ -42,7 +42,7 @@ public class DatabaseTest {
     @Before
     public void setup() throws Exception
     {
-        controller = new Controller();
+        controller = new Controller(false);
         database = createDatabase(PASSWORD, DEFAULT_LAST_MODIFIED, DEFAULT_LAST_MODIFIED);
     }
 

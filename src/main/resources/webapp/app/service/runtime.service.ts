@@ -76,4 +76,14 @@ export class RuntimeService {
         }
     }
 
+    isDevelopmentMode() : boolean
+    {
+        return this.runtimeService.isDevelopmentMode();
+    }
+
+    refreshPage()
+    {
+        this.runtimeService.refreshPage();
+    }
+
 }

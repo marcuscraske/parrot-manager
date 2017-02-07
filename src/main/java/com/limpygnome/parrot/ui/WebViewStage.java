@@ -44,7 +44,7 @@ public class WebViewStage extends Stage
     public WebViewStage(Controller controller)
     {
         // Setup injected POJOs
-        this.runtimeService = new RuntimeService(this);
+        this.runtimeService = new RuntimeService(controller, this);
         this.databaseService = new DatabaseService(controller);
         this.randomGeneratorService = new RandomGeneratorService();
         this.remoteSshFileService = new RemoteSshFileService();
@@ -56,6 +56,7 @@ public class WebViewStage extends Stage
         setupContextMenu();
         setupClientsideHooks();
 
+        // Load initial page
         webView.getEngine().load("http://localhost/index.html");
 
         // Build scene for web view
@@ -211,6 +212,15 @@ public class WebViewStage extends Stage
         webView.getEngine().executeScript(script);
 
         LOG.info("triggered event - dom element: {}, event name: {}", domElement, eventName);
+    }
+
+    /**
+     * Refreshes/reloads the current page.
+     */
+    public void refreshPage()
+    {
+        String currentUrl = webView.getEngine().getLocation();
+        webView.getEngine().load(currentUrl);
     }
 
 }

@@ -29,6 +29,13 @@
             <a title="Close" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>
             </a>
+
+        </div>
+
+        <div class="development" *ngIf="runtimeService.isDevelopmentMode()">
+            <a title="Refresh" (click)="runtimeService.refreshPage()">
+                <span class="icon icon-loop2"></span>
+            </a>
         </div>
 
     </div>

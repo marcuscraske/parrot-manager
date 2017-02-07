@@ -6,10 +6,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     moduleId: module.id,
-    templateUrl: 'sync-remote-ssh.component.html',
+    templateUrl: 'remote-sync-ssh.component.html',
     providers: [RemoteSshFileService, DatabaseService]
 })
-export class SyncRemoteSshComponent {
+export class RemoteSyncSshComponent {
 
     public openForm = this.fb.group({
        name: [""],
