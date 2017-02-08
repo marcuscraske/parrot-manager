@@ -5,7 +5,6 @@ import com.limpygnome.parrot.model.dbaction.Action;
 import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
-import com.limpygnome.parrot.ui.WebViewStage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -2,19 +2,23 @@
     remote sync
 </h1>
 
-<table class="table remote-sync">
-    <tr>
+<p>
+    Sync your database with multiple remote hosts.
+</p>
+
+<table class="table remote-sync" *ngIf="isTargets()">
+    <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
         <td>
             <input type="checkbox" />
         </td>
         <td>
-            key name
+            {{ node.getName() }}
         </td>
         <td>
-            host:ip
+            {{ getHostName(node) }}
         </td>
         <td>
-            <a class="btn btn-primary">
+            <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getName() }}">
                 Edit
             </a>
             <a class="btn btn-danger">
@@ -25,14 +29,21 @@
 </table>
 
 <div class="form-group">
-    <button class="btn btn-primary">
+    <button class="btn btn-primary" *ngIf="isTargets()">
         Sync
+    </button>
+    <button class="btn btn-default">
+        Add New
     </button>
 </div>
 
 <h2>
     changelog
 </h2>
+
+<p>
+    When syncing, a list of changes will be listed below.
+</p>
 
 <div class="form-group">
     <textarea class="form-control" disabled="disabled">
