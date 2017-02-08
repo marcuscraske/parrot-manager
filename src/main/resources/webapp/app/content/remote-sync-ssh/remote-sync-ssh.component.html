@@ -1,14 +1,31 @@
-<h1 *ngIf="currentNode == null">
+<!--
+    Heading for when opening new host
+-->
+<h1 *ngIf="currentMode == 'open'">
     open - remote (ssh)
 </h1>
+<p *ngIf="currentMode == 'open'">
+    This will copy a remote database to your local filesystem and add the host as a remote-sync target. This means
+    you will be able to easily keep both databases synchronized.
+</p>
 
-<h1 *ngIf="currentNode != null">
+<!--
+    Heading for when creating new host for an open database
+-->
+<h1 *ngIf="currentMode == 'new'">
+    remote-sync - new
+</h1>
+<p *ngIf="currentMode == 'new'">
+    This will add a new host to which your current database will be synchronized. If a different database exists,
+    the two will be merged. If no database exists, the current one is uploaded.
+</p>
+
+<!--
+    Heading for when editing an already existing host
+-->
+<h1 *ngIf="currentMode == 'edit'">
     remote-sync - edit
 </h1>
-
-<p *ngIf="currentNode == null">
-    This will copy a remote database, using SSH, to your local filesystem.
-</p>
 
 <form id="openRemoteSsh" [formGroup]="openForm" (ngSubmit)="open($event)" #form="ngForm">
     <div class="form-group">
@@ -231,7 +248,7 @@
             {{ currentNode != null ? 'Update' : 'Open' }}
         </button>
 
-        <button class="btn btn-default" (click)="actionCancel()">
+        <button type="button" class="btn btn-default" (click)="actionCancel()">
             Cancel
         </button>
 

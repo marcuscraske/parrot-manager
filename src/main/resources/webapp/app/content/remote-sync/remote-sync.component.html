@@ -9,7 +9,7 @@
 <table class="table remote-sync" *ngIf="isTargets()">
     <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
         <td>
-            <input type="checkbox" />
+            <input type="checkbox" attr.data-node-id="{{ node.getId() }}" checked="checked" />
         </td>
         <td>
             {{ node.getName() }}
@@ -32,7 +32,7 @@
     <button class="btn btn-primary" *ngIf="isTargets()">
         Sync
     </button>
-    <button class="btn btn-default">
+    <button class="btn btn-default" routerLink="/remote-sync/ssh/new">
         Add New
     </button>
 </div>

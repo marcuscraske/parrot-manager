@@ -32,9 +32,12 @@ export class RemoteSyncSshComponent {
     errorMessage : string;
 
     // Observable subscription for params
-    subParams: any;
+    subParams : any;
 
-    // The name (key stored under remote-sync) of the current node being changed; passed by routing config
+    // The mode: open, new, edit
+    currentMode : string;
+
+    // The ID (key stored under remote-sync) of the current node being changed; passed by routing config
     currentNode : string;
 
     constructor(private remoteSshFileService: RemoteSshFileService, private databaseService: DatabaseService,
@@ -43,10 +46,30 @@ export class RemoteSyncSshComponent {
     ngOnInit()
     {
         this.subParams = this.route.params.subscribe(params => {
-           this.currentNode = params['currentNode'];
-           console.log("current node changed: " + this.currentNode);
 
-           // TODO: populate form here for existing config...
+            var passedNode = params['currentNode'];
+
+            // Determine appropriate mode and if we need to populate form with existing data
+            if (passedNode == null)
+            {
+                this.currentNode = null;
+                this.currentMode = "open";
+            }
+            else if (passedNode == "new")
+            {
+                this.currentNode = null;
+                this.currentMode = "new";
+                console.log("changed to new mode");
+            }
+            else
+            {
+                this.currentNode = passedNode;
+                this.currentNode = "edit";
+                console.log("changed to edit mode - node id: " + this.currentNode);
+
+                // Populate with existing data
+                // TODO: populate...
+            }
         });
     }
 
@@ -209,13 +232,13 @@ export class RemoteSyncSshComponent {
     /* Handler for cancel button (navigates to appropriate previous page in flow */
     actionCancel()
     {
-        if (this.currentNode != null)
+        if (this.currentMode == "open")
         {
-            this.router.navigate(["/remote-sync"]);
+            this.router.navigate(["/open"]);
         }
         else
         {
-            this.router.navigate(["/open"]);
+            this.router.navigate(["/remote-sync"]);
         }
     }
 
