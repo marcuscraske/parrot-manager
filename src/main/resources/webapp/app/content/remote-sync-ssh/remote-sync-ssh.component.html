@@ -233,11 +233,11 @@
 
     <div class="form-group">
         <label class="checkbox-inline">
-            <input type="checkbox" id="promptUserPass" formControlName="promptUserPass" [(ngModel)]="openForm.value['promptUserPass']" />
+            <input type="checkbox" id="promptUserPass" formControlName="promptUserPass" />
             Prompt for user password
         </label>
         <label class="checkbox-inline">
-            <input type="checkbox" id="promptKeyPass" formControlName="promptKeyPass" [(ngModel)]="openForm.value['promptKeyPass']" />
+            <input type="checkbox" id="promptKeyPass" formControlName="promptKeyPass" />
             Prompt for key password
         </label>
     </div>
@@ -245,7 +245,7 @@
     <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null }">
 
         <button type="submit" class="btn btn-primary">
-            {{ currentNode != null ? 'Update' : 'Open' }}
+            {{ currentMode == 'open' ? 'Open' : currentMode == 'edit' ? 'Save' : 'Add' }}
         </button>
 
         <button type="button" class="btn btn-default" (click)="actionCancel()">

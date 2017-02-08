@@ -13,13 +13,13 @@ export class RemoteSyncSshComponent {
 
     public openForm = this.fb.group({
        name: [""],
-       host: ["localhost", Validators.required],
+       host: ["", Validators.required],
        port: ["22", Validators.required],
-       strictHostChecking : ["false"],
-       user : ["limpygnome", Validators.required],
-       userPass : ["test123"],
-       remotePath : ["~/git-remote/parrot/test.parrot", Validators.required],
-       destinationPath : ["~/sync.parrot", Validators.required],
+       strictHostChecking : [false],
+       user : ["", Validators.required],
+       userPass : [""],
+       remotePath : ["", Validators.required],
+       destinationPath : ["", Validators.required],
        privateKey : [""],
        privateKeyPass : [""],
        proxyHost : [""],
@@ -64,18 +64,60 @@ export class RemoteSyncSshComponent {
             else
             {
                 this.currentNode = passedNode;
-                this.currentNode = "edit";
-                console.log("changed to edit mode - node id: " + this.currentNode);
+                this.currentMode = "edit";
+                //this.populate(passedNode);
 
-                // Populate with existing data
-                // TODO: populate...
+                console.log("changed to edit mode - node id: " + this.currentNode);
             }
         });
+    }
+
+    // TODO: NOT WORKING...
+    ngAfterViewInit()
+    {
+        this.populate(this.currentNode);
     }
 
     ngOnDestroy()
     {
         this.subParams.unsubscribe();
+    }
+
+    /* Populates form using a specific node of remote-sync. */
+    populate(nodeId)
+    {
+        // Fetch actual JSON for node
+        var node = this.databaseService.getNode(nodeId);
+        var json = node != null ? node.getDecryptedValueString() : null;
+        var config = json != null ? JSON.parse(json) : null;
+
+        if (config != null)
+        {
+            // Populate form with data
+            var form = this.openForm;
+
+            form.value["name"] = node.getName();
+            form.value["host"] = config["host"]
+            form.value["port"] = config["port"];
+            form.value["strictHostChecking"] = config["strictHostChecking"];
+            form.value["user"] = config["user"];
+            form.value["userPass"] = config["userPass"];
+            form.value["remotePath"] = config["remotePath"];
+            form.value["destinationPath"] = config["destinationPath"];
+            form.value["privateKey"] = config["privateKey"];
+            form.value["privateKeyPass"] = config["privateKeyPass"];
+            form.value["proxyHost"] = config["proxyHost"];
+            form.value["proxyPort"] = config["proxyPort"];
+            form.value["proxyType"] = config["proxyType"];
+            form.value["promptUserPass"] = config["promptUserPass"];
+            form.value["promptKeyPass"] = config["promptKeyPass"];
+
+            console.log("form populated - node id: " + nodeId);
+        }
+        else
+        {
+            console.log("no config found - node id: " + nodeId);
+        }
     }
 
     open(event)
@@ -117,10 +159,22 @@ export class RemoteSyncSshComponent {
             options.setPromptUserPass(form.value["promptUserPass"]);
             options.setPromptKeyPass(form.value["promptKeyPass"]);
 
-            // Perform download...
-            // TODO: consider converting to a promise with a loading box...
+            // Handle options based on mode
             console.log("download options: " + options.toString());
-            this.performOpen(options);
+
+            if (this.currentMode == "open")
+            {
+                // Perform download and save config...
+                this.performOpen(options);
+            }
+            else if (this.currentMode == "edit")
+            {
+                // Update existing
+            }
+            else if (this.currentMode == "new")
+            {
+                // Test and save config
+            }
         }
         else
         {

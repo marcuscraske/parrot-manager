@@ -20,7 +20,7 @@ export class RemoteSyncComponent {
     ngOnInit()
     {
         // Fetch 'remote-sync' node from database
-        var database = databaseService.getDatabase();
+        var database = this.databaseService.getDatabase();
         var rootNode = database.getRoot();
 
         this.remoteSyncNode = rootNode.getByName("remote-sync");
