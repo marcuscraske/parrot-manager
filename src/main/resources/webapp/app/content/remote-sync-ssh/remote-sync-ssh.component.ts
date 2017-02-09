@@ -12,18 +12,18 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class RemoteSyncSshComponent {
 
     public openForm = this.fb.group({
-       name: [""],
+       name: ["", Validators.required],
        host: ["", Validators.required],
-       port: ["22", Validators.required],
+       port: [22, Validators.required],
        strictHostChecking : [false],
        user : ["", Validators.required],
        userPass : [""],
        remotePath : ["", Validators.required],
-       destinationPath : ["", Validators.required],
+       destinationPath : [""],                      // Validator is dynamic based on mode (required only for open)
        privateKey : [""],
        privateKeyPass : [""],
        proxyHost : [""],
-       proxyPort : [""],
+       proxyPort : [0],
        proxyType : ["None"],
        promptUserPass : [false],
        promptKeyPass : [false]
@@ -54,6 +54,7 @@ export class RemoteSyncSshComponent {
             {
                 this.currentNode = null;
                 this.currentMode = "open";
+                this.openForm.controls["destinationPath"].setValidators(Validators.required);
             }
             else if (passedNode == "new")
             {
@@ -65,17 +66,11 @@ export class RemoteSyncSshComponent {
             {
                 this.currentNode = passedNode;
                 this.currentMode = "edit";
-                //this.populate(passedNode);
+                this.populate(passedNode);
 
                 console.log("changed to edit mode - node id: " + this.currentNode);
             }
         });
-    }
-
-    // TODO: NOT WORKING...
-    ngAfterViewInit()
-    {
-        this.populate(this.currentNode);
     }
 
     ngOnDestroy()
@@ -95,23 +90,7 @@ export class RemoteSyncSshComponent {
         {
             // Populate form with data
             var form = this.openForm;
-
-            form.value["name"] = node.getName();
-            form.value["host"] = config["host"]
-            form.value["port"] = config["port"];
-            form.value["strictHostChecking"] = config["strictHostChecking"];
-            form.value["user"] = config["user"];
-            form.value["userPass"] = config["userPass"];
-            form.value["remotePath"] = config["remotePath"];
-            form.value["destinationPath"] = config["destinationPath"];
-            form.value["privateKey"] = config["privateKey"];
-            form.value["privateKeyPass"] = config["privateKeyPass"];
-            form.value["proxyHost"] = config["proxyHost"];
-            form.value["proxyPort"] = config["proxyPort"];
-            form.value["proxyType"] = config["proxyType"];
-            form.value["promptUserPass"] = config["promptUserPass"];
-            form.value["promptKeyPass"] = config["promptKeyPass"];
-
+            form.patchValue(config);
             console.log("form populated - node id: " + nodeId);
         }
         else
@@ -124,56 +103,27 @@ export class RemoteSyncSshComponent {
     {
         var form = this.openForm;
 
+        console.log("#### " + form.controls["port"].valid + " ### " + form.value["proxyPort"]);
+
         if (form.valid)
         {
-            // Set default name if empty
-            var name = form.value["name"];
-
-            if (name == null || !name.length)
-            {
-                console.log("setting default name");
-                form.value["name"] = form.value["host"] + ":" + form.value["port"];
-            }
-
-            // Build random token for tracking download status
-            var randomToken = "not so random";
-
             // Create download options
-            var options = this.remoteSshFileService.createOptions(
-                randomToken,
-                form.value["name"],
-                form.value["host"],
-                form.value["port"],
-                form.value["user"],
-                form.value["remotePath"],
-                form.value["destinationPath"]
-            );
-
-            options.setStrictHostChecking(form.value["strictHostChecking"]);
-            options.setUserPass(form.value["userPass"]);
-            options.setPrivateKeyPath(form.value["privateKey"]);
-            options.setPrivateKeyPass(form.value["privateKeyPass"]);
-            options.setProxyHost(form.value["proxyHost"]);
-            options.setProxyPort(form.value["proxyPort"]);
-            options.setProxyType(form.value["proxyType"]);
-            options.setPromptUserPass(form.value["promptUserPass"]);
-            options.setPromptKeyPass(form.value["promptKeyPass"]);
-
-            // Handle options based on mode
-            console.log("download options: " + options.toString());
+            var options = this.createOptions();
 
             if (this.currentMode == "open")
             {
                 // Perform download and save config...
                 this.performOpen(options);
             }
-            else if (this.currentMode == "edit")
+            else if (this.currentMode == "edit" || this.currentMode == "new")
             {
                 // Update existing
+                this.persistOptions(options);
+                this.router.navigate(["/remote-sync"]);
             }
-            else if (this.currentMode == "new")
+            else
             {
-                // Test and save config
+                console.log("unhandled mode");
             }
         }
         else
@@ -271,8 +221,7 @@ export class RemoteSyncSshComponent {
                 else
                 {
                     // Persist options
-                    console.log("persisting options");
-                    options.persist(this.databaseService.getDatabase());
+                    this.persistOptions(options);
 
                     // Navigate to viewer
                     console.log("navigating to viewer...");
@@ -281,6 +230,65 @@ export class RemoteSyncSshComponent {
 
             });
         }
+    }
+
+    /* Converts the current form into SshOptions instance */
+    createOptions() : any
+    {
+        var form = this.openForm;
+
+        // Set default name if empty
+        var name = form.value["name"];
+
+        if (name == null || !name.length)
+        {
+            console.log("setting default name");
+            form.value["name"] = form.value["host"] + ":" + form.value["port"];
+        }
+
+        // Build random token for tracking download status
+        // -- This is just left for the future, in case we want async downloading / progress bar
+        var randomToken = "not so random";
+
+        // Create actual instance
+        var options = this.remoteSshFileService.createOptions(
+            randomToken,
+            form.value["name"],
+            form.value["host"],
+            form.value["port"],
+            form.value["user"],
+            form.value["remotePath"],
+            form.value["destinationPath"]
+        );
+
+        options.setStrictHostChecking(form.value["strictHostChecking"]);
+        options.setUserPass(form.value["userPass"]);
+        options.setPrivateKeyPath(form.value["privateKey"]);
+        options.setPrivateKeyPass(form.value["privateKeyPass"]);
+        options.setProxyHost(form.value["proxyHost"]);
+        options.setProxyPort(form.value["proxyPort"]);
+        options.setProxyType(form.value["proxyType"]);
+        options.setPromptUserPass(form.value["promptUserPass"]);
+        options.setPromptKeyPass(form.value["promptKeyPass"]);
+
+        // Handle options based on mode
+        console.log("download options: " + options.toString());
+
+        return options;
+    }
+
+    /* Saves currently configuration to database */
+    persistOptions(options)
+    {
+        if (this.currentMode == "edit")
+        {
+            var node = this.databaseService.getNode(this.currentNode);
+            node.remove();
+            console.log("dropped existing options node - id: " + this.currentNode);
+        }
+
+        console.log("persisting options to new node");
+        options.persist(this.databaseService.getDatabase());
     }
 
     /* Handler for cancel button (navigates to appropriate previous page in flow */

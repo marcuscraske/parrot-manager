@@ -212,9 +212,16 @@ public class RemoteSshFileService
             String message = e.getMessage();
 
             // Improved error messages
-            if (e instanceof JSchException && "Auth fail".equals(message))
+            if (e instanceof JSchException)
             {
-                message = "Auth failed - unable to connect using specified credentials";
+                if ("Auth fail".equals(message))
+                {
+                    message = "Auth failed - unable to connect using specified credentials";
+                }
+                else if ("No such file".equals(message))
+                {
+                    message = "Remote file could not be found";
+                }
             }
 
             LOG.error("transfer - {} - failed", randomToken, e);

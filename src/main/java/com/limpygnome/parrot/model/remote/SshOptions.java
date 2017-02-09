@@ -291,14 +291,6 @@ public class SshOptions implements Serializable, Cloneable
             root.add(remoteSyncNode);
         }
 
-        // Fetch any nodes with same name, remove them
-        DatabaseNode similarNode = remoteSyncNode.getByName(name);
-
-        if (similarNode != null)
-        {
-            similarNode.remove();
-        }
-
         // Create new instance
         SshOptions clone = (SshOptions) this.clone();
 

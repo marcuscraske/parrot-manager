@@ -28,69 +28,74 @@
 </h1>
 
 <form id="openRemoteSsh" [formGroup]="openForm" (ngSubmit)="open($event)" #form="ngForm">
-    <div class="form-group">
 
-        <div class="form-group">
-            <label class="form-control-label" for="name">
-                Name
+    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['name'].valid }">
+        <label class="form-control-label" for="name">
+            Name
+        </label>
+
+        <input id="name"
+               formControlName="name"
+               [(ngModel)]="openForm.value['name']"
+               type="text"
+               class="form-control"
+               placeholder="The name of this remote sync configuration..."
+               minlength="1" maxlength="128"
+        />
+    </div>
+
+    <label class="form-control-label">
+        Host
+    </label>
+
+    <div class="form-inline">
+        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['host'].valid }">
+            <label class="sr-only" for="host">
+                Host
             </label>
-
-            <input id="name"
-                   formControlName="name"
+            <input id="host"
+                   formControlName="host"
+                   [(ngModel)]="openForm.value['host']"
                    type="text"
                    class="form-control"
-                   placeholder="The name of this remote sync configuration..."
+                   placeholder="Hostname..."
                    minlength="1" maxlength="128"
             />
         </div>
-
-        <label class="form-control-label">
-            Host
-        </label>
-
-        <div class="form-inline">
-            <div class="form-group">
-                <label class="sr-only" for="host">
-                    Host
-                </label>
-                <input id="host"
-                       formControlName="host"
-                       type="text"
-                       class="form-control"
-                       placeholder="Hostname..."
-                       minlength="1" maxlength="128"
-                />
-            </div>
-            <div class="form-group">
-                <label class="sr-only" for="port">
-                    Port
-                </label>
-                <input id="port"
-                       formControlName="port"
-                       type="number"
-                       class="form-control"
-                       placeholder="Port..."
-                       minlength="1" maxlength="5"
-                />
-            </div>
+        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['port'].valid }">
+            <label class="sr-only" for="port">
+                Port
+            </label>
+            <input id="port"
+                   formControlName="port"
+                   [(ngModel)]="openForm.value['port']"
+                   type="number"
+                   class="form-control"
+                   placeholder="Port..."
+                   minlength="1" maxlength="5"
+            />
         </div>
-
     </div>
 
     <div class="form-group">
         <label class="checkbox-inline">
-            <input type="checkbox" id="strictHostChecking" formControlName="strictHostChecking" />
+            <input type="checkbox"
+                   id="strictHostChecking"
+                   formControlName="strictHostChecking"
+                   [(ngModel)]="openForm.value['strictHostChecking']"
+            />
             Strict host key checking
         </label>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['user'].valid }">
         <label class="form-control-label" for="user">
             User
         </label>
 
         <input id="user"
                formControlName="user"
+               [(ngModel)]="openForm.value['user']"
                type="text"
                class="form-control"
                placeholder="Username..."
@@ -98,13 +103,14 @@
         />
     </div>
 
-    <div class="form-group">
+    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['userPass'].valid }">
         <label class="form-control-label" for="userPass">
             Pass
         </label>
 
         <input id="userPass"
                formControlName="userPass"
+               [(ngModel)]="openForm.value['userPass']"
                type="password"
                class="form-control"
                placeholder="Only required for pass authentication"
@@ -112,25 +118,27 @@
         />
     </div>
 
-    <div class="form-group">
+    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['remotePath'].valid }">
         <label class="form-label" for="remotePath">
             Remote Path
         </label>
         <input id="remotePath"
                formControlName="remotePath"
+               [(ngModel)]="openForm.value['remotePath']"
                type="text"
                class="form-control"
                placeholder="The remote path to the database file..."
         />
     </div>
 
-    <div class="form-group">
+    <div class="form-group" *ngIf="this.currentMode == 'open'" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['destinationPath'].valid }">
         <label class="form-label" for="destinationPath">
             Destination Path
         </label>
         <div class="input-group">
             <input id="destinationPath"
                    formControlName="destinationPath"
+                   [(ngModel)]="openForm.value['destinationPath']"
                    type="text"
                    class="form-control"
                    placeholder="The path of where the local instance will be saved..."
@@ -145,13 +153,14 @@
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['privateKey'].valid }">
                 <label class="form-label" for="privateKey">
                     Private Key
                 </label>
                 <div class="input-group">
                     <input id="privateKey"
                            formControlName="privateKey"
+                           [(ngModel)]="openForm.value['privateKey']"
                            type="text"
                            class="form-control"
                            placeholder="Only required for key file auth..."
@@ -164,7 +173,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['privateKeyPass'].valid }">
                 <label class="form-label" for="privateKeyPass">
                     Password
                 </label>
@@ -186,36 +195,39 @@
                 </label>
 
                 <div class="form-inline">
-                    <div class="form-group">
+                    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['proxyHost'].valid }">
                         <label class="sr-only" for="host">
                             Proxy Host
                         </label>
                         <input id="proxyHost"
                                formControlName="proxyHost"
+                               [(ngModel)]="openForm.value['proxyHost']"
                                type="text"
                                class="form-control"
                                placeholder="Proxy hostname..."
                                minlength="1" maxlength="128"
                         />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['proxyPort'].valid }">
                         <label class="sr-only" for="port">
                             Proxy Port
                         </label>
                         <input id="proxyPort"
                                formControlName="proxyPort"
+                               [(ngModel)]="openForm.value['proxyPort']"
                                type="number"
                                class="form-control"
                                placeholder="Proxy port..."
                                minlength="1" maxlength="5"
                         />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['proxyType'].valid }">
                         <label class="sr-only" for="port">
                             Proxy Type
                         </label>
                         <select id="proxyType"
                                 formControlName="proxyType"
+                                [(ngModel)]="openForm.value['proxyType']"
                                 type="number"
                                 class="form-control"
                                 minlength="1" maxlength="5"
@@ -233,11 +245,19 @@
 
     <div class="form-group">
         <label class="checkbox-inline">
-            <input type="checkbox" id="promptUserPass" formControlName="promptUserPass" />
+            <input type="checkbox"
+                   id="promptUserPass"
+                   formControlName="promptUserPass"
+                   [(ngModel)]="openForm.value['promptUserPass']"
+            />
             Prompt for user password
         </label>
         <label class="checkbox-inline">
-            <input type="checkbox" id="promptKeyPass" formControlName="promptKeyPass" />
+            <input type="checkbox"
+                   id="promptKeyPass"
+                   formControlName="promptKeyPass"
+                   [(ngModel)]="openForm.value['promptKeyPass']"
+            />
             Prompt for key password
         </label>
     </div>
