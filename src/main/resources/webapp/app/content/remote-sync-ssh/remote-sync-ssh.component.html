@@ -72,7 +72,7 @@
                    type="number"
                    class="form-control"
                    placeholder="Port..."
-                   minlength="1" maxlength="5"
+                   min="1" max="65535"
             />
         </div>
     </div>
@@ -218,7 +218,7 @@
                                type="number"
                                class="form-control"
                                placeholder="Proxy port..."
-                               minlength="1" maxlength="5"
+                               min="1" max="65535"
                         />
                     </div>
                     <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['proxyType'].valid }">
@@ -266,6 +266,10 @@
 
         <button type="submit" class="btn btn-primary">
             {{ currentMode == 'open' ? 'Open' : currentMode == 'edit' ? 'Save' : 'Add' }}
+        </button>
+
+        <button type="button" class="btn btn-default">
+            Test
         </button>
 
         <button type="button" class="btn btn-default" (click)="actionCancel()">

@@ -294,6 +294,31 @@ export class RemoteSyncSshComponent {
     /* Handler for cancel button (navigates to appropriate previous page in flow */
     actionCancel()
     {
+        if (this.openForm.dirty)
+        {
+            bootbox.dialog({
+                message: "You have unsaved changes, are you sure?",
+                buttons: {
+                    cancel: {
+                        label: "No",
+                        className: "btn-primary"
+                    },
+                    exit: {
+                        label: "Yes",
+                        className: "btn-default",
+                        callback: () => { this.actionCancelContinue(); }
+                    }
+                }
+            });
+        }
+        else
+        {
+            this.actionCancelContinue();
+        }
+    }
+
+    actionCancelContinue()
+    {
         if (this.currentMode == "open")
         {
             this.router.navigate(["/open"]);

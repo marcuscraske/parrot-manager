@@ -20,6 +20,7 @@ import java.io.Serializable;
  */
 public class SshOptions implements Serializable, Cloneable
 {
+    @JsonIgnore
     private String randomToken;
 
     // Mandatory

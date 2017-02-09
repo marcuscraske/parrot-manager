@@ -7,9 +7,11 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
 import com.limpygnome.parrot.component.FileComponent;
+import com.limpygnome.parrot.component.SshComponent;
 import com.limpygnome.parrot.model.db.DatabaseNode;
 import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.FileStatus;
+import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,12 +30,15 @@ public class RemoteSshFileService
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
     private FileComponent fileComponent;
+    private SshComponent sshComponent;
+
     private Map<String, FileStatus> fileStatusMap;
 
     public RemoteSshFileService()
     {
-        this.fileStatusMap = new HashMap<>();
         this.fileComponent = new FileComponent();
+        this.sshComponent = new SshComponent();
+        this.fileStatusMap = new HashMap<>();
     }
 
     /**
@@ -97,160 +102,68 @@ public class RemoteSshFileService
     public String download(SshOptions options)
     {
         String result = null;
-
-        final String randomToken = options.getRandomToken();
-        String destinationPath = options.getDestinationPath();
-        String remotePath = options.getRemotePath();
-
-        // Add status for transfer
-        synchronized (fileStatusMap)
-        {
-            fileStatusMap.put(randomToken, new FileStatus());
-        }
-
-        // Ensure path is fully resolved
-        destinationPath = fileComponent.resolvePath(destinationPath);
-
-        LOG.info("transfer - {} - starting - options: {}", randomToken, options);
-
-        Session session = null;
-        ChannelSftp channelSftp = null;
+        SshSession session = null;
 
         try
         {
-            JSch jsch = new JSch();
+            // Connect
+            session = sshComponent.connect(options);
 
-            // Setup key
-            if (options.isPrivateKey())
-            {
-                jsch.addIdentity(options.getPrivateKeyPath(), options.getPrivateKeyPass());
-            }
-
-            // Disable strict host checking (if not enabled)
-            Properties properties = new Properties();
-
-            if (!options.isStrictHostChecking())
-            {
-                properties.put("StrictHostKeyChecking", "no");
-            }
-
-            // Connect to host...
-            session = jsch.getSession(options.getUser(), options.getHost(), options.getPort());
-            session.setPassword(options.getUserPass());
-            session.setConfig(properties);
-            session.setProxy(options.getProxy());
-
-            session.connect();
-
-            // Start sftp in session
-            Channel channel = session.openChannel("sftp");
-            channel.connect();
-
-            channelSftp = (ChannelSftp) channel;
-
-            // Replace ~/ with home directory
-            if (remotePath.startsWith("~/") && remotePath.length() > 2)
-            {
-                String home = channelSftp.getHome();
-                remotePath = home + "/" + remotePath.substring(2);
-                LOG.info("transfer - {} - replacing ~/ with home directory - new remote path: {}", randomToken, remotePath);
-            }
-
-            // Move to containing directory
-            File remoteFile = new File(remotePath);
-            File remoteFileParent = remoteFile.getParentFile();
-
-            if (remoteFileParent != null)
-            {
-                String remoteFileParentPath = remoteFileParent.getAbsolutePath();
-
-                LOG.info("transfer - {} - changing directory - path: {}", randomToken, remoteFileParentPath);
-                channelSftp.cd(remoteFileParentPath);
-            }
-
-            // Start the transfer...
-            String remoteFileName = remoteFile.getName();
-            LOG.info("transfer - {} - initiating transfer - fileName: {}", randomToken, remoteFileName);
-
-            channelSftp.get(remoteFileName, destinationPath, new SftpProgressMonitor()
-            {
-                @Override
-                public void init(int op, String src, String dest, long maxBytes)
-                {
-                    LOG.info("transfer - {} - init - max bytes: {}", randomToken, maxBytes);
-
-                    synchronized (fileStatusMap)
-                    {
-                        FileStatus status = fileStatusMap.get(randomToken);
-                        status.setMax(maxBytes);
-                    }
-                }
-
-                @Override
-                public boolean count(long bytes)
-                {
-                    LOG.info("transfer - {} - progress - bytes: {}", randomToken, bytes);
-
-                    synchronized (fileStatusMap)
-                    {
-                        FileStatus status = fileStatusMap.get(randomToken);
-                        status.setCurrent(bytes);
-                    }
-
-                    return true;
-                }
-
-                @Override
-                public void end()
-                {
-                    LOG.info("transfer - finished");
-                }
-            });
+            // Start download...
+            sshComponent.download(session, fileStatusMap, options);
         }
         catch (Exception e)
         {
-            String message = e.getMessage();
-
-            // Improved error messages
-            if (e instanceof JSchException)
-            {
-                if ("Auth fail".equals(message))
-                {
-                    message = "Auth failed - unable to connect using specified credentials";
-                }
-                else if ("No such file".equals(message))
-                {
-                    message = "Remote file could not be found";
-                }
-            }
-
-            LOG.error("transfer - {} - failed", randomToken, e);
-            result = message;
+            result = sshComponent.getExceptionMessage(e);
+            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
         }
         finally
         {
-            // Dispose session and sftp channel
+            // Disconnect
             if (session != null)
             {
-                session.disconnect();
-            }
-
-            if (channelSftp != null)
-            {
-                channelSftp.exit();
-            }
-
-            // Remove progress
-            if (randomToken != null)
-            {
-                synchronized (fileStatusMap)
-                {
-                    fileStatusMap.remove(randomToken);
-                }
+                session.dispose();
             }
         }
 
         return result;
+    }
+
+    public String test(SshOptions options)
+    {
+        String result = null;
+        SshSession session = null;
+
+        try
+        {
+            // Check directory exists of local path
+
+            // Connect
+            session = sshComponent.connect(options);
+
+            // Check remote connection works and file exists
+            result = sshComponent.checkRemotePathExists(options);
+        }
+        catch (Exception e)
+        {
+            result = sshComponent.getExceptionMessage(e);
+            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
+        }
+        finally
+        {
+            // Disconnect
+            if (session != null)
+            {
+                session.dispose();
+            }
+        }
+
+        return result;
+    }
+
+    public String merge(SshOptions options)
+    {
+        return null;
     }
 
 }
