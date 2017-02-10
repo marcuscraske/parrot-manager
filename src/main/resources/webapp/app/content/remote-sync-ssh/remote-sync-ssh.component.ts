@@ -20,7 +20,7 @@ export class RemoteSyncSshComponent {
        userPass : [""],
        remotePath : ["", Validators.required],
        destinationPath : [""],                      // Validator is dynamic based on mode (required only for open)
-       privateKey : [""],
+       privateKeyPath : [""],
        privateKeyPass : [""],
        proxyHost : [""],
        proxyPort : [0],
@@ -142,7 +142,7 @@ export class RemoteSyncSshComponent {
     performOpen(options)
     {
         // Begin async chain to prompt for passwords etc
-        this.chainDisableAndPrompt(options, () => { this.performDownloadAndOpen });
+        this.chainDisableAndPrompt(options, (options) => { this.performDownloadAndOpen(options) });
     }
 
     performTest()
@@ -155,7 +155,7 @@ export class RemoteSyncSshComponent {
             var options = this.createOptions();
 
             // Begin async chain to prompt for passwords etc
-            this.chainDisableAndPrompt(options, () => { this.performTestWithAuth });
+            this.chainDisableAndPrompt(options, (options) => { this.performTestWithAuth(options); });
         }
         else
         {
@@ -225,8 +225,7 @@ export class RemoteSyncSshComponent {
         }
         else
         {
-            console.log("skipped prompting user pass, invoking final callbaack...");
-
+            console.log("skipped prompting user pass, invoking final callback...");
             finalCallback(options);
         }
     }
@@ -282,6 +281,9 @@ export class RemoteSyncSshComponent {
         {
             this.successMessage = "Working!";
         }
+
+        // Re-enable form
+        this.setFormDisabled(false);
     }
 
     /* Converts the current form into SshOptions instance */
@@ -315,13 +317,19 @@ export class RemoteSyncSshComponent {
 
         options.setStrictHostChecking(form.value["strictHostChecking"]);
         options.setUserPass(form.value["userPass"]);
-        options.setPrivateKeyPath(form.value["privateKey"]);
+        options.setPrivateKeyPath(form.value["privateKeyPath"]);
         options.setPrivateKeyPass(form.value["privateKeyPass"]);
         options.setProxyHost(form.value["proxyHost"]);
         options.setProxyPort(form.value["proxyPort"]);
         options.setProxyType(form.value["proxyType"]);
         options.setPromptUserPass(form.value["promptUserPass"]);
         options.setPromptKeyPass(form.value["promptKeyPass"]);
+
+        // Non-serialized data used for just test/downloading in edit mode
+        if (this.currentMode == "edit" || this.currentMode == "new")
+        {
+            options.setDestinationPath(this.databaseService.getPath());
+        }
 
         // Handle options based on mode
         console.log("download options: " + options.toString());

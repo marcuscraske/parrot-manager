@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -42,7 +43,19 @@ public class SshComponent
         // Setup key
         if (options.isPrivateKey())
         {
-            jsch.addIdentity(options.getPrivateKeyPath(), options.getPrivateKeyPass());
+            try
+            {
+                jsch.addIdentity(options.getPrivateKeyPath(), options.getPrivateKeyPass());
+            }
+            catch (JSchException e)
+            {
+                if (e.getCause() instanceof FileNotFoundException)
+                {
+                    throw new RuntimeException("Private key not found");
+                }
+
+                throw e;
+            }
         }
 
         // Disable strict host checking (if not enabled)

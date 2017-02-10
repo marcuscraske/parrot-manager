@@ -82,6 +82,11 @@ export class DatabaseService
         return this.databaseService.getFileName();
     }
 
+    getPath() : string
+    {
+        return this.databaseService.getPath();
+    }
+
     isOpen() : boolean
     {
         return this.databaseService.isOpen();

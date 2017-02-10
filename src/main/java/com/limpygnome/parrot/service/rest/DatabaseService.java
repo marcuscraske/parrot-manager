@@ -6,10 +6,11 @@ import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.params.CryptoParams;
 import com.limpygnome.parrot.service.AbstractService;
 import com.limpygnome.parrot.service.server.DatabaseIOService;
-import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
+
+import java.io.File;
 
 /**
  * REST service for database service.
@@ -149,11 +150,19 @@ public class DatabaseService extends AbstractService
     }
 
     /**
-     * @return the name of the file currently open
+     * @return name of the file currently open
      */
     public synchronized String getFileName()
     {
         return currentFile != null ? currentFile.getName() : "";
+    }
+
+    /**
+     * @return full path of the file currently open
+     */
+    public synchronized String getPath()
+    {
+        return currentFile != null ? currentFile.getAbsolutePath() : "";
     }
 
     /**

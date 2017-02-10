@@ -153,14 +153,14 @@
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['privateKey'].valid }">
-                <label class="form-label" for="privateKey">
+            <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['privateKeyPath'].valid }">
+                <label class="form-label" for="privateKeyPath">
                     Private Key
                 </label>
                 <div class="input-group">
-                    <input id="privateKey"
-                           formControlName="privateKey"
-                           [(ngModel)]="openForm.value['privateKey']"
+                    <input id="privateKeyPath"
+                           formControlName="privateKeyPath"
+                           [(ngModel)]="openForm.value['privateKeyPath']"
                            type="text"
                            class="form-control"
                            placeholder="Only required for key file auth..."
@@ -262,7 +262,7 @@
         </label>
     </div>
 
-    <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null }">
+    <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
 
         <button type="submit" class="btn btn-primary">
             {{ currentMode == 'open' ? 'Open' : currentMode == 'edit' ? 'Save' : 'Add' }}
@@ -277,6 +277,7 @@
         </button>
 
         <span class="help-block">{{ errorMessage }}</span>
+        <span class="help-block">{{ successMessage }}</span>
 
     </div>
 

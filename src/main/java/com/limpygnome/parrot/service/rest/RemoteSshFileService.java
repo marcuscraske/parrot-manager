@@ -184,6 +184,7 @@ public class RemoteSshFileService
 
         // Check directory exists of local path
         String localPath = fileComponent.resolvePath(options.getDestinationPath());
+
         File localFile = new File(localPath);
         File parentLocalFile = localFile.getParentFile();
 
