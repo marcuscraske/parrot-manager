@@ -21,7 +21,7 @@
             <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
                 Edit
             </a>
-            <a class="btn btn-danger">
+            <a class="btn btn-danger" (click)="node.remove();">
                 Delete
             </a>
         </td>
