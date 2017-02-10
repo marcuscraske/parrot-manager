@@ -1,16 +1,10 @@
 package com.limpygnome.parrot.service.rest;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpProgressMonitor;
 import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.component.SshComponent;
 import com.limpygnome.parrot.model.db.DatabaseNode;
-import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.FileStatus;
+import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * A service for downloading and uploading remote files using SSH.
@@ -106,11 +99,17 @@ public class RemoteSshFileService
 
         try
         {
-            // Connect
-            session = sshComponent.connect(options);
+            // Check destination path
+            result = checkDestinationPath(options);
 
-            // Start download...
-            sshComponent.download(session, fileStatusMap, options);
+            if (result == null)
+            {
+                // Connect
+                session = sshComponent.connect(options);
+
+                // Start download...
+                sshComponent.download(session, fileStatusMap, options);
+            }
         }
         catch (Exception e)
         {
@@ -129,6 +128,12 @@ public class RemoteSshFileService
         return result;
     }
 
+    /**
+     * Tests the given SSH options without downloading/uploading any files.
+     *
+     * @param options SSH options to be tested
+     * @return error message; or null if successful/no issues encountered
+     */
     public String test(SshOptions options)
     {
         String result = null;
@@ -136,13 +141,20 @@ public class RemoteSshFileService
 
         try
         {
-            // Check directory exists of local path
+            // Check destination file first, fail fast...
+            result = checkDestinationPath(options);
 
-            // Connect
-            session = sshComponent.connect(options);
+            if (result == null)
+            {
+                // Connect
+                session = sshComponent.connect(options);
 
-            // Check remote connection works and file exists
-            result = sshComponent.checkRemotePathExists(options);
+                // Check remote connection works and file exists
+                if (!sshComponent.checkRemotePathExists(options, session))
+                {
+                    result = "Remote file does not exist";
+                }
+            }
         }
         catch (Exception e)
         {
@@ -164,6 +176,27 @@ public class RemoteSshFileService
     public String merge(SshOptions options)
     {
         return null;
+    }
+
+    private String checkDestinationPath(SshOptions options)
+    {
+        String result = null;
+
+        // Check directory exists of local path
+        String localPath = fileComponent.resolvePath(options.getDestinationPath());
+        File localFile = new File(localPath);
+        File parentLocalFile = localFile.getParentFile();
+
+        if (parentLocalFile == null || !parentLocalFile.exists())
+        {
+            result = "Destination directory does not exist";
+        }
+        else if (localFile.exists() && (!localFile.canWrite() || !localFile.canRead()))
+        {
+            result = "Cannot read/write to existing destination path file";
+        }
+
+        return result;
     }
 
 }

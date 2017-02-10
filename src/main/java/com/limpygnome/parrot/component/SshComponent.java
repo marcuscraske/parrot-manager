@@ -82,31 +82,15 @@ public class SshComponent
 
         try
         {
-            // Ensure local path fully resolved
+            // Ensure paths are fully resolved
             destinationPath = fileComponent.resolvePath(destinationPath);
-
-            // Replace ~/ with home directory
-            if (remotePath.startsWith("~/") && remotePath.length() > 2)
-            {
-                String home = channelSftp.getHome();
-                remotePath = home + "/" + remotePath.substring(2);
-                LOG.info("transfer - {} - replacing ~/ with home directory - new remote path: {}", randomToken, remotePath);
-            }
+            remotePath = resolveRemotePath(channelSftp, randomToken, remotePath);
 
             // Move to containing directory
-            File remoteFile = new File(remotePath);
-            File remoteFileParent = remoteFile.getParentFile();
-
-            if (remoteFileParent != null)
-            {
-                String remoteFileParentPath = remoteFileParent.getAbsolutePath();
-
-                LOG.info("transfer - {} - changing directory - path: {}", randomToken, remoteFileParentPath);
-                channelSftp.cd(remoteFileParentPath);
-            }
+            changeRemoteDirectoryIfNeeded(channelSftp, randomToken, remotePath);
 
             // Start the transfer...
-            String remoteFileName = remoteFile.getName();
+            String remoteFileName = getFileNameFromRemotePath(remotePath);
             LOG.info("transfer - {} - initiating transfer - fileName: {}", randomToken, remoteFileName);
 
             channelSftp.get(remoteFileName, destinationPath, new SftpProgressMonitor()
@@ -157,27 +141,92 @@ public class SshComponent
         }
     }
 
-    public String checkRemotePathExists(SshOptions options)
+    public boolean checkRemotePathExists(SshOptions options, SshSession session) throws SftpException
     {
+        ChannelSftp channelSftp = session.getChannelSftp();
+
+        // Resolve path
+        String remotePath = options.getRemotePath();
+        remotePath = resolveRemotePath(channelSftp, null, remotePath);
+
+        // Change to the remote path
+        changeRemoteDirectoryIfNeeded(channelSftp, null, remotePath);
+
+        // Check file exists
+        String remoteFileName = getFileNameFromRemotePath(remotePath);
+
+        boolean exists = !channelSftp.ls(remotePath).isEmpty();
+        return exists;
     }
 
+    /**
+     * Translates an exception into a more friendly message.
+     *
+     * @param e the exception; can be null
+     * @return the translate message; null if exception is null
+     */
     public String getExceptionMessage(Exception e)
     {
-        String message = e.getMessage();
+        String message;
 
-        // Improved error messages
-        if (e instanceof JSchException)
+        if (e != null)
         {
-            if ("Auth fail".equals(message))
+            message = e.getMessage();
+
+            // Improved error messages
+            if (e instanceof JSchException)
             {
-                message = "Auth failed - unable to connect using specified credentials";
-            } else if ("No such file".equals(message))
-            {
-                message = "Remote file could not be found";
+                if ("Auth fail".equals(message))
+                {
+                    message = "Auth failed - unable to connect using specified credentials";
+                } else if ("No such file".equals(message))
+                {
+                    message = "Remote file could not be found";
+                }
             }
+        }
+        else
+        {
+            message = null;
         }
 
         return message;
+    }
+
+    /* Common path short-hands are translated */
+    private String resolveRemotePath(ChannelSftp channelSftp, String randomToken, String remotePath) throws SftpException
+    {
+        // Replace ~/ with home directory
+        if (remotePath.startsWith("~/") && remotePath.length() > 2)
+        {
+            String home = channelSftp.getHome();
+            remotePath = home + "/" + remotePath.substring(2);
+            LOG.info("transfer - {} - replacing ~/ with home directory - new remote path: {}", randomToken, remotePath);
+        }
+
+        return remotePath;
+    }
+
+    /* Changes the current remote directory to the parent of the remote path (if it has a parent) */
+    private void changeRemoteDirectoryIfNeeded(ChannelSftp channelSftp, String randomToken, String remotePath) throws SftpException
+    {
+        // Move to containing directory
+        File remoteFile = new File(remotePath);
+        File remoteFileParent = remoteFile.getParentFile();
+
+        if (remoteFileParent != null)
+        {
+            String remoteFileParentPath = remoteFileParent.getAbsolutePath();
+
+            LOG.info("transfer - {} - changing directory - path: {}", randomToken, remoteFileParentPath);
+            channelSftp.cd(remoteFileParentPath);
+        }
+    }
+
+    private String getFileNameFromRemotePath(String remotePath)
+    {
+        File remoteFile = new File(remotePath);
+        return remoteFile.getName();
     }
 
 }

@@ -34,4 +34,10 @@ export class RemoteSshFileService {
         return result;
     }
 
+    test(options)
+    {
+        var result = this.remoteSshFileService.test(options);
+        return result;
+    }
+
 }

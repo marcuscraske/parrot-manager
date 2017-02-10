@@ -29,7 +29,9 @@ export class RemoteSyncSshComponent {
        promptKeyPass : [false]
     });
 
+    // Messages displayed to user; hidden when null
     errorMessage : string;
+    successMessage : string;
 
     // Observable subscription for params
     subParams : any;
@@ -139,17 +141,49 @@ export class RemoteSyncSshComponent {
 
     performOpen(options)
     {
+        // Begin async chain to prompt for passwords etc
+        this.chainDisableAndPrompt(options, () => { this.performDownloadAndOpen });
+    }
+
+    performTest()
+    {
+        if (this.openForm.valid)
+        {
+            console.log("testing...");
+
+            // Create download options
+            var options = this.createOptions();
+
+            // Begin async chain to prompt for passwords etc
+            this.chainDisableAndPrompt(options, () => { this.performTestWithAuth });
+        }
+        else
+        {
+            console.log("not testing, form is invalid");
+        }
+    }
+
+    chainDisableAndPrompt(options, finalCallback)
+    {
+        console.log("disabling form, wiping messages...");
+
+        // Wipe existing messages
+        this.errorMessage = null;
+        this.successMessage = null;
+
         // Disable form
         this.setFormDisabled(true);
 
-        // Begin chain to async prompt for passwords
-        this.chainPromptUserPass(options);
+        // Move onto asking for user pass
+        this.chainPromptUserPass(options, finalCallback);
     }
 
-    chainPromptUserPass(options)
+    chainPromptUserPass(options, finalCallback)
     {
         if (options.isPromptUserPass())
         {
+            console.log("prompting for user pass...");
+
             bootbox.prompt({
                 title: "Enter SSH user password:",
                 inputType: "password",
@@ -159,20 +193,23 @@ export class RemoteSyncSshComponent {
 
                     // Continue next stage in the chain...
                     console.log("continuing to key pass chain...");
-                    this.chainPromptKeyPass(options);
+                    this.chainPromptKeyPass(options, finalCallback);
                 }
             });
         }
         else
         {
-            this.chainPromptKeyPass(options);
+            console.log("skipped user pass prompt, moving to key pass...");
+            this.chainPromptKeyPass(options, finalCallback);
         }
     }
 
-    chainPromptKeyPass(options)
+    chainPromptKeyPass(options, finalCallback)
     {
-        if (options.isPromptUserPass())
+        if (options.isPromptKeyPass())
         {
+            console.log("prompting for key pass...");
+
             bootbox.prompt({
                 title: "Enter key password:",
                 inputType: "password",
@@ -182,13 +219,15 @@ export class RemoteSyncSshComponent {
 
                     // Continue next stage in the chain...
                     console.log("continuing to perform actual download and open...");
-                    this.performDownloadAndOpen(options);
+                    finalCallback(options);
                 }
             });
         }
         else
         {
-            this.performDownloadAndOpen(options);
+            console.log("skipped prompting user pass, invoking final callbaack...");
+
+            finalCallback(options);
         }
     }
 
@@ -229,6 +268,19 @@ export class RemoteSyncSshComponent {
                 }
 
             });
+        }
+    }
+
+    performTestWithAuth(options)
+    {
+        console.log("going to test options...");
+
+        // Invoke and assign error message (successful if null)
+        this.errorMessage = this.remoteSshFileService.test(options);
+
+        if (this.errorMessage == null)
+        {
+            this.successMessage = "Working!";
         }
     }
 
