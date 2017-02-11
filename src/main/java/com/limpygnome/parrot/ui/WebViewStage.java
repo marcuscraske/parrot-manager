@@ -11,6 +11,7 @@ import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -66,7 +67,15 @@ public class WebViewStage extends Stage
         setScene(scene);
         setTitle("parrot");
         setWidth(900.0);
-        setHeight(150.0);
+        setHeight(200.0);
+
+        // Setup icons
+        getIcons().addAll(
+                new Image(getClass().getResource("/icons/parrot-icon.png").toString()),
+                new Image(getClass().getResource("/icons/parrot-icon-64.png").toString()),
+                new Image(getClass().getResource("/icons/parrot-icon-512.png").toString()),
+                new Image(getClass().getResource("/icons/parrot.svg").toString())
+        );
 
         // Prevent window from closing to prevent data loss for dirty databases
         setOnCloseRequest(event -> {

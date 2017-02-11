@@ -14,7 +14,6 @@ export class RuntimeService {
 
     updateHeight()
     {
-
         var elementHtml = document.documentElement;
         var elementBody = document.body;
 
@@ -31,8 +30,8 @@ export class RuntimeService {
 
     changeHeight(newHeight)
     {
-         this.runtimeService.changeHeight(newHeight);
-     }
+        this.runtimeService.changeHeight(newHeight);
+    }
 
     pickFile(title, initialPath, isSave) : string
     {
