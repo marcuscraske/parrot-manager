@@ -68,4 +68,132 @@ export class RemoteSyncComponent {
         return result;
     }
 
+    sync()
+    {
+        console.log("starting sync...");
+
+        // Grab all the selected hosts and convert each one to options
+        var targetHosts = $("#remoteSyncTargets input[type=checkbox]:checked");
+
+        var self = this;
+        targetHosts.each(function() {
+
+            // Read the node identifier
+            var nodeId = $(this).attr("data-node-id");
+            console.log("syncing node - id: " + nodeId);
+
+            // Create SSH options and invoke sync
+            var node = self.databaseService.getNode(nodeId);
+
+            if (node != null)
+            {
+                console.log("creating initial ssh options for host...");
+                var options = null;
+
+                try
+                {
+                    options = self.remoteSshFileService.createOptionsFromNode(node);
+                }
+                catch (e)
+                {
+                    console.log("failed to create options for host");
+                    console.error(e);
+                }
+
+                if (options != null)
+                {
+                    console.log("starting sync chain for host...");
+                    self.syncChainPromptUserPass(options);
+                }
+                else
+                {
+                    self.logChange(node.getName() + " - failed to read host options; delete and re-create the sync host...");
+                }
+            }
+            else
+            {
+                console.log("node not found for sync - id: " + nodeId);
+            }
+
+        });
+    }
+
+    syncChainPromptUserPass(options)
+    {
+        if (options.isPromptUserPass())
+        {
+            console.log("prompting for user pass...");
+
+            bootbox.prompt({
+                title: options.getName() + " - enter SSH user password:",
+                inputType: "password",
+                callback: (password) => {
+                    // Update options
+                    options.setUserPass(password);
+
+                    // Continue next stage in the chain...
+                    console.log("continuing to key pass chain...");
+                    this.syncChainPromptKeyPass(options);
+                }
+            });
+        }
+        else
+        {
+            console.log("skipped user pass prompt, moving to key pass...");
+            this.syncChainPromptKeyPass(options);
+        }
+    }
+
+    syncChainPromptKeyPass(options)
+    {
+        if (options.isPromptKeyPass())
+        {
+            console.log("prompting for key pass...");
+
+            bootbox.prompt({
+                title: options.getName() + " - enter key password:",
+                inputType: "password",
+                callback: (password) => {
+                    // Update options
+                    options.setPrivateKeyPass(password);
+
+                    // Continue next stage in the chain...
+                    console.log("continuing to perform actual sync...");
+                    this.syncHost(options);
+                }
+            });
+        }
+        else
+        {
+            console.log("skipped prompting user pass, invoking final callback...");
+            this.syncHost(options);
+        }
+    }
+
+    syncHost(options)
+    {
+        console.log("syncing host...");
+    }
+
+    logChange(message)
+    {
+        var changeLog = $("#changeLog");
+
+        // Append date to message
+        var date = new Date();
+        message = date.toLocaleTimeString() + " - " + message;
+
+        // Log to console
+        console.log("change log - " + message);
+
+        // Append to changelog
+        var html = "<option>" + message + "</option>";
+        changeLog.append(html);
+
+        // Scroll to bottom
+        // TODO: find better method, perhaps with scrollTop...
+        changeLog.children(":last-child").prop("selected", true);
+        changeLog.children(":last-child").prop("selected", false);
+    }
+
 }

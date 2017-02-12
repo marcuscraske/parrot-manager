@@ -49,6 +49,8 @@ public class SshOptions implements Serializable, Cloneable
     private boolean promptKeyPass;
     private boolean strictHostChecking;
 
+    public SshOptions() { }
+
     public SshOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
     {
         this.randomToken = randomToken;
@@ -68,16 +70,6 @@ public class SshOptions implements Serializable, Cloneable
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    public String getRandomToken()
-    {
-        return randomToken;
-    }
-
-    public void setRandomToken(String randomToken)
-    {
-        this.randomToken = randomToken;
     }
 
     public String getHost()
@@ -110,16 +102,6 @@ public class SshOptions implements Serializable, Cloneable
         this.user = user;
     }
 
-    public String getDestinationPath()
-    {
-        return destinationPath;
-    }
-
-    public void setDestinationPath(String destinationPath)
-    {
-        this.destinationPath = destinationPath;
-    }
-
     public String getRemotePath()
     {
         return remotePath;
@@ -148,11 +130,6 @@ public class SshOptions implements Serializable, Cloneable
     public void setStrictHostChecking(boolean strictHostChecking)
     {
         this.strictHostChecking = strictHostChecking;
-    }
-
-    public boolean isPrivateKey()
-    {
-        return privateKeyPath != null && privateKeyPath.length() > 0;
     }
 
     public String getPrivateKeyPath()
@@ -205,6 +182,57 @@ public class SshOptions implements Serializable, Cloneable
         this.proxyType = proxyType;
     }
 
+    public boolean isPromptUserPass()
+    {
+        return promptUserPass;
+    }
+
+    public void setPromptUserPass(boolean promptUserPass)
+    {
+        this.promptUserPass = promptUserPass;
+    }
+
+    public boolean isPromptKeyPass()
+    {
+        return promptKeyPass;
+    }
+
+    public void setPromptKeyPass(boolean promptKeyPass)
+    {
+        this.promptKeyPass = promptKeyPass;
+    }
+
+    @JsonIgnore
+    public String getDestinationPath()
+    {
+        return destinationPath;
+    }
+
+    @JsonIgnore
+    public void setDestinationPath(String destinationPath)
+    {
+        this.destinationPath = destinationPath;
+    }
+
+    @JsonIgnore
+    public String getRandomToken()
+    {
+        return randomToken;
+    }
+
+    @JsonIgnore
+    public void setRandomToken(String randomToken)
+    {
+        this.randomToken = randomToken;
+    }
+
+    @JsonIgnore
+    public boolean isPrivateKey()
+    {
+        return privateKeyPath != null && privateKeyPath.length() > 0;
+    }
+
+    @JsonIgnore
     public Proxy getProxy()
     {
         Proxy result = null;
@@ -230,26 +258,6 @@ public class SshOptions implements Serializable, Cloneable
         }
 
         return result;
-    }
-
-    public boolean isPromptUserPass()
-    {
-        return promptUserPass;
-    }
-
-    public void setPromptUserPass(boolean promptUserPass)
-    {
-        this.promptUserPass = promptUserPass;
-    }
-
-    public boolean isPromptKeyPass()
-    {
-        return promptKeyPass;
-    }
-
-    public void setPromptKeyPass(boolean promptKeyPass)
-    {
-        this.promptKeyPass = promptKeyPass;
     }
 
     /**
