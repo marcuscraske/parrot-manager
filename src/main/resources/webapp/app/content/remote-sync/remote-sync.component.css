@@ -12,3 +12,8 @@ table.remote-sync tr td:nth-child(3)
 {
     width: 50%;
 }
+
+#changeLog
+{
+    height: 8em;
+}

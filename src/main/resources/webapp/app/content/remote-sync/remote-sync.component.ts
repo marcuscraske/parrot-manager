@@ -1,21 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewChecked } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
+import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { Router } from '@angular/router';
 
 @Component({
     moduleId: module.id,
     templateUrl: 'remote-sync.component.html',
     styleUrls: ['remote-sync.component.css'],
-    providers: [RemoteSshFileService, DatabaseService]
+    providers: [RemoteSshFileService, DatabaseService, RemoteSyncChangeLogService]
 })
-export class RemoteSyncComponent {
+export class RemoteSyncComponent implements AfterViewChecked {
 
     remoteSyncNode : any;
+    oldChangeLog : string;
 
     constructor(private remoteSshFileService: RemoteSshFileService, private databaseService: DatabaseService,
-                    private router: Router, public fb: FormBuilder) { }
+                private router: Router, public fb: FormBuilder, private remoteSyncChangeLogService: RemoteSyncChangeLogService
+    ) { }
 
     ngOnInit()
     {
@@ -24,6 +27,19 @@ export class RemoteSyncComponent {
         var rootNode = database.getRoot();
 
         this.remoteSyncNode = rootNode.getByName("remote-sync");
+    }
+
+    ngAfterViewChecked()
+    {
+        // Keeps changelog scrolled to bottom
+        var changeLog = $("#changeLog");
+        var newChangeLog = changeLog.val();
+
+        if (newChangeLog != this.oldChangeLog)
+        {
+            changeLog.scrollTop(changeLog[0].scrollHeight - changeLog.height());
+            this.oldChangeLog = newChangeLog;
+        }
     }
 
     trackChildren(index, node)
@@ -118,7 +134,7 @@ export class RemoteSyncComponent {
                 }
                 else
                 {
-                    self.logChange(node.getName() + " - failed to read host options; delete and re-create the sync host...");
+                    self.remoteSyncChangeLogService.add(node.getName() + " - failed to read host options; delete and re-create the sync host...");
                 }
             }
             else
@@ -206,38 +222,20 @@ export class RemoteSyncComponent {
 
     syncHost(options, remoteDatabasePassword)
     {
-        this.logChange(options.getName() + " - syncing host");
+        this.remoteSyncChangeLogService.add(options.getName() + " - syncing host");
 
         var database = this.databaseService.getDatabase();
         var result = this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
 
         // Split result message and log each line
         var lines = result.split("\n");
+        var line;
+
         for (var i = 0; i < lines.length; i++)
         {
-            this.logChange(options.getName() + " - " + lines[i]);
+            line = options.getName() + " - " + lines[i];
+            this.remoteSyncChangeLogService.add(line);
         }
-    }
-
-    logChange(message)
-    {
-        var changeLog = $("#changeLog");
-
-        // Append date to message
-        var date = new Date();
-        message = date.toLocaleTimeString() + " - " + message;
-
-        // Log to console
-        console.log("change log - " + message);
-
-        // Append to changelog
-        var html = "<option>" + message + "</option>";
-        changeLog.append(html);
-
-        // Scroll to bottom
-        // TODO: find better method, perhaps with scrollTop...
-        changeLog.children(":last-child").prop("selected", true);
-        changeLog.children(":last-child").prop("selected", false);
     }
 
 }
