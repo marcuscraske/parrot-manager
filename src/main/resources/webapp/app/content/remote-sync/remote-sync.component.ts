@@ -210,7 +210,13 @@ export class RemoteSyncComponent {
 
         var database = this.databaseService.getDatabase();
         var result = this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
-        this.logChange(options.getName() + " - " + result);
+
+        // Split result message and log each line
+        var lines = result.split("\n");
+        for (var i = 0; i < lines.length; i++)
+        {
+            this.logChange(options.getName() + " - " + lines[i]);
+        }
     }
 
     logChange(message)

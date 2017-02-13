@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 
 /**
  * A service for downloading and uploading remote files using SSH.
@@ -211,9 +212,23 @@ public class RemoteSshFileService
                     LOG.info("sync - neither database is dirty");
                 }
 
-                // TODO: return actual log, this is just to get things going for now; prolly want actual async callbacks
-                result = "merged";
+                // Build result
+                String separator = System.lineSeparator();
+                StringBuilder buffer = new StringBuilder();
+                actionsLog.getActions().stream().forEach(action -> buffer.append(action.getAction()).append(separator));
+                if (buffer.length() > 0)
+                {
+                    int separatorLen = separator.length();
+                    int len = buffer.length();
+                    buffer.delete(len - separatorLen, len);
+                }
+                result = buffer.toString();
             }
+        }
+        catch (InvalidCipherTextException e)
+        {
+            result = "Incorrect password or corrupted file";
+            LOG.error("Failed to open remote database due to invalid crypto (wrong password / corrupted)", e);
         }
         catch (Exception e)
         {

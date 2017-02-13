@@ -28,7 +28,7 @@ export class ViewerEntriesComponent
     addNewEntry()
     {
         // Add new node to current node
-        var newNode = this.currentNode.add();
+        var newNode = this.currentNode.addNew();
 
         if (newNode != null)
         {

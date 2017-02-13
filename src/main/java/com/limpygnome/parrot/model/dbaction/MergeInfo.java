@@ -15,7 +15,7 @@ public class MergeInfo {
     public MergeInfo(MergeInfo parent, DatabaseNode currentNode)
     {
         this.actionsLog = parent.actionsLog;
-        nodePath = (parent != null ? parent.nodePath : "") + "/" + currentNode.getName();
+        nodePath = currentNode.getPath();
     }
 
     public MergeInfo(ActionsLog actionsLog, DatabaseNode currentNode)

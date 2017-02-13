@@ -89,10 +89,14 @@ public class SshComponent
 
     public void upload(SshSession sshSession, SshOptions options, String srcPath) throws SftpException
     {
-        // TODO: add monitor in future...
         ChannelSftp channelSftp = sshSession.getChannelSftp();
 
-        channelSftp.put(srcPath, options.getRemotePath());
+        // Resolve remote path
+        String remotePath = resolveRemotePath(channelSftp, options.getRandomToken(), options.getRemotePath());
+
+        // Upload file
+        // TODO: add monitor in future...
+        channelSftp.put(srcPath, remotePath);
     }
 
     public void download(SshSession sshSession, SshOptions options, String destinationPath) throws SftpException

@@ -481,14 +481,14 @@ public class DatabaseNode
                     database.lookup.remove(child.id);
 
                     // TODO: add test
-                    mergeInfo.addMergeMessage("removed child - " + child.getName());
+                    mergeInfo.addMergeMessage("removed child - " + child.getPath());
                     database.setDirty(true);
                 }
                 else
                 {
                     // Our child is missing from the remote site
                     // TODO: add test
-                    mergeInfo.addMergeMessage("remote node missing our child - " + child.getName());
+                    mergeInfo.addMergeMessage("remote node missing our child - " + child.getPath());
                     src.database.setDirty(true);
                 }
             }
@@ -511,13 +511,13 @@ public class DatabaseNode
                 {
                     newNode = otherChild.clone(database);
                     add(newNode);
-                    mergeInfo.addMergeMessage("added child - " + newNode.name);
+                    mergeInfo.addMergeMessage("added child - " + newNode.getPath());
                     database.setDirty(true);
                 }
                 else if (isDeleted)
                 {
                     // Looks like we deleted the current node on our side...
-                    mergeInfo.addMergeMessage("remote node deleted on our side - " + otherChild.name);
+                    mergeInfo.addMergeMessage("node already deleted in local database - " + otherChild.getPath());
                     src.database.setDirty(true);
                 }
             }
@@ -562,7 +562,7 @@ public class DatabaseNode
      *
      * TODO: add tests
      */
-    public synchronized DatabaseNode add()
+    public synchronized DatabaseNode addNew()
     {
         // Add node
         UUID randomUuid = UUID.randomUUID();
@@ -613,6 +613,22 @@ public class DatabaseNode
     public DatabaseNode getParent()
     {
         return parent;
+    }
+
+    /**
+     * TODO: unit test
+     * @return the full path of this node
+     */
+    public String getPath()
+    {
+        String path = name != null ? name : "[" + id + "]";
+
+        if (parent != null)
+        {
+            path = parent.getPath() + "/" + path;
+        }
+
+        return path;
     }
 
     @Override
