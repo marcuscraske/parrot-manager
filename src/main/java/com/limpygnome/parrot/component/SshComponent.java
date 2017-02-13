@@ -6,8 +6,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.SftpProgressMonitor;
-import com.limpygnome.parrot.model.remote.FileStatus;
 import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -85,9 +82,9 @@ public class SshComponent
         return sshSession;
     }
 
-    public void download(SshSession sshSession, Map<String, FileStatus> fileStatusMap, SshOptions options) throws SftpException
+    public void download(SshSession sshSession, SshOptions options) throws SftpException
     {
-        download(sshSession, fileStatusMap, options, options.getDestinationPath());
+        download(sshSession, options, options.getDestinationPath());
     }
 
     public void upload(SshSession sshSession, SshOptions options, String srcPath) throws SftpException
@@ -98,72 +95,26 @@ public class SshComponent
         channelSftp.put(srcPath, options.getRemotePath());
     }
 
-    public void download(SshSession sshSession, Map<String, FileStatus> fileStatusMap, SshOptions options, String destinationPath) throws SftpException
+    public void download(SshSession sshSession, SshOptions options, String destinationPath) throws SftpException
     {
         ChannelSftp channelSftp = sshSession.getChannelSftp();
 
         final String randomToken = options.getRandomToken();
         String remotePath = options.getRemotePath();
 
-        try
-        {
-            // Ensure paths are fully resolved
-            destinationPath = fileComponent.resolvePath(destinationPath);
-            remotePath = resolveRemotePath(channelSftp, randomToken, remotePath);
+        // Ensure paths are fully resolved
+        destinationPath = fileComponent.resolvePath(destinationPath);
+        remotePath = resolveRemotePath(channelSftp, randomToken, remotePath);
 
-            // Move to containing directory
-            changeRemoteDirectoryIfNeeded(channelSftp, randomToken, remotePath);
+        // Move to containing directory
+        changeRemoteDirectoryIfNeeded(channelSftp, randomToken, remotePath);
 
-            // Start the transfer...
-            String remoteFileName = getFileNameFromRemotePath(remotePath);
-            LOG.info("transfer - {} - initiating transfer - fileName: {}", randomToken, remoteFileName);
+        // Start the transfer...
+        String remoteFileName = getFileNameFromRemotePath(remotePath);
+        LOG.info("transfer - {} - initiating transfer - fileName: {}", randomToken, remoteFileName);
 
-            channelSftp.get(remoteFileName, destinationPath, new SftpProgressMonitor()
-            {
-                @Override
-                public void init(int op, String src, String dest, long maxBytes)
-                {
-                    LOG.info("transfer - {} - init - max bytes: {}", randomToken, maxBytes);
-
-                    synchronized (fileStatusMap)
-                    {
-                        FileStatus status = fileStatusMap.get(randomToken);
-                        status.setMax(maxBytes);
-                    }
-                }
-
-                @Override
-                public boolean count(long bytes)
-                {
-                    LOG.info("transfer - {} - progress - bytes: {}", randomToken, bytes);
-
-                    synchronized (fileStatusMap)
-                    {
-                        FileStatus status = fileStatusMap.get(randomToken);
-                        status.setCurrent(bytes);
-                    }
-
-                    return true;
-                }
-
-                @Override
-                public void end()
-                {
-                    LOG.info("transfer - finished");
-                }
-            });
-        }
-        finally
-        {
-            // Remove progress
-            if (randomToken != null)
-            {
-                synchronized (fileStatusMap)
-                {
-                    fileStatusMap.remove(randomToken);
-                }
-            }
-        }
+        // TODO: add monitor in future
+        channelSftp.get(remoteFileName, destinationPath);
     }
 
     public boolean checkRemotePathExists(SshOptions options, SshSession session) throws SftpException

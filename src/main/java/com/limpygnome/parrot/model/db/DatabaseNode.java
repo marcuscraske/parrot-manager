@@ -393,13 +393,20 @@ public class DatabaseNode
      *
      * This does not add it to the target database, nor does this operation set the dirty flag.
      *
+     * TODO: review unit test, bug found here...
+     *
      * @param database the database to contain the new cloned node
      * @return a cloned instance of this db
      */
     protected synchronized DatabaseNode clone(Database database)
     {
         DatabaseNode newNode = new DatabaseNode(database, id, name, lastModified);
-        newNode.value = new EncryptedAesValue(value.getIv().clone(), value.getValue().clone());
+
+        // TODO: unit test null value beiing cloned
+        if (value != null)
+        {
+            newNode.value = new EncryptedAesValue(value.getIv().clone(), value.getValue().clone());
+        }
 
         // Perform same recursion on children
         DatabaseNode clonedChild;

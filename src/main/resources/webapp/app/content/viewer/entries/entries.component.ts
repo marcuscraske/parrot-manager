@@ -30,15 +30,22 @@ export class ViewerEntriesComponent
         // Add new node to current node
         var newNode = this.currentNode.add();
 
-        // Change view to new node
-        var nodeId = newNode.getId();
-        this.changeNodeBeingViewed.emit(nodeId);
+        if (newNode != null)
+        {
+            // Change view to new node
+            var nodeId = newNode.getId();
+            this.changeNodeBeingViewed.emit(nodeId);
 
-        // Update tree
-        // TODO: implement events on server side....
-        this.updateTree.emit();
+            // Update tree
+            // TODO: implement events on server side....
+            this.updateTree.emit();
 
-        console.log("added new entry - id: " + nodeId);
+            console.log("added new entry - id: " + nodeId);
+        }
+        else
+        {
+            console.log("failed to create new node - curr node: " + this.currentNode.getId());
+        }
     }
 
     deleteSelectAll(event)

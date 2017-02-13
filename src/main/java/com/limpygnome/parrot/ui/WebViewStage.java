@@ -48,7 +48,7 @@ public class WebViewStage extends Stage
         this.runtimeService = new RuntimeService(controller, this);
         this.databaseService = new DatabaseService(controller);
         this.randomGeneratorService = new RandomGeneratorService();
-        this.remoteSshFileService = new RemoteSshFileService();
+        this.remoteSshFileService = new RemoteSshFileService(controller);
 
         // Setup webview
         webView = new WebView();

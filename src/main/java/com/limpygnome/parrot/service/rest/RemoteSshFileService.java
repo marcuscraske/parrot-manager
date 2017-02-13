@@ -6,15 +6,12 @@ import com.limpygnome.parrot.component.SshComponent;
 import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.db.DatabaseNode;
 import com.limpygnome.parrot.model.dbaction.ActionsLog;
-import com.limpygnome.parrot.model.remote.FileStatus;
 import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A service for downloading and uploading remote files using SSH.
@@ -30,15 +27,12 @@ public class RemoteSshFileService
     private FileComponent fileComponent;
     private SshComponent sshComponent;
 
-    private Map<String, FileStatus> fileStatusMap;
-
     public RemoteSshFileService(Controller controller)
     {
         this.controller = controller;
 
         this.fileComponent = new FileComponent();
         this.sshComponent = new SshComponent();
-        this.fileStatusMap = new HashMap<>();
     }
 
     /**
@@ -73,28 +67,9 @@ public class RemoteSshFileService
     }
 
     /**
-     * Retrieves the status of a file download/upload.
-     *
-     * @param randomToken the same token used to initiate a download/upload
-     * @return the status, or null if not found / transfer has ended
-     */
-    public FileStatus getStatus(String randomToken)
-    {
-        FileStatus fileStatus;
-
-        synchronized (fileStatusMap)
-        {
-            fileStatus = fileStatusMap.get(randomToken);
-        }
-
-        return fileStatus;
-    }
-
-    /**
      * Begins downloading a file from an SSH host.
      *
-     * Invocation is synchronous, but the status of a file can be retrieved using {@link #getStatus}, using the
-     * provided token.
+     * Invocation is synchronous.
      *
      * @param options the config for a download
      * @return error message, otherwise null if successful
@@ -115,7 +90,7 @@ public class RemoteSshFileService
                 session = sshComponent.connect(options);
 
                 // Start download...
-                sshComponent.download(session, fileStatusMap, options);
+                sshComponent.download(session, options);
             }
         }
         catch (Exception e)
@@ -210,7 +185,7 @@ public class RemoteSshFileService
 
                 // Start download...
                 LOG.info("sync - downloading");
-                sshComponent.download(session, fileStatusMap, options, syncPath);
+                sshComponent.download(session, options, syncPath);
 
                 // Load remote database
                 LOG.info("sync - loading remote database");

@@ -40,9 +40,9 @@ export class RemoteSshFileService {
         return result;
     }
 
-    sync(options)
+    sync(database, options, remoteDatabasePassword)
     {
-        var result = this.remoteSshFileService.sync(options);
+        var result = this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
         return result;
     }
 

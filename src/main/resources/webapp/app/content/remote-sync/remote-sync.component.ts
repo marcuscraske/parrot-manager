@@ -95,14 +95,20 @@ export class RemoteSyncComponent {
                     // Read existing options
                     options = self.remoteSshFileService.createOptionsFromNode(node);
 
+                    if (options == null)
+                    {
+                        throw "no options returned";
+                    }
+
                     // Set destination path to current file open
-                    var currentPath = this.databaseService.getPath();
+                    var currentPath = self.databaseService.getPath();
                     options.setDestinationPath(currentPath);
                 }
                 catch (e)
                 {
                     console.log("failed to create options for host");
                     console.error(e);
+                    options = null;
                 }
 
                 if (options != null)
@@ -164,18 +170,18 @@ export class RemoteSyncComponent {
 
                     // Continue next stage in the chain...
                     console.log("continuing to perform actual sync...");
-                    this.syncHost(options);
+                    this.syncChainPromptDatabasePass(options);
                 }
             });
         }
         else
         {
             console.log("skipped prompting user pass, invoking final callback...");
-            this.syncHost(options);
+            this.syncChainPromptDatabasePass(options);
         }
     }
 
-    syncChainPromptKeyPass(options)
+    syncChainPromptDatabasePass(options)
     {
         console.log("prompting for remote db pass...");
 
@@ -183,9 +189,17 @@ export class RemoteSyncComponent {
             title: options.getName() + " - enter database password:",
             inputType: "password",
             callback: (password) => {
-                // Continue next stage in the chain...
-                console.log("continuing to perform actual sync...");
-                this.syncHost(options, password);
+
+                if (password != null)
+                {
+                    // Continue next stage in the chain...
+                    console.log("continuing to perform actual sync...");
+                    this.syncHost(options, password);
+                }
+                else
+                {
+                    console.log("no password specified, user has cancelled entering remote db password");
+                }
             }
         });
     }
