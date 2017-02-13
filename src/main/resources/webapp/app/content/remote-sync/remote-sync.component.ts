@@ -92,7 +92,12 @@ export class RemoteSyncComponent {
 
                 try
                 {
+                    // Read existing options
                     options = self.remoteSshFileService.createOptionsFromNode(node);
+
+                    // Set destination path to current file open
+                    var currentPath = this.databaseService.getPath();
+                    options.setDestinationPath(currentPath);
                 }
                 catch (e)
                 {
@@ -170,9 +175,28 @@ export class RemoteSyncComponent {
         }
     }
 
-    syncHost(options)
+    syncChainPromptKeyPass(options)
     {
-        console.log("syncing host...");
+        console.log("prompting for remote db pass...");
+
+        bootbox.prompt({
+            title: options.getName() + " - enter database password:",
+            inputType: "password",
+            callback: (password) => {
+                // Continue next stage in the chain...
+                console.log("continuing to perform actual sync...");
+                this.syncHost(options, password);
+            }
+        });
+    }
+
+    syncHost(options, remoteDatabasePassword)
+    {
+        this.logChange(options.getName() + " - syncing host");
+
+        var database = this.databaseService.getDatabase();
+        var result = this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
+        this.logChange(options.getName() + " - " + result);
     }
 
     logChange(message)

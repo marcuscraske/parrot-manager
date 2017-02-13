@@ -87,10 +87,22 @@ public class SshComponent
 
     public void download(SshSession sshSession, Map<String, FileStatus> fileStatusMap, SshOptions options) throws SftpException
     {
+        download(sshSession, fileStatusMap, options, options.getDestinationPath());
+    }
+
+    public void upload(SshSession sshSession, SshOptions options, String srcPath) throws SftpException
+    {
+        // TODO: add monitor in future...
+        ChannelSftp channelSftp = sshSession.getChannelSftp();
+
+        channelSftp.put(srcPath, options.getRemotePath());
+    }
+
+    public void download(SshSession sshSession, Map<String, FileStatus> fileStatusMap, SshOptions options, String destinationPath) throws SftpException
+    {
         ChannelSftp channelSftp = sshSession.getChannelSftp();
 
         final String randomToken = options.getRandomToken();
-        String destinationPath = options.getDestinationPath();
         String remotePath = options.getRemotePath();
 
         try
@@ -164,9 +176,6 @@ public class SshComponent
 
         // Change to the remote path
         changeRemoteDirectoryIfNeeded(channelSftp, null, remotePath);
-
-        // Check file exists
-        String remoteFileName = getFileNameFromRemotePath(remotePath);
 
         boolean exists = !channelSftp.ls(remotePath).isEmpty();
         return exists;

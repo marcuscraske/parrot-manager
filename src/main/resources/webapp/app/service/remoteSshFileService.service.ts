@@ -40,4 +40,10 @@ export class RemoteSshFileService {
         return result;
     }
 
+    sync(options)
+    {
+        var result = this.remoteSshFileService.sync(options);
+        return result;
+    }
+
 }

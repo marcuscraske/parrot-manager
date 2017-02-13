@@ -201,7 +201,7 @@ public final class Database
      *
      * @param controller the current runtime controller
      * @param memoryCryptoParams the new params
-     * @param password the current password
+     * @param password the new password
      * @throws Exception if crypto fails
      */
     public synchronized void updateMemoryCryptoParams(Controller controller, CryptoParams memoryCryptoParams, char[] password) throws Exception
@@ -227,11 +227,17 @@ public final class Database
     }
 
     /**
-     * Merges the two databases together.
+     * Merges remote database into this current database.
+     *
+     * At the end of this operation, it's expected that this current database instance will contain the result of the
+     * merge, so that this database has the combined additions//deletions merged together.
+     *
+     * If there are any changes between the two databases, the dirty flag is set. If changes are made to this database,
+     * the flag is set. If no changes are made, but required on the passed database instance, its dirty flag is set.
      *
      * @param actionsLog used to log any actions/changes to the database during the merge
      * @param database the other database to be merged with this database
-     * @param password the password for the current database
+     * @param password the password for the passed database
      * @throws Exception when unable to merge
      */
     public synchronized void merge(ActionsLog actionsLog, Database database, char[] password) throws Exception
@@ -240,11 +246,15 @@ public final class Database
         if (fileCryptoParams.getLastModified() < database.fileCryptoParams.getLastModified()) {
             updateFileCryptoParams(controller, database.fileCryptoParams, password);
             actionsLog.add(new Action("updated file crypto parameters"));
+            // TODO: add test
+            database.setDirty(true);
         }
 
         if (memoryCryptoParams.getLastModified() < database.memoryCryptoParams.getLastModified()) {
             updateMemoryCryptoParams(controller, database.memoryCryptoParams, password);
             actionsLog.add(new Action("updated memory crypto parameters"));
+            // TODO: add test
+            database.setDirty(true);
         }
 
         // Merge nodes

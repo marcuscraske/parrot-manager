@@ -16,6 +16,9 @@ import java.io.Serializable;
 /**
  * Options for downloading a remote SSH file.
  *
+ * WARNING: this class is serialized using Jackson, hence be careful when adding new getters/setters, ensure
+ * jsonignore annotation is set appropriately.
+ *
  * TODO: unit test
  */
 public class SshOptions implements Serializable, Cloneable

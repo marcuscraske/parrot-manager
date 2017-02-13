@@ -2,8 +2,10 @@ package com.limpygnome.parrot.model.db;
 
 import com.limpygnome.parrot.model.dbaction.MergeInfo;
 import com.limpygnome.parrot.model.params.CryptoParams;
+import org.joda.time.DateTime;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,9 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 /**
  * Represents a db in a database.
@@ -441,6 +440,12 @@ public class DatabaseNode
 
             mergeInfo.addMergeMessage("updated node properties");
         }
+        else if (src.lastModified < lastModified)
+        {
+            // TODO: add test
+            src.database.setDirty(true);
+            mergeInfo.addMergeMessage("node older on remote side");
+        }
 
         // Compare our children against theirs
         {
@@ -459,7 +464,7 @@ public class DatabaseNode
 
                 if (otherNode != null)
                 {
-                    // Recursively merge child
+                    // Recursively merge our child
                     child.merge(new MergeInfo(mergeInfo, child), otherNode);
                 }
                 else if (src.deletedChildren.contains(child.id))
@@ -467,10 +472,17 @@ public class DatabaseNode
                     // Remove from our tree, this node has been deleted
                     iterator.remove();
                     database.lookup.remove(child.id);
-                    // TODO: add test
-                    database.setDirty(true);
 
+                    // TODO: add test
                     mergeInfo.addMergeMessage("removed child - " + child.getName());
+                    database.setDirty(true);
+                }
+                else
+                {
+                    // Our child is missing from the remote site
+                    // TODO: add test
+                    mergeInfo.addMergeMessage("remote node missing our child - " + child.getName());
+                    src.database.setDirty(true);
                 }
             }
         }
@@ -479,17 +491,27 @@ public class DatabaseNode
         {
             DatabaseNode otherChild;
             DatabaseNode newNode;
+            boolean isDeleted;
 
             for (Map.Entry<UUID, DatabaseNode> kv : src.children.entrySet())
             {
                 otherChild = kv.getValue();
 
-                // Check if new db to add to our side (new node)...
-                if (!children.containsKey(otherChild.id) && !deletedChildren.contains(otherChild.id))
+                // New node on their side that we don't have...
+                isDeleted = deletedChildren.contains(otherChild.id);
+
+                if (!children.containsKey(otherChild.id) && !isDeleted)
                 {
                     newNode = otherChild.clone(database);
                     add(newNode);
                     mergeInfo.addMergeMessage("added child - " + newNode.name);
+                    database.setDirty(true);
+                }
+                else if (isDeleted)
+                {
+                    // Looks like we deleted the current node on our side...
+                    mergeInfo.addMergeMessage("remote node deleted on our side - " + otherChild.name);
+                    src.database.setDirty(true);
                 }
             }
         }
@@ -501,8 +523,8 @@ public class DatabaseNode
         // TODO: add test
         if (change)
         {
-            database.setDirty(true);
             mergeInfo.addMergeMessage("updated list of deleted nodes");
+            database.setDirty(true);
         }
     }
 
@@ -625,4 +647,5 @@ public class DatabaseNode
                 ", lastModified="    + lastModified +
                 '}';
     }
+
 }

@@ -1,8 +1,11 @@
 package com.limpygnome.parrot.service.rest;
 
+import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.component.SshComponent;
+import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.db.DatabaseNode;
+import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.remote.FileStatus;
 import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
@@ -22,13 +25,17 @@ public class RemoteSshFileService
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
+    private Controller controller;
+
     private FileComponent fileComponent;
     private SshComponent sshComponent;
 
     private Map<String, FileStatus> fileStatusMap;
 
-    public RemoteSshFileService()
+    public RemoteSshFileService(Controller controller)
     {
+        this.controller = controller;
+
         this.fileComponent = new FileComponent();
         this.sshComponent = new SshComponent();
         this.fileStatusMap = new HashMap<>();
@@ -173,9 +180,81 @@ public class RemoteSshFileService
         return result;
     }
 
-    public String merge(SshOptions options)
+    public String sync(Database database, SshOptions options, String remotePassword)
     {
-        return null;
+        // TODO: perhaps we should use DB service instead...
+        if (options.getDestinationPath() == null)
+        {
+            throw new IllegalArgumentException("Internal error - destination path must be setup on options");
+        }
+
+        // Alter destination path for this host
+        // TODO: will need to fix this for async merging...
+        String syncPath = options.getDestinationPath();
+        syncPath = syncPath + ".sync";
+
+        // Begin sync process...
+        String result = null;
+        SshSession session = null;
+
+        try
+        {
+            // Check destination path
+            result = checkDestinationPath(options);
+
+            if (result == null)
+            {
+                // Connect
+                LOG.info("sync - connecting");
+                session = sshComponent.connect(options);
+
+                // Start download...
+                LOG.info("sync - downloading");
+                sshComponent.download(session, fileStatusMap, options, syncPath);
+
+                // Load remote database
+                LOG.info("sync - loading remote database");
+                Database remoteDatabase = controller.getDatabaseIOService().open(controller, syncPath, remotePassword.toCharArray());
+
+                // Perform merge and check if any change occurred...
+                LOG.info("sync - performing merge...");
+                ActionsLog actionsLog = controller.getDatabaseIOService().merge(remoteDatabase, database, remotePassword.toCharArray());
+
+                // Check if we need to upload...
+                if (database.isDirty() || remoteDatabase.isDirty())
+                {
+                    // Save current database
+                    LOG.info("sync - database(s) dirty, saving... - local: {}, remote: {}", database.isDirty(), remoteDatabase.isDirty());
+                    controller.getDatabaseIOService().save(controller, database, options.getDestinationPath());
+
+                    // Upload to remote
+                    LOG.info("sync - uploading to remote host...");
+                    sshComponent.upload(session, options, options.getDestinationPath());
+                }
+                else
+                {
+                    LOG.info("sync - neither database is dirty");
+                }
+
+                // TODO: return actual log, this is just to get things going for now; prolly want actual async callbacks
+                result = "merged";
+            }
+        }
+        catch (Exception e)
+        {
+            result = sshComponent.getExceptionMessage(e);
+            LOG.error("sync - {} - exception", options.getRandomToken(), e);
+        }
+        finally
+        {
+            // Disconnect
+            if (session != null)
+            {
+                session.dispose();
+            }
+        }
+
+        return result;
     }
 
     private String checkDestinationPath(SshOptions options)
