@@ -1,0 +1,7 @@
+Package: parrot-manager
+Version: @VERSION@
+Section: web
+Priority: optional
+Architecture: all
+Maintainer: limpygnome
+Description: Password manager

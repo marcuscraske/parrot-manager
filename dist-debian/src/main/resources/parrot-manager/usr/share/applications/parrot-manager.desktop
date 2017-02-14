@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=${project.version}
+Name=parrot
+Comment=Password manager
+Exec=java -jar /usr/bin/parrot.jar
+Icon=/usr/share/parrot-manager/parrot-icon.png
+Terminal=false
+Type=Application
+Categories=Utility;Application;
