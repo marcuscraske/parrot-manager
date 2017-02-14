@@ -5,12 +5,12 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.limpygnome</groupId>
-        <artifactId>parrot</artifactId>
+        <groupId>com.limpygnome.parrot</groupId>
+        <artifactId>dist</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.limpygnome.parrot</groupId>
-    <artifactId>dist-debian</artifactId>
+    <groupId>com.limpygnome.parrot.dist</groupId>
+    <artifactId>debian</artifactId>
     <packaging>pom</packaging>
 
     <build>
@@ -39,12 +39,12 @@
 
                                 <!-- Copy executable -->
                                 <mkdir dir="${project.build.directory}/parrot-manager/usr/bin" />
-                                <copy file="${project.basedir}/../parrot-manager/target/parrot.jar"
+                                <copy file="${project.basedir}/../../parrot-manager/target/parrot.jar"
                                       tofile="${project.build.directory}/parrot-manager/usr/bin/parrot.jar" />
 
                                 <!-- Copy icon -->
                                 <mkdir dir="${project.build.directory}/parrot-manager/usr/share/parrot-manager" />
-                                <copy file="${project.basedir}/../parrot-manager/src/main/resources/icons/parrot-icon-512.png"
+                                <copy file="${project.basedir}/../../parrot-manager/src/main/resources/icons/parrot-icon-512.png"
                                       tofile="${project.build.directory}/parrot-manager/usr/share/parrot-manager/parrot-icon.png"
                                 />
 
