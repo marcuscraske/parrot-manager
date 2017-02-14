@@ -10,9 +10,9 @@ import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 
 import java.io.File;
-import org.bouncycastle.crypto.InvalidCipherTextException;
 
 /**
  * A service for downloading and uploading remote files using SSH.
@@ -165,9 +165,9 @@ public class RemoteSshFileService
         }
 
         // Alter destination path for this host
-        // TODO: will need to fix this for async merging...
+        int fullHostNameHash = (options.getHost() + options.getPort()).hashCode();
         String syncPath = options.getDestinationPath();
-        syncPath = syncPath + ".sync";
+        syncPath = syncPath + "." + fullHostNameHash + "." + System.currentTimeMillis() + ".sync";
 
         // Begin sync process...
         String result = null;
@@ -237,6 +237,14 @@ public class RemoteSshFileService
         }
         finally
         {
+            // Cleanup sync file
+            File syncFile = new File(syncPath);
+
+            if (syncFile.exists())
+            {
+                syncFile.delete();
+            }
+
             // Disconnect
             if (session != null)
             {
