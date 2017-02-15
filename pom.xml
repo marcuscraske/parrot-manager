@@ -14,4 +14,11 @@
         <module>dist</module>
     </modules>
 
+    <scm>
+        <url>https://github.com/limpygnome/parrot-manager</url>
+        <connection>scm:git:https://github.com/limpygnome/parrot-manager.git</connection>
+        <developerConnection>scm:git:https://github.com/limpygnome/parrot-manager.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
 </project>
