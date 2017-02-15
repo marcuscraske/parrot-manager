@@ -13,6 +13,13 @@
     <artifactId>github</artifactId>
     <packaging>pom</packaging>
 
+    <scm>
+        <url>https://github.com/limpygnome/parrot-manager</url>
+        <connection>scm:git:https://github.com/limpygnome/parrot-manager.git</connection>
+        <developerConnection>scm:git:https://github.com/limpygnome/parrot-manager.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
 
@@ -20,6 +27,14 @@
                 <groupId>de.jutzig</groupId>
                 <artifactId>github-release-plugin</artifactId>
                 <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>release</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
                 <configuration>
                     <description>See CHANGELOG file.</description>
                     <releaseName>${project.version}</releaseName>
