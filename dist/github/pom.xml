@@ -23,6 +23,33 @@
     <build>
         <plugins>
 
+            <!-- Generate MD5 checksums -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <configuration>
+                    <exportAntProperties>true</exportAntProperties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <loadfile srcFile="${project.basedir}/../../changelog/${project.version}.md" property="dist.changelog" />
+                                <checksum file="../debian/target/parrot-manager-${project.version}.deb" property="dist.debian.md5" />
+                                <checksum file="../jar/target/parrot-jar-${project.version}.tar.gz" property="dist.jar.tar.md5" />
+                                <checksum file="../jar/target/parrot-jar-${project.version}.zip" property="dist.jar.zip.md5" />
+                                <checksum file="../windows/target/parrot-windows-${project.version}.zip" property="dist.windows.md5" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Push artifacts to Github -->
             <plugin>
                 <groupId>de.jutzig</groupId>
                 <artifactId>github-release-plugin</artifactId>
@@ -36,7 +63,16 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <description>See CHANGELOG file.</description>
+<description>
+Changelog:
+${dist.changelog}
+
+MD5 checksums:
+* parrot-manager-${project.version}.deb  : ${dist.debian.md5}
+* parrot-jar-${project.version}.tar.gz   : ${dist.jar.tar.md5}
+* parrot-jar-${project.version}.zip      : ${dist.jar.zip.md5}
+* parrot-windows-${project.version}.zip  : ${dist.windows.md5}
+</description>
                     <releaseName>${project.version}</releaseName>
                     <tag>${project.version}</tag>
                     <fileSets>
