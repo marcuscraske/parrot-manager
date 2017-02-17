@@ -93,10 +93,3 @@ header div a.dirty
 {
     color: yellow;
 }
-
-/* Give development icons a different colour, so they stand out / do not look normal. */
-.development
-{
-    background: #333;
-    color: red;
-}

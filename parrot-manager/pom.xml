@@ -124,6 +124,9 @@
                 </executions>
             </plugin>
 
+            <!-- Create build.properties file -->
+
+
             <!-- Build JAR distribution -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -38,7 +38,7 @@ public class Program extends Application
         Stream argStream = Stream.of(args);
 
         // Read params
-        developmentMode = argStream.anyMatch(s -> "-development".equals(s));
+        developmentMode = argStream.anyMatch(s -> "--development".equals(s));
 
         // Launch JavaFX app
         launch(args);

@@ -51,4 +51,8 @@ a
     border-color: none;
 }
 
+a
+{
+    text-decoration: underline;
+}
 
