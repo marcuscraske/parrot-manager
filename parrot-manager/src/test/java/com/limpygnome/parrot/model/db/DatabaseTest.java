@@ -166,26 +166,32 @@ public class DatabaseTest {
     }
 
     @Test
-    public void merge_whenMemoryCryptoParamsNewer_thenChanged() throws Exception
+    public void merge_givenSoakTest_whenMemoryCryptoParamsNewer_thenChanged() throws Exception
     {
-        // Given
-        Database databaseRemote = createDatabase("different password".toCharArray(), DEFAULT_LAST_MODIFIED + 1, DEFAULT_LAST_MODIFIED);
-        long currentHash = System.identityHashCode(database.memoryCryptoParams);
-        long remoteHash = System.identityHashCode(databaseRemote.memoryCryptoParams);
-        byte[] oldSalt = database.memoryCryptoParams.getSalt();
+        for (int i = 0; i < 256; i++)
+        {
+            setup();
 
-        // When
-        database.merge(actionsLog, databaseRemote, PASSWORD);
+            final char[] DIFFERENT_PASSWORD = "different password".toCharArray();
 
-        // Then
-        long updatedHash = System.identityHashCode(database.memoryCryptoParams);
-        assertTrue("Expected memory crypto params to change", currentHash != updatedHash);
-        assertTrue("Expected new object for updated memory crypto params", updatedHash != remoteHash);
-        assertTrue("Expected salt to be different", !oldSalt.equals(database.memoryCryptoParams.getSalt()));
+            // Given
+            Database databaseRemote = createDatabase(DIFFERENT_PASSWORD, DEFAULT_LAST_MODIFIED + 1, DEFAULT_LAST_MODIFIED);
+            long currentHash = System.identityHashCode(database.memoryCryptoParams);
+            long remoteHash = System.identityHashCode(databaseRemote.memoryCryptoParams);
+            byte[] oldSalt = database.memoryCryptoParams.getSalt();
 
-        DatabaseNode child = database.getRoot().getChildrenMap().values().iterator().next();
-        // TODO: pad block corrupted - seen for line below, investigate if seen again...
-        assertArrayEquals("Expected to be able to decrypt child data", TEST_DATA, child.getDecryptedValue());
+            // When
+            database.merge(actionsLog, databaseRemote, DIFFERENT_PASSWORD);
+
+            // Then
+            long updatedHash = System.identityHashCode(database.memoryCryptoParams);
+            assertTrue("Expected memory crypto params to change", currentHash != updatedHash);
+            assertTrue("Expected new object for updated memory crypto params", updatedHash != remoteHash);
+            assertTrue("Expected salt to be different", !oldSalt.equals(database.memoryCryptoParams.getSalt()));
+
+            DatabaseNode child = database.getRoot().getChildrenMap().values().iterator().next();
+            assertArrayEquals("Expected to be able to decrypt child data", TEST_DATA, child.getDecryptedValue());
+        }
     }
 
     @Test

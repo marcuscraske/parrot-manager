@@ -2,11 +2,12 @@ package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import com.limpygnome.parrot.service.server.CryptographyService;
-import java.util.Base64;
-import javax.crypto.SecretKey;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.crypto.SecretKey;
+import java.util.Base64;
 
 public class CryptographyTest {
 
@@ -43,6 +44,15 @@ public class CryptographyTest {
     {
         // 500 chars test
         encryptDecryptTest("N8eIeLcuL7uhBukF8HAR1tS22IR5e307lUBZxINuvHED9FmY2DYwAfVgWVJOpLQr7TPbY5HD51q1hfHvmkCka3M0JZGuQzNfTLwhbcUHLOcPaTkG8U6BWAlBz0zohLZ3g6Po9vhMIGFwiCetDXLA0FVIwr07ENL10vCRVtO68z1O87qXMf3HFxhAE8RNOiS0Oq2Kv1miWtnDHrgmeje1ShpX6ZtPjtkwZVJBOe1nDUyHsYG5yr5nHPPCXNxRrl9cyPevvQ7JYXwht0X2lsPaZJN6AQ7QHUvTcb9W6tSUpnmt0NuaKj65OP1BZtwn26Cl9RQWge0tCuU31ZDFzFAPTSSqsbNCCsAJT20QJybYoZcqGJpOjvT2JikhnXF1wmBklEUNjRYeiHqTawAt4v0VHNooNg79Ehh9Qi9ky2IAgROABKvUt6JtrqCrSJYAWpVe5qPO2fFyDRBh5pagCCXX3pWFGPDkUOz2p7U77t26sV90NmV0K1hX");
+    }
+
+    @Test
+    public void encryptDecryptSoakTest() throws Exception
+    {
+        for (int i = 0; i < 64; i++)
+        {
+            encryptDecryptTest("hello :) 123456789 foo bar test string");
+        }
     }
 
     private void encryptDecryptTest(final String MAGIC_WORD) throws Exception

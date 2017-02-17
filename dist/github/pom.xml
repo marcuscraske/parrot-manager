@@ -64,7 +64,6 @@
                 </executions>
                 <configuration>
 <description>
-Changelog:
 ${dist.changelog}
 
 MD5 checksums:
