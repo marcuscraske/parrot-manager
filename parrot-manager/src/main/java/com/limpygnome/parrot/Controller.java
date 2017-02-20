@@ -1,12 +1,10 @@
 package com.limpygnome.parrot;
 
-import com.limpygnome.parrot.model.params.CryptoParamsFactory;
+import com.limpygnome.parrot.service.BackupService;
 import com.limpygnome.parrot.service.DatabaseService;
 import com.limpygnome.parrot.service.RandomGeneratorService;
 import com.limpygnome.parrot.service.RemoteSshFileService;
 import com.limpygnome.parrot.service.RuntimeService;
-import com.limpygnome.parrot.service.CryptographyService;
-import com.limpygnome.parrot.service.DatabaseIOService;
 import com.limpygnome.parrot.ui.WebViewStage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,10 +20,6 @@ public class Controller
 {
     // Services
     @Autowired
-    private CryptographyService cryptographyService;
-    @Autowired
-    private DatabaseIOService databaseIOService;
-    @Autowired
     private DatabaseService databaseService;
     @Autowired
     private RandomGeneratorService randomGeneratorService;
@@ -33,10 +27,8 @@ public class Controller
     private RemoteSshFileService remoteSshFileService;
     @Autowired
     private RuntimeService runtimeService;
-
-    // Components
     @Autowired
-    private CryptoParamsFactory cryptoParamsFactory;
+    private BackupService backupService;
 
     // Properties
     private boolean developmentMode;
@@ -60,43 +52,12 @@ public class Controller
         runtimeService.setStage(stage);
 
         // Inject required services into front-end
+        // WARNING: due to JavaFX "bug", never pass newly constructed instances here
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);
         stage.exposeJsObject("randomGeneratorService", randomGeneratorService);
         stage.exposeJsObject("remoteSshFileService", remoteSshFileService);
-    }
-
-    public DatabaseService getDatabaseService()
-    {
-        return databaseService;
-    }
-
-    public RandomGeneratorService getRandomGeneratorService()
-    {
-        return randomGeneratorService;
-    }
-
-    public RemoteSshFileService getRemoteSshFileService()
-    {
-        return remoteSshFileService;
-    }
-
-    public RuntimeService getRuntimeService()
-    {
-        return runtimeService;
-    }
-
-    public CryptographyService getCryptographyService() {
-        return cryptographyService;
-    }
-
-    public DatabaseIOService getDatabaseIOService() {
-        return databaseIOService;
-    }
-
-    public CryptoParamsFactory getCryptoParamsFactory()
-    {
-        return cryptoParamsFactory;
+        stage.exposeJsObject("backupService", backupService);
     }
 
     /**

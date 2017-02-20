@@ -1,20 +1,19 @@
 package com.limpygnome.parrot.service;
 
-import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.component.SshComponent;
-import com.limpygnome.parrot.model.db.Database;
-import com.limpygnome.parrot.model.db.DatabaseNode;
-import com.limpygnome.parrot.model.dbaction.ActionsLog;
+import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.db.DatabaseReaderWriter;
+import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
+import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
 
 /**
  * A service for downloading and uploading remote files using SSH.
@@ -28,7 +27,7 @@ public class RemoteSshFileService
 
     // Services
     @Autowired
-    private DatabaseIOService databaseIOService;
+    private DatabaseReaderWriter databaseReaderWriter;
 
     // Components
     @Autowired
@@ -190,18 +189,18 @@ public class RemoteSshFileService
 
                 // Load remote database
                 LOG.info("sync - loading remote database");
-                Database remoteDatabase = databaseIOService.open(syncPath, remotePassword.toCharArray());
+                Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
 
                 // Perform merge and check if any change occurred...
                 LOG.info("sync - performing merge...");
-                ActionsLog actionsLog = databaseIOService.merge(remoteDatabase, database, remotePassword.toCharArray());
+                ActionsLog actionsLog = databaseReaderWriter.merge(remoteDatabase, database, remotePassword.toCharArray());
 
                 // Check if we need to upload...
                 if (database.isDirty() || remoteDatabase.isDirty())
                 {
                     // Save current database
                     LOG.info("sync - database(s) dirty, saving... - local: {}, remote: {}", database.isDirty(), remoteDatabase.isDirty());
-                    databaseIOService.save(database, options.getDestinationPath());
+                    databaseReaderWriter.save(database, options.getDestinationPath());
 
                     // Upload to remote
                     LOG.info("sync - uploading to remote host...");

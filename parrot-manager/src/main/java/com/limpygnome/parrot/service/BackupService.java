@@ -11,8 +11,6 @@ public class BackupService
 {
     @Autowired
     private DatabaseService databaseService;
-    @Autowired
-    private DatabaseIOService databaseIOService;
 
     public void create()
     {

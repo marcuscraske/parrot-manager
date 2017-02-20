@@ -37,7 +37,8 @@ File name may differ and no installation process is required, as the JAR is stan
 - Raise any suggestions or bugs as issues
 - This project is open to pull requests
 
-This project uses Java, JavaFX WebView and AngularJS 2; as well as many front-end libraries, managed by npm.
+This project uses Java, JavaFX WebView and AngularJS 2; as well as many front-end libraries, managed by npm. Each
+module should have its own `README.md` file for purpose.
 
 ### main
 The entire project, including distributions, can be built using:

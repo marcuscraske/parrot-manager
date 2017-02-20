@@ -1,5 +1,8 @@
 # TODO / Roadmap
 
+## Major/in-progress
+- Need to move JSON related functions out of library or in own contained package.
+
 ## Features
 - Add ability to enable auto-backup / creates backed up versions.
   - Specify retention period / copies etc.

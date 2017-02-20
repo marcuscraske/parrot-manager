@@ -1,16 +1,16 @@
 package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.component.FileComponent;
-import com.limpygnome.parrot.model.db.Database;
-import com.limpygnome.parrot.model.params.CryptoParams;
-import com.limpygnome.parrot.model.params.CryptoParamsFactory;
+import com.limpygnome.parrot.library.crypto.CryptoParams;
+import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
+import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.DatabaseReaderWriter;
+import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
 
 /**
  * A layer above database service, which maintains the current database open.
@@ -22,9 +22,7 @@ public class DatabaseService
 
     // Services
     @Autowired
-    private DatabaseIOService databaseIOService;
-    @Autowired
-    private CryptographyService cryptographyService;
+    private DatabaseReaderWriter databaseReaderWriter;
 
     // Components
     @Autowired
@@ -58,10 +56,10 @@ public class DatabaseService
                     password.toCharArray(), rounds, System.currentTimeMillis()
             );
 
-            this.database = databaseIOService.create(memoryCryptoParams, fileCryptoParams);
+            this.database = databaseReaderWriter.create(memoryCryptoParams, fileCryptoParams);
 
             // Attempt to save...
-            databaseIOService.save(database, location);
+            databaseReaderWriter.save(database, location);
 
             // Update internal state
             this.currentFile = new File(location);
@@ -94,7 +92,7 @@ public class DatabaseService
 
         try
         {
-            database = databaseIOService.open(path, password.toCharArray());
+            database = databaseReaderWriter.open(path, password.toCharArray());
             currentFile = new File(path);
             result = null;
         }
@@ -129,7 +127,7 @@ public class DatabaseService
             LOG.info("saving database - path: {}", path);
 
             // Save the database
-            databaseIOService.save(database, path);
+            databaseReaderWriter.save(database, path);
 
             // Reset dirty flag
             database.setDirty(false);

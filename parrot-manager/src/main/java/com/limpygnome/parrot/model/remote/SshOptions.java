@@ -4,14 +4,13 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
-import com.limpygnome.parrot.model.db.Database;
-import com.limpygnome.parrot.model.db.DatabaseNode;
+import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.DatabaseNode;
+import java.io.Serializable;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import java.io.Serializable;
 
 /**
  * Options for downloading a remote SSH file.

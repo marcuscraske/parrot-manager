@@ -1,5 +1,0 @@
-1.0:
-    - Remote syncing (SSH) added, along with general UI improvements.
-
-0.1:
-    - Initial concept with basic database open/create/save.
