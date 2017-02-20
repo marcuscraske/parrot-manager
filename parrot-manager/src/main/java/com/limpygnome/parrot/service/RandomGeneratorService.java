@@ -1,7 +1,8 @@
-package com.limpygnome.parrot.service.rest;
+package com.limpygnome.parrot.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
@@ -10,6 +11,7 @@ import java.security.SecureRandom;
  *
  * TODO: unit test
  */
+@Service
 public class RandomGeneratorService
 {
     private static final Logger LOG = LogManager.getLogger(RandomGeneratorService.class);

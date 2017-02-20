@@ -1,16 +1,18 @@
-package com.limpygnome.parrot.service.server;
+package com.limpygnome.parrot.service;
 
-import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.db.DatabaseNode;
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import com.limpygnome.parrot.model.dbaction.Action;
 import com.limpygnome.parrot.model.dbaction.ActionsLog;
 import com.limpygnome.parrot.model.params.CryptoParams;
+import com.limpygnome.parrot.model.params.CryptoParamsFactory;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.io.File;
@@ -60,29 +62,31 @@ import java.util.UUID;
  *     deleted: [ list of uuid (string), ... ]
  * }
  */
+@Service
 public class DatabaseIOService
 {
-    private Controller controller;
+    // Services
+    @Autowired
+    private CryptographyService cryptographyService;
 
-    public DatabaseIOService(Controller controller)
-    {
-        this.controller = controller;
-    }
+    // Components
+    @Autowired
+    private CryptoParamsFactory cryptoParamsFactory;
 
     public Database create(CryptoParams memoryCryptoParams, CryptoParams fileCryptoParams) throws Exception
     {
-        Database database = new Database(controller, memoryCryptoParams, fileCryptoParams);
+        Database database = new Database(memoryCryptoParams, fileCryptoParams);
         return database;
     }
 
-    public synchronized Database open(Controller controller, String path, char[] password) throws Exception
+    public synchronized Database open(String path, char[] password) throws Exception
     {
         byte[] encryptedData = Files.readAllBytes(new File(path).toPath());
-        Database database = openFileEncrypted(controller, encryptedData, password);
+        Database database = openFileEncrypted(encryptedData, password);
         return database;
     }
 
-    public Database openFileEncrypted(Controller controller, byte[] encryptedData, char[] password) throws Exception
+    public Database openFileEncrypted(byte[] encryptedData, char[] password) throws Exception
     {
         // Convert to JSON
         String encryptedText = new String(encryptedData, "UTF-8");
@@ -91,13 +95,12 @@ public class DatabaseIOService
         JSONObject json = (JSONObject) jsonParser.parse(encryptedText);
 
         // Read params to decrypt database
-        CryptoParams fileCryptoParams = CryptoParams.parse(controller, json, password);
+        CryptoParams fileCryptoParams = cryptoParamsFactory.parse(json, password);
 
         byte[] iv = Base64.decode((String) json.get("iv"));
         byte[] data = Base64.decode((String) json.get("data"));
 
         // Decrypt it...
-        CryptographyService cryptographyService = controller.getCryptographyService();
         SecretKey secretKey = cryptographyService.createSecretKey(password, fileCryptoParams.getSalt(), fileCryptoParams.getRounds());
         byte[] decryptedData = cryptographyService.decrypt(secretKey, new EncryptedAesValue(iv, data));
 
@@ -116,10 +119,10 @@ public class DatabaseIOService
         JSONObject json = (JSONObject) jsonParser.parse(text);
 
         // Read params
-        CryptoParams memoryCryptoParams = CryptoParams.parse(controller, json, password);
+        CryptoParams memoryCryptoParams = cryptoParamsFactory.parse(json, password);
 
         // Setup database
-        Database database = new Database(controller, memoryCryptoParams, fileCryptoParams);
+        Database database = new Database(memoryCryptoParams, fileCryptoParams);
 
         // Traverse and parse db structure
         DatabaseNode root = database.getRoot();
@@ -263,7 +266,7 @@ public class DatabaseIOService
         }
     }
 
-    public byte[] saveMemoryEncrypted(Controller controller, Database database) throws Exception
+    public byte[] saveMemoryEncrypted(Database database) throws Exception
     {
         // Convert to JSON object
         DatabaseNode rootNode = database.getRoot();
@@ -280,14 +283,14 @@ public class DatabaseIOService
         return result;
     }
 
-    public byte[] saveFileEncrypted(Controller controller, Database database) throws Exception
+    public byte[] saveFileEncrypted(Database database) throws Exception
     {
         // Save as memory encrypted
-        byte[] memoryEncrypted = saveMemoryEncrypted(controller, database);
+        byte[] memoryEncrypted = saveMemoryEncrypted(database);
 
         // Apply file encryption
         CryptoParams fileCryptoParams = database.getFileCryptoParams();
-        EncryptedAesValue fileEncrypted = controller.getCryptographyService().encrypt(fileCryptoParams.getSecretKey(), memoryEncrypted);
+        EncryptedAesValue fileEncrypted = cryptographyService.encrypt(fileCryptoParams.getSecretKey(), memoryEncrypted);
 
         // Build JSON wrapper
         JSONObject jsonFileEncrypted = new JSONObject();
@@ -303,10 +306,10 @@ public class DatabaseIOService
         return result;
     }
 
-    public void save(Controller controller, Database database, String path) throws Exception
+    public void save(Database database, String path) throws Exception
     {
         // Save as file encrypted
-        byte[] fileEncrypted = saveFileEncrypted(controller, database);
+        byte[] fileEncrypted = saveFileEncrypted(database);
 
         // Write to path
         Files.write(new File(path).toPath(), fileEncrypted);

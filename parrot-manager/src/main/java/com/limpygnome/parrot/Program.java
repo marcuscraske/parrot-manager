@@ -1,9 +1,12 @@
 package com.limpygnome.parrot;
 
+import com.limpygnome.parrot.config.AppConfig;
 import com.limpygnome.parrot.ui.WebViewStage;
 import com.limpygnome.parrot.ui.urlstream.ResourceUrlConfig;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.stream.Stream;
 
@@ -18,7 +21,9 @@ public class Program extends Application
 
     public Program()
     {
-        controller = new Controller(developmentMode);
+        // Create new controller using Spring
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        controller = applicationContext.getBean(Controller.class, developmentMode);
     }
 
     @Override

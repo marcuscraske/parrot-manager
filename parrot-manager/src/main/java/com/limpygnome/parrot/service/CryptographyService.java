@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.service.server;
+package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import org.bouncycastle.crypto.CipherParameters;
@@ -7,6 +7,7 @@ import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -18,6 +19,7 @@ import java.security.spec.KeySpec;
 /**
  * A service for performing common cryptography functions.
  */
+@Service
 public class CryptographyService {
 
     // The length of secret keys

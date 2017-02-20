@@ -10,6 +10,8 @@ import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,16 +22,13 @@ import java.util.Properties;
  *
  * TODO: unit test
  */
+@Component
 public class SshComponent
 {
     private static final Logger LOG = LogManager.getLogger(SshComponent.class);
 
+    @Autowired
     private FileComponent fileComponent;
-
-    public SshComponent()
-    {
-        this.fileComponent = new FileComponent();
-    }
 
     public SshSession connect(SshOptions options) throws JSchException
     {

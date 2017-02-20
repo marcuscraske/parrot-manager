@@ -1,7 +1,6 @@
 package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
-import com.limpygnome.parrot.service.server.CryptographyService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

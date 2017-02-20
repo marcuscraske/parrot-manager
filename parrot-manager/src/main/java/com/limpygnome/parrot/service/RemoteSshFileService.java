@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.service.rest;
+package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.component.FileComponent;
@@ -11,6 +11,8 @@ import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 
@@ -19,22 +21,20 @@ import java.io.File;
  *
  * TODO: unit test
  */
+@Service
 public class RemoteSshFileService
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
-    private Controller controller;
+    // Services
+    @Autowired
+    private DatabaseIOService databaseIOService;
 
+    // Components
+    @Autowired
     private FileComponent fileComponent;
+    @Autowired
     private SshComponent sshComponent;
-
-    public RemoteSshFileService(Controller controller)
-    {
-        this.controller = controller;
-
-        this.fileComponent = new FileComponent();
-        this.sshComponent = new SshComponent();
-    }
 
     /**
      * Creates options from a set of mandatory values.
@@ -190,18 +190,18 @@ public class RemoteSshFileService
 
                 // Load remote database
                 LOG.info("sync - loading remote database");
-                Database remoteDatabase = controller.getDatabaseIOService().open(controller, syncPath, remotePassword.toCharArray());
+                Database remoteDatabase = databaseIOService.open(syncPath, remotePassword.toCharArray());
 
                 // Perform merge and check if any change occurred...
                 LOG.info("sync - performing merge...");
-                ActionsLog actionsLog = controller.getDatabaseIOService().merge(remoteDatabase, database, remotePassword.toCharArray());
+                ActionsLog actionsLog = databaseIOService.merge(remoteDatabase, database, remotePassword.toCharArray());
 
                 // Check if we need to upload...
                 if (database.isDirty() || remoteDatabase.isDirty())
                 {
                     // Save current database
                     LOG.info("sync - database(s) dirty, saving... - local: {}, remote: {}", database.isDirty(), remoteDatabase.isDirty());
-                    controller.getDatabaseIOService().save(controller, database, options.getDestinationPath());
+                    databaseIOService.save(database, options.getDestinationPath());
 
                     // Upload to remote
                     LOG.info("sync - uploading to remote host...");

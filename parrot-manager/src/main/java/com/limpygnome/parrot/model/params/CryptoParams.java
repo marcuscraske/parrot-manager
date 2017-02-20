@@ -1,6 +1,5 @@
 package com.limpygnome.parrot.model.params;
 
-import com.limpygnome.parrot.Controller;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONObject;
 
@@ -17,56 +16,23 @@ import java.util.Arrays;
 public class CryptoParams
 {
     // The salt randomly generated when the DB was created
-    private byte[] salt;
+    byte[] salt;
 
     // Number of rounds to perform
-    private int rounds;
+    int rounds;
 
     // THe time at which the params were last modified
-    private long lastModified;
+    long lastModified;
 
-    // Generated from above - the actual secret key
-    private transient SecretKey secretKey;
+    // Generated from above - the actual secret key; cannot be serialized
+    transient SecretKey secretKey;
 
-    /**
-     * Construct an instance.
-     *
-     * This will generate a salt and a secret key, intended for initial first usage.
-     *
-     * @param controller
-     * @param password
-     * @param rounds
-     * @throws Exception
-     */
-    public CryptoParams(Controller controller, char[] password, int rounds, long lastModified) throws Exception
-    {
-        this.salt = controller.getCryptographyService().generateRandomSalt();
-        this.rounds = rounds;
-        this.lastModified = lastModified;
-
-        // Generate secret key
-        secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
-    }
-
-    /**
-     * Constructs an instance.
-     *
-     * This will generate a secret key.
-     *
-     * @param controller
-     * @param password
-     * @param salt
-     * @param rounds
-     * @throws Exception
-     */
-    public CryptoParams(Controller controller, char[] password, byte[] salt, int rounds, long lastModified) throws Exception
+    CryptoParams(byte[] salt, int rounds, long lastModified, SecretKey secretKey) throws Exception
     {
         this.salt = salt;
         this.rounds = rounds;
         this.lastModified = lastModified;
-
-        // Generate secret key
-        secretKey = controller.getCryptographyService().createSecretKey(password, salt, rounds);
+        this.secretKey = secretKey;
     }
 
     /**
@@ -111,31 +77,6 @@ public class CryptoParams
         object.put("cryptoParams.salt", Base64.toBase64String(salt));
         object.put("cryptoParams.rounds", rounds);
         object.put("cryptoParams.modified", lastModified);
-    }
-
-    public CryptoParams clone(Controller controller, char[] password) throws Exception
-    {
-        CryptoParams result = new CryptoParams(controller, password, rounds, lastModified);
-        return result;
-    }
-
-    /**
-     * Parses an instance from JSON.
-     *
-     * The following attribs are expected:
-     * - salt - base64 of byte data
-     * - rounds - integer/short
-     *
-     * @param object
-     */
-    public static CryptoParams parse(Controller controller, JSONObject object, char[] password) throws Exception
-    {
-        byte[] salt = Base64.decode((String) object.get("cryptoParams.salt"));
-        int rounds = (int) (long) object.get("cryptoParams.rounds");
-        long lastModified = (long) object.get("cryptoParams.modified");
-
-        CryptoParams params = new CryptoParams(controller, password, salt, rounds, lastModified);
-        return params;
     }
 
     @Override

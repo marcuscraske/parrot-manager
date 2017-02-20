@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.service.rest;
+package com.limpygnome.parrot.service;
 
 import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.ui.WebViewStage;
@@ -7,6 +7,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -14,18 +16,19 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * REST service for runtime service.
+ * A service for runtime state and functionality.
  */
+@Service
 public class RuntimeService
 {
     private static final Logger LOG = LogManager.getLogger(RuntimeService.class);
 
+    @Autowired
     private Controller controller;
-    private final WebViewStage stage;
+    private WebViewStage stage;
 
-    public RuntimeService(Controller controller, WebViewStage stage)
+    public void setStage(WebViewStage stage)
     {
-        this.controller = controller;
         this.stage = stage;
     }
 

@@ -5,8 +5,6 @@ import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.db.DatabaseNode;
 import com.limpygnome.parrot.model.db.EncryptedAesValue;
 import com.limpygnome.parrot.model.params.CryptoParams;
-import com.limpygnome.parrot.service.server.CryptographyService;
-import com.limpygnome.parrot.service.server.DatabaseIOService;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,13 +12,18 @@ import org.json.simple.parser.JSONParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseIOServiceTest
@@ -29,21 +32,27 @@ public class DatabaseIOServiceTest
     private static final char[] PASSWORD = "unit test password".toCharArray();
     private static final long LAST_MODIFIED = 1234L;
 
+    @Spy
+    private CryptographyService cryptographyService;
+
+    // Mock objects
+    @Spy
+    @InjectMocks
+    private Controller controller;
+
     // SUT
+    @InjectMocks
     private DatabaseIOService service;
 
     // Objects
-    private Controller controller = new Controller(false);
     private CryptoParams memoryCryptoParams;
     private CryptoParams fileCryptoParams;
-    byte[] iv = new byte[]{ 0x44 };
-    byte[] encryptedData = new byte[]{ 0x22 };
+    private byte[] iv = new byte[]{ 0x44 };
+    private byte[] encryptedData = new byte[]{ 0x22 };
 
     @Before
     public void setup() throws Exception
     {
-        service = new DatabaseIOService(controller);
-
         memoryCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT, LAST_MODIFIED);
         fileCryptoParams = new CryptoParams(controller, PASSWORD, CryptographyService.ROUNDS_DEFAULT / 2, LAST_MODIFIED);
     }

@@ -2,36 +2,50 @@
     settings
 </h1>
 
-<div class="row">
-    <div class="col-xs-4"></div>
-    <div class="col-xs-4">
-        <h2>
-            recent files
-        </h2>
-        <div class="form-group">
-            <label class="checkbox-inline">
-                <input type="checkbox"
-                       id="recentFilesEnabled"
-                />
-                Enabled
-            </label>
-        </div>
-        <h2>
-            automatic backups
-        </h2>
-        <div class="form-group">
-            <label class="checkbox-inline">
-                <input type="checkbox"
-                       id="automaticBacupsEnabled"
-                />
-                Enabled
-            </label>
-        </div>
-        <div class="form-group text-center">
-            <button type="submit" class="btn btn-primary">
-                Save
-            </button>
-        </div>
-    </div>
-    <div class="col-xs-4"></div>
+<h2>
+    recent files
+</h2>
+<div class="form-group">
+    <label class="checkbox-inline">
+        <input type="checkbox"
+               id="recentFilesEnabled"
+        />
+        Enabled
+    </label>
+</div>
+
+<h2>
+    automatic backups
+</h2>
+<div class="form-group">
+    <label class="checkbox-inline">
+        <input type="checkbox"
+               id="automaticBackupsEnabled"
+        />
+        Enabled
+    </label>
+</div>
+<div class="form-group">
+    <label class="checkbox-inline">
+        <input type="checkbox"
+               id="automaticBackupsOnSave"
+        />
+        Backup on save
+    </label>
+</div>
+<div class="form-group">
+    <label class="form-control-label" for="automaticBackupsRetained">
+        Maximum backups retained
+    </label>
+    <input id="automaticBackupsRetained"
+           type="number"
+           class="form-control"
+           placeholder="Leave empty for unlimited"
+    />
+</div>
+
+<div class="form-group text-center">
+    <button type="submit" class="btn btn-primary">
+        Save
+    </button>
 </div>

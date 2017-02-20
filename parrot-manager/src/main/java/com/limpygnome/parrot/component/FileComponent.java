@@ -1,10 +1,13 @@
 package com.limpygnome.parrot.component;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Used to resolve paths and perform common operations for file related functions.
  *
  * TODO: unit test
  */
+@Component
 public class FileComponent
 {
 

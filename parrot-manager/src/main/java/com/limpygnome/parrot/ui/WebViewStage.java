@@ -1,10 +1,6 @@
 package com.limpygnome.parrot.ui;
 
 import com.limpygnome.parrot.Controller;
-import com.limpygnome.parrot.service.rest.DatabaseService;
-import com.limpygnome.parrot.service.rest.RandomGeneratorService;
-import com.limpygnome.parrot.service.rest.RemoteSshFileService;
-import com.limpygnome.parrot.service.rest.RuntimeService;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -32,23 +28,15 @@ public class WebViewStage extends Stage
 {
     private static final Logger LOG = LogManager.getLogger(WebViewStage.class);
 
+    private Controller controller;
+
     // JavaFX controls
     private Scene scene;
     private WebView webView;
 
-    // Injected services
-    private RuntimeService runtimeService;
-    private DatabaseService databaseService;
-    private RandomGeneratorService randomGeneratorService;
-    private RemoteSshFileService remoteSshFileService;
-
     public WebViewStage(Controller controller)
     {
-        // Setup injected POJOs
-        this.runtimeService = new RuntimeService(controller, this);
-        this.databaseService = new DatabaseService(controller);
-        this.randomGeneratorService = new RandomGeneratorService();
-        this.remoteSshFileService = new RemoteSshFileService(controller);
+        this.controller = controller;
 
         // Setup webview
         webView = new WebView();
@@ -182,12 +170,9 @@ public class WebViewStage extends Stage
                 // TODO: separate from this stage, make it generic
                 Platform.runLater(() ->
                 {
-                    // Expose rest service objects
+                    // Attach controller to this stage
                     // WARNING: due to JDK bug, do not pass newly constructed instances here...
-                    exposeJsObject("runtimeService", runtimeService);
-                    exposeJsObject("databaseService", databaseService);
-                    exposeJsObject("randomGeneratorService", randomGeneratorService);
-                    exposeJsObject("remoteSshFileService", remoteSshFileService);
+                    controller.attach(this);
 
                     LOG.info("injected REST POJOs into window");
                 });

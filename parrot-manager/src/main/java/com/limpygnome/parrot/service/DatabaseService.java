@@ -1,36 +1,40 @@
-package com.limpygnome.parrot.service.rest;
+package com.limpygnome.parrot.service;
 
-import com.limpygnome.parrot.Controller;
 import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.model.db.Database;
 import com.limpygnome.parrot.model.params.CryptoParams;
-import com.limpygnome.parrot.service.AbstractService;
-import com.limpygnome.parrot.service.server.DatabaseIOService;
+import com.limpygnome.parrot.model.params.CryptoParamsFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 
 /**
- * REST service for database service.
+ * A layer above database service, which maintains the current database open.
  */
-public class DatabaseService extends AbstractService
+@Service
+public class DatabaseService
 {
     private static final Logger LOG = LogManager.getLogger(DatabaseService.class);
 
+    // Services
+    @Autowired
+    private DatabaseIOService databaseIOService;
+    @Autowired
+    private CryptographyService cryptographyService;
+
+    // Components
+    @Autowired
     private FileComponent fileComponent;
+    @Autowired
+    private CryptoParamsFactory cryptoParamsFactory;
 
     // The current database open...
     private Database database;
     private File currentFile;
-
-    public DatabaseService(Controller controller)
-    {
-        super(controller);
-
-        this.fileComponent = new FileComponent();
-    }
 
     /**
      * Creates a new database.
@@ -42,20 +46,22 @@ public class DatabaseService extends AbstractService
      */
     public synchronized boolean create(String location, String password, int rounds)
     {
-        DatabaseIOService databaseIOService = controller.getDatabaseIOService();
-
         try
         {
             LOG.info("creating new database - location: {}, rounds: {}", location, rounds);
 
             // Create DB
-            CryptoParams memoryCryptoParams = new CryptoParams(controller, password.toCharArray(), rounds, System.currentTimeMillis());
-            CryptoParams fileCryptoParams = new CryptoParams(controller, password.toCharArray(), rounds, System.currentTimeMillis());
+            CryptoParams memoryCryptoParams = cryptoParamsFactory.create(
+                    password.toCharArray(), rounds, System.currentTimeMillis()
+            );
+            CryptoParams fileCryptoParams = cryptoParamsFactory.create(
+                    password.toCharArray(), rounds, System.currentTimeMillis()
+            );
 
             this.database = databaseIOService.create(memoryCryptoParams, fileCryptoParams);
 
             // Attempt to save...
-            databaseIOService.save(controller, database, location);
+            databaseIOService.save(database, location);
 
             // Update internal state
             this.currentFile = new File(location);
@@ -88,7 +94,7 @@ public class DatabaseService extends AbstractService
 
         try
         {
-            database = controller.getDatabaseIOService().open(controller, path, password.toCharArray());
+            database = databaseIOService.open(path, password.toCharArray());
             currentFile = new File(path);
             result = null;
         }
@@ -123,7 +129,7 @@ public class DatabaseService extends AbstractService
             LOG.info("saving database - path: {}", path);
 
             // Save the database
-            controller.getDatabaseIOService().save(controller, database, path);
+            databaseIOService.save(database, path);
 
             // Reset dirty flag
             database.setDirty(false);

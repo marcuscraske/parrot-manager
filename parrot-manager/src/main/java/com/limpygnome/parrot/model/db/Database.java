@@ -46,13 +46,11 @@ public final class Database
     /**
      * Creates a new instance.
      *
-     * @param controller current instance
      * @param memoryCryptoParams params for in-memory crypto
      * @param fileCryptoParams params used for file crypto; only required for writing to file later, can be null
      */
     public Database(Controller controller, CryptoParams memoryCryptoParams, CryptoParams fileCryptoParams)
     {
-        this.controller = controller;
         this.memoryCryptoParams = memoryCryptoParams;
         this.fileCryptoParams = fileCryptoParams;
         this.lookup = new HashMap<>();
@@ -186,10 +184,7 @@ public final class Database
     public void updateFileCryptoParams(Controller controller, CryptoParams fileCryptoParams, char[] password) throws Exception
     {
         // Update params
-        this.fileCryptoParams = new CryptoParams(
-                controller, password, fileCryptoParams.getSalt(), fileCryptoParams.getRounds(), fileCryptoParams.getLastModified());
-
-        // No more actions required, as data is written during I/O...
+        this.fileCryptoParams = controller.getCryptoParamsFactory().clone(fileCryptoParams, password);
     }
 
     /**
@@ -210,8 +205,7 @@ public final class Database
         CryptoParams oldMemoryCryptoParams = this.memoryCryptoParams;
 
         // Update to use new params
-        this.memoryCryptoParams = new CryptoParams(
-                controller, password, memoryCryptoParams.getSalt(), memoryCryptoParams.getRounds(), memoryCryptoParams.getLastModified());
+        this.memoryCryptoParams = controller.getCryptoParamsFactory().clone(memoryCryptoParams, password);
 
         // Re-encrypt in-memory data...
         root.rebuildCrypto(oldMemoryCryptoParams);
