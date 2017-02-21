@@ -7,8 +7,6 @@ import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.dbaction.Action;
-import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -322,40 +320,6 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         object.put("cryptoParams.salt", Base64.toBase64String(cryptoParams.getSalt()));
         object.put("cryptoParams.rounds", cryptoParams.getRounds());
         object.put("cryptoParams.modified", cryptoParams.getLastModified());
-    }
-
-    /**
-     * TODO: doesnt belong here, need to pull it out...
-     *
-     * Merges source to destination.
-     *        memoryCryptoParams.write(jsonRoot);
-
-     * This will only update destination, hence two calls are needed for merging both ways. This is since the
-     * destination database should be the final result for both.
-     *
-     * @param source the database being merged into the destination
-     * @param destination the database to have the final version of everything
-     * @param password the password for the destination database
-     * @return a log of actions performed on the database
-     * @throws Exception if a crypto operation fails
-     */
-    public ActionsLog merge(Database source, Database destination, char[] password) throws Exception
-    {
-        ActionsLog actionsLog = new ActionsLog();
-
-        // Check if databases are the same, skip if so...
-        if (destination.equals(source))
-        {
-            actionsLog.add(new Action("No changes detected"));
-        }
-        else
-        {
-            actionsLog.add(new Action("Changes detected, merging..."));
-
-            destination.merge(actionsLog, source, password);
-        }
-
-        return actionsLog;
     }
 
 }

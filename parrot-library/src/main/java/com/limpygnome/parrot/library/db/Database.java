@@ -4,9 +4,6 @@ import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
-import com.limpygnome.parrot.library.dbaction.Action;
-import com.limpygnome.parrot.library.dbaction.ActionsLog;
-import com.limpygnome.parrot.library.dbaction.MergeInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,7 +87,7 @@ public final class Database
         try
         {
             UUID uuid = UUID.fromString(rawUuid);
-            result = getNode(uuid);
+            result = getNodeByUuid(uuid);
         }
         catch (IllegalArgumentException e)
         {
@@ -109,7 +106,7 @@ public final class Database
      * @param uuid the node identifier
      * @return the node, or null if not found
      */
-    public synchronized DatabaseNode getNode(UUID uuid)
+    public synchronized DatabaseNode getNodeByUuid(UUID uuid)
     {
         DatabaseNode result = lookup.get(uuid);
         return result;
@@ -224,41 +221,6 @@ public final class Database
     public synchronized CryptoParams getMemoryCryptoParams()
     {
         return memoryCryptoParams;
-    }
-
-    /**
-     * Merges remote database into this current database.
-     *
-     * At the end of this operation, it's expected that this current database instance will contain the result of the
-     * merge, so that this database has the combined additions//deletions merged together.
-     *
-     * If there are any changes between the two databases, the dirty flag is set. If changes are made to this database,
-     * the flag is set. If no changes are made, but required on the passed database instance, its dirty flag is set.
-     *
-     * @param actionsLog used to log any actions/changes to the database during the merge
-     * @param database the other database to be merged with this database
-     * @param password the password for the passed database
-     * @throws Exception when unable to merge
-     */
-    public synchronized void merge(ActionsLog actionsLog, Database database, char[] password) throws Exception
-    {
-        // Merge params
-        if (fileCryptoParams.getLastModified() < database.fileCryptoParams.getLastModified()) {
-            updateFileCryptoParams(database.fileCryptoParams, password);
-            actionsLog.add(new Action("updated file crypto parameters"));
-            // TODO: add test
-            database.setDirty(true);
-        }
-
-        if (memoryCryptoParams.getLastModified() < database.memoryCryptoParams.getLastModified()) {
-            updateMemoryCryptoParams(database.memoryCryptoParams, password);
-            actionsLog.add(new Action("updated memory crypto parameters"));
-            // TODO: add test
-            database.setDirty(true);
-        }
-
-        // Merge nodes
-        root.merge(new MergeInfo(actionsLog, database.root), database.root);
     }
 
     /**

@@ -33,11 +33,6 @@ public class Controller
     // Properties
     private boolean developmentMode;
 
-    public Controller()
-    {
-        this.developmentMode = false;
-    }
-
     public Controller(boolean developmentMode)
     {
         this.developmentMode = developmentMode;

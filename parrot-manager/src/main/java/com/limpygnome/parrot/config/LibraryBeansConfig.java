@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.config;
 
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
+import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.io.DatabaseJsonReaderWriter;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,12 @@ public class LibraryBeansConfig
     public CryptoParamsFactory cryptoParamsFactory()
     {
         return new CryptoParamsFactory();
+    }
+
+    @Bean
+    public DatabaseMerger databaseMerger()
+    {
+        return new DatabaseMerger();
     }
 
 }

@@ -2,7 +2,6 @@ package com.limpygnome.parrot.library.db;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
-import com.limpygnome.parrot.library.dbaction.MergeInfo;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,36 +22,36 @@ import java.util.UUID;
  *
  * Thread safe.
  */
-public class DatabaseNode
+public final class DatabaseNode
 {
     // The database to which this belongs
-    private Database database;
+    Database database;
 
     // The parent of this node
-    private DatabaseNode parent;
+    DatabaseNode parent;
 
     // A unique ID for this db
-    private UUID id;
+    UUID id;
 
     // The name of the db
-    private String name;
+    String name;
 
     // The epoch time of when the db was last changed
-    private long lastModified;
+    long lastModified;
 
     // The value stored at this db
-    private EncryptedAesValue value;
+    EncryptedAesValue value;
 
     // Any sub-nodes which belong to this db
-    private Map<UUID, DatabaseNode> children;
+    Map<UUID, DatabaseNode> children;
 
     // Cached array of children retrieved; this is because to provide an array, we need to keep a permanent reference
     // to avoid garbage collection
     // TODO: update this on init and as child nodes are added/removed, current imp doesnt save anything
-    private DatabaseNode[] childrenCached;
+    DatabaseNode[] childrenCached;
 
     // A list of previously deleted children; used for merging
-    private Set<UUID> deletedChildren;
+    Set<UUID> deletedChildren;
 
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
@@ -398,122 +397,6 @@ public class DatabaseNode
         }
 
         return newNode;
-    }
-
-    /*
-        Merges the passed node with this node.
-
-        Both nodes should be at the same level in their respected databases.
-     */
-    protected synchronized void merge(MergeInfo mergeInfo, DatabaseNode src)
-    {
-        // Check if this db was modified before/after
-        if (src.lastModified > lastModified)
-        {
-            // Compare/clone first level props
-            if (!name.equals(src.name))
-            {
-                name = src.name;
-                mergeInfo.addMergeMessage("changing name to '" + src.name + "'");
-            }
-
-            if (!value.equals(src.value))
-            {
-                value = new EncryptedAesValue(src.value.getIv(), src.value.getValue());
-            }
-
-            lastModified = src.lastModified;
-            // TODO: add test
-            database.setDirty(true);
-
-            mergeInfo.addMergeMessage("updated node properties");
-        }
-        else if (src.lastModified < lastModified)
-        {
-            // TODO: add test
-            src.database.setDirty(true);
-            mergeInfo.addMergeMessage("node older on remote side");
-        }
-
-        // Compare our children against theirs
-        {
-            DatabaseNode child;
-            DatabaseNode otherNode;
-
-            Iterator<Map.Entry<UUID, DatabaseNode>> iterator = children.entrySet().iterator();
-            Map.Entry<UUID, DatabaseNode> kv;
-
-            while (iterator.hasNext())
-            {
-                kv = iterator.next();
-                child = kv.getValue();
-
-                otherNode = src.children.get(kv.getKey());
-
-                if (otherNode != null)
-                {
-                    // Recursively merge our child
-                    child.merge(new MergeInfo(mergeInfo, child), otherNode);
-                }
-                else if (src.deletedChildren.contains(child.id))
-                {
-                    // Remove from our tree, this node has been deleted
-                    iterator.remove();
-                    database.lookup.remove(child.id);
-
-                    // TODO: add test
-                    mergeInfo.addMergeMessage("removed child - " + child.getPath());
-                    database.setDirty(true);
-                }
-                else
-                {
-                    // Our child is missing from the remote site
-                    // TODO: add test
-                    mergeInfo.addMergeMessage("remote node missing our child - " + child.getPath());
-                    src.database.setDirty(true);
-                }
-            }
-        }
-
-        // Compare their children against ours
-        {
-            DatabaseNode otherChild;
-            DatabaseNode newNode;
-            boolean isDeleted;
-
-            for (Map.Entry<UUID, DatabaseNode> kv : src.children.entrySet())
-            {
-                otherChild = kv.getValue();
-
-                // New node on their side that we don't have...
-                isDeleted = deletedChildren.contains(otherChild.id);
-
-                if (!children.containsKey(otherChild.id) && !isDeleted)
-                {
-                    newNode = otherChild.clone(database);
-                    add(newNode);
-                    mergeInfo.addMergeMessage("added child - " + newNode.getPath());
-                    database.setDirty(true);
-                }
-                else if (isDeleted)
-                {
-                    // Looks like we deleted the current node on our side...
-                    mergeInfo.addMergeMessage("node already deleted in local database - " + otherChild.getPath());
-                    src.database.setDirty(true);
-                }
-            }
-        }
-
-        // Merge any deleted items
-        boolean change = deletedChildren.addAll(src.deletedChildren);
-
-        // Set dirty flag
-        // TODO: add test
-        if (change)
-        {
-            mergeInfo.addMergeMessage("updated list of deleted nodes");
-            database.setDirty(true);
-        }
     }
 
     /**

@@ -3,6 +3,7 @@ package com.limpygnome.parrot.service;
 import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.component.SshComponent;
 import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
@@ -26,15 +27,15 @@ public class RemoteSshFileService
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
-    // Services
+    // Components
     @Autowired
     private DatabaseReaderWriter databaseReaderWriter;
-
-    // Components
     @Autowired
     private FileComponent fileComponent;
     @Autowired
     private SshComponent sshComponent;
+    @Autowired
+    private DatabaseMerger databaseMerger;
 
     /**
      * Creates options from a set of mandatory values.
@@ -194,7 +195,7 @@ public class RemoteSshFileService
 
                 // Perform merge and check if any change occurred...
                 LOG.info("sync - performing merge...");
-                ActionsLog actionsLog = databaseReaderWriter.merge(remoteDatabase, database, remotePassword.toCharArray());
+                ActionsLog actionsLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
 
                 // Check if we need to upload...
                 if (database.isDirty() || remoteDatabase.isDirty())
