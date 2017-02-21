@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.service;
 
-import com.limpygnome.parrot.Controller;
+import com.limpygnome.parrot.component.WebStageInitComponent;
 import com.limpygnome.parrot.ui.WebViewStage;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
@@ -24,20 +24,14 @@ public class RuntimeService
     private static final Logger LOG = LogManager.getLogger(RuntimeService.class);
 
     @Autowired
-    private Controller controller;
-    private WebViewStage stage;
-
-    public void setStage(WebViewStage stage)
-    {
-        this.stage = stage;
-    }
+    private WebStageInitComponent webStageInitComponent;
 
     /**
      * @return indicates if running in development mode
      */
     public boolean isDevelopmentMode()
     {
-        return controller.isDevelopmentMode();
+        return webStageInitComponent.isDevelopmentMode();
     }
 
     /**
@@ -45,7 +39,7 @@ public class RuntimeService
      */
     public void loadPage(String currentUrl)
     {
-        stage.loadPage(currentUrl);
+        webStageInitComponent.getStage().loadPage(currentUrl);
     }
 
     /**
@@ -56,7 +50,7 @@ public class RuntimeService
     public void changeHeight(int newHeight)
     {
         // Fetch actual window
-        Scene scene = stage.getScene();
+        Scene scene = webStageInitComponent.getStage().getScene();
 
         // Set the new height, factoring size of window frame
         int targetHeight = newHeight + (int) scene.getY() + 1;
@@ -80,6 +74,8 @@ public class RuntimeService
      */
     public String pickFile(String title, String initialPath, boolean isSave)
     {
+        WebViewStage stage = webStageInitComponent.getStage();
+
         // Build dialogue
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);

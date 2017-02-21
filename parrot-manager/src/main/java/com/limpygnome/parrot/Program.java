@@ -1,29 +1,36 @@
 package com.limpygnome.parrot;
 
+import com.limpygnome.parrot.component.WebStageInitComponent;
 import com.limpygnome.parrot.config.AppConfig;
 import com.limpygnome.parrot.ui.WebViewStage;
 import com.limpygnome.parrot.ui.urlstream.ResourceUrlConfig;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.stream.Stream;
+import org.springframework.core.env.CommandLinePropertySource;
+import org.springframework.core.env.SimpleCommandLinePropertySource;
 
 /**
  * The entry-point into the application.
  */
 public class Program extends Application
 {
-    private static boolean developmentMode = false;
-
-    private Controller controller;
+    private static String[] args;
+    private WebStageInitComponent webStageInitComponent;
 
     public Program()
     {
-        // Create new controller using Spring
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
-        controller = applicationContext.getBean(Controller.class, developmentMode);
+        // Read args as values source
+        CommandLinePropertySource cmdLineSource = new SimpleCommandLinePropertySource(args);
+
+        // Setup Spring context
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext.getEnvironment().getPropertySources().addFirst(cmdLineSource);
+        applicationContext.register(AppConfig.class);
+        applicationContext.refresh();
+
+        // Create/fetch init component
+        webStageInitComponent = applicationContext.getBean(WebStageInitComponent.class);
     }
 
     @Override
@@ -31,19 +38,17 @@ public class Program extends Application
     {
         // Serve resources from class path
         ResourceUrlConfig resourceUrlConfig = new ResourceUrlConfig();
-        resourceUrlConfig.enable(developmentMode);
+        resourceUrlConfig.enable(webStageInitComponent.isDevelopmentMode());
 
         // Create and show stage
-        WebViewStage stage = new WebViewStage(controller);
+        WebViewStage stage = new WebViewStage(webStageInitComponent);
         stage.show();
     }
 
     public static void main(String[] args)
     {
-        Stream argStream = Stream.of(args);
-
-        // Read params
-        developmentMode = argStream.anyMatch(s -> "--development".equals(s));
+        // Store args
+        Program.args = args;
 
         // Launch JavaFX app
         launch(args);

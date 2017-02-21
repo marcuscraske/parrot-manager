@@ -1,7 +1,9 @@
 package com.limpygnome.parrot.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
  * Configuration for Spring.
@@ -12,5 +14,16 @@ import org.springframework.context.annotation.Configuration;
 })
 public class AppConfig
 {
+
+    /**
+     * @return property source config to allow optional injected values, using @Value annotation
+     */
+    @Bean
+    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()
+    {
+        PropertySourcesPlaceholderConfigurer config = new PropertySourcesPlaceholderConfigurer();
+        config.setIgnoreResourceNotFound(true);
+        return config;
+    }
 
 }

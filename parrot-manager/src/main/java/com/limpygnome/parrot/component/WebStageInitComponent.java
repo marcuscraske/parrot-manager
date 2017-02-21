@@ -1,4 +1,4 @@
-package com.limpygnome.parrot;
+package com.limpygnome.parrot.component;
 
 import com.limpygnome.parrot.service.BackupService;
 import com.limpygnome.parrot.service.DatabaseService;
@@ -7,6 +7,7 @@ import com.limpygnome.parrot.service.RemoteSshFileService;
 import com.limpygnome.parrot.service.RuntimeService;
 import com.limpygnome.parrot.ui.WebViewStage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
  * inecting beans into stage
  */
 @Component
-public class Controller
+public class WebStageInitComponent
 {
     // Services
     @Autowired
@@ -31,12 +32,11 @@ public class Controller
     private BackupService backupService;
 
     // Properties
+    @Value("${development:false}")
     private boolean developmentMode;
 
-    public Controller(boolean developmentMode)
-    {
-        this.developmentMode = developmentMode;
-    }
+    // Stage
+    private WebViewStage stage;
 
     /**
      * Attaches this controller instance to a stage. Can only be done once.
@@ -44,7 +44,7 @@ public class Controller
     public void attach(WebViewStage stage)
     {
         // Pass stage onto services which need to know about it
-        runtimeService.setStage(stage);
+        this.stage = stage;
 
         // Inject required services into front-end
         // WARNING: due to JavaFX "bug", never pass newly constructed instances here
@@ -61,6 +61,14 @@ public class Controller
     public boolean isDevelopmentMode()
     {
         return developmentMode;
+    }
+
+    /**
+     * @return the stage associated with this Spring context
+     */
+    public WebViewStage getStage()
+    {
+        return stage;
     }
 
 }

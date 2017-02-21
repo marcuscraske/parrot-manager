@@ -105,6 +105,11 @@ class LocalResourceStreamHandler extends URLStreamHandler
             LOG.error("unable to serve request as URL is null");
         }
 
+        if (connection == null && developmentMode)
+        {
+            LOG.warn("Unable to resolve resource, have you set the working directory to the root of the parrot-manager module?");
+        }
+
         return connection;
     }
 

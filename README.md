@@ -53,3 +53,11 @@ You can launch the node lite server to build the front-end on the fly, although 
 ````
 ./run-angular.sh
 ````
+
+### development mode
+If you need the ability to refresh files from the `target` directory from your IDE, launch `parrot-manager` using the
+following arg:
+
+````
+--development=true
+````

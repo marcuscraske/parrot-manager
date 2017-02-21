@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.ui;
 
-import com.limpygnome.parrot.Controller;
+import com.limpygnome.parrot.component.WebStageInitComponent;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -28,15 +28,15 @@ public class WebViewStage extends Stage
 {
     private static final Logger LOG = LogManager.getLogger(WebViewStage.class);
 
-    private Controller controller;
+    private WebStageInitComponent webStageInitComponent;
 
     // JavaFX controls
     private Scene scene;
     private WebView webView;
 
-    public WebViewStage(Controller controller)
+    public WebViewStage(WebStageInitComponent webStageInitComponent)
     {
-        this.controller = controller;
+        this.webStageInitComponent = webStageInitComponent;
 
         // Setup webview
         webView = new WebView();
@@ -172,7 +172,7 @@ public class WebViewStage extends Stage
                 {
                     // Attach controller to this stage
                     // WARNING: due to JDK bug, do not pass newly constructed instances here...
-                    controller.attach(this);
+                    webStageInitComponent.attach(this);
 
                     LOG.info("injected REST POJOs into window");
                 });
