@@ -1,7 +1,8 @@
 package com.limpygnome.parrot.config;
 
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
-import com.limpygnome.parrot.library.db.DatabaseReaderWriter;
+import com.limpygnome.parrot.library.io.DatabaseJsonReaderWriter;
+import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +16,7 @@ public class LibraryBeansConfig
     @Bean
     public DatabaseReaderWriter databaseReaderWriter()
     {
-        return new DatabaseReaderWriter();
+        return new DatabaseJsonReaderWriter();
     }
 
     @Bean

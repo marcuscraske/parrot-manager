@@ -1,10 +1,12 @@
-package com.limpygnome.parrot.library.db;
+package com.limpygnome.parrot.library.io;
 
 import com.limpygnome.parrot.library.crypto.CryptoFactory;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
+import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.dbaction.Action;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import org.bouncycastle.util.encoders.Base64;
@@ -58,7 +60,7 @@ import java.util.UUID;
  *     deleted: [ list of uuid (string), ... ]
  * }
  */
-public class DatabaseReaderWriter
+public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 {
     private CryptoReaderWriter cryptoReaderWriter;
     private CryptoFactory cryptoFactory;
@@ -67,14 +69,14 @@ public class DatabaseReaderWriter
     /**
      * Creates an instance.
      */
-    public DatabaseReaderWriter()
+    public DatabaseJsonReaderWriter()
     {
         this.cryptoReaderWriter = new CryptoReaderWriter();
         this.cryptoFactory = new CryptoFactory();
         this.cryptoParamsFactory = new CryptoParamsFactory();
-
     }
 
+    @Override
     public synchronized Database open(String path, char[] password) throws Exception
     {
         byte[] encryptedData = Files.readAllBytes(new File(path).toPath());
@@ -82,6 +84,7 @@ public class DatabaseReaderWriter
         return database;
     }
 
+    @Override
     public Database openFileEncrypted(byte[] encryptedData, char[] password) throws Exception
     {
         // Convert to JSON
@@ -104,6 +107,7 @@ public class DatabaseReaderWriter
         return database;
     }
 
+    @Override
     public Database openMemoryEncrypted(byte[] rawData, char[] password, CryptoParams fileCryptoParams) throws Exception
     {
         // Convert to text
@@ -261,6 +265,7 @@ public class DatabaseReaderWriter
         }
     }
 
+    @Override
     public byte[] saveMemoryEncrypted(Database database) throws Exception
     {
         // Convert to JSON object
@@ -268,7 +273,7 @@ public class DatabaseReaderWriter
         CryptoParams memoryCryptoParams = database.getMemoryCryptoParams();
 
         JSONObject jsonRoot = new JSONObject();
-        memoryCryptoParams.write(jsonRoot);
+        writeCryptoParams(jsonRoot, memoryCryptoParams);
 
         convertNodeToJson(rootNode, jsonRoot, true);
 
@@ -278,6 +283,7 @@ public class DatabaseReaderWriter
         return result;
     }
 
+    @Override
     public byte[] saveFileEncrypted(Database database) throws Exception
     {
         // Save as memory encrypted
@@ -290,7 +296,7 @@ public class DatabaseReaderWriter
         // Build JSON wrapper
         JSONObject jsonFileEncrypted = new JSONObject();
 
-        fileCryptoParams.write(jsonFileEncrypted);
+        writeCryptoParams(jsonFileEncrypted, fileCryptoParams);
 
         jsonFileEncrypted.put("iv", Base64.toBase64String(fileEncrypted.getIv()));
         jsonFileEncrypted.put("data", Base64.toBase64String(fileEncrypted.getValue()));
@@ -301,6 +307,7 @@ public class DatabaseReaderWriter
         return result;
     }
 
+    @Override
     public void save(Database database, String path) throws Exception
     {
         // Save as file encrypted
@@ -310,9 +317,19 @@ public class DatabaseReaderWriter
         Files.write(new File(path).toPath(), fileEncrypted);
     }
 
+    private void writeCryptoParams(JSONObject object, CryptoParams cryptoParams)
+    {
+        object.put("cryptoParams.salt", Base64.toBase64String(cryptoParams.getSalt()));
+        object.put("cryptoParams.rounds", cryptoParams.getRounds());
+        object.put("cryptoParams.modified", cryptoParams.getLastModified());
+    }
+
     /**
-     * Merges source to destination.
+     * TODO: doesnt belong here, need to pull it out...
      *
+     * Merges source to destination.
+     *        memoryCryptoParams.write(jsonRoot);
+
      * This will only update destination, hence two calls are needed for merging both ways. This is since the
      * destination database should be the final result for both.
      *

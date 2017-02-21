@@ -1,8 +1,5 @@
 package com.limpygnome.parrot.library.crypto;
 
-import org.bouncycastle.util.encoders.Base64;
-import org.json.simple.JSONObject;
-
 import javax.crypto.SecretKey;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -67,18 +64,6 @@ public class CryptoParams implements Serializable
     SecretKey getSecretKey()
     {
         return secretKey;
-    }
-
-    /**
-     * Writes the parameters of this instance to a JSON object.
-     *
-     * @param object the target object
-     */
-    public void write(JSONObject object)
-    {
-        object.put("cryptoParams.salt", Base64.toBase64String(salt));
-        object.put("cryptoParams.rounds", rounds);
-        object.put("cryptoParams.modified", lastModified);
     }
 
     @Override

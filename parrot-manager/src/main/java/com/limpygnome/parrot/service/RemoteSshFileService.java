@@ -4,16 +4,17 @@ import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.component.SshComponent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.DatabaseReaderWriter;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
+import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import com.limpygnome.parrot.model.remote.SshOptions;
 import com.limpygnome.parrot.model.remote.SshSession;
-import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 
 /**
  * A service for downloading and uploading remote files using SSH.

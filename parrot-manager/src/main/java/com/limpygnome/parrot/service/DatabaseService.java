@@ -4,7 +4,7 @@ import com.limpygnome.parrot.component.FileComponent;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.db.DatabaseReaderWriter;
+import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;

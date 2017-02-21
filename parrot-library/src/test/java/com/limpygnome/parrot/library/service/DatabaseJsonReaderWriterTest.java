@@ -4,7 +4,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DatabaseReaderWriterTest
+public class DatabaseJsonReaderWriterTest
 {
 
 //    private static final char[] PASSWORD = "unit test password".toCharArray();
