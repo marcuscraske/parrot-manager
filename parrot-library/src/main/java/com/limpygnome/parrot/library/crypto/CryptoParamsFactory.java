@@ -1,8 +1,9 @@
 package com.limpygnome.parrot.library.crypto;
 
-import javax.crypto.SecretKey;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONObject;
+
+import javax.crypto.SecretKey;
 
 /**
  * A factory for creating instances of {@link CryptoParams}.
@@ -11,13 +12,16 @@ public class CryptoParamsFactory
 {
     private CryptoFactory cryptoFactory;
 
+    /**
+     * Creates a new factory.
+     */
     public CryptoParamsFactory()
     {
         this.cryptoFactory = new CryptoFactory();
     }
 
     /*
-        TODO: JSON should not be at this level!
+        TODO: move out of here, does not belong in this layer...
      */
     public CryptoParams parse(JSONObject json, char[] password) throws Exception
     {
@@ -29,6 +33,15 @@ public class CryptoParamsFactory
         return instance;
     }
 
+    /**
+     * Creates an instance.
+     *
+     * @param password password
+     * @param rounds rounds/permutations
+     * @param lastModified epoch time of when last modified (used for merging)
+     * @return an instance
+     * @throws Exception when cannot create instance
+     */
     public CryptoParams create(char[] password, int rounds, long lastModified) throws Exception
     {
         byte[] salt = cryptoFactory.generateRandomSalt();
@@ -36,6 +49,16 @@ public class CryptoParamsFactory
         return cryptoParams;
     }
 
+    /**
+     * Creates an instance.
+     *
+     * @param password password
+     * @param rounds rounds/permutations
+     * @param lastModified epoch time of when last modified (used for merging)
+     * @param salt salt
+     * @return an instance
+     * @throws Exception when cannot create instance
+     */
     public CryptoParams create(char[] password, int rounds, long lastModified, byte[] salt) throws Exception
     {
         // Generate secret key
@@ -46,6 +69,14 @@ public class CryptoParamsFactory
         return instance;
     }
 
+    /**
+     * Clones an existing instance, so that no references exist (hard).
+     *
+     * @param original instance to be cloned
+     * @param password password originally used for instance, as this is not stored
+     * @return a newly cloned instance
+     * @throws Exception when cannot create instance
+     */
     public CryptoParams clone(CryptoParams original, char[] password) throws Exception
     {
         // Generate secret key

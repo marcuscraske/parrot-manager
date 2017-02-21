@@ -7,20 +7,19 @@ import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
 import com.limpygnome.parrot.library.dbaction.Action;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
-import java.io.File;
-import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-import javax.crypto.SecretKey;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 /**
- * Used for parsing instances of databases. This acts as the layer for reading and writing actual instances of
- * {@link Database}.
+ * Used for reading and writing instances of {@link Database}.
  *
  * File (Encrypted) JSON Structure
  * -----------------------------------
@@ -65,18 +64,15 @@ public class DatabaseReaderWriter
     private CryptoFactory cryptoFactory;
     private CryptoParamsFactory cryptoParamsFactory;
 
+    /**
+     * Creates an instance.
+     */
     public DatabaseReaderWriter()
     {
         this.cryptoReaderWriter = new CryptoReaderWriter();
         this.cryptoFactory = new CryptoFactory();
         this.cryptoParamsFactory = new CryptoParamsFactory();
 
-    }
-
-    public Database create(CryptoParams memoryCryptoParams, CryptoParams fileCryptoParams) throws Exception
-    {
-        Database database = new Database(memoryCryptoParams, fileCryptoParams);
-        return database;
     }
 
     public synchronized Database open(String path, char[] password) throws Exception
@@ -101,8 +97,7 @@ public class DatabaseReaderWriter
         byte[] data = Base64.decode((String) json.get("data"));
 
         // Decrypt it...
-        SecretKey secretKey = cryptoFactory.createSecretKey(password, fileCryptoParams.getSalt(), fileCryptoParams.getRounds());
-        byte[] decryptedData = cryptoReaderWriter.decrypt(secretKey, new EncryptedAesValue(iv, data));
+        byte[] decryptedData = cryptoReaderWriter.decrypt(fileCryptoParams, new EncryptedAesValue(iv, data));
 
         // Now open as memory encrypted database
         Database database = openMemoryEncrypted(decryptedData, password, fileCryptoParams);
@@ -290,7 +285,7 @@ public class DatabaseReaderWriter
 
         // Apply file encryption
         CryptoParams fileCryptoParams = database.getFileCryptoParams();
-        EncryptedAesValue fileEncrypted = cryptoReaderWriter.encrypt(fileCryptoParams.getSecretKey(), memoryEncrypted);
+        EncryptedAesValue fileEncrypted = cryptoReaderWriter.encrypt(fileCryptoParams, memoryEncrypted);
 
         // Build JSON wrapper
         JSONObject jsonFileEncrypted = new JSONObject();

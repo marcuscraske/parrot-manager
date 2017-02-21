@@ -1,7 +1,5 @@
 package com.limpygnome.parrot.library.crypto;
 
-import java.security.SecureRandom;
-import javax.crypto.SecretKey;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -9,8 +7,11 @@ import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
+import javax.crypto.SecretKey;
+import java.security.SecureRandom;
+
 /**
- * Created by limpygnome on 20/02/17.
+ * Used for encrypting and decrypting data.
  */
 public class CryptoReaderWriter
 {
@@ -22,6 +23,9 @@ public class CryptoReaderWriter
 
     private SecureRandom random;
 
+    /**
+     * Creates a new instance.
+     */
     public CryptoReaderWriter()
     {
         random = new SecureRandom();
@@ -30,13 +34,15 @@ public class CryptoReaderWriter
     /**
      * Encrypts provided value.
      *
-     * @param secretKey the secret ket
+     * @param cryptoParams params
      * @param value the value to be encrypted
      * @return the encrypted wrapper
      * @throws Exception if the specified value cannot be encrypted
      */
-    public EncryptedAesValue encrypt(SecretKey secretKey, byte[] value) throws Exception
+    public EncryptedAesValue encrypt(CryptoParams cryptoParams, byte[] value) throws Exception
     {
+        SecretKey secretKey = cryptoParams.getSecretKey();
+
         // In the result of null, just set to empty...
         if (value == null)
         {
@@ -63,13 +69,15 @@ public class CryptoReaderWriter
     /**
      * Decrypts provided wrapper object.
      *
-     * @param secretKey the secret ket
+     * @param cryptoParams params
      * @param value the encrypted (wrapper) object
      * @return the decrypted value
      * @throws Exception if the specified value cannot be decrypted
      */
-    public byte[] decrypt(SecretKey secretKey, EncryptedAesValue value) throws Exception
+    public byte[] decrypt(CryptoParams cryptoParams, EncryptedAesValue value) throws Exception
     {
+        SecretKey secretKey = cryptoParams.getSecretKey();
+
         CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), value.getIv());
         PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
         aes.init(false, cipherParams);

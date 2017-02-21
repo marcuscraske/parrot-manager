@@ -3,6 +3,10 @@ package com.limpygnome.parrot.library.db;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
 import com.limpygnome.parrot.library.dbaction.MergeInfo;
+import org.joda.time.DateTime;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,16 +15,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 /**
- * Represents a db in a database.
+ * Represents a node in a database.
  *
- * Each db can then have children, which can have more nodes.
- *
- * TODO: database/UI should have option to purge old delete history on a DB...
+ * Each node can then have children, which can have more nodes.
  *
  * Thread safe.
  */
@@ -83,24 +82,6 @@ public class DatabaseNode
     {
         this(database, id, name, lastModified);
         this.value = value;
-    }
-
-    /**
-     * Creates a new db for unecrypted data, which is encrypted by this constructor.
-     *
-     * @param database the DB to which this belongs
-     * @param id unique identifier
-     * @param name the name of this db
-     * @param lastModified the epoch time at which this db was last modified
-     * @param unecryptedData unencrypted data
-     * @throws Exception thrown if the data cannot be encrypted
-     */
-    public DatabaseNode(Database database, UUID id, String name, long lastModified, byte[] unecryptedData) throws Exception
-    {
-        this(database, id, name, lastModified);
-
-        // Encrypt the data
-        this.value = database.encrypt(unecryptedData);
     }
 
     /**

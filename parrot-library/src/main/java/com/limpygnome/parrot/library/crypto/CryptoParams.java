@@ -4,16 +4,18 @@ import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONObject;
 
 import javax.crypto.SecretKey;
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * Stores, and able to sometimes generate, cryptography information.
+ * Stores parameters used for cryptography.
  *
- * This should never need to store the password.
+ * This is used as a wrapper to allow the underlying implementation of parameters and types to change, when and if
+ * required.
  *
  * Intended to be immutable.
  */
-public class CryptoParams
+public class CryptoParams implements Serializable
 {
     // The salt randomly generated when the DB was created
     byte[] salt;
@@ -59,10 +61,10 @@ public class CryptoParams
         return lastModified;
     }
 
-    /**
-     * @return the secret key used for encryption/decryption
+    /*
+        The underlying secret key, kept to only this package.
      */
-    public SecretKey getSecretKey()
+    SecretKey getSecretKey()
     {
         return secretKey;
     }

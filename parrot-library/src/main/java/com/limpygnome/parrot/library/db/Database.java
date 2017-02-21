@@ -63,14 +63,14 @@ public final class Database
         this.fileCryptoParams = fileCryptoParams;
         this.lookup = new HashMap<>();
 
-        // Setup an initial blank root db
+        // Setup an initial blank root node
         root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
     }
 
     /**
      * @return the root db of this database
      */
-    public DatabaseNode getRoot()
+    public synchronized DatabaseNode getRoot()
     {
         return root;
     }
@@ -83,7 +83,7 @@ public final class Database
      * @param rawUuid the id/uuid as raw text
      * @return the node, or null if not found or the id cannot be parsed as a uuid
      */
-    public DatabaseNode getNode(String rawUuid)
+    public synchronized DatabaseNode getNode(String rawUuid)
     {
         DatabaseNode result;
 
@@ -109,7 +109,7 @@ public final class Database
      * @param uuid the node identifier
      * @return the node, or null if not found
      */
-    public DatabaseNode getNode(UUID uuid)
+    public synchronized DatabaseNode getNode(UUID uuid)
     {
         DatabaseNode result = lookup.get(uuid);
         return result;
@@ -136,7 +136,7 @@ public final class Database
      */
     public synchronized EncryptedAesValue encrypt(byte[] data) throws Exception
     {
-        EncryptedAesValue value = cryptoReaderWriter.encrypt(memoryCryptoParams.getSecretKey(), data);
+        EncryptedAesValue value = cryptoReaderWriter.encrypt(memoryCryptoParams, data);
         return value;
     }
 
@@ -167,14 +167,14 @@ public final class Database
      */
     public synchronized byte[] decrypt(EncryptedAesValue data, CryptoParams memoryCryptoParams) throws Exception
     {
-        byte[] value = cryptoReaderWriter.decrypt(memoryCryptoParams.getSecretKey(), data);
+        byte[] value = cryptoReaderWriter.decrypt(memoryCryptoParams, data);
         return value;
     }
 
     /**
      * @return params used for file crypto; can be null if this DB is not written to file
      */
-    public CryptoParams getFileCryptoParams()
+    public synchronized CryptoParams getFileCryptoParams()
     {
         return fileCryptoParams;
     }
@@ -188,7 +188,7 @@ public final class Database
      * @param password the current password
      * @throws Exception if crypto fails
      */
-    public void updateFileCryptoParams(CryptoParams fileCryptoParams, char[] password) throws Exception
+    public synchronized void updateFileCryptoParams(CryptoParams fileCryptoParams, char[] password) throws Exception
     {
         // Update params
         this.fileCryptoParams = cryptoParamsFactory.clone(fileCryptoParams, password);
@@ -221,7 +221,7 @@ public final class Database
     /**
      * @return params used for in-memory crypto
      */
-    public CryptoParams getMemoryCryptoParams()
+    public synchronized CryptoParams getMemoryCryptoParams()
     {
         return memoryCryptoParams;
     }
@@ -264,7 +264,7 @@ public final class Database
     /**
      * @param dirty sets whether database is dirty; true = dirty/changed, false = unchanged/saved
      */
-    public void setDirty(boolean dirty)
+    public synchronized void setDirty(boolean dirty)
     {
         isDirty = dirty;
     }
@@ -272,13 +272,13 @@ public final class Database
     /**
      * @return true = dirty/modified, false = unchanged
      */
-    public boolean isDirty()
+    public synchronized boolean isDirty()
     {
         return isDirty;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public synchronized boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -293,7 +293,7 @@ public final class Database
     }
 
     @Override
-    public int hashCode()
+    public synchronized int hashCode()
     {
         int result = fileCryptoParams != null ? fileCryptoParams.hashCode() : 0;
         result = 31 * result + (memoryCryptoParams != null ? memoryCryptoParams.hashCode() : 0);

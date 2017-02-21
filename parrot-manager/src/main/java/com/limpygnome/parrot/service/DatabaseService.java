@@ -5,12 +5,13 @@ import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseReaderWriter;
-import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 
 /**
  * A layer above database service, which maintains the current database open.
@@ -56,7 +57,7 @@ public class DatabaseService
                     password.toCharArray(), rounds, System.currentTimeMillis()
             );
 
-            this.database = databaseReaderWriter.create(memoryCryptoParams, fileCryptoParams);
+            this.database = new Database(memoryCryptoParams, fileCryptoParams);
 
             // Attempt to save...
             databaseReaderWriter.save(database, location);

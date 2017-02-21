@@ -16,11 +16,17 @@ public class EncryptedAesValue
         this.value = value;
     }
 
+    /**
+     * @return initialization vector
+     */
     public byte[] getIv()
     {
         return iv;
     }
 
+    /**
+     * @return encrypted byte data
+     */
     public byte[] getValue()
     {
         return value;

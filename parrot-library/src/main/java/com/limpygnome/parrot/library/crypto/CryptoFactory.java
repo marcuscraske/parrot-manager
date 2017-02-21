@@ -1,14 +1,14 @@
 package com.limpygnome.parrot.library.crypto;
 
-import java.security.SecureRandom;
-import java.security.spec.KeySpec;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 
 /**
- * Created by limpygnome on 20/02/17.
+ * Supports creating crypto-related instances of objects.
  */
 public class CryptoFactory
 {
@@ -43,6 +43,15 @@ public class CryptoFactory
         return salt;
     }
 
+    /**
+     * Creates a PBKDF2, with SHA-256 HMAC, secret key from the given parameters.
+     *
+     * @param password password
+     * @param salt salt
+     * @param rounds rounds/permutations
+     * @return an instance
+     * @throws Exception when unable to make an instance
+     */
     public SecretKey createSecretKey(char[] password, byte[] salt, int rounds) throws Exception
     {
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(SECRET_KEY_TYPE);
