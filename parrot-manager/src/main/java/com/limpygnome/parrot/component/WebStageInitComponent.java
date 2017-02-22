@@ -5,6 +5,7 @@ import com.limpygnome.parrot.service.DatabaseService;
 import com.limpygnome.parrot.service.RandomGeneratorService;
 import com.limpygnome.parrot.service.RemoteSshFileService;
 import com.limpygnome.parrot.service.RuntimeService;
+import com.limpygnome.parrot.service.SettingsService;
 import com.limpygnome.parrot.ui.WebViewStage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Component;
 public class WebStageInitComponent
 {
     // Services
+    @Autowired
+    private SettingsService settingsService;
     @Autowired
     private DatabaseService databaseService;
     @Autowired
@@ -48,6 +51,7 @@ public class WebStageInitComponent
 
         // Inject required services into front-end
         // WARNING: due to JavaFX "bug", never pass newly constructed instances here
+        stage.exposeJsObject("settingsService", settingsService);
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);
         stage.exposeJsObject("randomGeneratorService", randomGeneratorService);

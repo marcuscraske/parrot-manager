@@ -1,11 +1,9 @@
 # TODO / Roadmap
 
-## Major/in-progress
-- Need to move JSON related functions out of library or in own contained package.
-
 ## Features
 - Add ability to enable auto-backup / creates backed up versions.
   - Specify retention period / copies etc.
+- Load last opened database on startup (with password prompt)
 - Settings
   - Disable recent files
   - Automatic backups (enable/disable, max backups)

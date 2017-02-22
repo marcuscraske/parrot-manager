@@ -12,16 +12,10 @@ public class MergeInfo {
 
     public final String nodePath;
 
-    public MergeInfo(MergeInfo parent, DatabaseNode currentNode)
-    {
-        this.actionsLog = parent.actionsLog;
-        nodePath = currentNode.getPath();
-    }
-
     public MergeInfo(ActionsLog actionsLog, DatabaseNode currentNode)
     {
         this.actionsLog = actionsLog;
-        nodePath = "/" + currentNode.getName();
+        nodePath = currentNode.getPath();
     }
 
     public void addMergeMessage(String message) {

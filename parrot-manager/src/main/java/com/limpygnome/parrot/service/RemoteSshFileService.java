@@ -159,8 +159,19 @@ public class RemoteSshFileService
 
     public String sync(Database database, SshOptions options, String remotePassword)
     {
-        // TODO: perhaps we should use DB service instead...
-        if (options.getDestinationPath() == null)
+        if (database == null)
+        {
+            throw new IllegalArgumentException("Database is null");
+        }
+        else if (options == null)
+        {
+            throw new IllegalArgumentException("Options are null");
+        }
+        else if (remotePassword == null || remotePassword.length() == 0)
+        {
+            return "Remote password is required";
+        }
+        else if (options.getDestinationPath() == null)
         {
             throw new IllegalArgumentException("Internal error - destination path must be setup on options");
         }

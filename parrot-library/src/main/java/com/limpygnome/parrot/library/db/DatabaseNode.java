@@ -485,7 +485,7 @@ public final class DatabaseNode
      */
     public String getPath()
     {
-        String path = name != null ? name : "[" + id + "]";
+        String path = name != null && name.length() > 0 ? name : "[" + id + "]";
 
         if (parent != null)
         {
