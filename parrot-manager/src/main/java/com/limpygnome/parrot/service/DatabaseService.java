@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 /**
- * A layer above database service, which maintains the current database open.
+ * A service for maintaining the current (primary) database open.
  */
 @Service
 public class DatabaseService

@@ -19,8 +19,6 @@ import java.io.File;
 
 /**
  * A service for downloading and uploading remote files using SSH.
- *
- * TODO: unit test
  */
 @Service
 public class RemoteSshFileService

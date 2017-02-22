@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- * Created by limpygnome on 20/02/17.
+ * Used to create backups of a database.
  */
 @Service
 public class BackupService
@@ -71,6 +71,7 @@ public class BackupService
         return backupFiles;
     }
 
+    // TODO: finish...
     private void checkRetainedDatabases()
     {
         long maxRetained = settingsService.getSettings().getAutomaticBackupsRetained().getValue();

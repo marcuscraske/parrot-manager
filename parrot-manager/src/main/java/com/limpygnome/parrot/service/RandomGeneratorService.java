@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 
 /**
- * A REST-only service of useful functions for randomly generating values.
- *
- * TODO: unit test
+ * A service for generating secure random values.
  */
 @Service
 public class RandomGeneratorService
