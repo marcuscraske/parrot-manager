@@ -5,18 +5,23 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import java.io.Serializable;
 
 /**
- * Created by limpygnome on 22/02/17.
+ * Used to hold a setting, which can have an initial default value.
  */
-public class SettingValue<T> implements Serializable
+public class SettingsValue<T> implements Serializable
 {
     private T value;
 
-    public SettingValue(T defaultValue)
+    public SettingsValue()
+    {
+        this.value = null;
+    }
+
+    public SettingsValue(T defaultValue)
     {
         this.value = defaultValue;
     }
 
-    public T value()
+    public T getValue()
     {
         return value;
     }
@@ -30,7 +35,7 @@ public class SettingValue<T> implements Serializable
     @Override
     public String toString()
     {
-        return "SettingValue{" +
+        return "SettingsValue{" +
                 "value=" + value +
                 '}';
     }

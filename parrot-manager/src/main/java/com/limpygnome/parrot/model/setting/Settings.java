@@ -9,14 +9,14 @@ import java.io.Serializable;
  */
 public class Settings implements Serializable
 {
-    private SettingValue<Long> automaticBackupsRetained;
+    private SettingsValue<Long> automaticBackupsRetained;
 
     public Settings()
     {
-        this.automaticBackupsRetained = new SettingValue(30);
+        this.automaticBackupsRetained = new SettingsValue(30);
     }
 
-    public SettingValue<Long> automaticBackupsRetained()
+    public SettingsValue<Long> getAutomaticBackupsRetained()
     {
         return automaticBackupsRetained;
     }

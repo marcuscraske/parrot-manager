@@ -170,6 +170,11 @@ public class DatabaseService
         return currentFile != null ? currentFile.getAbsolutePath() : "";
     }
 
+    public synchronized File getFile()
+    {
+        return currentFile;
+    }
+
     /**
      * @return true = a database is open, false = not open
      */

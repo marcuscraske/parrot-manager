@@ -79,6 +79,7 @@ public class SettingsService
         {
             // Create parent path if it does not exist
             File settingsParentFile = settingsFile.getParentFile();
+
             if (!settingsParentFile.exists() && !settingsParentFile.mkdirs())
             {
                 LOG.info("unable to create parent dir for settings");
@@ -86,17 +87,8 @@ public class SettingsService
             }
 
             // Check we can write to file
-            if (settingsFile.canWrite())
-            {
-                // Serialize to file
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.writeValue(settingsFile, settings);
-            }
-            else
-            {
-                LOG.info("unable to write settings file");
-                result = "Unable to write to settings file - path: " + settingsFile.getAbsolutePath();
-            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(settingsFile, settings);
         }
         catch (IOException e)
         {
