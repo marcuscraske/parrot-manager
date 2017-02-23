@@ -23,9 +23,12 @@ public class DatabaseService
 
     // Services
     @Autowired
-    private DatabaseReaderWriter databaseReaderWriter;
+    private SessionService sessionService
+            // TODO: write generic set method for file, invoke wipe on session too
 
     // Components
+    @Autowired
+    private DatabaseReaderWriter databaseReaderWriter;
     @Autowired
     private FileComponent fileComponent;
     @Autowired
