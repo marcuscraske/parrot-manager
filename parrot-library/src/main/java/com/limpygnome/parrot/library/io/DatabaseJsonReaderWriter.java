@@ -308,11 +308,17 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     @Override
     public void save(Database database, String path) throws Exception
     {
+        save(database, new File(path));
+    }
+
+    @Override
+    public void save(Database database, File file) throws Exception
+    {
         // Save as file encrypted
         byte[] fileEncrypted = saveFileEncrypted(database);
 
         // Write to path
-        Files.write(new File(path).toPath(), fileEncrypted);
+        Files.write(file.toPath(), fileEncrypted);
     }
 
     private void writeCryptoParams(JSONObject object, CryptoParams cryptoParams)

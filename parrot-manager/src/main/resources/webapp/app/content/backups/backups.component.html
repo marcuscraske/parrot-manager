@@ -7,12 +7,16 @@
 </p>
 
 <p class="text-center">
-    <button class="btn btn-default btn-lg">
+    <button class="btn btn-default btn-lg" (click)="create()">
         Backup Now
     </button>
 </p>
 
-<div class="row">
+<p *ngIf="!isBackups()" class="text-center">
+    No backups created.
+</p>
+
+<div class="row" *ngIf="isBackups()">
     <div class="col-xs-3"></div>
     <div class="col-xs-6">
         <table class="table">
@@ -24,9 +28,9 @@
                     options
                 </th>
             </tr>
-            <tr>
+            <tr *ngFor="let file of (backupFiles | orderBy: ['-getName()']); trackBy: trackChildren">
                 <td class="text-center">
-                    date
+                    {{ file.getCreated() }}
                 </td>
                 <td>
                     <button class="btn btn-default">

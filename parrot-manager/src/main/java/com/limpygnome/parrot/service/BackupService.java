@@ -3,6 +3,8 @@ package com.limpygnome.parrot.service;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import com.limpygnome.parrot.model.backup.BackupFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.Arrays;
 @Service
 public class BackupService
 {
+    private static final Logger LOG = LogManager.getLogger(BackupService.class);
+
     @Autowired
     private SettingsService settingsService;
     @Autowired
@@ -31,6 +35,8 @@ public class BackupService
     {
         String result = null;
 
+        LOG.info("creating backup...");
+
         try
         {
             // Fetch the database currently open
@@ -39,15 +45,20 @@ public class BackupService
             // Check if max retained databases has been met
             checkRetainedDatabases();
 
-            // Build file-name
-            String fileName = databaseService.getFileName() + "." + System.currentTimeMillis();
+            // Build path
+            File currentFile = databaseService.getFile();
+            File currentParentFile = currentFile.getParentFile();
+            File backupFile = new File(currentParentFile, "." + databaseService.getFileName() + "." + System.currentTimeMillis());
 
             // Save as backup...
-            databaseReaderWriter.save(database, fileName);
+            databaseReaderWriter.save(database, backupFile);
+
+            LOG.info("backup created - name: {}", backupFile.getAbsolutePath());
         }
         catch (Exception e)
         {
             result = "Failed to create backup - " + e.getMessage();
+            LOG.error("failed to create backup", e);
         }
 
         return result;
@@ -65,9 +76,9 @@ public class BackupService
         File currentFile = databaseService.getFile();
         File parentFile = currentFile.getParentFile();
         String currentName = currentFile.getName();
-        File[] files = parentFile.listFiles((dir, name) -> name.startsWith(currentName) && !name.equals(currentName));
+        File[] files = parentFile.listFiles((dir, name) -> name.startsWith("." + currentName));
 
-        BackupFile[] backupFiles = (BackupFile[]) Arrays.stream(files).map(file -> new BackupFile(file)).toArray();
+        BackupFile[] backupFiles = Arrays.stream(files).map(file -> new BackupFile(file)).toArray(size -> new BackupFile[size]);
         return backupFiles;
     }
 

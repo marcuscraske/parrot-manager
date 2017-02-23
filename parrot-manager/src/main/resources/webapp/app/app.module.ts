@@ -25,6 +25,9 @@ import { RemoteSyncComponent }      from 'app/content/remote-sync/remote-sync.co
 import { RemoteSyncSshComponent }   from 'app/content/remote-sync-ssh/remote-sync-ssh.component'
 import { BackupsComponent }         from 'app/content/backups/backups.component'
 
+// Pipes
+import { OrderBy } from 'app/orderBy'
+
 const appRoutes: Routes = [
   { path: '',                                       component: OpenComponent },
   { path: 'open',                                   component: OpenComponent },
@@ -48,6 +51,9 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes)
   ],
   declarations: [
+
+    // Pipes
+    OrderBy,
 
     // Global
     AppComponent, TopBarComponent,

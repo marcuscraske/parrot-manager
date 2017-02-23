@@ -27,8 +27,11 @@ export class BackupsComponent {
 
     create()
     {
+        console.log("creating backup...");
+
         // Create backup
         this.errorMessage = this.backupService.create();
+        console.log("backup result: " + this.errorMessage);
 
         // Refresh list of backups if no error occurred
         if (this.errorMessage == null)
@@ -40,6 +43,17 @@ export class BackupsComponent {
     refreshBackups()
     {
         this.backupFiles = this.backupService.fetch();
+        console.log("refreshed backups");
+    }
+
+    isBackups()
+    {
+        return this.backupFiles != null && this.backupFiles.length > 0;
+    }
+
+    trackChildren(index, file)
+    {
+        return file ? file.getName() : null;
     }
 
 }
