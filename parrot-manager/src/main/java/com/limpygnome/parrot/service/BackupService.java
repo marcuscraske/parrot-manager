@@ -25,6 +25,8 @@ public class BackupService
     private DatabaseService databaseService;
     @Autowired
     private DatabaseReaderWriter databaseReaderWriter;
+    @Autowired
+    private SessionService sessionService;
 
     /**
      * Creates a new backup.
@@ -73,12 +75,18 @@ public class BackupService
      */
     public BackupFile[] fetch()
     {
+        // Fetch backup files
         File currentFile = databaseService.getFile();
         File parentFile = currentFile.getParentFile();
         String currentName = currentFile.getName();
         File[] files = parentFile.listFiles((dir, name) -> name.startsWith("." + currentName));
 
+        // Translate to view model
         BackupFile[] backupFiles = Arrays.stream(files).map(file -> new BackupFile(file)).toArray(size -> new BackupFile[size]);
+
+        // Store in session to prevent GC
+        sessionService.put("backups", backupFiles);
+
         return backupFiles;
     }
 
@@ -86,6 +94,19 @@ public class BackupService
     private void checkRetainedDatabases()
     {
         long maxRetained = settingsService.getSettings().getAutomaticBackupsRetained().getValue();
+    }
+
+    public String delete(BackupFile backupFile)
+    {
+        String result = null;
+        File file = new File(backupFile.getPath());
+
+        if (!file.delete())
+        {
+            result = "Unable to delete file (unknown reason)";
+        }
+
+        return result;
     }
 
 }

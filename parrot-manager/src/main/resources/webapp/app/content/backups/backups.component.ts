@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
 import { Router } from '@angular/router';
 
 @Component({
     moduleId: module.id,
     templateUrl: "backups.component.html",
-    providers: [BackupService],
+    providers: [DatabaseService, BackupService],
     styleUrls: ["backups.component.css"]
 })
 export class BackupsComponent {
@@ -16,7 +17,9 @@ export class BackupsComponent {
     errorMessage : string;
 
     constructor(
-        public fb: FormBuilder, private backupService: BackupService,
+        public fb: FormBuilder,
+        private databaseService: DatabaseService,
+        private backupService: BackupService,
         private router: Router
     ) {}
 
@@ -54,6 +57,35 @@ export class BackupsComponent {
     trackChildren(index, file)
     {
         return file ? file.getName() : null;
+    }
+
+    open(file)
+    {
+        var path = file.getPath();
+        this.databaseService.openWithPrompt(path, (message) => {
+            // Check if failure message
+            if (message == null)
+            {
+                console.log("successfully opened database, redirecting to navigator...");
+                this.router.navigate(["/viewer"]);
+            }
+            else
+            {
+                this.errorMessage = message;
+                console.log("failed to open database - " + message);
+            }
+        });
+    }
+
+    delete(file)
+    {
+        this.errorMessage = this.backupService.delete(file);
+
+        // Check if file has been deleted
+        if (this.errorMessage == null)
+        {
+            this.refreshBackups();
+        }
     }
 
 }

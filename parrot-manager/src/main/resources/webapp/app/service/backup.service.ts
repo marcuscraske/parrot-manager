@@ -22,4 +22,10 @@ export class BackupService {
         return result;
     }
 
+    delete(file) : string
+    {
+        var result = this.backupService.delete(file);
+        return result;
+    }
+
 }

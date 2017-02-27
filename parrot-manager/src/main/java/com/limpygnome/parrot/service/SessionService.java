@@ -1,5 +1,7 @@
 package com.limpygnome.parrot.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import java.util.Map;
 @Service
 public class SessionService
 {
+    private static final Logger LOG = LogManager.getLogger(SessionService.class);
+
     private Map<String, Object> store;
 
     public SessionService()
@@ -24,14 +28,16 @@ public class SessionService
         store = new HashMap<>();
     }
 
-    public void clearAll()
+    public void reset()
     {
         store.clear();
+        LOG.debug("wiped session data");
     }
 
     public void put(String key, Object value)
     {
         store.put(key, value);
+        LOG.debug("added value - key: {}", key);
     }
 
     public Object get(String key)
@@ -41,7 +47,9 @@ public class SessionService
 
     public Object remove(String key)
     {
-        return store.remove(key);
+        Object object = store.remove(key);
+        LOG.debug("removed value - key: {}", key);
+        return object;
     }
 
 }

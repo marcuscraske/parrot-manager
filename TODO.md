@@ -1,6 +1,7 @@
 # TODO / Roadmap
 
 ## Features
+- Save-as
 - Add ability to enable auto-backup / creates backed up versions.
   - Specify retention period / copies etc.
 - Load last opened database on startup (with password prompt)

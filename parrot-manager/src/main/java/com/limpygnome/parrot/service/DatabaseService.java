@@ -23,8 +23,7 @@ public class DatabaseService
 
     // Services
     @Autowired
-    private SessionService sessionService
-            // TODO: write generic set method for file, invoke wipe on session too
+    private SessionService sessionService;
 
     // Components
     @Autowired
@@ -67,6 +66,7 @@ public class DatabaseService
 
             // Update internal state
             this.currentFile = new File(location);
+            sessionService.reset();
 
             LOG.info("created database successfully - location: {}", location);
 
@@ -98,6 +98,7 @@ public class DatabaseService
         {
             database = databaseReaderWriter.open(path, password.toCharArray());
             currentFile = new File(path);
+            sessionService.reset();
             result = null;
         }
         catch (InvalidCipherTextException e)
@@ -155,6 +156,7 @@ public class DatabaseService
     {
         database = null;
         currentFile = null;
+        sessionService.reset();
     }
 
     /**

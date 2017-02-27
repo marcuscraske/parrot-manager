@@ -33,13 +33,10 @@
                     {{ file.getCreated() }}
                 </td>
                 <td>
-                    <button class="btn btn-default">
+                    <button class="btn btn-default" (click)="open(file)">
                         Open
                     </button>
-                    <button class="btn btn-default">
-                        Restore
-                    </button>
-                    <button class="btn btn-danger">
+                    <button class="btn btn-danger" (click)="delete(file)">
                         Delete
                     </button>
                 </td>
