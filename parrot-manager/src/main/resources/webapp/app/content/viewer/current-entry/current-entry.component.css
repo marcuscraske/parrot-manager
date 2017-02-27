@@ -1,0 +1,61 @@
+/*
+    Layout of editor header
+*/
+
+.header
+{
+    display: table;
+    font-size: 2em;
+    padding: 0.5em 0.2em 0.5em 0;
+    width: 100%;
+}
+
+.header .button,
+.header .title
+{
+    display: table-cell;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.header .title
+{
+    width: 100%;
+}
+
+
+/*
+    Title input field in header
+*/
+
+.title-input
+{
+    border: none;
+    padding: 0.1em 0.2em;
+    width: 100%;
+}
+
+.title-input:hover,
+.title-input:focus
+{
+    outline: solid 1px #ccc;
+}
+
+/*
+    Input for an entry's value
+*/
+#currentValue
+{
+    min-height: 1em;
+    max-height: 30em;
+}
+
+
+/*
+    Option buttons
+*/
+
+.options
+{
+    max-height: 2em;
+}

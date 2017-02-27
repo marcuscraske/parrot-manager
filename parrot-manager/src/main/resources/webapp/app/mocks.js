@@ -79,7 +79,7 @@ if (window.databaseService == null)
                                 }
 
                            ] },
-                           isRoot : function() { return true },
+                           isRoot : function() { return false },
                            setValueString : function() {}
                        }
                     }

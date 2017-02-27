@@ -134,7 +134,7 @@ export class DatabaseService
 
         var newJsonNode = {
             "id" : databaseNode.getId(),
-            "text" : name != null ? name : "(unnamed)",
+            "text" : name != null ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
             "children" : []
         };
 

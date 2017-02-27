@@ -19,10 +19,6 @@ export class ViewerComponent
     // The current node being edited
     public currentNode: any;
 
-    public updateEntryForm = this.fb.group({
-        currentValue: [""]
-    });
-
     constructor(private databaseService: DatabaseService, private runtimeService: RuntimeService,
                 private renderer: Renderer, public fb: FormBuilder)
     {
@@ -71,6 +67,24 @@ export class ViewerComponent
         this.updateTree();
     }
 
+    updateTree()
+    {
+        // Fetch JSON data
+        var data = this.databaseService.getJson();
+
+        $(function(){
+            // Update tree
+            var tree = $("#sidebar").jstree(true);
+            tree.settings.core.data = data;
+            tree.refresh();
+
+            // Expand all nodes
+            $("#sidebar").jstree("open_all");
+        });
+
+        this.updateTreeSelection();
+    }
+
     // Updates the selected node in the tree with the current node
     updateTreeSelection()
     {
@@ -101,7 +115,7 @@ export class ViewerComponent
 
     changeNodeBeingViewed(nodeId)
     {
-        this.continueActionWithPromptForDirtyValue(() => {
+        //this.continueActionWithPromptForDirtyValue(() => {
             // Update node being viewed
             this.currentNode = this.databaseService.getNode(nodeId);
 
@@ -109,179 +123,11 @@ export class ViewerComponent
             this.updateTreeSelection();
 
             // Reset form
-            this.updateEntryForm.reset();
+            //this.updateEntryForm.reset();
 
             console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
-        });
+        //});
     }
 
-    updateTree()
-    {
-        // Fetch JSON data
-        var data = this.databaseService.getJson();
-
-        $(function(){
-            // Update tree
-            var tree = $("#sidebar").jstree(true);
-            tree.settings.core.data = data;
-            tree.refresh();
-
-            // Expand all nodes
-            $("#sidebar").jstree("open_all");
-        });
-
-        this.updateTreeSelection();
-    }
-
-    deleteCurrentEntry()
-    {
-        console.log("deleting current entry");
-
-        // Save parent identifier
-        var parentNodeId = this.currentNode.getParent().getId();
-
-        // Delete the node
-        this.currentNode.remove();
-
-        // Update tree
-        this.updateTree();
-
-        // Navigate to parent node
-        console.log("navigating to parent node...");
-        this.changeNodeBeingViewed(parentNodeId);
-    }
-
-    preUpdateName(event)
-    {
-        var field = event.target;
-        var currentValue = field.value;
-
-        // Wipe the name of unnamed nodes
-        if (currentValue == "(unnamed)")
-        {
-            field.value = "";
-        }
-    }
-
-    updateName(event)
-    {
-        // Update name
-        var newName = event.target.value;
-        this.currentNode.setName(newName);
-        console.log("updateTitle - new name: " + newName);
-
-        // Update tree
-        this.updateTree();
-    }
-
-    postUpdateName(event)
-    {
-        var field = event.target;
-
-        // Reset name to "(unnamed)" if empty
-        if (field.value.length == 0)
-        {
-            field.value = "(unnamed)";
-        }
-    }
-
-    preUpdateValue(event)
-    {
-        var field = event.target;
-
-        // Only populate if empty
-        if (field.value.length == 0)
-        {
-            this.displayValue();
-        }
-    }
-
-    refreshValue()
-    {
-        var field = $("#currentValue")[0];
-
-        if (field.value.length != 0)
-        {
-            this.displayValue();
-        }
-    }
-
-    displayValue()
-    {
-        var decryptedValue = this.currentNode.getDecryptedValueString();
-        $("#currentValue").val(decryptedValue);
-        console.log("populated value field with actual decrypted value");
-
-        this.resizeValueTextAreaToFitContent();
-    }
-
-    updateValue(event)
-    {
-        var field = event.target;
-        this.resizeValueTextAreaToFitContent();
-    }
-
-    saveValue()
-    {
-        // Fetch value and update current node
-        var value = $("#currentValue").val();
-        this.currentNode.setValueString(value);
-
-        // Reset form as untouched
-        this.updateEntryForm.reset();
-    }
-
-    hideValue(target, ignoreDirty)
-    {
-        var field = $("#currentValue")[0];
-
-        this.continueActionWithPromptForDirtyValue(() => {
-            // Reset to empty and resize
-            field.value = "";
-            this.resizeValueTextAreaToFitContent();
-        });
-    }
-
-    // Resize field to fit value/content
-    resizeValueTextAreaToFitContent()
-    {
-        var field = $("#currentValue")[0];
-
-        // Resize box to fit content; reset to avoid inf. growing box
-        field.style.height = "0px";
-        field.style.height = field.scrollHeight + "px";
-    }
-
-    // TODO: doesnt work for global exit of application, need to think of good way to approach this...
-    continueActionWithPromptForDirtyValue(callbackContinue)
-    {
-        if (this.updateEntryForm.dirty)
-        {
-            bootbox.dialog({
-                message: "Unsaved changes to value, these will be lost!",
-                buttons: {
-                    cancel: {
-                        label: "Cancel",
-                        className: "btn-default",
-                        callback: () => { }
-                    },
-                    ignore: {
-                        label: "Ignore",
-                        className: "btn-default",
-                        callback: () => { callbackContinue(); }
-                    },
-                    saveAndContinue: {
-                        label: "Save and Continue",
-                        className: "btn-primary",
-                        callback: () => { this.saveValue(); callbackContinue(); }
-                    }
-                }
-            });
-        }
-        else
-        {
-            callbackContinue();
-        }
-    }
 
 }
