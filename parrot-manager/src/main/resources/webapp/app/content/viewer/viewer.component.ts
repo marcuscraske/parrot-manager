@@ -167,7 +167,10 @@ export class ViewerComponent
                     saveAndContinue: {
                         label: "Save and Continue",
                         className: "btn-primary",
-                        callback: () => { this.saveValue(); callbackContinue(); }
+                        callback: () => {
+                            this.saveValue();
+                            callbackContinue();
+                        }
                     }
                 }
             });
@@ -176,6 +179,16 @@ export class ViewerComponent
         {
             callbackContinue();
         }
+    }
+
+    saveValue()
+    {
+        // Fetch value and update current node
+        var value = $("#currentValue").val();
+        this.currentNode.setValueString(value);
+
+        // Reset form as untouched
+        this.updateEntryForm.reset();
     }
 
 }

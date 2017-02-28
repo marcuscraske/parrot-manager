@@ -30,7 +30,7 @@ public class SettingsService
         String result = null;
         File settingsFile = getSettingsPath();
 
-        LOG.info("settings file: {}", settingsFile.getAbsolutePath());
+        LOG.info("loading settings - file: {}", settingsFile.getAbsolutePath());
 
         try
         {
@@ -73,7 +73,8 @@ public class SettingsService
         String result = null;
         File settingsFile = getSettingsPath();
 
-        LOG.info("settings file: {}", settingsFile.getAbsolutePath());
+        LOG.info("saving settings - file: {}", settingsFile.getAbsolutePath());
+        LOG.debug("settings: {}", settings);
 
         try
         {

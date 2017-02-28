@@ -2,48 +2,58 @@
     settings
 </h1>
 
-<h2>
-    recent files
-</h2>
-<div class="form-group">
-    <label class="checkbox-inline">
-        <input type="checkbox"
-               id="recentFilesEnabled"
-        />
-        Enabled
-    </label>
-    <label class="checkbox-inline">
-        <input type="checkbox"
-               id="recentFilesOpenLastOnStartup"
-        />
-        Open last file on startup
-    </label>
-</div>
+<form [formGroup]="settingsForm" (ngSubmit)="save($event)" #form="ngForm">
+    <h2>
+        recent files
+    </h2>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="recentFilesEnabled"
+                   formControl="recentFilesEnabled"
+                   [(ngModel)]="settingsForm.value['recentFilesEnabled']"
+            />
+            Enabled
+        </label>    
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="recentFilesOpenLastOnStartup"
+                   formControl="recentFilesOpenLastOnStartup"
+                   [(ngModel)]="settingsForm.value['recentFilesOpenLastOnStartup']"
+            />
+            Open last file on startup
+        </label>
+    </div>
 
-<h2>
-    automatic backups
-</h2>
-<div class="form-group">
-    <label class="checkbox-inline">
-        <input type="checkbox"
-               id="automaticBackupsOnSave"
+    <h2>
+        automatic backups
+    </h2>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="automaticBackupsOnSave"
+                   formControl="automaticBackupsOnSave"
+                   [(ngModel)]="settingsForm.value['automaticBackupsOnSave']"
+            />
+            Backup on save
+        </label>
+    </div>
+    <div class="form-group">
+        <label class="form-control-label" for="automaticBackupsRetained">
+            Maximum backups retained
+        </label>
+        <input id="automaticBackupsRetained"
+               type="number"
+               class="form-control"
+               placeholder="Leave empty for unlimited"
+               formControl="automaticBackupsRetained"
+               [(ngModel)]="settingsForm.value['automaticBackupsRetained']"
         />
-        Backup on save
-    </label>
-</div>
-<div class="form-group">
-    <label class="form-control-label" for="automaticBackupsRetained">
-        Maximum backups retained
-    </label>
-    <input id="automaticBackupsRetained"
-           type="number"
-           class="form-control"
-           placeholder="Leave empty for unlimited"
-    />
-</div>
+    </div>
 
-<div class="form-group text-center">
-    <button type="submit" class="btn btn-primary">
-        Save
-    </button>
-</div>
+    <div class="form-group text-center">
+        <button type="submit" class="btn btn-primary" (click)="save()">
+            Save
+        </button>
+    </div>
+</form>

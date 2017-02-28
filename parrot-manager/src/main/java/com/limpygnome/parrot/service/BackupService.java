@@ -66,6 +66,16 @@ public class BackupService
         return result;
     }
 
+    private File[] fetchFiles()
+    {
+        // Fetch backup files
+        File currentFile = databaseService.getFile();
+        File parentFile = currentFile.getParentFile();
+        String currentName = currentFile.getName();
+        File[] files = parentFile.listFiles((dir, name) -> name.startsWith("." + currentName));
+        return files;
+    }
+
     /**
      * Fetches a list of existing backups.
      *
@@ -75,11 +85,7 @@ public class BackupService
      */
     public BackupFile[] fetch()
     {
-        // Fetch backup files
-        File currentFile = databaseService.getFile();
-        File parentFile = currentFile.getParentFile();
-        String currentName = currentFile.getName();
-        File[] files = parentFile.listFiles((dir, name) -> name.startsWith("." + currentName));
+        File[] files = fetchFiles();
 
         // Translate to view model
         BackupFile[] backupFiles = Arrays.stream(files).map(file -> new BackupFile(file)).toArray(size -> new BackupFile[size]);
@@ -90,10 +96,30 @@ public class BackupService
         return backupFiles;
     }
 
-    // TODO: finish...
     private void checkRetainedDatabases()
     {
         long maxRetained = settingsService.getSettings().getAutomaticBackupsRetained().getValue();
+
+        if (maxRetained > 0)
+        {
+            File[] backupFiles = fetchFiles();
+
+            if (backupFiles.length > maxRetained)
+            {
+                deleteOldestRetainedBackups(backupFiles, maxRetained);
+            }
+        }
+    }
+
+    private void deleteOldestRetainedBackups(File[] backupFiles, long maxRetained)
+    {
+        Arrays.stream(backupFiles)
+                .sorted((o1, o2) -> (int) (o1.lastModified() - o2.lastModified()) )
+                .limit(backupFiles.length - maxRetained)
+                .forEach(file -> {
+                    file.delete();
+                    LOG.info("deleted old retained file (max reached) - name: {}", file.getName());
+                });
     }
 
     public String delete(BackupFile backupFile)

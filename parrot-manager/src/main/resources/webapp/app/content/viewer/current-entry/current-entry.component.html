@@ -20,7 +20,7 @@
 
 <!-- Value Options -->
 <div class="form-group options">
-    <button class="btn btn-primary" (click)="saveValue()">
+    <button class="btn btn-primary" (click)="saveValue.emit()">
         Save Value
     </button>
     <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteCurrentEntry(currentNode.getId())">

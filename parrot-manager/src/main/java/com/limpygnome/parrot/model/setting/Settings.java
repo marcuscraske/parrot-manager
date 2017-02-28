@@ -5,15 +5,36 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import java.io.Serializable;
 
 /**
- * Created by limpygnome on 22/02/17.
+ * Stores a collection of settings.
  */
 public class Settings implements Serializable
 {
+    private SettingsValue<Boolean> recentFilesEnabled;
+    private SettingsValue<Boolean> recentFilesOpenLastOnStartup;
+    private SettingsValue<Boolean> automaticBackupsOnSave;
     private SettingsValue<Long> automaticBackupsRetained;
 
     public Settings()
     {
-        this.automaticBackupsRetained = new SettingsValue(30);
+        this.recentFilesEnabled = new SettingsValue<>(true);
+        this.recentFilesOpenLastOnStartup = new SettingsValue<>(true);
+        this.automaticBackupsOnSave = new SettingsValue<>(true);
+        this.automaticBackupsRetained = new SettingsValue(20);
+    }
+
+    public SettingsValue<Boolean> getRecentFilesEnabled()
+    {
+        return recentFilesEnabled;
+    }
+
+    public SettingsValue<Boolean> getRecentFilesOpenLastOnStartup()
+    {
+        return recentFilesOpenLastOnStartup;
+    }
+
+    public SettingsValue<Boolean> getAutomaticBackupsOnSave()
+    {
+        return automaticBackupsOnSave;
     }
 
     public SettingsValue<Long> getAutomaticBackupsRetained()
@@ -26,7 +47,10 @@ public class Settings implements Serializable
     public String toString()
     {
         return "Settings{" +
-                "automaticBackupsRetained=" + automaticBackupsRetained +
+                "recentFilesEnabled=" + recentFilesEnabled +
+                ", recentFilesOpenLastOnStartup=" + recentFilesOpenLastOnStartup +
+                ", automaticBackupsOnSave=" + automaticBackupsOnSave +
+                ", automaticBackupsRetained=" + automaticBackupsRetained +
                 '}';
     }
 

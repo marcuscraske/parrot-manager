@@ -1,5 +1,5 @@
 import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { DatabaseService } from 'app/service/database.service'
 import { RuntimeService } from 'app/service/runtime.service'
 
@@ -24,6 +24,7 @@ export class CurrentEntryComponent
     @Output() updateTreeSelection = new EventEmitter();
     @Output() changeNodeBeingViewed = new EventEmitter();
     @Output() continueActionWithPromptForDirtyValue = new EventEmitter();
+    @Output() saveValue = new EventEmitter();
 
     constructor(
         private databaseService: DatabaseService,
@@ -126,16 +127,6 @@ export class CurrentEntryComponent
     {
         var field = event.target;
         this.resizeValueTextAreaToFitContent();
-    }
-
-    saveValue()
-    {
-        // Fetch value and update current node
-        var value = $("#currentValue").val();
-        this.currentNode.setValueString(value);
-
-        // Reset form as untouched
-        this.updateEntryForm.reset();
     }
 
     hideValue()
