@@ -9,39 +9,23 @@
     <div class="editor">
 
         <!--
-            No node selected - display home page
+            Main view for child node
         -->
-        <div class="home" *ngIf="currentNode == null">
-            <h1>
-                {{ databaseService.getFileName() }}
-            </h1>
-            <p>
-                Select a node to begin editing.
-            </p>
+        <div *ngIf="!this.currentNode.isRoot()">
+            <current-entry [currentNode]="currentNode"
+                           [updateEntryForm]="updateEntryForm"
+                           (updateTree)="updateTree()"
+                           (updateTreeSelection)="updateTreeSelection()"
+                           (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
+                           (continueActionWithPromptForDirtyValue)="continueActionWithPromptForDirtyValue($event)"
+            ></current-entry>
         </div>
 
-        <!--
-            Node selected
-        -->
-        <div class="view" *ngIf="currentNode != null">
-
-            <!--
-                Main view for child node
-            -->
-            <div *ngIf="!this.currentNode.isRoot()">
-                <current-entry [currentNode]="currentNode"
-                               (updateTree)="updateTree()"
-                               (updateTreeSelection)="updateTreeSelection()"
-                ></current-entry>
-            </div>
-
-            <!-- List entries -->
-            <viewer-entries [currentNode]="currentNode"
-                            (updateTree)="updateTree()"
-                            (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
-            ></viewer-entries>
-
-        </div>
+        <!-- List entries -->
+        <viewer-entries [currentNode]="currentNode"
+                        (updateTree)="updateTree()"
+                        (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
+        ></viewer-entries>
 
     </div>
 

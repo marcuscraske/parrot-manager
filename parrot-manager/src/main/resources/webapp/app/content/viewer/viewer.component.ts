@@ -19,8 +19,16 @@ export class ViewerComponent
     // The current node being edited
     public currentNode: any;
 
-    constructor(private databaseService: DatabaseService, private runtimeService: RuntimeService,
-                private renderer: Renderer, public fb: FormBuilder)
+    // Form for editing encrypted value; stored at parent level so we can check for change
+    public updateEntryForm = this.fb.group({
+        currentValue: [""]
+    });
+
+    constructor(
+        private databaseService: DatabaseService,
+        private runtimeService: RuntimeService,
+        private renderer: Renderer,
+        public fb: FormBuilder)
     {
         // Setup tree
         this.initTree();
@@ -30,6 +38,13 @@ export class ViewerComponent
             console.log("native databaseUpdated event raised, updating tree...");
             this.updateTree();
         });
+    }
+
+    ngOnInit()
+    {
+        // Set root node as current by default
+        var database = this.databaseService.getDatabase();
+        this.currentNode = database.getRoot();
     }
 
     ngOnDestroy()
@@ -115,7 +130,9 @@ export class ViewerComponent
 
     changeNodeBeingViewed(nodeId)
     {
-        //this.continueActionWithPromptForDirtyValue(() => {
+        console.log("request to change node - id: " + nodeId);
+
+        this.continueActionWithPromptForDirtyValue(() => {
             // Update node being viewed
             this.currentNode = this.databaseService.getNode(nodeId);
 
@@ -126,8 +143,39 @@ export class ViewerComponent
             //this.updateEntryForm.reset();
 
             console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
-        //});
+        });
     }
 
+    // TODO: doesnt work for global exit of application, need to think of good way to approach this...
+    continueActionWithPromptForDirtyValue(callbackContinue)
+    {
+        if (this.updateEntryForm.dirty)
+        {
+            bootbox.dialog({
+                message: "Unsaved changes to value, these will be lost!",
+                buttons: {
+                    cancel: {
+                        label: "Cancel",
+                        className: "btn-default",
+                        callback: () => { }
+                    },
+                    ignore: {
+                        label: "Ignore",
+                        className: "btn-default",
+                        callback: () => { callbackContinue(); }
+                    },
+                    saveAndContinue: {
+                        label: "Save and Continue",
+                        className: "btn-primary",
+                        callback: () => { this.saveValue(); callbackContinue(); }
+                    }
+                }
+            });
+        }
+        else
+        {
+            callbackContinue();
+        }
+    }
 
 }

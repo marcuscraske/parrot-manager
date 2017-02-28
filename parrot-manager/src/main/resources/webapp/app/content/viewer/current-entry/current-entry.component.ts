@@ -13,17 +13,17 @@ import { RuntimeService } from 'app/service/runtime.service'
 export class CurrentEntryComponent
 {
 
-   // The current node being changed; passed from parent
-   @Input() currentNode : any;
+    // The current node being changed; passed from parent
+    @Input() currentNode : any;
 
-   // Functions on parent
-   @Output() updateTree = new EventEmitter();
-   @Output() updateTreeSelection = new EventEmitter();
-   @Output() changeNodeBeingViewed = new EventEmitter();
+    // The form for the encrypted value
+    @Input() updateEntryForm : FormGroup;
 
-    public updateEntryForm = this.fb.group({
-        currentValue: [""]
-    });
+    // Functions on parent
+    @Output() updateTree = new EventEmitter();
+    @Output() updateTreeSelection = new EventEmitter();
+    @Output() changeNodeBeingViewed = new EventEmitter();
+    @Output() continueActionWithPromptForDirtyValue = new EventEmitter();
 
     constructor(
         private databaseService: DatabaseService,
@@ -31,6 +31,13 @@ export class CurrentEntryComponent
         private renderer: Renderer,
         public fb: FormBuilder
     ) {
+    }
+
+    navigateToParent()
+    {
+        var parentNodeId = this.currentNode.getParent().getId();
+        console.log("navigating to parent: " + parentNodeId);
+        this.changeNodeBeingViewed.emit(parentNodeId);
     }
 
     deleteCurrentEntry()
@@ -131,11 +138,11 @@ export class CurrentEntryComponent
         this.updateEntryForm.reset();
     }
 
-    hideValue(target, ignoreDirty)
+    hideValue()
     {
         var field = $("#currentValue")[0];
 
-        this.continueActionWithPromptForDirtyValue(() => {
+        this.continueActionWithPromptForDirtyValue.emit(() => {
             // Reset to empty and resize
             field.value = "";
             this.resizeValueTextAreaToFitContent();
@@ -150,38 +157,6 @@ export class CurrentEntryComponent
         // Resize box to fit content; reset to avoid inf. growing box
         field.style.height = "0px";
         field.style.height = field.scrollHeight + "px";
-    }
-
-    // TODO: doesnt work for global exit of application, need to think of good way to approach this...
-    continueActionWithPromptForDirtyValue(callbackContinue)
-    {
-        if (this.updateEntryForm.dirty)
-        {
-            bootbox.dialog({
-                message: "Unsaved changes to value, these will be lost!",
-                buttons: {
-                    cancel: {
-                        label: "Cancel",
-                        className: "btn-default",
-                        callback: () => { }
-                    },
-                    ignore: {
-                        label: "Ignore",
-                        className: "btn-default",
-                        callback: () => { callbackContinue(); }
-                    },
-                    saveAndContinue: {
-                        label: "Save and Continue",
-                        className: "btn-primary",
-                        callback: () => { this.saveValue(); callbackContinue(); }
-                    }
-                }
-            });
-        }
-        else
-        {
-            callbackContinue();
-        }
     }
 
 }
