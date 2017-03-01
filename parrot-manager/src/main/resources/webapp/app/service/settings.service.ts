@@ -43,7 +43,8 @@ export class SettingsService {
         );
 
         // Save
-        this.settingsService.save();
+        var result = this.settingsService.save();
+        return result;
     }
 
 }

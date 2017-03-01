@@ -2,16 +2,16 @@
     <div class="actions">
 
         <div class="general-file" *ngIf="!databaseService.isOpen()">
-            <a routerLink="open" title="Open">
+            <a routerLink="/open" title="Open">
                 <span class="icon icon-folder"></span>
             </a>
-            <a routerLink="create" title="Create">
+            <a routerLink="/create" title="Create">
                 <span class="icon icon-file-text2"></span>
             </a>
         </div>
 
         <div class="db-open" *ngIf="databaseService.isOpen()">
-            <a routerLink="viewer" title="Viewer">
+            <a routerLink="/viewer" title="Viewer">
                 <span class="icon icon-search"></span>
             </a>
             <a title="Save" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">

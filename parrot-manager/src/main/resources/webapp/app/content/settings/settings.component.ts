@@ -12,15 +12,18 @@ import { Router } from '@angular/router';
 export class SettingsComponent {
 
     public settingsForm = this.fb.group({
-        recentFilesEnabled: [""],
-        recentFilesOpenLastOnStartup: [""],
-        automaticBackupsOnSave: [""],
+        recentFilesEnabled: [false],
+        recentFilesOpenLastOnStartup: [false],
+        automaticBackupsOnSave: [false],
         automaticBackupsRetained: [""]
     });
 
+    errorMessage ; string = null;
+    successMessage ; string = null;
+
     constructor(
-        public fb: FormBuilder,
         private settingsService: SettingsService,
+        public fb: FormBuilder,
         private router: Router
     ) { }
 
@@ -41,7 +44,12 @@ export class SettingsComponent {
         {
             // Save settings
             var newSettings = form.value;
-            this.settingsService.save(newSettings);
+            this.errorMessage = this.settingsService.save(newSettings);
+
+            if (this.errorMessage == null)
+            {
+                this.successMessage = "Saved.";
+            }
         }
         else
         {

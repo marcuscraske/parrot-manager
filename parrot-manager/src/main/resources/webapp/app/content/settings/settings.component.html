@@ -10,15 +10,15 @@
         <label class="checkbox-inline">
             <input type="checkbox"
                    id="recentFilesEnabled"
-                   formControl="recentFilesEnabled"
+                   formControlName="recentFilesEnabled"
                    [(ngModel)]="settingsForm.value['recentFilesEnabled']"
             />
             Enabled
-        </label>    
+        </label>
         <label class="checkbox-inline">
             <input type="checkbox"
                    id="recentFilesOpenLastOnStartup"
-                   formControl="recentFilesOpenLastOnStartup"
+                   formControlName="recentFilesOpenLastOnStartup"
                    [(ngModel)]="settingsForm.value['recentFilesOpenLastOnStartup']"
             />
             Open last file on startup
@@ -32,7 +32,7 @@
         <label class="checkbox-inline">
             <input type="checkbox"
                    id="automaticBackupsOnSave"
-                   formControl="automaticBackupsOnSave"
+                   formControlName="automaticBackupsOnSave"
                    [(ngModel)]="settingsForm.value['automaticBackupsOnSave']"
             />
             Backup on save
@@ -46,7 +46,7 @@
                type="number"
                class="form-control"
                placeholder="Leave empty for unlimited"
-               formControl="automaticBackupsRetained"
+               formControlName="automaticBackupsRetained"
                [(ngModel)]="settingsForm.value['automaticBackupsRetained']"
         />
     </div>
@@ -56,4 +56,10 @@
             Save
         </button>
     </div>
+
+    <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
+        <span class="help-block">{{ errorMessage }}</span>
+        <span class="help-block">{{ successMessage }}</span>
+    </div>
+
 </form>

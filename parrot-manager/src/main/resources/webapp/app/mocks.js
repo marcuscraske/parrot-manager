@@ -2,6 +2,22 @@
     Simple JS file for mocking injected dependencies during Parrot runtime.
 */
 
+if (window.settingsService == null)
+{
+    window.settingsService = (function(){
+        return {
+            getSettings : function() {
+                return {
+                    getRecentFilesEnabled : function() { return { getValue : function() { return "true" } } },
+                    getRecentFilesOpenLastOnStartup : function() { return { getValue : function() { return "true" } } },
+                    getAutomaticBackupsOnSave : function() { return { getValue : function() { return "true" } } },
+                    getAutomaticBackupsRetained : function() { return { getValue : function() { return "20" } } }
+                }
+            }
+        }
+    })();
+}
+
 if (window.runtimeService == null)
 {
     window.runtimeService = (function(){
