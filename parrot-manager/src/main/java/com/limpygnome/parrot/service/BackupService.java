@@ -104,9 +104,10 @@ public class BackupService
         {
             File[] backupFiles = fetchFiles();
 
-            if (backupFiles.length > maxRetained)
+            if (backupFiles.length >= maxRetained)
             {
-                deleteOldestRetainedBackups(backupFiles, maxRetained);
+                // Subtract one as we're now making a new backup, hence we only want n backups afterwards
+                deleteOldestRetainedBackups(backupFiles, maxRetained - 1);
             }
         }
     }

@@ -18,7 +18,7 @@ export class SettingsService {
             "recentFilesEnabled" : settings.getRecentFilesEnabled().getValue(),
             "recentFilesOpenLastOnStartup" : settings.getRecentFilesOpenLastOnStartup().getValue(),
             "automaticBackupsOnSave" : settings.getAutomaticBackupsOnSave().getValue(),
-            "automaticBackupsRetained" : settings.getAutomaticBackupsRetained().getValue(),
+            "automaticBackupsRetained" : settings.getAutomaticBackupsRetained().getValue()
         };
 
         return json;
@@ -38,7 +38,7 @@ export class SettingsService {
         settings.getAutomaticBackupsOnSave().setValue(
             json.automaticBackupsOnSave
         );
-        settings.getAutomaticBackupsRetained().setValue(
+        settings.getAutomaticBackupsRetained().setValueLong(
             json.automaticBackupsRetained
         );
 

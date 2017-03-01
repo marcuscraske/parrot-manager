@@ -31,6 +31,16 @@ public class SettingsValue<T> implements Serializable
         this.value = value;
     }
 
+    /**
+     * Used by JavaScript invocations, which do not typecast to the generic type (T).
+     *
+     * @param value long value
+     */
+    public void setValueLong(long value)
+    {
+        this.value = (T) (Long) value;
+    }
+
     @JsonIgnore
     @Override
     public String toString()

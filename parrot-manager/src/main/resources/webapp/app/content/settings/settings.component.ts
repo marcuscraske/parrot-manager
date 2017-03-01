@@ -18,8 +18,8 @@ export class SettingsComponent {
         automaticBackupsRetained: [""]
     });
 
-    errorMessage ; string = null;
-    successMessage ; string = null;
+    errorMessage : string = null;
+    successMessage : string = null;
 
     constructor(
         private settingsService: SettingsService,
