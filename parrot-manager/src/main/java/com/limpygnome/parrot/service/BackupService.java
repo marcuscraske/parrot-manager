@@ -3,6 +3,7 @@ package com.limpygnome.parrot.service;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import com.limpygnome.parrot.model.backup.BackupFile;
+import com.limpygnome.parrot.model.setting.Settings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,22 @@ public class BackupService
     private DatabaseReaderWriter databaseReaderWriter;
     @Autowired
     private SessionService sessionService;
+
+    public String createBackupBeforeSave()
+    {
+        String result = null;
+
+        // Check if enabled
+        Settings settings = settingsService.getSettings();
+        boolean isEnabled = settings.getAutomaticBackupsOnSave().getValue();
+
+        if (isEnabled)
+        {
+            result = create();
+        }
+
+        return result;
+    }
 
     /**
      * Creates a new backup.

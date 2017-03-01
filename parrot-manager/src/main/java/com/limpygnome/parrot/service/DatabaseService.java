@@ -24,6 +24,8 @@ public class DatabaseService
     // Services
     @Autowired
     private SessionService sessionService;
+    @Autowired
+    private BackupService backupService;
 
     // Components
     @Autowired
@@ -124,20 +126,31 @@ public class DatabaseService
      */
     public synchronized String save()
     {
-        String result = null;
+        String result;
 
         try
         {
             String path = currentFile.getCanonicalPath();
             LOG.info("saving database - path: {}", path);
 
-            // Save the database
-            databaseReaderWriter.save(database, path);
+            // Create backup
+            result = backupService.createBackupBeforeSave();
 
-            // Reset dirty flag
-            database.setDirty(false);
+            if (result != null)
+            {
+                LOG.error("failed to backup database on save - result: {}", result);
+                result = "Failed to create automatic backup on save - " + result;
+            }
+            else
+            {
+                // Save the database
+                databaseReaderWriter.save(database, path);
 
-            LOG.info("successfully saved database");
+                // Reset dirty flag
+                database.setDirty(false);
+
+                LOG.info("successfully saved database");
+            }
         }
         catch (Exception e)
         {
