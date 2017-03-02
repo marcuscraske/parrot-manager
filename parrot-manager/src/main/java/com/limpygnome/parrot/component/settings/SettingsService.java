@@ -1,8 +1,10 @@
 package com.limpygnome.parrot.component.settings;
 
+import com.limpygnome.parrot.component.common.FileComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -15,6 +17,9 @@ import java.io.IOException;
 public class SettingsService
 {
     private static final Logger LOG = LogManager.getLogger(SettingsService.class);
+
+    @Autowired
+    private FileComponent fileComponent;
 
     private Settings settings;
 
@@ -101,10 +106,7 @@ public class SettingsService
 
     private File getSettingsPath()
     {
-        // TODO: need to consider windows
-        String homeDir = System.getProperty("user.home");
-        File result = new File(homeDir + "/.config/parrot-manager/settings.json");
-        return result;
+        return fileComponent.resolvePreferenceFile("settings.json");
     }
 
     /**

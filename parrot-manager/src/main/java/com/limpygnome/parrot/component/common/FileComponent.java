@@ -2,6 +2,8 @@ package com.limpygnome.parrot.component.common;
 
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 /**
  * Used to resolve paths and perform common operations for file related functions.
  *
@@ -31,6 +33,20 @@ public class FileComponent
         }
 
         return path;
+    }
+
+    /**
+     * Builds the full path to a preference file.
+     *
+     * @param fileName file name
+     * @return the full path
+     */
+    public File resolvePreferenceFile(String fileName)
+    {
+        // TODO: need to consider windows
+        String homeDir = System.getProperty("user.home");
+        File result = new File(homeDir + "/.config/parrot-manager/" + fileName);
+        return result;
     }
 
 }
