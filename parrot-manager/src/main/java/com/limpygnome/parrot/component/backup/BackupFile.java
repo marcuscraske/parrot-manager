@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.model.backup;
+package com.limpygnome.parrot.component.backup;
 
 import org.joda.time.DateTime;
 

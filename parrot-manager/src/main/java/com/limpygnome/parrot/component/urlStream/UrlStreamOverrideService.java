@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.ui.urlstream;
+package com.limpygnome.parrot.component.urlStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,9 +11,9 @@ import java.net.URLStreamHandlerFactory;
  *
  * TODO: unit test
  */
-public class ResourceUrlConfig
+public class UrlStreamOverrideService
 {
-    private static final Logger LOG = LogManager.getLogger(ResourceUrlConfig.class);
+    private static final Logger LOG = LogManager.getLogger(UrlStreamOverrideService.class);
 
     /**
      * Enables local resources to be served by class path.

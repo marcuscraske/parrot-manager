@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.component.session;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

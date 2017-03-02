@@ -1,7 +1,7 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.component.runtime;
 
-import com.limpygnome.parrot.component.WebStageInitComponent;
-import com.limpygnome.parrot.ui.WebViewStage;
+import com.limpygnome.parrot.component.ui.WebStageInitService;
+import com.limpygnome.parrot.component.ui.WebViewStage;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -24,14 +24,14 @@ public class RuntimeService
     private static final Logger LOG = LogManager.getLogger(RuntimeService.class);
 
     @Autowired
-    private WebStageInitComponent webStageInitComponent;
+    private WebStageInitService webStageInitService;
 
     /**
      * @return indicates if running in development mode
      */
     public boolean isDevelopmentMode()
     {
-        return webStageInitComponent.isDevelopmentMode();
+        return webStageInitService.isDevelopmentMode();
     }
 
     /**
@@ -39,7 +39,7 @@ public class RuntimeService
      */
     public void loadPage(String currentUrl)
     {
-        webStageInitComponent.getStage().loadPage(currentUrl);
+        webStageInitService.getStage().loadPage(currentUrl);
     }
 
     /**
@@ -50,7 +50,7 @@ public class RuntimeService
     public void changeHeight(int newHeight)
     {
         // Fetch actual window
-        Scene scene = webStageInitComponent.getStage().getScene();
+        Scene scene = webStageInitService.getStage().getScene();
 
         // Set the new height, factoring size of window frame
         int targetHeight = newHeight + (int) scene.getY() + 1;
@@ -74,7 +74,7 @@ public class RuntimeService
      */
     public String pickFile(String title, String initialPath, boolean isSave)
     {
-        WebViewStage stage = webStageInitComponent.getStage();
+        WebViewStage stage = webStageInitService.getStage();
 
         // Build dialogue
         FileChooser fileChooser = new FileChooser();

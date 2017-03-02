@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.model.setting;
+package com.limpygnome.parrot.component.settings;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 

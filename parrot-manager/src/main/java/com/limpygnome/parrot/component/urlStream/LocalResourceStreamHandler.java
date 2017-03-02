@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.ui.urlstream;
+package com.limpygnome.parrot.component.urlStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.model.remote;
+package com.limpygnome.parrot.component.remote;
 
 import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;

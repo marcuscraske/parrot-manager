@@ -1,9 +1,11 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.component.backup;
 
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import com.limpygnome.parrot.model.backup.BackupFile;
-import com.limpygnome.parrot.model.setting.Settings;
+import com.limpygnome.parrot.component.settings.Settings;
+import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.session.SessionService;
+import com.limpygnome.parrot.component.settings.SettingsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

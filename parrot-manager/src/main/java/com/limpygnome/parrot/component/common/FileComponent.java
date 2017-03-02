@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component;
+package com.limpygnome.parrot.component.common;
 
 import org.springframework.stereotype.Component;
 

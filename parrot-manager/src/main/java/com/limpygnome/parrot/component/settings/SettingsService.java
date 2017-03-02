@@ -1,6 +1,5 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.component.settings;
 
-import com.limpygnome.parrot.model.setting.Settings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;

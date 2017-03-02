@@ -1,9 +1,9 @@
 package com.limpygnome.parrot;
 
-import com.limpygnome.parrot.component.WebStageInitComponent;
+import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.config.AppConfig;
-import com.limpygnome.parrot.ui.WebViewStage;
-import com.limpygnome.parrot.ui.urlstream.ResourceUrlConfig;
+import com.limpygnome.parrot.component.ui.WebViewStage;
+import com.limpygnome.parrot.component.urlStream.UrlStreamOverrideService;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -16,7 +16,7 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 public class Program extends Application
 {
     private static String[] args;
-    private WebStageInitComponent webStageInitComponent;
+    private WebStageInitService webStageInitService;
 
     public Program()
     {
@@ -30,18 +30,18 @@ public class Program extends Application
         applicationContext.refresh();
 
         // Create/fetch init component
-        webStageInitComponent = applicationContext.getBean(WebStageInitComponent.class);
+        webStageInitService = applicationContext.getBean(WebStageInitService.class);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
         // Serve resources from class path
-        ResourceUrlConfig resourceUrlConfig = new ResourceUrlConfig();
-        resourceUrlConfig.enable(webStageInitComponent.isDevelopmentMode());
+        UrlStreamOverrideService urlStreamOverrideService = new UrlStreamOverrideService();
+        urlStreamOverrideService.enable(webStageInitService.isDevelopmentMode());
 
         // Create and show stage
-        WebViewStage stage = new WebViewStage(webStageInitComponent);
+        WebViewStage stage = new WebViewStage(webStageInitService);
         stage.show();
     }
 

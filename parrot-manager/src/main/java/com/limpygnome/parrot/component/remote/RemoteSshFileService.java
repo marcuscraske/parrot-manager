@@ -1,14 +1,12 @@
-package com.limpygnome.parrot.service;
+package com.limpygnome.parrot.component.remote;
 
-import com.limpygnome.parrot.component.FileComponent;
-import com.limpygnome.parrot.component.SshComponent;
+import com.limpygnome.parrot.component.common.FileComponent;
+import com.limpygnome.parrot.component.common.SshComponent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import com.limpygnome.parrot.model.remote.SshOptions;
-import com.limpygnome.parrot.model.remote.SshSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.InvalidCipherTextException;

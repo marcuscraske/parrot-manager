@@ -1,15 +1,14 @@
-package com.limpygnome.parrot.component;
+package com.limpygnome.parrot.component.ui;
 
-import com.limpygnome.parrot.service.BackupService;
-import com.limpygnome.parrot.service.DatabaseService;
-import com.limpygnome.parrot.service.RandomGeneratorService;
-import com.limpygnome.parrot.service.RemoteSshFileService;
-import com.limpygnome.parrot.service.RuntimeService;
-import com.limpygnome.parrot.service.SettingsService;
-import com.limpygnome.parrot.ui.WebViewStage;
+import com.limpygnome.parrot.component.backup.BackupService;
+import com.limpygnome.parrot.component.common.RandomGeneratorService;
+import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.remote.RemoteSshFileService;
+import com.limpygnome.parrot.component.runtime.RuntimeService;
+import com.limpygnome.parrot.component.settings.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * The facade for holding instances of common (shared) runtime services.
@@ -17,8 +16,8 @@ import org.springframework.stereotype.Component;
  * TODO: get rid of accessors, should be no need for it; we'll almost just want an auto-wiring bean/instance for
  * inecting beans into stage
  */
-@Component
-public class WebStageInitComponent
+@Service
+public class WebStageInitService
 {
     // Services
     @Autowired
