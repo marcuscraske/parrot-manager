@@ -6,7 +6,7 @@
 {
     display: table;
     font-size: 2em;
-    padding: 0.5em 0.2em 0.5em 0;
+    padding: 0.5em 0.2em 0 0;
     width: 100%;
 }
 
@@ -50,12 +50,10 @@
     max-height: 30em;
 }
 
-
 /*
-    Option buttons
+    Spacing for stacked option buttons
 */
-
-.options
+.options .btn
 {
-    max-height: 2em;
+    margin-bottom: 0.5em;
 }

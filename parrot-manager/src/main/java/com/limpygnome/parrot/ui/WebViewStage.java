@@ -17,6 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.html.HTMLElement;
 
+import java.io.InputStream;
+
 /**
  * A JavaFX web view stage.
  *
@@ -54,16 +56,14 @@ public class WebViewStage extends Stage
         // General window config
         setScene(scene);
         setTitle("parrot");
-        setWidth(900.0);
+        setWidth(980.0);
         setHeight(200.0);
 
         // Setup icons
-        getIcons().addAll(
-                new Image(getClass().getResource("/icons/parrot-icon.png").toString()),
-                new Image(getClass().getResource("/icons/parrot-icon-64.png").toString()),
-                new Image(getClass().getResource("/icons/parrot-icon-512.png").toString()),
-                new Image(getClass().getResource("/icons/parrot.svg").toString())
-        );
+        addIcon("/icons/parrot-icon.png");
+        addIcon("/icons/parrot-icon-64.png");
+        addIcon("/icons/parrot-icon-512.png");
+        addIcon("/icons/parrot.svg");
 
         // Prevent window from closing to prevent data loss for dirty databases
         setOnCloseRequest(event -> {
@@ -73,6 +73,20 @@ public class WebViewStage extends Stage
             // Trigger event for JS to handle action
             triggerEvent("document", "nativeExit");
         });
+    }
+
+    private void addIcon(String path)
+    {
+        InputStream iconStream = getClass().getResourceAsStream(path);
+
+        if (iconStream == null)
+        {
+            throw new RuntimeException("Unable to add icon - path: " + path);
+        }
+
+        Image icon = new Image(iconStream);
+        getIcons().add(icon);
+        LOG.debug("added icon - path: {}", path);
     }
 
     private void setupDebugging()

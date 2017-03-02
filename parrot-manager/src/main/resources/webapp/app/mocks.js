@@ -71,7 +71,8 @@ if (window.databaseService == null)
                                     getChildren : function() { return [] }
                                 }
 
-                            ] }
+                            ] },
+                            isRoot : function() { return false }
                         }
                     },
 
