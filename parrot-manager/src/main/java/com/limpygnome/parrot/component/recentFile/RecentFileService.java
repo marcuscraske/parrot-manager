@@ -87,8 +87,13 @@ public class RecentFileService
 
     public synchronized void add(RecentFile recentFile) throws IOException
     {
-        if (!recentFiles.contains(recentFile))
+        // Only update the list if the first/most recent item was not already this item. As a lot of users
+        // will most likely open the same file, it's best to not change anything and reduce I/O...
+        if (recentFiles.isEmpty() || !recentFiles.getFirst().equals(recentFile))
         {
+            // Remove in case it already exists
+            recentFiles.remove(recentFile);
+
             // Add to front of queue, but remove last element if we're over the limit of items
             recentFiles.addFirst(recentFile);
 

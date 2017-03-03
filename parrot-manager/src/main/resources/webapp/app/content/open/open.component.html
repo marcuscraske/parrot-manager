@@ -38,7 +38,7 @@
     </h2>
 
     <div class="form-group" *ngFor="let recentFile of recentFiles; trackBy: trackChildren">
-        <button class="form-control btn btn-default">
+        <button class="form-control btn btn-default" (click)="openFile(recentFile.getFullPath())">
             {{ recentFile.getFileName() }}
         </button>
     </div>

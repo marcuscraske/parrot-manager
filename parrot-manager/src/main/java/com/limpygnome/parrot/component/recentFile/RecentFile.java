@@ -14,7 +14,19 @@ public class RecentFile
 
     public RecentFile(File file)
     {
-        this.fileName = file.getName();
+        // Read file-name (but exclude database extension)
+        final String EXTENSION_REMOVED_FROM_FILENAME = ".parrot";
+
+        String fileName = file.getName();
+
+        if (fileName.endsWith(EXTENSION_REMOVED_FROM_FILENAME) && fileName.length() > EXTENSION_REMOVED_FROM_FILENAME.length())
+        {
+            fileName = fileName.substring(0, fileName.length() - EXTENSION_REMOVED_FROM_FILENAME.length());
+        }
+
+        this.fileName = fileName;
+
+        // Read full path for opening later
         this.fullPath = file.getAbsolutePath();
     }
 

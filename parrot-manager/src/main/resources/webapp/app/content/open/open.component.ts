@@ -30,7 +30,11 @@ export class OpenComponent {
     {
         // Open dialogue and read file
         var path = this.runtimeService.pickFile("Open existing database", null, false);
+        this.openFile(path);
+    }
 
+    openFile(path)
+    {
         // Open with password prompt
         this.databaseService.openWithPrompt(path, (message) => {
 
