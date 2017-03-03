@@ -32,18 +32,21 @@
 <!--
     TODO: split bottom into own component
 -->
-<h2>
-    recent
-</h2>
+<div *ngIf="recentFiles != null && recentFiles.length > 0">
+    <h2>
+        recent files
+    </h2>
 
-<p>
-    add button in future to toggle disabling this feature
-</p>
+    <div class="form-group" *ngFor="let recentFile of recentFiles; trackBy: trackChildren">
+        <button class="form-control btn btn-default">
+            {{ recentFile.getFileName() }}
+        </button>
+    </div>
 
-<ul>
-    <li>
-        <a>
-            example.parrot
-        </a>
-    </li>
-</ul>
+    <div class="form-group">
+        <span class="help-block">
+            You can enable loading the last recent file, on startup, in <a href="/settings" routerLink="/settings">settings</a>.
+        </span>
+    </div>
+
+</div>

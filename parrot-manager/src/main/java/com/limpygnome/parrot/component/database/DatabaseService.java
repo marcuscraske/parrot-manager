@@ -2,6 +2,8 @@ package com.limpygnome.parrot.component.database;
 
 import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.common.FileComponent;
+import com.limpygnome.parrot.component.recentFile.RecentFile;
+import com.limpygnome.parrot.component.recentFile.RecentFileService;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.db.Database;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * A service for maintaining the current (primary) database open.
@@ -28,6 +31,8 @@ public class DatabaseService
     private SessionService sessionService;
     @Autowired
     private BackupService backupService;
+    @Autowired
+    private RecentFileService recentFileService;
 
     // Components
     @Autowired
@@ -69,7 +74,8 @@ public class DatabaseService
             databaseReaderWriter.save(database, location);
 
             // Update internal state
-            this.currentFile = new File(location);
+            File currentFile = new File(location);
+            updateCurrentFile(currentFile);
             sessionService.reset();
 
             LOG.info("created database successfully - location: {}", location);
@@ -101,7 +107,8 @@ public class DatabaseService
         try
         {
             database = databaseReaderWriter.open(path, password.toCharArray());
-            currentFile = new File(path);
+            File currentFile = new File(path);
+            updateCurrentFile(currentFile);
             sessionService.reset();
             result = null;
         }
@@ -162,6 +169,24 @@ public class DatabaseService
         return result;
     }
 
+    private void updateCurrentFile(File currentFile)
+    {
+        if (currentFile != null)
+        {
+            try
+            {
+                RecentFile recentFile = new RecentFile(currentFile);
+                recentFileService.add(recentFile);
+            }
+            catch (IOException e)
+            {
+                LOG.error("failed to update recent files", e);
+            }
+        }
+
+        this.currentFile = currentFile;
+    }
+
     /**
      * Unloads the current database, closing it.
      *
@@ -170,7 +195,7 @@ public class DatabaseService
     public synchronized void close()
     {
         database = null;
-        currentFile = null;
+        updateCurrentFile(null);
         sessionService.reset();
     }
 

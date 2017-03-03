@@ -1,18 +1,30 @@
 import { Component } from '@angular/core';
-import { DatabaseService } from '../../service/database.service'
-import { RuntimeService } from '../../service/runtime.service'
+import { DatabaseService } from 'app/service/database.service'
+import { RuntimeService } from 'app/service/runtime.service'
+import { RecentFileService } from 'app/service/recentFile.service'
 import { Router } from '@angular/router';
 
 @Component({
     moduleId: module.id,
     templateUrl: 'open.component.html',
-    providers: [DatabaseService, RuntimeService]
+    providers: [DatabaseService, RuntimeService, RecentFileService]
 })
 export class OpenComponent {
 
     errorMessage: string;
+    recentFiles: any;
 
-    constructor(private databaseService: DatabaseService, private runtimeService: RuntimeService, private router: Router) { }
+    constructor(
+        private databaseService: DatabaseService,
+        private runtimeService: RuntimeService,
+        private recentFileService: RecentFileService,
+        private router: Router
+    ) { }
+
+    ngOnInit()
+    {
+        this.recentFiles = this.recentFileService.fetch();
+    }
 
     chooseDatabaseFile() : void
     {
@@ -35,6 +47,11 @@ export class OpenComponent {
             }
 
         });
+    }
+
+    trackChildren(index, recentFile)
+    {
+        return recentFile ? recentFile.getFileName() : null;
     }
 
 }

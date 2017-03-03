@@ -7,6 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 
@@ -23,9 +24,9 @@ public class SettingsService
 
     private Settings settings;
 
-    public SettingsService()
+    @PostConstruct
+    public void initialLoad()
     {
-        // Immediately load settings
         loadOrCreate();
     }
 
@@ -82,15 +83,6 @@ public class SettingsService
 
         try
         {
-            // Create parent path if it does not exist
-            File settingsParentFile = settingsFile.getParentFile();
-
-            if (!settingsParentFile.exists() && !settingsParentFile.mkdirs())
-            {
-                LOG.info("unable to create parent dir for settings");
-                result = "Failed to create directory for settings - path: " + settingsParentFile.getAbsolutePath();
-            }
-
             // Check we can write to file
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(settingsFile, settings);

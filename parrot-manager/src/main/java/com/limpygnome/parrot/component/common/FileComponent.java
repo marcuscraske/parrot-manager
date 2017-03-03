@@ -1,5 +1,7 @@
 package com.limpygnome.parrot.component.common;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -12,6 +14,7 @@ import java.io.File;
 @Component
 public class FileComponent
 {
+    private static final Logger LOG = LogManager.getLogger(FileComponent.class);
 
     /**
      * Used to resolve path shortcuts.
@@ -43,9 +46,39 @@ public class FileComponent
      */
     public File resolvePreferenceFile(String fileName)
     {
+        File preferenceRootFile = getPreferenceFileRoot();
+        File result = new File(preferenceRootFile, fileName);
+        return result;
+    }
+
+    /**
+     * @return root file for storing preferences / user data for the current user
+     */
+    public File getPreferenceFileRoot()
+    {
         // TODO: need to consider windows
         String homeDir = System.getProperty("user.home");
-        File result = new File(homeDir + "/.config/parrot-manager/" + fileName);
+        File result = new File(homeDir + "/.config/parrot-manager");
+
+        // Check the root exists, otherwise make it
+        if (!result.exists())
+        {
+            boolean isSuccess = result.mkdirs();
+
+            if (isSuccess)
+            {
+                LOG.info("created preferences directory - path: {}", result.getAbsolutePath());
+            }
+            else
+            {
+                LOG.error("failed to create preferences directory - path: {}", result.getAbsolutePath());
+            }
+        }
+        else
+        {
+            LOG.debug("preferences directory already exists");
+        }
+
         return result;
     }
 
