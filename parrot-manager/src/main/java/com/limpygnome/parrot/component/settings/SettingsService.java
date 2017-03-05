@@ -96,6 +96,19 @@ public class SettingsService
         return result;
     }
 
+    /**
+     * resets to default settings and persists them.
+     *
+     * @return error message; null if successful
+     */
+    public String reset()
+    {
+        settings = new Settings();
+
+        String result = save();
+        return result;
+    }
+
     private File getSettingsPath()
     {
         return fileComponent.resolvePreferenceFile("settings.json");

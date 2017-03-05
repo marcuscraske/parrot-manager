@@ -47,4 +47,10 @@ export class SettingsService {
         return result;
     }
 
+    reset()
+    {
+        var result = this.settingsService.reset();
+        return result;
+    }
+
 }

@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SettingsService } from 'app/service/settings.service'
+import { RecentFileService } from 'app/service/recentFile.service'
 import { Router } from '@angular/router';
 
 @Component({
     moduleId: module.id,
     templateUrl: "settings.component.html",
-    providers: [SettingsService],
+    providers: [SettingsService, RecentFileService],
     styleUrls: ["settings.component.css"]
 })
 export class SettingsComponent {
@@ -21,19 +22,32 @@ export class SettingsComponent {
     errorMessage : string = null;
     successMessage : string = null;
 
+    recentFilesClearEnabled : boolean;
+
     constructor(
         private settingsService: SettingsService,
+        private recentFileService: RecentFileService,
         public fb: FormBuilder,
         private router: Router
     ) { }
 
     ngOnInit()
     {
+        this.populateSettings();
+    }
+
+    populateSettings()
+    {
+        console.log("populating form with settings...");
+
         // Read existing settings
         var settings = this.settingsService.fetch();
 
         // Apply to form
         this.settingsForm.patchValue(settings);
+
+        // Determine if any recent files
+        this.recentFilesClearEnabled = this.recentFileService.isAny();
     }
 
     save()
@@ -55,6 +69,22 @@ export class SettingsComponent {
         {
             console.log("settings form not valid");
         }
+    }
+
+    resetToDefault()
+    {
+        console.log("resetting to default settings");
+        this.errorMessage = this.settingsService.reset();
+
+        this.populateSettings();
+    }
+
+    recentFilesClear()
+    {
+        console.log("clearing recent files");
+
+        this.recentFileService.clear();
+        this.recentFilesClearEnabled = false;
     }
 
 }

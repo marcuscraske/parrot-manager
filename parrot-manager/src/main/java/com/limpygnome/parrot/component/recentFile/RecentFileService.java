@@ -109,4 +109,21 @@ public class RecentFileService
         }
     }
 
+    /**
+     * clears recent files and persists empty state to preferences file.
+     */
+    public synchronized void clear()
+    {
+        recentFiles.clear();
+
+        try
+        {
+            saveToFile();
+        }
+        catch (IOException e)
+        {
+            LOG.error("failed to save recent files", e);
+        }
+    }
+
 }

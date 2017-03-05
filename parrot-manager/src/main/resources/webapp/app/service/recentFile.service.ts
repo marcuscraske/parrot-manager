@@ -16,4 +16,15 @@ export class RecentFileService {
         return result;
     }
 
+    isAny() : boolean
+    {
+        var recentFiles = this.fetch();
+        return recentFiles.length > 0;
+    }
+
+    clear()
+    {
+        this.recentFileService.clear();
+    }
+
 }
