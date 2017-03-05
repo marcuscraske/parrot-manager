@@ -3,75 +3,132 @@
 </h1>
 
 <form [formGroup]="settingsForm" (ngSubmit)="save($event)" #form="ngForm">
-    <h2>
-        recent files
-    </h2>
-    <div class="form-group">
-        <label class="checkbox-inline">
-            <input type="checkbox"
-                   id="recentFilesEnabled"
-                   formControlName="recentFilesEnabled"
-                   [(ngModel)]="settingsForm.value['recentFilesEnabled']"
-            />
-            Enabled
-        </label>
-        <label class="checkbox-inline">
-            <input type="checkbox"
-                   id="recentFilesOpenLastOnStartup"
-                   formControlName="recentFilesOpenLastOnStartup"
-                   [(ngModel)]="settingsForm.value['recentFilesOpenLastOnStartup']"
-            />
-            Open last file on startup
-        </label>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                Recent files
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="checkbox-inline">
+                    <input type="checkbox"
+                           id="recentFilesEnabled"
+                           formControlName="recentFilesEnabled"
+                           [(ngModel)]="settingsForm.value['recentFilesEnabled']"
+                    />
+                    Enabled
+                </label>
+                <label class="checkbox-inline">
+                    <input type="checkbox"
+                           id="recentFilesOpenLastOnStartup"
+                           formControlName="recentFilesOpenLastOnStartup"
+                           [(ngModel)]="settingsForm.value['recentFilesOpenLastOnStartup']"
+                    />
+                    Open last file on startup
+                </label>
+            </div>
+
+            <div class="form-group" *ngIf="recentFilesClearEnabled">
+                <button class="btn btn-default" (click)="recentFilesClear()">
+                    Clear recent files
+                </button>
+            </div>
+
+        </div>
     </div>
 
-    <div class="form-group" *ngIf="recentFilesClearEnabled">
-        <button class="btn btn-default" (click)="recentFilesClear()">
-            Clear recent files
-        </button>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                Backups
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="checkbox-inline">
+                    <input type="checkbox"
+                           id="automaticBackupsOnSave"
+                           formControlName="automaticBackupsOnSave"
+                           [(ngModel)]="settingsForm.value['automaticBackupsOnSave']"
+                    />
+                    Backup on save
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-control-label" for="automaticBackupsRetained">
+                    Maximum backups retained
+                </label>
+                <input id="automaticBackupsRetained"
+                       type="number"
+                       class="form-control"
+                       placeholder="Leave empty for unlimited"
+                       formControlName="automaticBackupsRetained"
+                       [(ngModel)]="settingsForm.value['automaticBackupsRetained']"
+                />
+            </div>
+
+        </div>
     </div>
 
-    <h2>
-        automatic backups
-    </h2>
-    <div class="form-group">
-        <label class="checkbox-inline">
-            <input type="checkbox"
-                   id="automaticBackupsOnSave"
-                   formControlName="automaticBackupsOnSave"
-                   [(ngModel)]="settingsForm.value['automaticBackupsOnSave']"
-            />
-            Backup on save
-        </label>
-    </div>
-    <div class="form-group">
-        <label class="form-control-label" for="automaticBackupsRetained">
-            Maximum backups retained
-        </label>
-        <input id="automaticBackupsRetained"
-               type="number"
-               class="form-control"
-               placeholder="Leave empty for unlimited"
-               formControlName="automaticBackupsRetained"
-               [(ngModel)]="settingsForm.value['automaticBackupsRetained']"
-        />
+    <div class="panel panel-default" *ngIf="databaseService.isOpen()">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <a href="#collapseAdvanced" data-toggle="collapse">
+                    Current database
+                </a>
+            </div>
+        </div>
+        <div id="collapseAdvanced" class="panel-body panel-collapse collapse">
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <button class="btn btn-default">
+                        Clear deleted node history
+                    </button>
+                </div>
+                <div class="col-xs-9">
+                    The identifiers of deleted nodes are retained for remote synchronisation of the database. If you have
+                    synchronised your database with all remote copies, you can wipe the history to reduce storage and memory
+                    usage.
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <button class="btn btn-default">
+                        Clear history
+                    </button>
+                </div>
+                <div class="col-xs-9">
+                    The history of values is retained, which can be wiped to reduce storage and memory.
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="form-group text-center">
-        <button type="submit" class="btn btn-primary btn-lg" (click)="save()">
-            Save
-        </button>
-    </div>
+    <div>
 
-    <div class="form-group text-center">
-        <button type="submit" class="btn btn-default" (click)="resetToDefault()">
-            Reset to default
-        </button>
-    </div>
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary btn-lg" (click)="save()">
+                Save
+            </button>
+        </div>
 
-    <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
-        <span class="help-block">{{ errorMessage }}</span>
-        <span class="help-block">{{ successMessage }}</span>
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-default" (click)="resetToDefault()">
+                Reset to default
+            </button>
+        </div>
+
+        <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
+            <span class="help-block">{{ errorMessage }}</span>
+            <span class="help-block">{{ successMessage }}</span>
+        </div>
+
     </div>
 
 </form>

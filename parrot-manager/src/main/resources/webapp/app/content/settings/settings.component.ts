@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
+
 import { SettingsService } from 'app/service/settings.service'
 import { RecentFileService } from 'app/service/recentFile.service'
-import { Router } from '@angular/router';
+import { DatabaseService } from 'app/service/database.service'
 
 @Component({
     moduleId: module.id,
     templateUrl: "settings.component.html",
-    providers: [SettingsService, RecentFileService],
+    providers: [SettingsService, RecentFileService, DatabaseService],
     styleUrls: ["settings.component.css"]
 })
 export class SettingsComponent {
@@ -27,6 +29,7 @@ export class SettingsComponent {
     constructor(
         private settingsService: SettingsService,
         private recentFileService: RecentFileService,
+        private databaseService: DatabaseService,
         public fb: FormBuilder,
         private router: Router
     ) { }
