@@ -51,8 +51,12 @@ public class WebStageInitService
         // Pass stage onto services which need to know about it
         this.stage = stage;
 
-        // Inject required services into front-end
+        // Inject required objects into front-end
         // WARNING: due to JavaFX "bug", never pass newly constructed instances here
+        // -- Flags
+        stage.exposeJsObject("developmentMode", developmentMode);
+
+        // -- Services
         stage.exposeJsObject("settingsService", settingsService);
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);

@@ -37,7 +37,7 @@ File name may differ and no installation process is required, as the JAR is stan
 - Raise any suggestions or bugs as issues
 - This project is open to pull requests
 
-This project uses Java, JavaFX WebView and AngularJS 2; as well as many front-end libraries, managed by npm. Each
+This project uses Java, JavaFX WebView and AngularJS 2; as well as many front-end libraries, managed by `npm`. Each
 module should have its own `README.md` file for purpose.
 
 ### main
@@ -54,6 +54,8 @@ You can launch the node lite server to build the front-end on the fly, although 
 ./run-angular.sh
 ````
 
+This will require `npm` v3 to be installed.
+    
 ### development mode
 If you need the ability to refresh files from the `target` directory from your IDE, launch `parrot-manager` using the
 following arg:
