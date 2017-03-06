@@ -1,10 +1,10 @@
 package com.limpygnome.parrot.library.io;
 
-import com.limpygnome.parrot.library.crypto.CryptoFactory;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import org.bouncycastle.util.encoders.Base64;
@@ -61,8 +61,8 @@ import java.util.UUID;
 public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 {
     private CryptoReaderWriter cryptoReaderWriter;
-    private CryptoFactory cryptoFactory;
     private CryptoParamsFactory cryptoParamsFactory;
+    private CryptoJsonReaderWriter cryptoJsonReaderWriter;
 
     /**
      * Creates an instance.
@@ -70,8 +70,8 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     public DatabaseJsonReaderWriter()
     {
         this.cryptoReaderWriter = new CryptoReaderWriter();
-        this.cryptoFactory = new CryptoFactory();
         this.cryptoParamsFactory = new CryptoParamsFactory();
+        this.cryptoJsonReaderWriter = new CryptoJsonReaderWriter();
     }
 
     @Override
@@ -98,7 +98,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         byte[] data = Base64.decode((String) json.get("data"));
 
         // Decrypt it...
-        byte[] decryptedData = cryptoReaderWriter.decrypt(fileCryptoParams, new EncryptedAesValue(iv, data));
+        byte[] decryptedData = cryptoReaderWriter.decrypt(fileCryptoParams, new EncryptedAesValue(0, iv, data));
 
         // Now open as memory encrypted database
         Database database = openMemoryEncrypted(decryptedData, password, fileCryptoParams);
@@ -171,18 +171,10 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             String name = (String) jsonNode.get("name");
             long lastModified = (long) jsonNode.get("modified");
 
-            EncryptedAesValue encryptedData = null;
-
-            // TODO: add test for when value is null / not specified
-            if (jsonNode.containsKey("iv") && jsonNode.containsKey("data"))
-            {
-                byte[] iv = Base64.decode((String) jsonNode.get("iv"));
-                byte[] data = Base64.decode((String) jsonNode.get("data"));
-                encryptedData = new EncryptedAesValue(iv, data);
-            }
+            EncryptedValue encryptedValue = cryptoJsonReaderWriter.read(jsonNode);
 
             // Create new DB db
-            child = new DatabaseNode(database, id, name, lastModified, encryptedData);
+            child = new DatabaseNode(database, id, name, lastModified, encryptedValue);
             child.getDeletedChildren().addAll(deletedChildren);
 
             // Append to current parent
@@ -229,17 +221,10 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             jsonChild.put("id", node.getUuid().toString());
             jsonChild.put("name", node.getName());
             jsonChild.put("modified", node.getLastModified());
-
-            EncryptedAesValue encryptedValue = node.getValue();
-            if (encryptedValue != null)
-            {
-                String ivStr = Base64.toBase64String(node.getValue().getIv());
-                String dataStr = Base64.toBase64String(node.getValue().getValue());
-                jsonChild.put("iv", ivStr);
-                jsonChild.put("data", dataStr);
-            }
-
             jsonChild.put("deleted", jsonDeleted);
+
+            EncryptedValue encryptedValue = node.getValue();
+            cryptoJsonReaderWriter.write(jsonChild, encryptedValue);
 
             // Add to parent
             if (!jsonRoot.containsKey("children")) {
@@ -289,7 +274,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 
         // Apply file encryption
         CryptoParams fileCryptoParams = database.getFileCryptoParams();
-        EncryptedAesValue fileEncrypted = cryptoReaderWriter.encrypt(fileCryptoParams, memoryEncrypted);
+        EncryptedAesValue fileEncrypted = (EncryptedAesValue) cryptoReaderWriter.encrypt(fileCryptoParams, memoryEncrypted);
 
         // Build JSON wrapper
         JSONObject jsonFileEncrypted = new JSONObject();

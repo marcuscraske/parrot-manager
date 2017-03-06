@@ -4,6 +4,7 @@ import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +38,7 @@ public final class Database
     // Params used for memory crypto
     protected CryptoParams memoryCryptoParams;
 
-    // The root db of the database
+    // The root node of the database
     protected DatabaseNode root;
 
     // Quick ref map of UUID (String) to node; this must be updated in places where nodes are added/removed etc
@@ -113,9 +114,9 @@ public final class Database
     }
 
     /**
-     * Sets the root db of this database.
+     * Sets the root node of this database.
      *
-     * @param node the db to become root
+     * @param node the node to become root
      */
     public synchronized void setRoot(DatabaseNode node)
     {
@@ -131,9 +132,9 @@ public final class Database
      * @return the encrypted wrapper
      * @throws Exception
      */
-    public synchronized EncryptedAesValue encrypt(byte[] data) throws Exception
+    public synchronized EncryptedValue encrypt(byte[] data) throws Exception
     {
-        EncryptedAesValue value = cryptoReaderWriter.encrypt(memoryCryptoParams, data);
+        EncryptedValue value = cryptoReaderWriter.encrypt(memoryCryptoParams, data);
         return value;
     }
 
@@ -146,7 +147,7 @@ public final class Database
      * @return the decrypted data
      * @throws Exception if crypto fails
      */
-    public synchronized byte[] decrypt(EncryptedAesValue data) throws Exception
+    public synchronized byte[] decrypt(EncryptedValue data) throws Exception
     {
         byte[] result = decrypt(data, memoryCryptoParams);
         return result;
@@ -162,14 +163,14 @@ public final class Database
      * @return the decrypted data
      * @throws Exception if crypto fails
      */
-    public synchronized byte[] decrypt(EncryptedAesValue data, CryptoParams memoryCryptoParams) throws Exception
+    public synchronized byte[] decrypt(EncryptedValue data, CryptoParams memoryCryptoParams) throws Exception
     {
         byte[] value = cryptoReaderWriter.decrypt(memoryCryptoParams, data);
         return value;
     }
 
     /**
-     * @return params used for file crypto; can be null if this DB is not written to file
+     * @return params used for file crypto; can be null if this node is not written to file
      */
     public synchronized CryptoParams getFileCryptoParams()
     {

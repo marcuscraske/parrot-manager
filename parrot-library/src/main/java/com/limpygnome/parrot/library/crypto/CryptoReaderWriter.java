@@ -12,6 +12,8 @@ import java.security.SecureRandom;
 
 /**
  * Used for encrypting and decrypting data.
+ *
+ * THe current implementation is to use AES - refer to {@link EncryptedAesValue}.
  */
 public class CryptoReaderWriter
 {
@@ -39,7 +41,7 @@ public class CryptoReaderWriter
      * @return the encrypted wrapper
      * @throws Exception if the specified value cannot be encrypted
      */
-    public EncryptedAesValue encrypt(CryptoParams cryptoParams, byte[] value) throws Exception
+    public EncryptedValue encrypt(CryptoParams cryptoParams, byte[] value) throws Exception
     {
         SecretKey secretKey = cryptoParams.getSecretKey();
 
@@ -62,7 +64,7 @@ public class CryptoReaderWriter
         byte[] rawResult = processCrypto(aes, value);
 
         // Build encrypted result
-        EncryptedAesValue result = new EncryptedAesValue(iv, rawResult);
+        EncryptedValue result = new EncryptedAesValue(System.currentTimeMillis(), iv, rawResult);
         return result;
     }
 
@@ -74,16 +76,17 @@ public class CryptoReaderWriter
      * @return the decrypted value
      * @throws Exception if the specified value cannot be decrypted
      */
-    public byte[] decrypt(CryptoParams cryptoParams, EncryptedAesValue value) throws Exception
+    public byte[] decrypt(CryptoParams cryptoParams, EncryptedValue value) throws Exception
     {
         SecretKey secretKey = cryptoParams.getSecretKey();
+        EncryptedAesValue aesValue = (EncryptedAesValue) value;
 
-        CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), value.getIv());
+        CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), aesValue.getIv());
         PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
         aes.init(false, cipherParams);
 
         // Process data
-        byte[] result = processCrypto(aes, value.getValue());
+        byte[] result = processCrypto(aes, aesValue.getValue());
         return result;
     }
 

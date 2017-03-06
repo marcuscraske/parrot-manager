@@ -1,6 +1,5 @@
 package com.limpygnome.parrot.library.db;
 
-import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
 import com.limpygnome.parrot.library.dbaction.Action;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import com.limpygnome.parrot.library.dbaction.MergeInfo;
@@ -92,7 +91,7 @@ public class DatabaseMerger
 
             if (!dest.value.equals(src.value))
             {
-                dest.value = new EncryptedAesValue(src.value.getIv(), src.value.getValue());
+                dest.value = src.value.clone();
             }
 
             dest.lastModified = src.lastModified;

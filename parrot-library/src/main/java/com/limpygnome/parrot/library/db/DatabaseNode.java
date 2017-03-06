@@ -1,7 +1,7 @@
 package com.limpygnome.parrot.library.db;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
-import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -30,19 +32,22 @@ public final class DatabaseNode
     // The parent of this node
     DatabaseNode parent;
 
-    // A unique ID for this db
+    // A unique ID for this node
     UUID id;
 
-    // The name of the db
+    // The name of the node
     String name;
 
-    // The epoch time of when the db was last changed
+    // The epoch time of when the node was last changed
     long lastModified;
 
-    // The value stored at this db
-    EncryptedAesValue value;
+    // The value stored at this node
+    EncryptedValue value;
 
-    // Any sub-nodes which belong to this db
+    // Previous values stored at this node
+    List<EncryptedValue> history;
+
+    // Any sub-nodes which belong to this node
     Map<UUID, DatabaseNode> children;
 
     // Cached array of children retrieved; this is because to provide an array, we need to keep a permanent reference
@@ -63,21 +68,22 @@ public final class DatabaseNode
 
         this.children = new HashMap<>(0);
         this.deletedChildren = new HashSet<>();
+        this.history = new LinkedList<>();
 
         // Add ref to database lookup
         database.lookup.put(id, this);
     }
 
     /**
-     * Creates a new db with already encrypted data.
+     * Creates a new node with already encrypted data.
      *
      * @param database the DB to which this belongs
      * @param id unique identifier
-     * @param name the name of this db
-     * @param lastModified the epoch time at which this db was last modified
+     * @param name the name of this node
+     * @param lastModified the epoch time at which this node was last modified
      * @param value the encrypted value
      */
-    public DatabaseNode(Database database, UUID id, String name, long lastModified, EncryptedAesValue value)
+    public DatabaseNode(Database database, UUID id, String name, long lastModified, EncryptedValue value)
     {
         this(database, id, name, lastModified);
         this.value = value;
@@ -111,7 +117,7 @@ public final class DatabaseNode
     }
 
     /**
-     * @param id the unique identifier to be assigned to this db
+     * @param id the unique identifier to be assigned to this node
      */
     public synchronized void setId(UUID id)
     {
@@ -127,7 +133,7 @@ public final class DatabaseNode
     }
 
     /**
-     * @return the name of the db; purely for presentation purposes
+     * @return the name of the node; purely for presentation purposes
      */
     public String getName()
     {
@@ -164,9 +170,17 @@ public final class DatabaseNode
     /**
      * @return the encrypted value, as stored in memory
      */
-    public EncryptedAesValue getValue()
+    public EncryptedValue getValue()
     {
         return value;
+    }
+
+    /**
+     * @return history of previous values, or empty list
+     */
+    public List<EncryptedValue> getHistory()
+    {
+        return history;
     }
 
     /**
@@ -373,20 +387,18 @@ public final class DatabaseNode
      *
      * This does not add it to the target database, nor does this operation set the dirty flag.
      *
-     * TODO: review unit test, bug found here...
-     *
      * @param database the database to contain the new cloned node
-     * @return a cloned instance of this db
+     * @return a cloned instance of this node
      */
     protected synchronized DatabaseNode clone(Database database)
     {
         DatabaseNode newNode = new DatabaseNode(database, id, name, lastModified);
 
-        // TODO: unit test null value beiing cloned
         if (value != null)
         {
-            newNode.value = new EncryptedAesValue(value.getIv().clone(), value.getValue().clone());
+            newNode.value = value.clone();
         }
+
 
         // Perform same recursion on children
         DatabaseNode clonedChild;
