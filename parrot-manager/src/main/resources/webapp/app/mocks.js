@@ -18,6 +18,7 @@ if (window.settingsService == null)
     })();
 }
 
+
 if (window.runtimeService == null)
 {
     window.runtimeService = (function(){
@@ -31,6 +32,7 @@ if (window.runtimeService == null)
     })();
 }
 
+
 if (window.randomGeneratorService == null)
 {
     window.randomGeneratorService = (function(){
@@ -43,6 +45,7 @@ if (window.randomGeneratorService == null)
 
     })();
 }
+
 
 if (window.databaseService == null)
 {
@@ -106,4 +109,19 @@ if (window.databaseService == null)
 
     })();
 
+}
+
+
+if (window.recentFileService == null)
+{
+    window.recentFileService = (function(){
+
+        return {
+
+           fetch : function() { return []; },
+           clear : function() { }
+
+        }
+
+    })();
 }

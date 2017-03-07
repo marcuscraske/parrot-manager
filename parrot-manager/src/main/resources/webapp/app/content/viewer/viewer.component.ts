@@ -19,6 +19,9 @@ export class ViewerComponent
     // The current node being edited
     public currentNode: any;
 
+    // The node's current sub view (entries, history)
+    public currentSubView: "entries";
+
     // Form for editing encrypted value; stored at parent level so we can check for change
     public updateEntryForm = this.fb.group({
         currentValue: [""]
@@ -141,6 +144,9 @@ export class ViewerComponent
 
             // Reset form
             //this.updateEntryForm.reset();
+
+            // Reset sub-view
+            this.currentSubView = "entries";
 
             console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
         });
