@@ -22,6 +22,19 @@
             ></current-entry>
         </div>
 
+        <ul class="nav nav-tabs">
+            <li class="active" data-toggle="tab">
+                <a href="#">
+                    Entries
+                </a>
+            </li>
+            <li *ngIf="!this.currentNode.isRoot()" data-toggle="tab">
+                <a href="#">
+                    History
+                </a>
+            </li>
+        </ul>
+
         <!-- List entries -->
         <viewer-entries [currentNode]="currentNode"
                         (updateTree)="updateTree()"

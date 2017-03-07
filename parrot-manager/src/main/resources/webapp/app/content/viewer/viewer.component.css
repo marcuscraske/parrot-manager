@@ -88,3 +88,27 @@
 {
     max-height: 2em;
 }
+
+/*
+    Navigator
+*/
+.nav
+{
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.nav .tab
+{
+    margin
+}
+
+.nav a
+{
+    color: #000;
+}
+
+.nav li:first-child
+{
+    margin-left: 1em;
+}
