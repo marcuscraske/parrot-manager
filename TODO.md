@@ -20,3 +20,4 @@
 
 ## Technical
 - Consider switching from JSON simple to Gson.
+- Fix intl polyfill issues for JavaFx in order to use Angular date formatting

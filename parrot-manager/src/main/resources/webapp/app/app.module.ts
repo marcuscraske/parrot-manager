@@ -22,6 +22,8 @@ import { ViewerComponent }          from 'app/content/viewer/viewer.component'
 import { GenerateRandomComponent }  from 'app/content/viewer/generate-random/generate-random.component'
 import { CurrentEntryComponent }    from 'app/content/viewer/current-entry/current-entry.component'
 import { ViewerEntriesComponent }   from 'app/content/viewer/entries/entries.component'
+import { HistoryComponent }         from 'app/content/viewer/history/history.component'
+
 import { RemoteSyncComponent }      from 'app/content/remote-sync/remote-sync.component'
 import { RemoteSyncSshComponent }   from 'app/content/remote-sync-ssh/remote-sync-ssh.component'
 import { BackupsComponent }         from 'app/content/backups/backups.component'
@@ -64,7 +66,7 @@ const appRoutes: Routes = [
     CreateComponent, OpenComponent, HelpComponent, SettingsComponent,
 
     // Pages - opened database
-    ViewerComponent, GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent,
+    ViewerComponent, GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent, HistoryComponent,
     RemoteSyncComponent, RemoteSyncSshComponent,
     BackupsComponent
 

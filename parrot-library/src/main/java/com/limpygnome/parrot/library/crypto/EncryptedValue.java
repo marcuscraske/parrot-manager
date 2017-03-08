@@ -1,5 +1,7 @@
 package com.limpygnome.parrot.library.crypto;
 
+import org.joda.time.DateTime;
+
 /**
  * Generic encrypted value.
  */
@@ -19,6 +21,15 @@ public abstract class EncryptedValue
     public long getLastModified()
     {
         return lastModified;
+    }
+
+    /**
+     * @return formatted date time
+     */
+    public String getFormattedLastModified()
+    {
+        DateTime dateTime = new DateTime(lastModified);
+        return dateTime.toString("dd-MM-yyyy HH:mm:ss");
     }
 
     /**

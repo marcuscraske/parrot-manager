@@ -1,0 +1,9 @@
+table tr td
+{
+    white-space: nowrap;
+}
+
+table tr td:nth-child(2)
+{
+    width: 100%;
+}

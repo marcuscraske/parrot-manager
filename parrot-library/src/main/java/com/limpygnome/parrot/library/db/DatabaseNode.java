@@ -55,6 +55,9 @@ public final class DatabaseNode
     // TODO: update this on init and as child nodes are added/removed, current imp doesnt save anything
     DatabaseNode[] childrenCached;
 
+    // Cached array of historic values retrieved; same reason as children being cached
+    EncryptedValue[] historyCached;
+
     // A list of previously deleted children; used for merging
     Set<UUID> deletedChildren;
 
@@ -157,7 +160,6 @@ public final class DatabaseNode
         return lastModified;
     }
 
-
     /**
      * @return formatted date time
      */
@@ -178,9 +180,26 @@ public final class DatabaseNode
     /**
      * @return history of previous values, or empty list
      */
-    public List<EncryptedValue> getHistory()
+    public List<EncryptedValue> getHistoryCollection()
     {
         return history;
+    }
+
+    /**
+     * @return cached history; result is safe against garbage collection
+     */
+    public EncryptedValue[] getHistory()
+    {
+        historyCached = history.toArray(new EncryptedValue[history.size()]);
+        return historyCached;
+    }
+
+    /**
+     * @return total number of historic values
+     */
+    public int getHistoryCount()
+    {
+        return history.size();
     }
 
     /**
@@ -276,6 +295,10 @@ public final class DatabaseNode
     {
         if (value != null)
         {
+            // Add present value to history
+            history.add(this.value);
+
+            // Update current value
             this.value = database.encrypt(value);
         }
         else
@@ -295,11 +318,9 @@ public final class DatabaseNode
      */
     public synchronized DatabaseNode[] getChildren()
     {
-        // TODO: consider a more elegant solution...
         // Build array and assign locally to avoid garbage collection
         Collection<DatabaseNode> childNodes = children.values();
         childrenCached = childNodes.toArray(new DatabaseNode[childNodes.size()]);
-
         return childrenCached;
     }
 

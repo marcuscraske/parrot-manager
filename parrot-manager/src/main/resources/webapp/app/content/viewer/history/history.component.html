@@ -25,21 +25,16 @@
 
     <tr *ngFor="let historicValue of currentNode.getHistory(); trackBy: trackChildren">
         <td>
-            {{ historicValue.getLastModified() }}
+            {{ historicValue.getFormattedLastModified() }}
         </td>
         <td>
-            <button class="btn btn-default" (click)="toggleMask('#' + node.getId() + '-value', node, false)">
-                Toggle Masking
-            </button>
-            <span id="{{ node.getId() }}-value">
-                ********
-            </span>
+            todo value
         </td>
         <td>
-            <button class="btn btn-danger" (click)="deleteEntry(node.getId())">
+            <button class="btn btn-danger">
                 Delete
             </button>
-            <button class="btn btn-default" (click)="runtimeService.copyNodeValueToClipboard(node)">
+            <button class="btn btn-default">
                 Copy to Clipboard
             </button>
         </td>

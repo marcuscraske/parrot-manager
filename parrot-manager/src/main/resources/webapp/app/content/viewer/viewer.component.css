@@ -106,6 +106,7 @@
 .nav a
 {
     color: #000;
+    cursor: pointer;
 }
 
 .nav li:first-child

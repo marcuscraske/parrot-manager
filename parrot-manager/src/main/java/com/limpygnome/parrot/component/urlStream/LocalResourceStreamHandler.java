@@ -82,6 +82,14 @@ class LocalResourceStreamHandler extends URLStreamHandler
                 // Convert to relative path
                 String classPathUrl = requestedUrl.substring(LOCAL_URL_REQUESTS.length());
 
+                // Exclude query-string
+                int queryStringIndex = classPathUrl.indexOf("?");
+
+                if (queryStringIndex > 0)
+                {
+                    classPathUrl = classPathUrl.substring(0, queryStringIndex - 1);
+                }
+
                 // Locate the resource and convert to a connection
                 URL resourceUrl = determineResource(classPathUrl);
 

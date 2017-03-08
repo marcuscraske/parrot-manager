@@ -23,13 +23,13 @@
         </div>
 
         <ul class="nav nav-tabs">
-            <li class="active" data-toggle="tab" (click)="currentSubView = 'entries'">
-                <a href="#">
+            <li (click)="currentSubView = 'entries'" [ngClass]="{ 'active' : currentSubView == 'entries' }">
+                <a>
                     Entries
                 </a>
             </li>
-            <li *ngIf="!this.currentNode.isRoot()" data-toggle="tab" (click)="currentSubView = 'history'">
-                <a href="#">
+            <li *ngIf="!this.currentNode.isRoot()" (click)="currentSubView = 'history'" [ngClass]="{ 'active' : currentSubView == 'history' }">
+                <a>
                     History
                 </a>
             </li>
@@ -42,9 +42,10 @@
                         (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
         ></viewer-entries>
 
-        <p *ngIf="currentSubView == 'history'">
-            history test
-        </p>
+        <!-- List historic values -->
+        <history *ngIf="currentSubView == 'history'"
+                 [currentNode]="currentNode"
+        ></history>
 
     </div>
 
