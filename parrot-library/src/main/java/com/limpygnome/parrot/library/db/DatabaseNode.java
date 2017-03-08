@@ -201,6 +201,18 @@ public final class DatabaseNode
         return history.size();
     }
 
+
+    public void setValue(EncryptedValue value)
+    {
+        this.value = value;
+        setDirty();
+    }
+
+    public EncryptedValue getValue()
+    {
+        return value;
+    }
+
     /**
      * TODO: unit test null value
      * Decrypts the value stored at this node and returns the data.
@@ -503,6 +515,15 @@ public final class DatabaseNode
         }
 
         return path;
+    }
+
+    private void setDirty()
+    {
+        // Update the last modified time
+        lastModified = System.currentTimeMillis();
+
+        // Set flag on database
+        database.setDirty(true);
     }
 
     @Override
