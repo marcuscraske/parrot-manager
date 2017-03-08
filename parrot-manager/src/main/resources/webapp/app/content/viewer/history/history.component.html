@@ -23,7 +23,7 @@
         </td>
     </tr>
 
-    <tr *ngFor="let historicValue of currentNode.getHistory(); trackBy: trackChildren">
+    <tr *ngFor="let historicValue of (currentNode.getHistory() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
         <td>
             {{ historicValue.getFormattedLastModified() }}
         </td>
@@ -34,7 +34,7 @@
             <button class="btn btn-danger">
                 Delete
             </button>
-            <button class="btn btn-default">
+            <button class="btn btn-default" (click)="copyToClipboard(historicValue)">
                 Copy to Clipboard
             </button>
         </td>

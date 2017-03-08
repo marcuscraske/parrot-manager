@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.common;
+package com.limpygnome.parrot.component.remote;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -6,8 +6,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-import com.limpygnome.parrot.component.remote.SshOptions;
-import com.limpygnome.parrot.component.remote.SshSession;
+import com.limpygnome.parrot.component.file.FileComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

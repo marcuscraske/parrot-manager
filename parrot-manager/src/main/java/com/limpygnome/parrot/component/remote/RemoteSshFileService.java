@@ -1,7 +1,6 @@
 package com.limpygnome.parrot.component.remote;
 
-import com.limpygnome.parrot.component.common.FileComponent;
-import com.limpygnome.parrot.component.common.SshComponent;
+import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;

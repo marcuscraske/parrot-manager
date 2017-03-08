@@ -213,6 +213,9 @@ public final class Database
 
         // Re-encrypt in-memory data...
         root.rebuildCrypto(oldMemoryCryptoParams);
+
+        // Set dirty flag
+        setDirty(true);
     }
 
 

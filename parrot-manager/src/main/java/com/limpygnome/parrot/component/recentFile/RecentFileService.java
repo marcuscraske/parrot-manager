@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.component.recentFile;
 
-import com.limpygnome.parrot.component.common.FileComponent;
+import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

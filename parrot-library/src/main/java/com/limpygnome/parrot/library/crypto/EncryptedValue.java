@@ -3,7 +3,9 @@ package com.limpygnome.parrot.library.crypto;
 import org.joda.time.DateTime;
 
 /**
- * Generic encrypted value.
+ * Immutable generic encrypted value.
+ *
+ * Use {@link CryptoReaderWriter} for interaction.
  */
 public abstract class EncryptedValue
 {
@@ -18,7 +20,7 @@ public abstract class EncryptedValue
     /**
      * @return epoch time of when this value was last modified
      */
-    public long getLastModified()
+    public final long getLastModified()
     {
         return lastModified;
     }
@@ -26,7 +28,7 @@ public abstract class EncryptedValue
     /**
      * @return formatted date time
      */
-    public String getFormattedLastModified()
+    public final String getFormattedLastModified()
     {
         DateTime dateTime = new DateTime(lastModified);
         return dateTime.toString("dd-MM-yyyy HH:mm:ss");

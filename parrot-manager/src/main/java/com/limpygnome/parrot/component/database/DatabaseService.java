@@ -1,7 +1,7 @@
 package com.limpygnome.parrot.component.database;
 
 import com.limpygnome.parrot.component.backup.BackupService;
-import com.limpygnome.parrot.component.common.FileComponent;
+import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.recentFile.RecentFile;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
 import com.limpygnome.parrot.library.crypto.CryptoParams;

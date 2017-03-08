@@ -4,7 +4,6 @@ import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -245,25 +244,6 @@ public final class DatabaseNode
 
     /**
      * TODO: unit test
-     * @return json object, or null
-     * @throws Exception when crypto exception or cannot parse as JSON
-     */
-    public synchronized JSONObject getDecryptedValueJson() throws Exception
-    {
-        JSONObject result = null;
-        String text = getDecryptedValueString();
-
-        if (text != null)
-        {
-            JSONParser parser = new JSONParser();
-            result = (JSONObject) parser.parse(text);
-        }
-
-        return result;
-    }
-
-    /**
-     * TODO: unit test
      * @param json the desired value
      * @throws Exception when crypto exception
      */
@@ -391,9 +371,6 @@ public final class DatabaseNode
 
             // Re-encrypt
             value = database.encrypt(decrypted);
-
-            // Set dirty flag
-            database.setDirty(true);
         }
 
         // Perform on child nodes

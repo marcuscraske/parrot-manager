@@ -1,7 +1,7 @@
 package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.component.backup.BackupService;
-import com.limpygnome.parrot.component.common.RandomGeneratorService;
+import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
 import com.limpygnome.parrot.component.remote.RemoteSshFileService;
