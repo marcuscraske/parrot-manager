@@ -27,7 +27,7 @@ public class CryptoJsonReaderWriter
         {
             byte[] iv = Base64.decode((String) jsonNode.get("iv"));
             byte[] data = Base64.decode((String) jsonNode.get("data"));
-            long modified = (Long) jsonNode.get("modified");
+            long modified = jsonNode.containsKey("modified") ? (Long) jsonNode.get("modified") : 0;
 
             value = new EncryptedAesValue(modified, iv, data);
         }
@@ -56,6 +56,7 @@ public class CryptoJsonReaderWriter
 
             jsonNode.put("iv", ivStr);
             jsonNode.put("data", dataStr);
+            jsonNode.put("modified", aesValue.getLastModified());
         }
     }
 
