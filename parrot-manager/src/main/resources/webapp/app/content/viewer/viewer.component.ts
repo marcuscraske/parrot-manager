@@ -1,7 +1,9 @@
 import { Component, Renderer } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { DatabaseService } from '../../service/database.service'
-import { RuntimeService } from '../../service/runtime.service'
+
+import { DatabaseService } from 'app/service/database.service'
+import { RuntimeService } from 'app/service/runtime.service'
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
@@ -30,6 +32,7 @@ export class ViewerComponent
     constructor(
         private databaseService: DatabaseService,
         private runtimeService: RuntimeService,
+        private encryptedValueService: EncryptedValueService,
         private renderer: Renderer,
         public fb: FormBuilder)
     {
@@ -191,7 +194,7 @@ export class ViewerComponent
     {
         // Fetch value and update current node
         var value = $("#currentValue").val();
-        this.currentNode.setValueString(value);
+        this.encryptedValueService.setString(this.currentNode, value);
 
         // Reset form as untouched
         this.updateEntryForm.reset();

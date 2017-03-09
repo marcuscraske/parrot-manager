@@ -3,7 +3,6 @@ package com.limpygnome.parrot.library.db;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -169,6 +168,17 @@ public final class DatabaseNode
     }
 
     /**
+     * Updates value and marks database as dirty.
+     *
+     * @param value encrypted value
+     */
+    public void setValue(EncryptedValue value)
+    {
+        this.value = value;
+        setDirty();
+    }
+
+    /**
      * @return the encrypted value, as stored in memory
      */
     public EncryptedValue getValue()
@@ -199,110 +209,6 @@ public final class DatabaseNode
     public int getHistoryCount()
     {
         return history.size();
-    }
-
-
-    public void setValue(EncryptedValue value)
-    {
-        this.value = value;
-        setDirty();
-    }
-
-    public EncryptedValue getValue()
-    {
-        return value;
-    }
-
-    /**
-     * TODO: unit test null value
-     * Decrypts the value stored at this node and returns the data.
-     *
-     * This can be an empty array if the node does not store a value i.e. acts as a directory/label for a set of child
-     * nodes.
-     *
-     * @return the decrypted value stored at this node
-     * @throws Exception
-     */
-    public synchronized byte[] getDecryptedValue() throws Exception
-    {
-        byte[] result = null;
-
-        if (value != null)
-        {
-            result = database.decrypt(value);;
-        }
-
-        return result;
-    }
-
-    /**
-     * TODO: unit test null value
-     * @return decrypted value stored at this node, as string
-     * @throws Exception when the value cannot be decrypted
-     */
-    public synchronized String getDecryptedValueString() throws Exception
-    {
-        String result = null;
-        byte[] decrypted = getDecryptedValue();
-
-        if (decrypted != null)
-        {
-            // TODO: move as configurable property for database?
-            result = new String(decrypted, "UTF-8");
-        }
-
-        return result;
-    }
-
-    /**
-     * TODO: unit test
-     * @param json the desired value
-     * @throws Exception when crypto exception
-     */
-    public synchronized void setValueJson(JSONObject json) throws Exception
-    {
-        // Convert to string and store
-        String text = json.toJSONString();
-        setValueString(text);
-    }
-
-    /**
-     * TODO: unit test
-     * @param value the desired value
-     * @throws Exception when crypto exception
-     */
-    public synchronized void setValueString(String value) throws Exception
-    {
-        // TODO: move as configurable property for database?
-        byte[] plainValue = value.length() > 0 ? value.getBytes("UTF-8") : null;
-        setValue(plainValue);
-    }
-
-    /**
-     * TODO: unit test
-     * @param value the desired value
-     * @throws Exception thrown if crypto exception
-     */
-    public synchronized void setValue(byte[] value) throws Exception
-    {
-        if (value != null)
-        {
-            // Add present value to history
-            history.add(this.value);
-
-            // Update current value
-            this.value = database.encrypt(value);
-        }
-        else
-        {
-            this.value = null;
-        }
-
-        // Update modified time
-        lastModified = System.currentTimeMillis();
-
-        // Set dirty flag...
-        database.setDirty(true);
     }
 
     /**

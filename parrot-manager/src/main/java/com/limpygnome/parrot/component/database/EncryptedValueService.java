@@ -15,6 +15,13 @@ public class EncryptedValueService
     @Autowired
     private DatabaseService databaseService;
 
+    /**
+     * Creates an encrypted value from a string.
+     *
+     * @param text value to be encrypted; can be null
+     * @return an instance, or null if the provided value is null
+     * @throws Exception
+     */
     public EncryptedValue fromString(String text) throws Exception
     {
         EncryptedValue result = null;

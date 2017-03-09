@@ -1,7 +1,9 @@
 import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+
 import { DatabaseService } from 'app/service/database.service'
 import { RandomGeneratorService } from 'app/service/randomGenerator.service'
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
@@ -21,9 +23,13 @@ export class GenerateRandomComponent
     // Form of options for random value generator
     public randomOptions : any;
 
-    constructor(private databaseService: DatabaseService, private randomGeneratorService: RandomGeneratorService,
-                private renderer: Renderer, public fb: FormBuilder)
-    {
+    constructor(
+        private databaseService: DatabaseService,
+        private randomGeneratorService: RandomGeneratorService,
+        private encryptedValueService: EncryptedValueService,
+        private renderer: Renderer,
+        public fb: FormBuilder
+    ) {
         // Set default values
         // TODO: read/save in database eventually
         this.randomOptions = this.fb.group({
@@ -57,8 +63,7 @@ export class GenerateRandomComponent
         if (randomPassword != null)
         {
             // Update value of current node
-            this.currentNode.setValueString(randomPassword);
-
+            this.encryptedValueService.setString(this.currentNode, randomPassword);
             console.log("current password updated with random string - node id: " + this.currentNode.getId());
 
             // Refresh value

@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+
 import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
-import { Router, ActivatedRoute } from '@angular/router';
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
@@ -42,8 +44,14 @@ export class RemoteSyncSshComponent {
     // The ID (key stored under remote-sync) of the current node being changed; passed by routing config
     currentNode : string;
 
-    constructor(private remoteSshFileService: RemoteSshFileService, private databaseService: DatabaseService,
-                private router: Router, public fb: FormBuilder, private route: ActivatedRoute) { }
+    constructor(
+        private remoteSshFileService: RemoteSshFileService,
+        private databaseService: DatabaseService,
+        private encryptedValueService: EncryptedValueService,
+        private router: Router,
+        public fb: FormBuilder,
+        private route: ActivatedRoute
+    ) { }
 
     ngOnInit()
     {
@@ -85,7 +93,7 @@ export class RemoteSyncSshComponent {
     {
         // Fetch actual JSON for node
         var node = this.databaseService.getNode(nodeId);
-        var json = node != null ? node.getDecryptedValueString() : null;
+        var json = node != null ? this.encryptedValueService.getString(node) : null;
         var config = json != null ? JSON.parse(json) : null;
 
         if (config != null)
@@ -340,6 +348,7 @@ export class RemoteSyncSshComponent {
     /* Saves currently configuration to database */
     persistOptions(options)
     {
+        // Delete existing node
         if (this.currentMode == "edit")
         {
             var node = this.databaseService.getNode(this.currentNode);
@@ -347,8 +356,11 @@ export class RemoteSyncSshComponent {
             console.log("dropped existing options node - id: " + this.currentNode);
         }
 
+        // Create new node
         console.log("persisting options to new node");
-        options.persist(this.databaseService.getDatabase());
+
+        var database = this.databaseService.getDatabase();
+        this.encryptedValueService.persistSshOptions(database, options);
     }
 
     /* Handler for cancel button (navigates to appropriate previous page in flow */

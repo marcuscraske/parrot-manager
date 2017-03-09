@@ -1,7 +1,9 @@
 import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+
 import { DatabaseService } from 'app/service/database.service'
 import { RuntimeService } from 'app/service/runtime.service'
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
@@ -29,6 +31,7 @@ export class CurrentEntryComponent
     constructor(
         private databaseService: DatabaseService,
         private runtimeService: RuntimeService,
+        private encryptedValueService: EncryptedValueService,
         private renderer: Renderer,
         public fb: FormBuilder
     ) {
@@ -116,7 +119,7 @@ export class CurrentEntryComponent
 
     displayValue()
     {
-        var decryptedValue = this.currentNode.getDecryptedValueString();
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode);
         $("#currentValue").val(decryptedValue);
         console.log("populated value field with actual decrypted value");
 

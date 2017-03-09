@@ -4,13 +4,16 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
+import com.limpygnome.parrot.component.database.EncryptedValueService;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import java.io.Serializable;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.io.Serializable;
 
 /**
  * Options for downloading a remote SSH file.
@@ -265,14 +268,15 @@ public class SshOptions implements Serializable, Cloneable
     /**
      * Deserializes a JSON string into a new instance of this class.
      *
+     * @param encryptedValueService used to decrypt value stored in node
      * @param node a standard child node
      * @return an instance
      * @throws Exception when cannot be deserialized or crypto problem
      */
-    public static SshOptions read(DatabaseNode node) throws Exception
+    public static SshOptions read(EncryptedValueService encryptedValueService, DatabaseNode node) throws Exception
     {
         // Fetch value as string
-        String value = node.getDecryptedValueString();
+        String value = encryptedValueService.asString(node.getValue());
 
         // Deserialize into object
         ObjectMapper mapper = new ObjectMapper();
@@ -288,7 +292,7 @@ public class SshOptions implements Serializable, Cloneable
      * @param database the current database
      * @throws Exception when cannot persist
      */
-    public void persist(Database database) throws Exception
+    public void persist(EncryptedValueService encryptedValueService, Database database) throws Exception
     {
         // TODO: need way to ban / reserve names, as multiple nodes can share same name...
         // Should be saved to /remote-sync/<name> - overwrite by default
@@ -314,9 +318,12 @@ public class SshOptions implements Serializable, Cloneable
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(rawJson);
 
-        // Store as node
+        // Create encrypted JSON object
+        EncryptedValue encryptedValue = encryptedValueService.fromJson(json);
+
+        // Store in new node
         DatabaseNode newNode = new DatabaseNode(database, name);
-        newNode.setValueJson(json);
+        newNode.setValue(encryptedValue);
         remoteSyncNode.add(newNode);
     }
 

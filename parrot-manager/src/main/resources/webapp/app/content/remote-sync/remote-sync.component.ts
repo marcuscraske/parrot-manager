@@ -1,9 +1,11 @@
 import { Component, AfterViewChecked } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
-import { Router } from '@angular/router';
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
@@ -16,8 +18,13 @@ export class RemoteSyncComponent implements AfterViewChecked {
     remoteSyncNode : any;
     oldChangeLog : string;
 
-    constructor(private remoteSshFileService: RemoteSshFileService, private databaseService: DatabaseService,
-                private router: Router, public fb: FormBuilder, private remoteSyncChangeLogService: RemoteSyncChangeLogService
+    constructor(
+        private remoteSshFileService: RemoteSshFileService,
+        private databaseService: DatabaseService,
+        private encryptedValueService: EncryptedValueService,
+        private router: Router,
+        public fb: FormBuilder,
+        private remoteSyncChangeLogService: RemoteSyncChangeLogService
     ) { }
 
     ngOnInit()
@@ -53,7 +60,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         var result = "unknown";
 
         // Decrypt node value
-        var json = node.getDecryptedValueString();
+        var json = this.encryptedValueService.getString(node);
         var config = json != null ? JSON.parse(json) : null;
 
         if (config != null)

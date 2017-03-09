@@ -1,6 +1,8 @@
 import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
@@ -20,10 +22,12 @@ export class ViewerEntriesComponent
     @Output() updateTree = new EventEmitter();
     @Output() changeNodeBeingViewed = new EventEmitter();
 
-    constructor(private runtimeService: RuntimeService, private databaseService: DatabaseService,
-                private renderer: Renderer)
-    {
-    }
+    constructor(
+        private runtimeService: RuntimeService,
+        private databaseService: DatabaseService,
+        private encryptedValueService: EncryptedValueService,
+        private renderer: Renderer
+    ) { }
 
     addNewEntry()
     {
@@ -120,15 +124,7 @@ export class ViewerEntriesComponent
         if (masked == null || masked)
         {
             // Switch to unmasked
-            if (targetNode == null)
-            {
-                newValue = this.currentNode.getDecryptedValueString();
-            }
-            else
-            {
-                newValue = targetNode.getDecryptedValueString();
-            }
-
+            newValue = this.encryptedValueService.getString(targetNode);
             field.data("data-masked", false);
         }
         else

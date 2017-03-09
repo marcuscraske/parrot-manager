@@ -125,3 +125,18 @@ if (window.recentFileService == null)
 
     })();
 }
+
+
+if (window.encryptedValueService == null)
+{
+    window.encryptedValueService = (function(){
+
+        return {
+
+           asString : function() { return "decrypted value test" },
+           fromString : function() { }
+
+        }
+
+    })();
+}

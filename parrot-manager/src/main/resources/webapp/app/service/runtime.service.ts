@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
+
 @Injectable()
 export class RuntimeService {
 
     oldHeight: number;
     runtimeService : any;
 
-    constructor()
+    constructor(
+        private encryptedValueService: EncryptedValueService,
+    )
     {
         setInterval( () => { this.updateHeight(); }, 50);
         this.runtimeService = (window as any).runtimeService;
@@ -57,7 +61,7 @@ export class RuntimeService {
             var nodeId = node.getId();
             console.log("copying value to clipboard - node id: " + nodeId);
 
-            var decryptedValue = node.getDecryptedValueString();
+            var decryptedValue = this.encryptedValueService.getString(node);
 
             if (decryptedValue != null)
             {

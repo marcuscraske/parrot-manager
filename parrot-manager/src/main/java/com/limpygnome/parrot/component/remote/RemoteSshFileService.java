@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.remote;
 
+import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
@@ -31,6 +32,8 @@ public class RemoteSshFileService
     private SshComponent sshComponent;
     @Autowired
     private DatabaseMerger databaseMerger;
+    @Autowired
+    private EncryptedValueService encryptedValueService;
 
     /**
      * Creates options from a set of mandatory values.
@@ -59,7 +62,7 @@ public class RemoteSshFileService
      */
     public SshOptions createOptionsFromNode(DatabaseNode node) throws Exception
     {
-        SshOptions options = SshOptions.read(node);
+        SshOptions options = SshOptions.read(encryptedValueService, node);
         return options;
     }
 
