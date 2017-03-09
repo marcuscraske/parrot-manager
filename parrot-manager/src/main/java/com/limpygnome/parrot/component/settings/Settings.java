@@ -19,7 +19,7 @@ public class Settings implements Serializable
         this.recentFilesEnabled = new SettingsValue<>(true);
         this.recentFilesOpenLastOnStartup = new SettingsValue<>(true);
         this.automaticBackupsOnSave = new SettingsValue<>(true);
-        this.automaticBackupsRetained = new SettingsValue(20);
+        this.automaticBackupsRetained = new SettingsValue(10);
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
-import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 import "app/global-vars"
 
@@ -12,7 +11,7 @@ import "app/global-vars"
   selector: 'topbar',
   templateUrl: 'topbar.component.html',
   styleUrls: ['topbar.component.css'],
-  providers: [RuntimeService, DatabaseService, EncryptedValueService]
+  providers: [RuntimeService, DatabaseService]
 })
 export class TopBarComponent
 {

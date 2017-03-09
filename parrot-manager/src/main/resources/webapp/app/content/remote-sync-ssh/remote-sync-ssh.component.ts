@@ -9,7 +9,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
 @Component({
     moduleId: module.id,
     templateUrl: 'remote-sync-ssh.component.html',
-    providers: [RemoteSshFileService, DatabaseService]
+    providers: [RemoteSshFileService, DatabaseService, EncryptedValueService]
 })
 export class RemoteSyncSshComponent {
 
