@@ -6,8 +6,7 @@ import { Router } from '@angular/router';
 
 @Component({
     moduleId: module.id,
-    templateUrl: 'create.component.html',
-    providers: [DatabaseService, RuntimeService]
+    templateUrl: 'create.component.html'
 })
 export class CreateComponent {
 

@@ -9,7 +9,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
     moduleId: module.id,
     selector: 'generate-random',
     templateUrl: 'generate-random.component.html',
-    providers: [DatabaseService, RandomGeneratorService],
+    providers: [RandomGeneratorService],
 })
 export class GenerateRandomComponent
 {

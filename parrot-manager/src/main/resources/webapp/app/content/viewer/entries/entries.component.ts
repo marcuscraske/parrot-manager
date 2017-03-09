@@ -9,7 +9,6 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
     selector: 'viewer-entries',
     templateUrl: 'entries.component.html',
     styleUrls: ['entries.component.css'],
-    providers: [RuntimeService, DatabaseService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ViewerEntriesComponent

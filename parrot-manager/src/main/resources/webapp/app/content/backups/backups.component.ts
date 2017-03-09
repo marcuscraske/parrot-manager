@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 @Component({
     moduleId: module.id,
     templateUrl: "backups.component.html",
-    providers: [DatabaseService, BackupService],
+    providers: [BackupService],
     styleUrls: ["backups.component.css"]
 })
 export class BackupsComponent {

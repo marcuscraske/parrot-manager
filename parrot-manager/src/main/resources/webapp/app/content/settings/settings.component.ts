@@ -9,7 +9,7 @@ import { DatabaseService } from 'app/service/database.service'
 @Component({
     moduleId: module.id,
     templateUrl: "settings.component.html",
-    providers: [SettingsService, RecentFileService, DatabaseService],
+    providers: [SettingsService, RecentFileService],
     styleUrls: ["settings.component.css"]
 })
 export class SettingsComponent {

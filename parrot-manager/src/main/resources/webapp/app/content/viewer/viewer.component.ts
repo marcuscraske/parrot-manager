@@ -9,8 +9,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
     moduleId: module.id,
     selector: 'viewer',
     templateUrl: 'viewer.component.html',
-    styleUrls: ['viewer.component.css'],
-    providers: [DatabaseService, RuntimeService]
+    styleUrls: ['viewer.component.css']
 })
 export class ViewerComponent
 {

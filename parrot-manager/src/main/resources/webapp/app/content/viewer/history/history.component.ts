@@ -6,7 +6,6 @@ import { RuntimeService } from 'app/service/runtime.service'
     selector: 'history',
     templateUrl: 'history.component.html',
     styleUrls: ['history.component.css'],
-    providers: [RuntimeService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HistoryComponent

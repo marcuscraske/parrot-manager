@@ -10,8 +10,7 @@ import "app/global-vars"
   moduleId: module.id,
   selector: 'topbar',
   templateUrl: 'topbar.component.html',
-  styleUrls: ['topbar.component.css'],
-  providers: [RuntimeService, DatabaseService]
+  styleUrls: ['topbar.component.css']
 })
 export class TopBarComponent
 {

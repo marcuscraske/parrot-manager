@@ -11,7 +11,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
     moduleId: module.id,
     templateUrl: 'remote-sync.component.html',
     styleUrls: ['remote-sync.component.css'],
-    providers: [RemoteSshFileService, DatabaseService, RemoteSyncChangeLogService]
+    providers: [RemoteSshFileService, RemoteSyncChangeLogService]
 })
 export class RemoteSyncComponent implements AfterViewChecked {
 

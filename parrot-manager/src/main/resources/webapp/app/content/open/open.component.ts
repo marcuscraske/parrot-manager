@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 @Component({
     moduleId: module.id,
     templateUrl: 'open.component.html',
-    providers: [DatabaseService, RuntimeService, RecentFileService, SettingsService]
+    providers: [RecentFileService, SettingsService]
 })
 export class OpenComponent {
 

@@ -9,8 +9,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
     moduleId: module.id,
     selector: 'current-entry',
     templateUrl: 'current-entry.component.html',
-    styleUrls: ['current-entry.component.css'],
-    providers: [DatabaseService, RuntimeService]
+    styleUrls: ['current-entry.component.css']
 })
 export class CurrentEntryComponent
 {
