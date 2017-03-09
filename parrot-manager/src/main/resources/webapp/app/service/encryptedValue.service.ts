@@ -25,6 +25,12 @@ export class EncryptedValueService {
     getString(databaseNode) : string
     {
         var encryptedValue = databaseNode.getValue();
+        var result = this.getStringFromValue(encryptedValue);
+        return result;
+    }
+
+    getStringFromValue(encryptedValue) : string
+    {
         var result = this.encryptedValueService.asString(encryptedValue);
         return result;
     }

@@ -22,6 +22,7 @@ import { ViewerComponent }          from 'app/content/viewer/viewer.component'
 import { GenerateRandomComponent }  from 'app/content/viewer/generate-random/generate-random.component'
 import { CurrentEntryComponent }    from 'app/content/viewer/current-entry/current-entry.component'
 import { ViewerEntriesComponent }   from 'app/content/viewer/entries/entries.component'
+import { ToggleValueComponent }    from 'app/content/viewer/toggle-value/toggleValue.component'
 import { HistoryComponent }         from 'app/content/viewer/history/history.component'
 
 import { RemoteSyncComponent }      from 'app/content/remote-sync/remote-sync.component'
@@ -64,11 +65,11 @@ const appRoutes: Routes = [
     // Pages
     ErrorComponent, HomeComponent,
     CreateComponent, OpenComponent, HelpComponent, SettingsComponent,
-
-    // Pages - opened database
-    ViewerComponent, GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent, HistoryComponent,
     RemoteSyncComponent, RemoteSyncSshComponent,
-    BackupsComponent
+    BackupsComponent,
+
+    // Pages - viewer (and components)
+    ViewerComponent, GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent, HistoryComponent, ToggleValueComponent
 
   ],
   bootstrap: [

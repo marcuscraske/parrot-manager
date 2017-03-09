@@ -39,12 +39,7 @@
             </span>
         </td>
         <td>
-            <button class="btn btn-default" (click)="toggleMask('#' + node.getId() + '-value', node, false)">
-                Toggle Masking
-            </button>
-            <span id="{{ node.getId() }}-value">
-                ********
-            </span>
+            <toggle-value [value]="node.getValue()"></toggle-value>
         </td>
         <td>
             <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())">

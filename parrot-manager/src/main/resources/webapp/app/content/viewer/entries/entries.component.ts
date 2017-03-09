@@ -112,36 +112,4 @@ export class ViewerEntriesComponent
         return node ? node.getId() : null;
     }
 
-    toggleMask(target, targetNode, isInput)
-    {
-        var field = $(target);
-        var masked = field.data("data-masked");
-
-        // Determine new value
-        var newValue;
-
-        if (masked == null || masked)
-        {
-            // Switch to unmasked
-            newValue = this.encryptedValueService.getString(targetNode);
-            field.data("data-masked", false);
-        }
-        else
-        {
-            // Switch to masked
-            newValue = "********";
-            field.data("data-masked", true);
-        }
-
-        // Update element with new value
-        if (isInput)
-        {
-            field.val(newValue);
-        }
-        else
-        {
-            field.text(newValue);
-        }
-    }
-
 }
