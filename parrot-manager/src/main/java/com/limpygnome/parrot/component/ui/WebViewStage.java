@@ -55,7 +55,7 @@ public class WebViewStage extends Stage
         // General window config
         setScene(scene);
         setTitle("parrot");
-        setWidth(980.0);
+        setWidth(1024.0);
         setHeight(200.0);
 
         // Setup icons

@@ -24,4 +24,13 @@ export class HistoryComponent
         return node ? node.getFormattedLastModified() : null;
     }
 
+    delete(encryptedValue)
+    {
+    }
+
+    copyToClipboard(encryptedValue)
+    {
+        this.runtimeService.copyEncryptedValueToClipboard(encryptedValue);
+    }
+
 }

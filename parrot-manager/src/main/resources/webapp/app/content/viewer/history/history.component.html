@@ -31,7 +31,7 @@
             <toggle-value [value]="historicValue"></toggle-value>
         </td>
         <td>
-            <button class="btn btn-danger">
+            <button class="btn btn-danger" (click)="delete(historicValue)">
                 Delete
             </button>
             <button class="btn btn-default" (click)="copyToClipboard(historicValue)">
