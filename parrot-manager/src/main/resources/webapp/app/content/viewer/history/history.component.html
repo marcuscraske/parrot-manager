@@ -28,15 +28,13 @@
             {{ historicValue.getFormattedLastModified() }}
         </td>
         <td>
-            <toggle-value [value]="historicValue"></toggle-value>
+            <toggle-value [encryptedValue]="historicValue"></toggle-value>
         </td>
         <td>
             <button class="btn btn-danger" (click)="delete(historicValue)">
                 Delete
             </button>
-            <button class="btn btn-default" (click)="copyToClipboard(historicValue)">
-                Copy to Clipboard
-            </button>
+            <copy-clipboard [encryptedValue]="historicValue"></copy-clipboard>
         </td>
     </tr>
 

@@ -11,7 +11,7 @@ export class ToggleValueComponent
 {
 
     // The encrypted value being displayed
-    @Input() value : any;
+    @Input() encryptedValue : any;
 
     // The value currently displayed by this component; toggled between masked chars and the decrypted value
     private displayedValue : string;
@@ -24,7 +24,7 @@ export class ToggleValueComponent
     {
         if (this.displayedValue == null)
         {
-            var result = this.encryptedValueService.getStringFromValue(this.value);
+            var result = this.encryptedValueService.getStringFromValue(this.encryptedValue);
 
             if (result == null)
             {

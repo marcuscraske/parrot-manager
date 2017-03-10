@@ -29,9 +29,7 @@
     <button class="btn btn-default" (click)="hideValue()">
         Hide Value
     </button>
-    <button class="btn btn-default" (click)="runtimeService.copyNodeValueToClipboard(currentNode)">
-        Copy to Clipboard
-    </button>
+    <copy-clipboard [encryptedValue]="currentNode.getValue()"></copy-clipboard>
     <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer">
         Generate Random
     </button>

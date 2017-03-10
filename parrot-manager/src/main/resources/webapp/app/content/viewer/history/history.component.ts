@@ -29,9 +29,4 @@ export class HistoryComponent
         this.currentNode.history().remove(encryptedValue);
     }
 
-    copyToClipboard(encryptedValue)
-    {
-        this.runtimeService.copyEncryptedValueToClipboard(encryptedValue);
-    }
-
 }
