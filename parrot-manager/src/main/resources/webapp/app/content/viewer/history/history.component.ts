@@ -24,6 +24,11 @@ export class HistoryComponent
         return historicValue ? historicValue.getFormattedLastModified() : null;
     }
 
+    clearAll()
+    {
+        this.currentNode.history().clearAll();
+    }
+
     delete(encryptedValue)
     {
         this.currentNode.history().remove(encryptedValue);

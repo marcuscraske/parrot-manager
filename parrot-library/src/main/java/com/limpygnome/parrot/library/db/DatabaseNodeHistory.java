@@ -29,7 +29,7 @@ public class DatabaseNodeHistory
     /**
      * @param encryptedValue value to be added
      */
-    public void add(EncryptedValue encryptedValue)
+    public synchronized void add(EncryptedValue encryptedValue)
     {
         history.add(encryptedValue);
 
@@ -40,7 +40,7 @@ public class DatabaseNodeHistory
     /**
      * @param values adds collection of values
      */
-    public void addAll(Collection<? extends EncryptedValue> values)
+    public synchronized void addAll(Collection<? extends EncryptedValue> values)
     {
         history.addAll(values);
     }
@@ -48,7 +48,7 @@ public class DatabaseNodeHistory
     /**
      * @return cached history; result is safe against garbage collection
      */
-    public EncryptedValue[] fetch()
+    public synchronized EncryptedValue[] fetch()
     {
         historyCached = history.toArray(new EncryptedValue[history.size()]);
         return historyCached;
@@ -65,6 +65,14 @@ public class DatabaseNodeHistory
 
         // Mark database as dirty
         currentNode.database.setDirty(true);
+    }
+
+    /**
+     * clears all stored history.
+     */
+    public void clearAll()
+    {
+        history.clear();
     }
 
     /**

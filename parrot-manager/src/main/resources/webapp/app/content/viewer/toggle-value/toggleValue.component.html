@@ -1,6 +1,7 @@
 <button class="btn btn-default" (click)="toggleMask()" title="Toggle visibility">
     <span class="icon" [ngClass]="{ 'icon-unlocked' : displayedValue != null, 'icon-lock' : displayedValue == null }"></span>
 </button>
-<span>
-    {{ displayedValue != null ? displayedValue : "********" }}
+
+<span class="container-value">
+    {{ displayedValue != null ? displayedValue : '********' }}
 </span>
