@@ -19,13 +19,14 @@ export class HistoryComponent
         private renderer: Renderer
     ) { }
 
-    trackChildren(index, node)
+    trackChildren(index, historicValue)
     {
-        return node ? node.getFormattedLastModified() : null;
+        return historicValue ? historicValue.getFormattedLastModified() : null;
     }
 
     delete(encryptedValue)
     {
+        this.currentNode.history().remove(encryptedValue);
     }
 
     copyToClipboard(encryptedValue)

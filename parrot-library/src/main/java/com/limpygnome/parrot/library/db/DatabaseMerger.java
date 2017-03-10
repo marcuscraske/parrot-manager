@@ -37,11 +37,11 @@ public class DatabaseMerger
         // Check if databases are the same, skip if so...
         if (destination.equals(source))
         {
-            actionsLog.add(new Action("No changes detected"));
+            actionsLog.add(new Action("no changes detected"));
         }
         else
         {
-            actionsLog.add(new Action("Changes detected, merging..."));
+            actionsLog.add(new Action("changes detected, merging..."));
 
             // Merge crypto params
             mergeDatabaseCryptoParams(actionsLog, source, destination, password);
@@ -83,18 +83,30 @@ public class DatabaseMerger
         if (src.lastModified > dest.lastModified)
         {
             // Compare/clone first level props
+            // -- Name
             if (!dest.name.equals(src.name))
             {
                 dest.name = src.name;
                 mergeInfo.addMergeMessage("changing name to '" + src.name + "'");
             }
 
+            // -- Value
             if (!dest.value.equals(src.value))
             {
                 dest.value = src.value.clone();
             }
 
+            // -- History
+            if (!dest.history.equals(src.history))
+            {
+                dest.history.cloneToNode(src);
+                mergeInfo.addMergeMessage("value history updated");
+            }
+
+            // Copy last modified
             dest.lastModified = src.lastModified;
+
+            // Mark as dirty due to changes
             dest.database.setDirty(true);
 
             mergeInfo.addMergeMessage("updated node properties");

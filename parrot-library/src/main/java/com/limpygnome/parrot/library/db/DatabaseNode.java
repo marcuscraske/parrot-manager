@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -42,9 +40,6 @@ public final class DatabaseNode
     // The value stored at this node
     EncryptedValue value;
 
-    // Previous values stored at this node
-    List<EncryptedValue> history;
-
     // Any sub-nodes which belong to this node
     Map<UUID, DatabaseNode> children;
 
@@ -53,11 +48,10 @@ public final class DatabaseNode
     // TODO: update this on init and as child nodes are added/removed, current imp doesnt save anything
     DatabaseNode[] childrenCached;
 
-    // Cached array of historic values retrieved; same reason as children being cached
-    EncryptedValue[] historyCached;
-
     // A list of previously deleted children; used for merging
     Set<UUID> deletedChildren;
+
+    DatabaseNodeHistory history;
 
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
@@ -69,7 +63,7 @@ public final class DatabaseNode
 
         this.children = new HashMap<>(0);
         this.deletedChildren = new HashSet<>();
-        this.history = new LinkedList<>();
+        this.history = new DatabaseNodeHistory(this);
 
         // Add ref to database lookup
         database.lookup.put(id, this);
@@ -174,6 +168,13 @@ public final class DatabaseNode
      */
     public void setValue(EncryptedValue value)
     {
+        // Add existing value to history
+        if (this.value != null)
+        {
+            history.add(this.value);
+        }
+
+        // Update current value
         this.value = value;
         setDirty();
     }
@@ -186,29 +187,9 @@ public final class DatabaseNode
         return value;
     }
 
-    /**
-     * @return history of previous values, or empty list
-     */
-    public List<EncryptedValue> getHistoryCollection()
+    public DatabaseNodeHistory history()
     {
         return history;
-    }
-
-    /**
-     * @return cached history; result is safe against garbage collection
-     */
-    public EncryptedValue[] getHistory()
-    {
-        historyCached = history.toArray(new EncryptedValue[history.size()]);
-        return historyCached;
-    }
-
-    /**
-     * @return total number of historic values
-     */
-    public int getHistoryCount()
-    {
-        return history.size();
     }
 
     /**
@@ -441,23 +422,26 @@ public final class DatabaseNode
         DatabaseNode that = (DatabaseNode) o;
 
         if (lastModified != that.lastModified) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
         if (children != null ? !children.equals(that.children) : that.children != null) return false;
         if (deletedChildren != null ? !deletedChildren.equals(that.deletedChildren) : that.deletedChildren != null)
             return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return value != null ? value.equals(that.value) : that.value == null;
+        return history != null ? history.equals(that.history) : that.history == null;
+
     }
 
     @Override
     public int hashCode()
     {
-        int result = children != null ? children.hashCode() : 0;
-        result = 31 * result + (deletedChildren != null ? deletedChildren.hashCode() : 0);
-        result = 31 * result + (id != null ? id.hashCode() : 0);
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (int) (lastModified ^ (lastModified >>> 32));
         result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (children != null ? children.hashCode() : 0);
+        result = 31 * result + (deletedChildren != null ? deletedChildren.hashCode() : 0);
+        result = 31 * result + (history != null ? history.hashCode() : 0);
         return result;
     }
 
