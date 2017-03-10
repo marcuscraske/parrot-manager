@@ -7,6 +7,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
     moduleId: module.id,
     selector: 'copy-clipboard',
     templateUrl: 'copyClipboard.component.html',
+    styleUrls: ['copyClipboard.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CopyClipboardComponent
@@ -20,7 +21,7 @@ export class CopyClipboardComponent
         private encryptedValueService: EncryptedValueService
     ) { }
 
-    copyToClipboard()
+    copyToClipboard(event)
     {
         console.log("decrypting value for clipboard");
 
@@ -34,6 +35,14 @@ export class CopyClipboardComponent
 
         this.runtimeService.setClipboard(decryptedValue);
         console.log("clipboard updated with decrypted value");
+
+        // Add rainbow effect to button
+        var button = $(event.target);
+        button.addClass("copiedAnimation");
+
+        setTimeout(() => {
+            button.removeClass("copiedAnimation");
+        }, 500);
     }
 
 }

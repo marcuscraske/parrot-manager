@@ -1,0 +1,10 @@
+.copiedAnimation
+{
+    -webkit-animation: rainbow 0.5s infinite;
+}
+
+@-webkit-keyframes rainbow
+{
+    0%  {background: #000; color: #fff; }
+    50%  {background: #666; color: #333; }
+}
