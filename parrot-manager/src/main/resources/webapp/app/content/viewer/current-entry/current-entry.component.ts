@@ -95,17 +95,6 @@ export class CurrentEntryComponent
         }
     }
 
-    preUpdateValue(event)
-    {
-        var field = event.target;
-
-        // Only populate if empty
-        if (field.value.length == 0)
-        {
-            this.displayValue();
-        }
-    }
-
     refreshValue()
     {
         var field = $("#currentValue")[0];
@@ -118,11 +107,18 @@ export class CurrentEntryComponent
 
     displayValue()
     {
+        var currentValue = $("#currentValue");
+
+        // Set the value
         var decryptedValue = this.encryptedValueService.getString(this.currentNode);
-        $("#currentValue").val(decryptedValue);
+        currentValue.val(decryptedValue);
         console.log("populated value field with actual decrypted value");
 
+        // Resize box to fit value
         this.resizeValueTextAreaToFitContent();
+
+        // Set param for edit mode
+        currentValue.attr("edit", true);
     }
 
     updateValue(event)
@@ -139,6 +135,9 @@ export class CurrentEntryComponent
             // Reset to empty and resize
             field.value = "";
             this.resizeValueTextAreaToFitContent();
+
+            // Remove edit mode param
+            $("#currentValue").removeAttr("edit");
         });
     }
 

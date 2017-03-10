@@ -67,7 +67,7 @@ public class RandomGeneratorService
             result = null;
             LOG.warn("failed to generate random string - no char groups selected");
         }
-        else if (minLength >= maxLength || minLength < 1)
+        else if (minLength > maxLength || minLength < 1)
         {
             result = null;
             LOG.warn("failed to generate random string - invalid min/max");

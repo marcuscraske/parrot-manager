@@ -191,12 +191,18 @@ export class ViewerComponent
 
     saveValue()
     {
-        // Fetch value and update current node
-        var value = $("#currentValue").val();
-        this.encryptedValueService.setString(this.currentNode, value);
+        // Only allow save if in edit mode
+        var currentValue = $("#currentValue");
 
-        // Reset form as untouched
-        this.updateEntryForm.reset();
+        if (currentValue.attr("edit"))
+        {
+            // Fetch value and update current node
+            var value = currentValue.val();
+            this.encryptedValueService.setString(this.currentNode, value);
+
+            // Reset form as untouched
+            this.updateEntryForm.reset();
+        }
     }
 
 }

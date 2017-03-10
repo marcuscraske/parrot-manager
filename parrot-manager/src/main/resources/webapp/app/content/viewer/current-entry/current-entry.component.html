@@ -41,14 +41,14 @@
 <form [formGroup]="updateEntryForm" #form="ngForm">
     <!-- Current value -->
     <div class="form-group">
-                    <textarea id="currentValue"
-                              class="form-control"
-                              rows="1"
-                              placeholder="Click to reveal value"
-                              formControlName="currentValue"
-                              (click)="preUpdateValue($event)"
-                              (keydown)="updateValue($event)"
-                    >********</textarea>
+        <textarea id="currentValue"
+                  class="form-control"
+                  rows="1"
+                  placeholder="Click to reveal value"
+                  formControlName="currentValue"
+                  (click)="displayValue($event)"
+                  (keydown)="updateValue($event)"
+        ></textarea>
     </div>
 
 </form>
