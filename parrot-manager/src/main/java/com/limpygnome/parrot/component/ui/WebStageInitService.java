@@ -47,7 +47,7 @@ public class WebStageInitService
 
     // Properties
     @Value("${development:false}")
-    private boolean developmentMode;
+    private Boolean developmentMode;
 
     // Stage
     private WebViewStage stage;
@@ -62,8 +62,6 @@ public class WebStageInitService
 
         // Inject required objects into front-end
         // WARNING: due to JavaFX "bug", never pass newly constructed instances here
-        // -- Flags
-        stage.exposeJsObject("developmentMode", developmentMode);
 
         // -- Services
         stage.exposeJsObject("settingsService", settingsService);

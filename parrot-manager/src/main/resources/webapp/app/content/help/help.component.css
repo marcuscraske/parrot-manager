@@ -9,4 +9,5 @@
 #buildInfo
 {
     max-width: 40em;
+    overflow: hidden;
 }

@@ -68,6 +68,8 @@ class LocalResourceStreamHandler extends URLStreamHandler
     {
         URLConnection connection = null;
 
+        LOG.debug("request for url - {}", url);
+
         if (url != null)
         {
             String requestedUrl = url.toString();
@@ -96,7 +98,7 @@ class LocalResourceStreamHandler extends URLStreamHandler
                 if (resourceUrl != null)
                 {
                     connection = resourceUrl.openConnection();
-                    LOG.info("served resource - url: {}, class path url: {}", requestedUrl, classPathUrl);
+                    LOG.info("served resource - url: {}, class path url: {}", requestedUrl, resourceUrl.getPath());
                 }
                 else
                 {
