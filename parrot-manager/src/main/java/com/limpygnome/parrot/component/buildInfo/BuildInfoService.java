@@ -17,7 +17,7 @@ public class BuildInfoService
     {
         StringBuilder buffer = new StringBuilder();
 
-        String newLineSeparator = System.getProperty("file.separator");
+        String newLineSeparator = System.getProperty("line.separator");
 
         appendApplicationVersion(buffer, newLineSeparator);
         appendCurrentPlatform(buffer, newLineSeparator);
