@@ -5,11 +5,12 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { SettingsService } from 'app/service/settings.service'
 import { RecentFileService } from 'app/service/recentFile.service'
 import { DatabaseService } from 'app/service/database.service'
+import { DatabaseOptimizerService } from 'app/service/databaseOptimizer.service'
 
 @Component({
     moduleId: module.id,
     templateUrl: "settings.component.html",
-    providers: [SettingsService, RecentFileService],
+    providers: [SettingsService, RecentFileService, DatabaseOptimizerService],
     styleUrls: ["settings.component.css"]
 })
 export class SettingsComponent {
@@ -30,6 +31,7 @@ export class SettingsComponent {
         private settingsService: SettingsService,
         private recentFileService: RecentFileService,
         private databaseService: DatabaseService,
+        private databaseOptimizerService: DatabaseOptimizerService,
         public fb: FormBuilder,
         private router: Router
     ) { }
@@ -88,6 +90,22 @@ export class SettingsComponent {
 
         this.recentFileService.clear();
         this.recentFilesClearEnabled = false;
+    }
+
+    optimizeDeletedNodeHistory()
+    {
+        console.log("optimizing delete node history");
+        this.databaseOptimizerService.optimizeDeletedNodeHistory();
+
+        this.successMessage = "Deleted node history cleared";
+    }
+
+    optimizeValueHistory()
+    {
+        console.log("optimizing value history");
+        this.databaseOptimizerService.optimizeValueHistory();
+
+        this.successMessage = "Value history cleared";
     }
 
 }

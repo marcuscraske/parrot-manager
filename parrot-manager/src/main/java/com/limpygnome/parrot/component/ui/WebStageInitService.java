@@ -2,9 +2,10 @@ package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.buildInfo.BuildInfoService;
+import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
+import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
-import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
 import com.limpygnome.parrot.component.remote.RemoteSshFileService;
 import com.limpygnome.parrot.component.runtime.RuntimeService;
@@ -41,6 +42,8 @@ public class WebStageInitService
     private EncryptedValueService encryptedValueService;
     @Autowired
     private BuildInfoService buildInfoService;
+    @Autowired
+    private DatabaseOptimizerService databaseOptimizerService;
 
     // Properties
     @Value("${development:false}")
@@ -72,6 +75,7 @@ public class WebStageInitService
         stage.exposeJsObject("recentFileService", recentFileService);
         stage.exposeJsObject("encryptedValueService", encryptedValueService);
         stage.exposeJsObject("buildInfoService", buildInfoService);
+        stage.exposeJsObject("databaseOptimizerService", databaseOptimizerService);
     }
 
     /**

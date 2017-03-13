@@ -32,9 +32,9 @@
             </div>
 
             <div class="form-group" *ngIf="recentFilesClearEnabled">
-                <button class="btn btn-default" (click)="recentFilesClear()">
+                <a class="btn btn-default" (click)="recentFilesClear()">
                     Clear recent files
-                </button>
+                </a>
             </div>
 
         </div>
@@ -84,9 +84,9 @@
 
             <div class="row">
                 <div class="col-xs-3">
-                    <button class="btn btn-default">
+                    <a class="btn btn-default" (click)="optimizeDeletedNodeHistory()">
                         Clear deleted node history
-                    </button>
+                    </a>
                 </div>
                 <div class="col-xs-9">
                     <p>
@@ -98,9 +98,9 @@
             </div>
             <div class="row">
                 <div class="col-xs-3">
-                    <button class="btn btn-default">
+                    <a class="btn btn-default" (click)="optimizeValueHistory()">
                         Clear history
-                    </button>
+                    </a>
                 </div>
                 <div class="col-xs-9">
                     <p>
