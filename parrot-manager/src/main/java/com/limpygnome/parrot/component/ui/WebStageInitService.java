@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.component.backup.BackupService;
+import com.limpygnome.parrot.component.buildInfo.BuildInfoService;
 import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.database.DatabaseService;
@@ -38,6 +39,8 @@ public class WebStageInitService
     private RecentFileService recentFileService;
     @Autowired
     private EncryptedValueService encryptedValueService;
+    @Autowired
+    private BuildInfoService buildInfoService;
 
     // Properties
     @Value("${development:false}")
@@ -68,6 +71,7 @@ public class WebStageInitService
         stage.exposeJsObject("backupService", backupService);
         stage.exposeJsObject("recentFileService", recentFileService);
         stage.exposeJsObject("encryptedValueService", encryptedValueService);
+        stage.exposeJsObject("buildInfoService", buildInfoService);
     }
 
     /**
