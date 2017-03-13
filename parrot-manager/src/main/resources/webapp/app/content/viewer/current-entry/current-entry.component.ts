@@ -95,16 +95,19 @@ export class CurrentEntryComponent
         }
     }
 
+    // Refreshes the decrypted value, if in edit mode (used for when generating random number)
     refreshValue()
     {
-        var field = $("#currentValue")[0];
+        var field = $("#currentValue");
+        var isEditMode = field.data("edit");
 
-        if (field.value.length != 0)
+        if (isEditMode == true)
         {
             this.displayValue();
         }
     }
 
+    // Displays decrypted value / switches to edit mode
     displayValue()
     {
         var currentValue = $("#currentValue");
@@ -118,26 +121,21 @@ export class CurrentEntryComponent
         this.resizeValueTextAreaToFitContent();
 
         // Set param for edit mode
-        currentValue.attr("edit", true);
+        currentValue.data("edit", true);
     }
 
-    updateValue(event)
-    {
-        var field = event.target;
-        this.resizeValueTextAreaToFitContent();
-    }
-
+    // Hides the decrypted value / switches out of edit mode
     hideValue()
     {
-        var field = $("#currentValue")[0];
+        var field = $("#currentValue");
 
         this.continueActionWithPromptForDirtyValue.emit(() => {
             // Reset to empty and resize
-            field.value = "";
+            field.val("");
             this.resizeValueTextAreaToFitContent();
 
-            // Remove edit mode param
-            $("#currentValue").removeAttr("edit");
+            // Switch out of edit mode
+            field.data("edit", false);
         });
     }
 

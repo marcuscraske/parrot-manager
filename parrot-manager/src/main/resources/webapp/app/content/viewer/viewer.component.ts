@@ -189,19 +189,28 @@ export class ViewerComponent
         }
     }
 
+    // Saves the current (decrypted) value
     saveValue()
     {
         // Only allow save if in edit mode
         var currentValue = $("#currentValue");
+        var isEditMode = currentValue.data("edit");
 
-        if (currentValue.attr("edit"))
+        console.error("EDIT MODE : " + isEditMode);
+
+        if (isEditMode == true)
         {
+            console.log("saving current value");
+
             // Fetch value and update current node
             var value = currentValue.val();
             this.encryptedValueService.setString(this.currentNode, value);
 
             // Reset form as untouched
             this.updateEntryForm.reset();
+
+            // Switch out of edit mode
+            currentValue.data("edit", false);
         }
     }
 

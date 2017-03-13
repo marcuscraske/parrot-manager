@@ -11,7 +11,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
 export class ToggleValueComponent
 {
     // The maximum length of displayed decrypted values
-    private MAX_LENGTH = 32 : int;
+    private MAX_LENGTH = 32;
 
     // The encrypted value being displayed
     @Input() encryptedValue : any;
