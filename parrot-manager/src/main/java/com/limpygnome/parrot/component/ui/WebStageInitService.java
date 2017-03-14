@@ -92,6 +92,7 @@ public class WebStageInitService
         return stage;
     }
 
+
     public DatabaseService getDatabaseService()
     {
         return databaseService;
@@ -100,6 +101,11 @@ public class WebStageInitService
     public RuntimeService getRuntimeService()
     {
         return runtimeService;
+    }
+
+    public EncryptedValueService getEncryptedValueService()
+    {
+        return encryptedValueService;
     }
 
 }

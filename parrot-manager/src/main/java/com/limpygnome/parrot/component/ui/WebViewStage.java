@@ -67,7 +67,7 @@ public class WebViewStage extends Stage
             event.consume();
 
             // Trigger event for JS to handle action
-            triggerEvent("document", "nativeExit");
+            triggerEvent("document", "nativeExit", null);
         });
     }
 
@@ -149,10 +149,26 @@ public class WebViewStage extends Stage
      * @param domElement the element e.g. document
      * @param eventName the event name e.g. nativeExit
      */
-    public void triggerEvent(String domElement, String eventName)
+    public void triggerEvent(String domElement, String eventName, Object eventData)
     {
-        String script = domElement + ".dispatchEvent(new CustomEvent(\"" + eventName + "\"))";
-        webView.getEngine().executeScript(script);
+        // Create event
+        JSObject customEventObject = (JSObject) webView.getEngine().executeScript("new CustomEvent(\"" + eventName + "\")");
+
+        if (eventData != null)
+        {
+            customEventObject.setMember("data", eventData);
+        }
+
+        // Fetch DOM element
+        JSObject domElementObject = (JSObject) webView.getEngine().executeScript(domElement);
+
+        if (domElementObject == null)
+        {
+            throw new RuntimeException("DOM element '" + domElement + "' not found for raising JS event '" + eventName + "'");
+        }
+
+        // Raise event
+        domElementObject.call("dispatchEvent", customEventObject);
 
         LOG.info("triggered event - dom element: {}, event name: {}", domElement, eventName);
     }

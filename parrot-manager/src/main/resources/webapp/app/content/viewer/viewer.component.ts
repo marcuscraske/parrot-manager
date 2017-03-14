@@ -15,7 +15,8 @@ export class ViewerComponent
 {
 
     // Event handle for "databaseUpdated" events
-    private nativeDatabaseUpdatedEvent: Function;
+    private databaseEntryDeleteEvent: Function;
+    private databaseEntryAddEvent: Function;
 
     // The current node being edited
     public currentNode: any;
@@ -38,10 +39,50 @@ export class ViewerComponent
         // Setup tree
         this.initTree();
 
-        // Hook for database update events
-        this.nativeDatabaseUpdatedEvent = renderer.listenGlobal("document", "nativeDatabaseUpdated", (event) => {
-            console.log("native databaseUpdated event raised, updating tree...");
+        // Hook for events raised by application
+        this.databaseEntryDeleteEvent = renderer.listenGlobal("document", "databaseEntryDelete", (event) => {
+            console.log("databaseEntryDeleted event raised");
+
+            var targetNode = event.data;
+
+            // Fetch parent node
+            var parentNode = targetNode.getParent();
+
+            // Delete target node
+            targetNode.remove();
+
+            // Update tree
             this.updateTree();
+
+            // Check current node still exists
+            if (this.currentNode != null && this.currentNode.getId() == targetNode.getId())
+            {
+                console.log("current node deleted, navigating to parent...");
+                this.changeNodeBeingViewed(parentNode.getId());
+            }
+            else
+            {
+                console.log("current node not deleted");
+            }
+        });
+
+        this.databaseEntryAddEvent = renderer.listenGlobal("document", "databaseEntryAdd", (event) => {
+            console.log("databaseEntryAdded event raised");
+
+            var targetNode = event.data;
+
+            // Add new node
+            var newNode = targetNode.addNew();
+
+            // Update tree
+            this.updateTree();
+
+            // Navigate to new node
+            this.changeNodeBeingViewed(newNode.getId());
+        });
+
+        this.databaseClipboardEvent = renderer.listenGlobal("document", "databaseClipboardEvent", (event) => {
+            console.log("databaseClipboardEvent event raised");
         });
     }
 
@@ -55,7 +96,8 @@ export class ViewerComponent
     ngOnDestroy()
     {
         // Dispose events
-        this.nativeDatabaseUpdatedEvent();
+        this.databaseEntryDeleteEvent();
+        this.databaseEntryAddEvent();
     }
 
     initTree()
@@ -74,8 +116,18 @@ export class ViewerComponent
 
             // Hook tree for select event
             $("#sidebar").on("select_node.jstree", (e, data) => {
+                // Check button was definitely left click
+                var evt = window.event || event;
+                var button = evt == null ? null : (evt as any).which || (evt as any).button;
+                if (button == null || button != 1)
+                {
+                    console.log("ignoring node selection, as not left click");
+                    return false;
+                }
+
                 // Fetch UUID/ID of node from tree
                 var nodeId = data.node.id;
+                console.log("node selected in tree - id: " + nodeId);
 
                 // Update current node being edited
                 this.changeNodeBeingViewed(nodeId);

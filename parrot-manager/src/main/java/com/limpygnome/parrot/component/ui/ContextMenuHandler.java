@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.ui;
 
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import javafx.event.EventHandler;
@@ -107,6 +108,7 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
 
         MenuItem itemAddEntry = new MenuItem("Add Entry");
         itemAddEntry.setOnAction(e -> {
+            webViewStage.triggerEvent("document", "databaseEntryAdd", databaseNode);
         });
 
         contextMenu.getItems().add(itemAddEntry);
@@ -114,15 +116,27 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
         if (!databaseNode.isRoot())
         {
             MenuItem itemDeleteEntry = new MenuItem("Delete Entry");
-            itemAddEntry.setOnAction(e ->
+            itemDeleteEntry.setOnAction(e ->
             {
-
+                webViewStage.triggerEvent("document", "databaseEntryDelete", databaseNode);
             });
 
             MenuItem itemCopyClipboard = new MenuItem("Copy to clipboard");
-            itemAddEntry.setOnAction(e ->
+            itemCopyClipboard.setOnAction(e ->
             {
+                try
+                {
+                    // Decrypt value
+                    EncryptedValue encryptedValue = databaseNode.getValue();
+                    String decryptedValue = webViewStage.getServiceFacade().getEncryptedValueService().asString(encryptedValue);
 
+                    // Set on clipboard
+                    webViewStage.getServiceFacade().getRuntimeService().setClipboard(decryptedValue);
+                }
+                catch (Exception e2)
+                {
+                    LOG.error("failed to copy node's decrypted value to clipboard", e2);
+                }
             });
 
             contextMenu.getItems().addAll(itemDeleteEntry, itemCopyClipboard);
