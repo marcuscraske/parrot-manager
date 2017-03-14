@@ -4,17 +4,13 @@ import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.w3c.dom.html.HTMLElement;
 
 import java.io.InputStream;
 
@@ -30,6 +26,7 @@ public class WebViewStage extends Stage
     private static final Logger LOG = LogManager.getLogger(WebViewStage.class);
 
     private WebStageInitService webStageInitService;
+    private ContextMenuHandler contextMenuHandler;
 
     // JavaFX controls
     private Scene scene;
@@ -105,68 +102,8 @@ public class WebViewStage extends Stage
 
     private void setupContextMenu()
     {
-        // Disable default ctx menu
-        webView.setContextMenuEnabled(false);
-
-        // Build menu for folder
-        ContextMenu contextMenuFolder = new ContextMenu();
-        {
-            MenuItem ctxAddEntry = new MenuItem("Add Entry");
-            ctxAddEntry.setOnAction(e -> webView.getEngine().reload());
-
-            MenuItem ctxRemoveFolder = new MenuItem("Remove Folder");
-            ctxRemoveFolder.setOnAction(e -> webView.getEngine().reload());
-
-            contextMenuFolder.getItems().addAll(ctxAddEntry, ctxRemoveFolder);
-        }
-
-        // Build menu for entry
-        ContextMenu contextMenuEntry = new ContextMenu();
-        {
-            MenuItem ctxRemoveEntry = new MenuItem("Remove Entry");
-            ctxRemoveEntry.setOnAction(e -> webView.getEngine().reload());
-
-            contextMenuEntry.getItems().addAll(ctxRemoveEntry);
-        }
-
-        // Hook
-        // TODO: consider removal
-        webView.setOnMousePressed(e -> {
-            ContextMenu ctxMenuToShow = null;
-
-            // Determine if to show ctx menu
-            if (e.getButton() == MouseButton.SECONDARY)
-            {
-                // Fetch element clicked
-                netscape.javascript.JSObject object = (netscape.javascript.JSObject) webView.getEngine().executeScript("document.elementFromPoint(" + e.getX() + "," + e.getY() + ");");
-                HTMLElement element = (HTMLElement) object;
-                String itemType = element.getAttribute("id");
-
-                if (itemType != null)
-                {
-                    LOG.error("ITEM TYPE: {}", itemType);
-//                    switch (itemType)
-//                    {
-//                        case "folder":
-//                            ctxMenuToShow = contextMenuFolder;
-//                            break;
-//                        case "entry":
-//                            ctxMenuToShow = contextMenuEntry;
-//                            break;
-//                    }
-                }
-            }
-
-            // Hide all menus
-            contextMenuFolder.hide();
-            contextMenuEntry.hide();
-
-            // Show menu
-            if (ctxMenuToShow != null)
-            {
-                ctxMenuToShow.show(webView, e.getScreenX(), e.getScreenY());
-            }
-        });
+        contextMenuHandler = new ContextMenuHandler(this);
+        contextMenuHandler.attach();
     }
 
     /**
@@ -180,7 +117,6 @@ public class WebViewStage extends Stage
             if (newValue == Worker.State.SUCCEEDED)
             {
                 // Ensure this runs on the JavaFX thread...
-                // TODO: separate from this stage, make it generic
                 Platform.runLater(() ->
                 {
                     // Attach controller to this stage
@@ -228,6 +164,22 @@ public class WebViewStage extends Stage
     {
         LOG.info("loading page - url: {}", url);
         webView.getEngine().load(url);
+    }
+
+    /**
+     * @return current web view control
+     */
+    public WebView getWebView()
+    {
+        return webView;
+    }
+
+    /**
+     * @return retrieves facade for access to common services.
+     */
+    public WebStageInitService getServiceFacade()
+    {
+        return webStageInitService;
     }
 
 }

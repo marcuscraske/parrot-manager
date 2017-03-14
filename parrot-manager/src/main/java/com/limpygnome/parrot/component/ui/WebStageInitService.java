@@ -92,4 +92,14 @@ public class WebStageInitService
         return stage;
     }
 
+    public DatabaseService getDatabaseService()
+    {
+        return databaseService;
+    }
+
+    public RuntimeService getRuntimeService()
+    {
+        return runtimeService;
+    }
+
 }
