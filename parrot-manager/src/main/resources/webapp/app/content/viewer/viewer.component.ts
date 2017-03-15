@@ -99,7 +99,8 @@ export class ViewerComponent
     {
         // Set root node as current by default
         var database = this.databaseService.getDatabase();
-        this.currentNode = database.getRoot();
+        var rootNode = database.getRoot();
+        this.changeNodeBeingViewed(rootNode.getId());
     }
 
     ngOnDestroy()
@@ -129,9 +130,10 @@ export class ViewerComponent
                 // Check button was definitely left click
                 var evt = window.event || event;
                 var button = evt == null ? null : (evt as any).which || (evt as any).button;
-                if (button != null && button != 1)
+
+                if (button == null || button != 1)
                 {
-                    console.log("ignoring node selection, as not left click");
+                    console.log("ignoring node selection, as not left click ###" + this.currentNode.getId());
                     return false;
                 }
 
