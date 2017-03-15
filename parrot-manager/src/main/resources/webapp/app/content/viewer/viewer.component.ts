@@ -17,6 +17,7 @@ export class ViewerComponent
     // Event handle for "databaseUpdated" events
     private databaseEntryDeleteEvent: Function;
     private databaseEntryAddEvent: Function;
+    private databaseClipboardEvent: Function;
 
     // The current node being edited
     public currentNode: any;
@@ -83,6 +84,14 @@ export class ViewerComponent
 
         this.databaseClipboardEvent = renderer.listenGlobal("document", "databaseClipboardEvent", (event) => {
             console.log("databaseClipboardEvent event raised");
+
+            // Decrypt value
+            var targetNode = event.data;
+            var encryptedValue = targetNode.getValue();
+            var decryptedValue = this.encryptedValueService.getStringFromValue(encryptedValue);
+
+            // Set on clipboard
+            this.runtimeService.setClipboard(decryptedValue);
         });
     }
 
@@ -98,6 +107,7 @@ export class ViewerComponent
         // Dispose events
         this.databaseEntryDeleteEvent();
         this.databaseEntryAddEvent();
+        this.databaseClipboardEvent();
     }
 
     initTree()
@@ -119,7 +129,7 @@ export class ViewerComponent
                 // Check button was definitely left click
                 var evt = window.event || event;
                 var button = evt == null ? null : (evt as any).which || (evt as any).button;
-                if (button == null || button != 1)
+                if (button != null && button != 1)
                 {
                     console.log("ignoring node selection, as not left click");
                     return false;
