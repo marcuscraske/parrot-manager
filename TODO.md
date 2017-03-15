@@ -8,7 +8,6 @@ Current release:
 - Implement generic key combos
   - ctrl+s for saving
   - ctrl+o for open
-- Sync to remote with non-existent file
 
 Next release:
 - Save-as

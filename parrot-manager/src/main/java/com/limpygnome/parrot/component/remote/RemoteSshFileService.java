@@ -1,10 +1,12 @@
 package com.limpygnome.parrot.component.remote;
 
+import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.dbaction.Action;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +34,8 @@ public class RemoteSshFileService
     private SshComponent sshComponent;
     @Autowired
     private DatabaseMerger databaseMerger;
+    @Autowired
+    private DatabaseService databaseService;
     @Autowired
     private EncryptedValueService encryptedValueService;
 
@@ -134,7 +138,7 @@ public class RemoteSshFileService
                 // Check remote connection works and file exists
                 if (!sshComponent.checkRemotePathExists(options, session))
                 {
-                    result = "Remote file does not exist";
+                    result = "Remote file does not exist - ignore if expected";
                 }
             }
         }
@@ -196,30 +200,47 @@ public class RemoteSshFileService
 
                 // Start download...
                 LOG.info("sync - downloading");
-                sshComponent.download(session, options, syncPath);
+                boolean exists = sshComponent.download(session, options, syncPath);
 
-                // Load remote database
-                LOG.info("sync - loading remote database");
-                Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
+                ActionsLog actionsLog;
 
-                // Perform merge and check if any change occurred...
-                LOG.info("sync - performing merge...");
-                ActionsLog actionsLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
-
-                // Check if we need to upload...
-                if (database.isDirty() || remoteDatabase.isDirty())
+                if (exists)
                 {
-                    // Save current database
-                    LOG.info("sync - database(s) dirty, saving... - local: {}, remote: {}", database.isDirty(), remoteDatabase.isDirty());
-                    databaseReaderWriter.save(database, options.getDestinationPath());
+                    // Load remote database
+                    LOG.info("sync - loading remote database");
+                    Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
 
-                    // Upload to remote
-                    LOG.info("sync - uploading to remote host...");
-                    sshComponent.upload(session, options, options.getDestinationPath());
+                    // Perform merge and check if any change occurred...
+                    LOG.info("sync - performing merge...");
+                    actionsLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
+
+                    // Check if we need to upload...
+                    if (database.isDirty() || remoteDatabase.isDirty())
+                    {
+                        // Save current database
+                        LOG.info("sync - database(s) dirty, saving... - local: {}, remote: {}", database.isDirty(), remoteDatabase.isDirty());
+                        databaseReaderWriter.save(database, options.getDestinationPath());
+
+                        // Upload to remote
+                        LOG.info("sync - uploading to remote host...");
+                        sshComponent.upload(session, options, options.getDestinationPath());
+                    }
+                    else
+                    {
+                        LOG.info("sync - neither database is dirty");
+                    }
                 }
                 else
                 {
-                    LOG.info("sync - neither database is dirty");
+                    LOG.info("sync - uploading current database");
+
+                    actionsLog = new ActionsLog();
+                    actionsLog.add(new Action("uploading current database, as does not exist remotely"));
+
+                    String currentPath = databaseService.getPath();
+                    sshComponent.upload(session, options, currentPath);
+
+                    actionsLog.add(new Action("uploaded successfully"));
                 }
 
                 // Build result
