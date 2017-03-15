@@ -77,7 +77,41 @@
     <div class="panel panel-default" *ngIf="databaseService.isOpen()">
         <div class="panel-heading">
             <div class="panel-title">
-                Current database
+                Change Database Password
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="form-control-label" for="newPassword">
+                    Enter password:
+                </label>
+                <input id="newPassword"
+                       type="password"
+                       class="form-control"
+                       placeholder="Leave empty to not change"
+                       formControlName="newPassword"
+                       [(ngModel)]="settingsForm.value['newPassword']"
+                />
+            </div>
+            <div class="form-group">
+                <label class="form-control-label" for="newPasswordConfirm">
+                    Confirm password:
+                </label>
+                <input id="newPasswordConfirm"
+                       type="password"
+                       class="form-control"
+                       placeholder="Type again to confirm"
+                       formControlName="newPasswordConfirm"
+                       [(ngModel)]="settingsForm.value['newPasswordConfirm']"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" *ngIf="databaseService.isOpen()">
+        <div class="panel-heading">
+            <div class="panel-title">
+                Database Optimization
             </div>
         </div>
         <div class="panel-body">
@@ -115,20 +149,15 @@
     <div>
 
         <div class="form-group text-center">
-            <button type="submit" class="btn btn-primary btn-lg" (click)="save()">
+            <button type="submit" class="btn btn-primary btn-lg">
                 Save
             </button>
         </div>
 
         <div class="form-group text-center">
-            <button type="submit" class="btn btn-default" (click)="resetToDefault()">
+            <button type="button" class="btn btn-default" (click)="resetToDefault()">
                 Reset to default
             </button>
-        </div>
-
-        <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
-            <span class="help-block">{{ errorMessage }}</span>
-            <span class="help-block">{{ successMessage }}</span>
         </div>
 
     </div>

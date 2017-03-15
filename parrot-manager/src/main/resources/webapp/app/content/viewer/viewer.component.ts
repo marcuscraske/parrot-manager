@@ -128,12 +128,14 @@ export class ViewerComponent
             // Hook tree for select event
             $("#sidebar").on("select_node.jstree", (e, data) => {
                 // Check button was definitely left click
+                // -- Disabling ctxmenu does not work, as JavaFX seems to change the event to left-click when selecting
+                //    native item
                 var evt = window.event || event;
                 var button = evt == null ? null : (evt as any).which || (evt as any).button;
 
                 if (button == null || button != 1)
                 {
-                    console.log("ignoring node selection, as not left click ###" + this.currentNode.getId());
+                    console.log("ignoring node selection, as not left click");
                     return false;
                 }
 

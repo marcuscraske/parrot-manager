@@ -51,4 +51,11 @@ a
     border-color: none;
 }
 
+/*
+    toastr theme overrides
+*/
 
+.toast-top-center
+{
+    margin-top: 1em;
+}

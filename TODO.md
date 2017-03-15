@@ -4,13 +4,14 @@
 - History is not updated when changing value
 
 ## Features
-- Implement right-click context menu of nodes.
-  - Skeleton/POC is still sitting in WebViewStage.
-- Change database password
-- Save-as
+Current release:
 - Implement generic key combos
   - ctrl+s for saving
   - ctrl+o for open
+- Sync to remote with non-existent file
+
+Next release:
+- Save-as
 - Import/export
   - Allow entire database to be exported in JSON or other compatible formats
   - Should be fairly easy for JSON and will be a gateway to other formats.

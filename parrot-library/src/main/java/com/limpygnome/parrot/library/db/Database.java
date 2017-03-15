@@ -124,13 +124,32 @@ public final class Database
     }
 
     /**
+     * Changes the password used to access the database.
+     *
+     * @param newPassword new password
+     * @throws Exception crypto issues
+     */
+    public synchronized void changePassword(String newPassword) throws Exception
+    {
+        char[] newPasswordChars = newPassword.toCharArray();
+
+        LOG.info("changing password...");
+
+        CryptoParams newCryptoParamsFile = cryptoParamsFactory.clone(fileCryptoParams, newPasswordChars);
+        CryptoParams newMemoryCryptoParams = cryptoParamsFactory.clone(memoryCryptoParams, newPasswordChars);
+
+        updateMemoryCryptoParams(newMemoryCryptoParams, newPasswordChars);
+        updateFileCryptoParams(newCryptoParamsFile, newPasswordChars);
+    }
+
+    /**
      * Performs memory encryption on data.
      *
      * Intended for encrypting data for nodes.
      *
      * @param data the data to be encrypted
      * @return the encrypted wrapper
-     * @throws Exception
+     * @throws Exception crypto issues
      */
     public synchronized EncryptedValue encrypt(byte[] data) throws Exception
     {
@@ -188,6 +207,8 @@ public final class Database
      */
     public synchronized void updateFileCryptoParams(CryptoParams fileCryptoParams, char[] password) throws Exception
     {
+        LOG.debug("updating file crypto params");
+
         // Update params
         this.fileCryptoParams = cryptoParamsFactory.clone(fileCryptoParams, password);
     }
@@ -205,6 +226,8 @@ public final class Database
      */
     public synchronized void updateMemoryCryptoParams(CryptoParams memoryCryptoParams, char[] password) throws Exception
     {
+        LOG.debug("updating memory crypto params");
+
         // Keep ref of current params, we'll need it to re-encrypt
         CryptoParams oldMemoryCryptoParams = this.memoryCryptoParams;
 

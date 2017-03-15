@@ -19,11 +19,10 @@ export class SettingsComponent {
         recentFilesEnabled: [false],
         recentFilesOpenLastOnStartup: [false],
         automaticBackupsOnSave: [false],
-        automaticBackupsRetained: [""]
+        automaticBackupsRetained: [""],
+        newPassword: [""],
+        newPasswordConfirm: [""]
     });
-
-    errorMessage : string = null;
-    successMessage : string = null;
 
     recentFilesClearEnabled : boolean;
 
@@ -61,13 +60,45 @@ export class SettingsComponent {
 
         if (form.valid)
         {
-            // Save settings
-            var newSettings = form.value;
-            this.errorMessage = this.settingsService.save(newSettings);
+            var isError = false;
 
-            if (this.errorMessage == null)
+            // Check new passwords match (if changed)
+            var newPassword = form.value["newPassword"];
+            var newPasswordConfirm = form.value["newPasswordConfirm"];
+
+            if (newPassword.length > 0)
             {
-                this.successMessage = "Saved.";
+                if (newPassword != newPasswordConfirm)
+                {
+                    toastr.error("New database passwords do not match");
+                    isError = true;
+                }
+                else
+                {
+                    // change it...
+                    console.log("changing database password");
+
+                    var database = this.databaseService.getDatabase();
+                    database.changePassword(newPassword);
+
+                    toastr.success("Updated database password");
+                }
+            }
+
+            // Save settings
+            if (!isError)
+            {
+                var newSettings = form.value;
+                var errorMessage = this.settingsService.save(newSettings);
+
+                if (errorMessage == null)
+                {
+                    toastr.success("Saved");
+                }
+                else
+                {
+                    toastr.error(errorMessage);
+                }
             }
         }
         else
@@ -79,7 +110,12 @@ export class SettingsComponent {
     resetToDefault()
     {
         console.log("resetting to default settings");
-        this.errorMessage = this.settingsService.reset();
+        var errorMessage = this.settingsService.reset();
+
+        if (errorMessage != null)
+        {
+            toastr.error(errorMessage);
+        }
 
         this.populateSettings();
     }
@@ -90,6 +126,8 @@ export class SettingsComponent {
 
         this.recentFileService.clear();
         this.recentFilesClearEnabled = false;
+
+        toastr.info("Cleared recent files");
     }
 
     optimizeDeletedNodeHistory()
@@ -97,7 +135,7 @@ export class SettingsComponent {
         console.log("optimizing delete node history");
         this.databaseOptimizerService.optimizeDeletedNodeHistory();
 
-        this.successMessage = "Deleted node history cleared";
+        toastr.info("Cleared database node history");
     }
 
     optimizeValueHistory()
@@ -105,7 +143,7 @@ export class SettingsComponent {
         console.log("optimizing value history");
         this.databaseOptimizerService.optimizeValueHistory();
 
-        this.successMessage = "Value history cleared";
+        toastr.info("Database value history cleared");
     }
 
 }
