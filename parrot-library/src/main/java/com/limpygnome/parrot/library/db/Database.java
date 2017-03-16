@@ -21,7 +21,7 @@ import java.util.UUID;
  *
  * Thread safe.
  */
-public final class Database
+public class Database
 {
     private static final Logger LOG = LogManager.getLogger(Database.class);
 
@@ -44,6 +44,13 @@ public final class Database
     // Quick ref map of UUID (String) to node; this must be updated in places where nodes are added/removed etc
     protected Map<UUID, DatabaseNode> lookup;
 
+    private Database()
+    {
+        // Setup an initial blank root node
+        lookup = new HashMap<>();
+        root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
+    }
+
     /**
      * Creates a new instance.
      *
@@ -52,6 +59,8 @@ public final class Database
      */
     public Database(CryptoParams memoryCryptoParams, CryptoParams fileCryptoParams)
     {
+        this();
+
         // Setup components
         this.cryptoReaderWriter = new CryptoReaderWriter();
         this.cryptoParamsFactory = new CryptoParamsFactory();
@@ -59,10 +68,17 @@ public final class Database
         // Setup initial state
         this.memoryCryptoParams = memoryCryptoParams;
         this.fileCryptoParams = fileCryptoParams;
-        this.lookup = new HashMap<>();
+    }
 
-        // Setup an initial blank root node
-        root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
+    Database(CryptoParams memoryCryptoParams, CryptoParams fileCryptoParams,
+                       CryptoReaderWriter cryptoReaderWriter, CryptoParamsFactory cryptoParamsFactory)
+    {
+        this();
+
+        this.cryptoReaderWriter = cryptoReaderWriter;
+        this.cryptoParamsFactory = cryptoParamsFactory;
+        this.memoryCryptoParams = memoryCryptoParams;
+        this.fileCryptoParams = fileCryptoParams;
     }
 
     /**
@@ -135,11 +151,8 @@ public final class Database
 
         LOG.info("changing password...");
 
-        CryptoParams newCryptoParamsFile = cryptoParamsFactory.clone(fileCryptoParams, newPasswordChars);
-        CryptoParams newMemoryCryptoParams = cryptoParamsFactory.clone(memoryCryptoParams, newPasswordChars);
-
-        updateMemoryCryptoParams(newMemoryCryptoParams, newPasswordChars);
-        updateFileCryptoParams(newCryptoParamsFile, newPasswordChars);
+        updateMemoryCryptoParams(memoryCryptoParams, newPasswordChars);
+        updateFileCryptoParams(fileCryptoParams, newPasswordChars);
     }
 
     /**

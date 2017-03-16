@@ -1,214 +1,240 @@
 package com.limpygnome.parrot.library.db;
 
-/**
- * TODO: test MergeInfo
- */
-//@RunWith(MockitoJUnitRunner.class)
-public class DatabaseTest {
+import com.limpygnome.parrot.library.crypto.CryptoParams;
+import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
+import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-//    private static final char[] PASSWORD = "test password".toCharArray();
-//    private static final long DEFAULT_LAST_MODIFIED = 1000L;
-//    private static final byte[] TEST_DATA = { 0x11, 0x22, 0x33, 0x44, 0x11, 0x22, 0x33 };
-//
-//    // SUT
-//    private Database database;
-//
-//    // Mock objects
-//    @Mock
-//    private ActionsLog actionsLog;
-//    @Mock
-//    private DatabaseNode node;
-//    @Mock
-//    private DatabaseNode node2;
-//
-//    // Objects
-//    private Controller controller;
-//
-//    @Before
-//    public void setup() throws Exception
-//    {
-//        controller = new Controller(false);
-//        database = createDatabase(PASSWORD, DEFAULT_LAST_MODIFIED, DEFAULT_LAST_MODIFIED);
-//    }
-//
-//    @Test
-//    public void encrypt_decrypt_whenGivenValue_thenCanGoInAndOut() throws Exception
-//    {
-//        // When
-//        EncryptedAesValue encrypted = database.encrypt(TEST_DATA);
-//        byte[] decrypted = database.decrypt(encrypted);
-//
-//        // Then
-//        assertArrayEquals("Decrypted data should be same as original input", TEST_DATA, decrypted);
-//        assertTrue("Encrypted data should not be same as input", !TEST_DATA.equals(encrypted.getValue()));
-//    }
-//
-//    @Test
-//    public void updateFileCryptoParams_whenChanged_thenHasDiffRef() throws Exception
-//    {
-//        // Given
-//        CryptoParams oldFileCryptoParams = database.fileCryptoParams;
-//        CryptoParams newFileCryptoParams = new CryptoParams(controller, "new pass".toCharArray(), 123, 0);
-//        long previousHash = System.identityHashCode(oldFileCryptoParams);
-//
-//        // When
-//        database.updateFileCryptoParams(controller, newFileCryptoParams, PASSWORD);
-//
-//        // Then
-//        assertTrue("Expected file crypto params to have changed from old", !oldFileCryptoParams.equals(database.fileCryptoParams));
-//
-//        long newParamsHash = System.identityHashCode(newFileCryptoParams);
-//        long currentHash = System.identityHashCode(database.fileCryptoParams);
-//        assertTrue("Expected identity hash to not be the same as new params i.e. made new instance", currentHash != newParamsHash);
-//        assertTrue("Expected identity hash to be different to old params hash", currentHash != previousHash);
-//    }
-//
-//    @Test
-//    public void updateMemoryCryptoParams_whenChanged_thenHasDiffRef() throws Exception
-//    {
-//        // Given
-//        CryptoParams oldMemoryCryptoParams = database.memoryCryptoParams;
-//        CryptoParams newMemoryCryptoParams = new CryptoParams(controller, "new pass".toCharArray(), 123, 0);
-//        long previousHash = System.identityHashCode(oldMemoryCryptoParams);
-//
-//        // When
-//        database.updateMemoryCryptoParams(controller, newMemoryCryptoParams, PASSWORD);
-//
-//        // Then
-//        assertTrue("Expected memory crypto params to have changed from old", !oldMemoryCryptoParams.equals(database.memoryCryptoParams));
-//
-//        long newParamsHash = System.identityHashCode(newMemoryCryptoParams);
-//        long currentHash = System.identityHashCode(database.memoryCryptoParams);
-//        assertTrue("Expected identity hash to not be the same as new params i.e. made new instance", currentHash != newParamsHash);
-//        assertTrue("Expected identity hash to be different to old params hash", currentHash != previousHash);
-//    }
-//
-//    @Test
-//    public void updateMemoryCryptoParams_whenChanged_thenUpdatesRootNode() throws Exception
-//    {
-//        // Given
-//        CryptoParams oldMemoryCryptoParams = database.memoryCryptoParams;
-//        CryptoParams newMemoryCryptoParams = new CryptoParams(controller, "new pass".toCharArray(), 123, 0);
-//        database.root = node;
-//
-//        // When
-//        database.updateMemoryCryptoParams(controller, newMemoryCryptoParams, PASSWORD);
-//
-//        // Then
-//        verify(node).rebuildCrypto(oldMemoryCryptoParams);
-//    }
-//
-//    @Test
-//    public void merge_whenFileCryptoParamsOlder_thenUnchanged() throws Exception
-//    {
-//        // Given
-//        Database databaseRemote = createDatabase(PASSWORD, DEFAULT_LAST_MODIFIED, DEFAULT_LAST_MODIFIED);
-//        long currentHash = System.identityHashCode(database.fileCryptoParams);
-//
-//        // When
-//        databaseRemote.merge(actionsLog, databaseRemote, PASSWORD);
-//
-//        // Then
-//        long updatedHash = System.identityHashCode(database.fileCryptoParams);
-//        assertEquals("File crypto params should be unchanged", currentHash, updatedHash);
-//    }
-//
-//    @Test
-//    public void merge_whenFileCryptoParamsNewer_thenChanged() throws Exception
-//    {
-//        // Given
-//        Database databaseRemote = createDatabase(PASSWORD, DEFAULT_LAST_MODIFIED, DEFAULT_LAST_MODIFIED + 1);
-//        long currentHash = System.identityHashCode(databaseRemote.fileCryptoParams);
-//
-//        // When
-//        database.merge(actionsLog, databaseRemote, PASSWORD);
-//
-//        // Then
-//        long updatedHash = System.identityHashCode(database.fileCryptoParams);
-//        assertTrue("Expected file crypto params identity hash to change", currentHash != updatedHash);
-//
-//        // -- Check it can still do crypto
-//        EncryptedAesValue value = controller.getCryptographyService().encrypt(database.fileCryptoParams.getSecretKey(), TEST_DATA);
-//        assertTrue("Expected encrypted value to be different to decrypted value", !value.getValue().equals(TEST_DATA));
-//
-//        byte[] decryptd = controller.getCryptographyService().decrypt(databaseRemote.fileCryptoParams.getSecretKey(), value);
-//        assertArrayEquals("Expected decrypted value to be same after file crypto param two-way cryption", TEST_DATA, decryptd);
-//    }
-//
-//    @Test
-//    public void merge_whenMemoryCryptoParamsOlder_thenUnchanged() throws Exception
-//    {
-//        // Given
-//        Database databaseRemote = createDatabase(PASSWORD, DEFAULT_LAST_MODIFIED, DEFAULT_LAST_MODIFIED);
-//        long currentHash = System.identityHashCode(database.memoryCryptoParams);
-//
-//        // When
-//        databaseRemote.merge(actionsLog, databaseRemote, PASSWORD);
-//
-//        // Then
-//        long updatedHash = System.identityHashCode(database.memoryCryptoParams);
-//        assertEquals("Memory crypto params should be unchanged", currentHash, updatedHash);
-//    }
-//
-//    @Test
-//    public void merge_givenSoakTest_whenMemoryCryptoParamsNewer_thenChanged() throws Exception
-//    {
-//        for (int i = 0; i < 256; i++)
-//        {
-//            setup();
-//
-//            final char[] DIFFERENT_PASSWORD = "different password".toCharArray();
-//
-//            // Given
-//            Database databaseRemote = createDatabase(DIFFERENT_PASSWORD, DEFAULT_LAST_MODIFIED + 1, DEFAULT_LAST_MODIFIED);
-//            long currentHash = System.identityHashCode(database.memoryCryptoParams);
-//            long remoteHash = System.identityHashCode(databaseRemote.memoryCryptoParams);
-//            byte[] oldSalt = database.memoryCryptoParams.getSalt();
-//
-//            // When
-//            database.merge(actionsLog, databaseRemote, DIFFERENT_PASSWORD);
-//
-//            // Then
-//            long updatedHash = System.identityHashCode(database.memoryCryptoParams);
-//            assertTrue("Expected memory crypto params to change", currentHash != updatedHash);
-//            assertTrue("Expected new object for updated memory crypto params", updatedHash != remoteHash);
-//            assertTrue("Expected salt to be different", !oldSalt.equals(database.memoryCryptoParams.getSalt()));
-//
-//            DatabaseNode child = database.getRoot().getChildrenMap().values().iterator().next();
-//            assertArrayEquals("Expected to be able to decrypt child data", TEST_DATA, child.getDecryptedValue());
-//        }
-//    }
-//
-//    @Test
-//    public void merge_whenInvoked_thenNodesMerged() throws Exception
-//    {
-//        // Given
-//        database.root = node;
-//
-//        Database databaseRemote = createDatabase(PASSWORD, DEFAULT_LAST_MODIFIED, DEFAULT_LAST_MODIFIED);
-//        databaseRemote.root = node2;
-//
-//        // When
-//        database.merge(actionsLog, databaseRemote, PASSWORD);
-//
-//        // Then
-//        verify(node).merge(any(MergeInfo.class), eq(node2));
-//    }
-//
-//    private Database createDatabase(char[] password, long lastModifiedMemoryCryptoParams, long lastModifiedFileCryptoParams) throws Exception
-//    {
-//        // Build params
-//        CryptoParams memoryCryptoParams = new CryptoParams(controller, password, 1234, lastModifiedMemoryCryptoParams);
-//        CryptoParams fileCryptoParams = new CryptoParams(controller, password, 1234, lastModifiedFileCryptoParams);
-//
-//        // Build database
-//        Database database = new Database(controller, memoryCryptoParams, fileCryptoParams);
-//
-//        // Give it a basic child
-//        DatabaseNode child = new DatabaseNode(database, UUID.randomUUID(), "child name", 0L, TEST_DATA);
-//        database.getRoot().add(child);
-//
-//        return database;
-//    }
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+@RunWith(MockitoJUnitRunner.class)
+public class DatabaseTest
+{
+
+    // SUT
+    private Database database;
+
+    // Mock dependencies
+    @Mock
+    private CryptoReaderWriter cryptoReaderWriter;
+    @Mock
+    private CryptoParamsFactory cryptoParamsFactory;
+
+    // Mock objects
+    @Mock
+    private CryptoParams memoryCryptoParams;
+    @Mock
+    private CryptoParams fileCryptoParams;
+    @Mock
+    private CryptoParams cryptoParams;
+    @Mock
+    private DatabaseNode node;
+    @Mock
+    private EncryptedValue encryptedValue;
+
+    // Test data
+    private final byte[] TEST_DATA = new byte[] { 0x11, 0x22, 0x33 };
+
+    @Before
+    public void setup()
+    {
+        database = new Database(
+                memoryCryptoParams,
+                fileCryptoParams,
+                cryptoReaderWriter,
+                cryptoParamsFactory
+        );
+    }
+
+    @Test
+    public void getRoot_isInstance()
+    {
+        // When
+        DatabaseNode root = database.getRoot();
+
+        // Then
+        assertNotNull("Should be an instance", root);
+    }
+
+    @Test
+    public void getNode_isNullWhenNotExists()
+    {
+        // When
+        DatabaseNode result = database.getNode(UUID.randomUUID().toString());
+
+        // Then
+        assertNull("Expected no node to be returned", result);
+    }
+
+    @Test
+    public void getNode_retrievesNode()
+    {
+        // Given
+        DatabaseNode child = database.getRoot().addNew();
+
+        // When
+        DatabaseNode result = database.getNode(child.getUuid().toString());
+
+        // Then
+        assertEquals("Expected new child to be returned", child, result);
+    }
+
+    @Test
+    public void getNodeByUuid_isNullWhenNotExists()
+    {
+        // When
+        DatabaseNode result = database.getNodeByUuid(UUID.randomUUID());
+
+        // Then
+        assertNull("Expected no node to be returned", result);
+    }
+
+    @Test
+    public void getNodeByUuid_retrievesNode()
+    {
+        // Given
+        DatabaseNode child = database.getRoot().addNew();
+
+        // When
+        DatabaseNode result = database.getNodeByUuid(child.getUuid());
+
+        // Then
+        assertEquals("Expected new child to be returned", child, result);
+    }
+
+    @Test
+    public void setNode_isReflectedWhenRetrieved()
+    {
+        // Given
+        DatabaseNode node = new DatabaseNode(database, "blah");
+
+        // When
+        database.setRoot(node);
+
+        // Then
+        DatabaseNode root = database.getRoot();
+        assertEquals("Expected set node to be the root", node, root);
+    }
+
+    @Test
+    public void changePassword_clonesParamsWithNewPassword() throws Exception
+    {
+        // When
+        database.changePassword("foobar");
+
+        // Then
+        verify(cryptoParamsFactory).clone(fileCryptoParams, "foobar".toCharArray());
+        verify(cryptoParamsFactory).clone(memoryCryptoParams, "foobar".toCharArray());
+        verifyNoMoreInteractions(cryptoParamsFactory);
+    }
+
+    @Test
+    public void changePassword_rebuildsMemoryCrypto() throws Exception
+    {
+        // Given
+        database.setRoot(node);
+
+        // When
+        database.changePassword("foobar");
+
+        // Then
+        verify(node).rebuildCrypto(memoryCryptoParams);
+        verifyNoMoreInteractions(node);
+    }
+
+    @Test
+    public void encrypt_usesCryptoReaderWriter() throws Exception
+    {
+        // When
+        database.encrypt(TEST_DATA);
+
+        // Then
+        verify(cryptoReaderWriter).encrypt(memoryCryptoParams, TEST_DATA);
+        verifyNoMoreInteractions(cryptoReaderWriter);
+    }
+
+    @Test
+    public void decrypt_usesCryptoReaderWriter() throws Exception
+    {
+        // When
+        database.decrypt(encryptedValue);
+
+        // Then
+        verify(cryptoReaderWriter).decrypt(memoryCryptoParams, encryptedValue);
+        verifyNoMoreInteractions(cryptoReaderWriter);
+    }
+
+    @Test
+    public void decrypt_withCryptoParams_usesCryptoReaderWriter() throws Exception
+    {
+        // When
+        database.decrypt(encryptedValue, cryptoParams);
+
+        // Then
+        verify(cryptoReaderWriter).decrypt(cryptoParams, encryptedValue);
+        verifyNoMoreInteractions(cryptoReaderWriter);
+    }
+
+    @Test
+    public void getFileCryptoParams_isReflected()
+    {
+        // When
+        CryptoParams result = database.getFileCryptoParams();
+
+        // Then
+        assertEquals("Should be same as passed in", fileCryptoParams, result);
+    }
+
+    @Test
+    public void updateFileCryptoParams_isReflected()
+    {
+        // When
+    }
+
+    @Test
+    public void updateMemoryCryptoParams_isReflected()
+    {
+    }
+
+    @Test
+    public void updateMemoryCryptoParams_rebuildsCryptoOnNodes()
+    {
+    }
+
+    @Test
+    public void updateMemoryCryptoParams_setsDirty()
+    {
+    }
+
+    @Test
+    public void getMemoryCryptoParams_isReflected()
+    {
+        // When
+        CryptoParams result = database.getMemoryCryptoParams();
+
+        // Then
+        assertEquals("Should be same as passed in", memoryCryptoParams, result);
+    }
+
+    @Test
+    public void setDirty_isReflected()
+    {
+    }
+
+    @Test
+    public void isDirty_initiallyFalse()
+    {
+    }
 
 }

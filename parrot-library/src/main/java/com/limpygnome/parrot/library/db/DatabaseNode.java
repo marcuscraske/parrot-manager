@@ -20,7 +20,7 @@ import java.util.UUID;
  *
  * Thread safe.
  */
-public final class DatabaseNode
+public class DatabaseNode
 {
     // The database to which this belongs
     Database database;
