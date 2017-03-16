@@ -1,9 +1,6 @@
 package com.limpygnome.parrot.library.db;
 
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-@RunWith(MockitoJUnitRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 public class DatabaseNodeTest {
 
 //    private static final byte[] TEST_DECRYPTED_DATA = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };

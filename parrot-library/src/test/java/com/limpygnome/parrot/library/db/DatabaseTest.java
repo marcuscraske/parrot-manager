@@ -1,12 +1,9 @@
 package com.limpygnome.parrot.library.db;
 
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
 /**
  * TODO: test MergeInfo
  */
-@RunWith(MockitoJUnitRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 public class DatabaseTest {
 
 //    private static final char[] PASSWORD = "test password".toCharArray();

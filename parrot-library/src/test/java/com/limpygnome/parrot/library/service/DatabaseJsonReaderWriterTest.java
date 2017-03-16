@@ -1,9 +1,6 @@
 package com.limpygnome.parrot.library.service;
 
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-@RunWith(MockitoJUnitRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 public class DatabaseJsonReaderWriterTest
 {
 
