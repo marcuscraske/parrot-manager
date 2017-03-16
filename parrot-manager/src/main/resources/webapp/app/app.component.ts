@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { KeyBindsService } from 'app/service/global/keyBinds.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
@@ -7,11 +8,13 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
 @Component({
   selector: 'my-app',
   templateUrl: '/app/app.component.html',
-  providers: [RuntimeService, DatabaseService, EncryptedValueService]
+  providers: [KeyBindsService, RuntimeService, DatabaseService, EncryptedValueService]
 })
 export class AppComponent {
 
-    constructor()
+    constructor(
+        keyBindsService: KeyBindsService
+    )
     {
         // Setup global toastr configuration
         toastr.options = {

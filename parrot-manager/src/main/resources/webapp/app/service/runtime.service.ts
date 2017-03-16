@@ -50,7 +50,11 @@ export class RuntimeService {
 
     setClipboard(value)
     {
+        // Set clipboard
         this.runtimeService.setClipboard(value);
+
+        // Show notification
+        toastr.info("Copied to clipboard");
     }
 
     isDevelopmentMode() : boolean

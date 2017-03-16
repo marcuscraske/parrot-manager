@@ -19,8 +19,10 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
 {
     private static final Logger LOG = LogManager.getLogger(ContextMenuHandler.class);
 
+    // The parent window/stage to which this belongs
     private WebViewStage webViewStage;
 
+    // The current context menu; only instantiated when the context menu is open
     private ContextMenu contextMenu;
 
     public ContextMenuHandler(WebViewStage webViewStage)

@@ -93,7 +93,7 @@ export class SettingsComponent {
 
                 if (errorMessage == null)
                 {
-                    toastr.success("Saved");
+                    toastr.success("Settings saved");
                 }
                 else
                 {

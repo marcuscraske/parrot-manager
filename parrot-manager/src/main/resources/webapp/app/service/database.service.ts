@@ -69,7 +69,18 @@ export class DatabaseService
 
     save() : string
     {
-        return this.databaseService.save();
+        var result = this.databaseService.save();
+
+        if (result == null)
+        {
+            toastr.success("Saved");
+        }
+        else
+        {
+            toastr.error("Failed to save database - " + result);
+        }
+
+        return result;
     }
 
     close()
