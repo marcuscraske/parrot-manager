@@ -3,7 +3,7 @@ package com.limpygnome.parrot.config;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseOptimizer;
-import com.limpygnome.parrot.library.io.DatabaseJsonReaderWriter;
+import com.limpygnome.parrot.library.io.json.DatabaseJsonReaderWriter;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

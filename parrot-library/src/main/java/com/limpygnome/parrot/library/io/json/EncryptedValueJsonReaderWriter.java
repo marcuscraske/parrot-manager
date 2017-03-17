@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.library.io;
+package com.limpygnome.parrot.library.io.json;
 
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
  *
  * Current implementation is to use AES - refer to {@link EncryptedAesValue}.
  */
-public class CryptoJsonReaderWriter
+public class EncryptedValueJsonReaderWriter
 {
 
     /**

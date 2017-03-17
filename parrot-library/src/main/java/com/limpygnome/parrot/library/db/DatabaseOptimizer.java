@@ -50,10 +50,7 @@ public class DatabaseOptimizer
         node.history.clearAll();
 
         // Iterate children
-        for (DatabaseNode childNode : node.children.values())
-        {
-            deleteAllValueHistoryIterate(childNode);
-        }
+        node.children.values().stream().forEach(childNode -> deleteAllValueHistoryIterate(childNode));
     }
 
 }

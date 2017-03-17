@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.library.io;
+package com.limpygnome.parrot.library.io.json;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
@@ -7,6 +7,7 @@ import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -63,7 +64,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 {
     private CryptoReaderWriter cryptoReaderWriter;
     private CryptoParamsFactory cryptoParamsFactory;
-    private CryptoJsonReaderWriter cryptoJsonReaderWriter;
+    private EncryptedValueJsonReaderWriter encryptedValueJsonReaderWriter;
 
     /**
      * Creates an instance.
@@ -72,7 +73,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     {
         this.cryptoReaderWriter = new CryptoReaderWriter();
         this.cryptoParamsFactory = new CryptoParamsFactory();
-        this.cryptoJsonReaderWriter = new CryptoJsonReaderWriter();
+        this.encryptedValueJsonReaderWriter = new EncryptedValueJsonReaderWriter();
     }
 
     @Override
@@ -83,8 +84,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         return database;
     }
 
-    @Override
-    public Database openFileEncrypted(byte[] encryptedData, char[] password) throws Exception
+    private Database openFileEncrypted(byte[] encryptedData, char[] password) throws Exception
     {
         // Convert to JSON
         String encryptedText = new String(encryptedData, "UTF-8");
@@ -106,8 +106,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         return database;
     }
 
-    @Override
-    public Database openMemoryEncrypted(byte[] rawData, char[] password, CryptoParams fileCryptoParams) throws Exception
+    private Database openMemoryEncrypted(byte[] rawData, char[] password, CryptoParams fileCryptoParams) throws Exception
     {
         // Convert to text
         String text = new String(rawData, "UTF-8");
@@ -172,7 +171,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             String name = (String) jsonNode.get("name");
             long lastModified = (long) jsonNode.get("modified");
 
-            EncryptedValue encryptedValue = cryptoJsonReaderWriter.read(jsonNode);
+            EncryptedValue encryptedValue = encryptedValueJsonReaderWriter.read(jsonNode);
 
             // -- History
             LinkedList<EncryptedValue> history = new LinkedList<>();
@@ -185,7 +184,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
                 for (Object rawHistory : jsonHistory)
                 {
                     jsonHistoricValue = (JSONObject) rawHistory;
-                    historicValue = cryptoJsonReaderWriter.read(jsonHistoricValue);
+                    historicValue = encryptedValueJsonReaderWriter.read(jsonHistoricValue);
                     history.add(historicValue);
                 }
             }
@@ -242,14 +241,14 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             jsonChild.put("deleted", jsonDeleted);
 
             EncryptedValue encryptedValue = node.getValue();
-            cryptoJsonReaderWriter.write(jsonChild, encryptedValue);
+            encryptedValueJsonReaderWriter.write(jsonChild, encryptedValue);
 
             JSONArray jsonHistory = new JSONArray();
             JSONObject jsonHistoryItem;
             for (EncryptedValue historicValue : node.history().fetch())
             {
                 jsonHistoryItem = new JSONObject();
-                cryptoJsonReaderWriter.write(jsonHistoryItem, historicValue);
+                encryptedValueJsonReaderWriter.write(jsonHistoryItem, historicValue);
                 jsonHistory.add(jsonHistoryItem);
             }
             jsonChild.put("history", jsonHistory);
@@ -277,8 +276,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         }
     }
 
-    @Override
-    public byte[] saveMemoryEncrypted(Database database) throws Exception
+    private byte[] saveMemoryEncrypted(Database database) throws Exception
     {
         // Convert to JSON object
         DatabaseNode rootNode = database.getRoot();
@@ -295,8 +293,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         return result;
     }
 
-    @Override
-    public byte[] saveFileEncrypted(Database database) throws Exception
+    private byte[] saveFileEncrypted(Database database) throws Exception
     {
         // Save as memory encrypted
         byte[] memoryEncrypted = saveMemoryEncrypted(database);

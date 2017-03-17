@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -204,7 +203,8 @@ public class DatabaseNode
     }
 
     /**
-     * TODO: test
+     * Retrieves child by name.
+     *
      * @param name the name of the child node
      * @return the instance, if found, or null
      */
@@ -214,18 +214,10 @@ public class DatabaseNode
 
         if (name != null)
         {
-            DatabaseNode node;
-            Iterator<DatabaseNode> iterator = children.values().iterator();
-
-            while (result == null && iterator.hasNext())
-            {
-                node = iterator.next();
-
-                if (name.equals(node.getName()))
-                {
-                    result = node;
-                }
-            }
+            result = children.values()
+                    .stream()
+                    .filter(node -> name.equals(node.name))
+                    .findFirst().get();
         }
 
         return result;
@@ -311,8 +303,6 @@ public class DatabaseNode
     /**
      * Adds a child node.
      *
-     * TODO: add tests
-     *
      * @param node the new child node
      * @return the node added
      */
@@ -389,7 +379,6 @@ public class DatabaseNode
     }
 
     /**
-     * TODO: unit test
      * @return the full path of this node
      */
     public String getPath()

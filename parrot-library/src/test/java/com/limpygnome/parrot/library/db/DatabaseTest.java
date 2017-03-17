@@ -13,8 +13,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -39,12 +42,15 @@ public class DatabaseTest
     @Mock
     private CryptoParams cryptoParams;
     @Mock
+    private CryptoParams cryptoParams2;
+    @Mock
     private DatabaseNode node;
     @Mock
     private EncryptedValue encryptedValue;
 
     // Test data
-    private final byte[] TEST_DATA = new byte[] { 0x11, 0x22, 0x33 };
+    private final byte[] TEST_BYTES = new byte[] { 0x11, 0x22, 0x33 };
+    private final char[] PASSWORD_CHAR_ARRAY = "foobar".toCharArray();
 
     @Before
     public void setup()
@@ -134,8 +140,8 @@ public class DatabaseTest
         database.changePassword("foobar");
 
         // Then
-        verify(cryptoParamsFactory).clone(fileCryptoParams, "foobar".toCharArray());
-        verify(cryptoParamsFactory).clone(memoryCryptoParams, "foobar".toCharArray());
+        verify(cryptoParamsFactory).clone(fileCryptoParams, PASSWORD_CHAR_ARRAY);
+        verify(cryptoParamsFactory).clone(memoryCryptoParams, PASSWORD_CHAR_ARRAY);
         verifyNoMoreInteractions(cryptoParamsFactory);
     }
 
@@ -157,10 +163,10 @@ public class DatabaseTest
     public void encrypt_usesCryptoReaderWriter() throws Exception
     {
         // When
-        database.encrypt(TEST_DATA);
+        database.encrypt(TEST_BYTES);
 
         // Then
-        verify(cryptoReaderWriter).encrypt(memoryCryptoParams, TEST_DATA);
+        verify(cryptoReaderWriter).encrypt(memoryCryptoParams, TEST_BYTES);
         verifyNoMoreInteractions(cryptoReaderWriter);
     }
 
@@ -197,24 +203,63 @@ public class DatabaseTest
     }
 
     @Test
-    public void updateFileCryptoParams_isReflected()
+    public void updateFileCryptoParams_isReflected() throws Exception
     {
+        // Given
+        given(cryptoParamsFactory.clone(cryptoParams, PASSWORD_CHAR_ARRAY)).willReturn(cryptoParams2);
+
         // When
+        database.updateFileCryptoParams(cryptoParams, PASSWORD_CHAR_ARRAY);
+
+        // Then
+        verify(cryptoParamsFactory).clone(cryptoParams, PASSWORD_CHAR_ARRAY);
+        verifyNoMoreInteractions(cryptoParamsFactory);
+
+        CryptoParams result = database.getFileCryptoParams();
+        assertEquals("Should be crypto params from factory", cryptoParams2, result);
     }
 
     @Test
-    public void updateMemoryCryptoParams_isReflected()
+    public void updateMemoryCryptoParams_isReflected() throws Exception
     {
+        // Given
+        given(cryptoParamsFactory.clone(cryptoParams, PASSWORD_CHAR_ARRAY)).willReturn(cryptoParams2);
+
+        // When
+        database.updateMemoryCryptoParams(cryptoParams, PASSWORD_CHAR_ARRAY);
+
+        // Then
+        verify(cryptoParamsFactory).clone(cryptoParams, PASSWORD_CHAR_ARRAY);
+        verifyNoMoreInteractions(cryptoParamsFactory);
+
+        CryptoParams result = database.getMemoryCryptoParams();
+        assertEquals("Should be crypto params from factory", cryptoParams2, result);
     }
 
     @Test
-    public void updateMemoryCryptoParams_rebuildsCryptoOnNodes()
+    public void updateMemoryCryptoParams_rebuildsCryptoOnNodes() throws Exception
     {
+        // Given
+        database.setRoot(node);
+
+        // When
+        database.updateMemoryCryptoParams(cryptoParams, PASSWORD_CHAR_ARRAY);
+
+        // Then
+        verify(node).rebuildCrypto(memoryCryptoParams);
     }
 
     @Test
-    public void updateMemoryCryptoParams_setsDirty()
+    public void updateMemoryCryptoParams_setsDirty() throws Exception
     {
+        // Given
+        assertFalse("Database dirty flag should not be set", database.isDirty());
+
+        // When
+        database.updateMemoryCryptoParams(cryptoParams, PASSWORD_CHAR_ARRAY);
+
+        // Then
+        assertTrue("Database dirty flag should be set", database.isDirty());
     }
 
     @Test
@@ -230,11 +275,18 @@ public class DatabaseTest
     @Test
     public void setDirty_isReflected()
     {
+        // When
+        database.setDirty(true);
+
+        // Then
+        assertTrue(database.isDirty());
     }
 
     @Test
     public void isDirty_initiallyFalse()
     {
+        // Then
+        assertFalse(database.isDirty());
     }
 
 }
