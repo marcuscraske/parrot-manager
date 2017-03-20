@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
  *
  * Current implementation is to use AES - refer to {@link EncryptedAesValue}.
  */
-public class EncryptedValueJsonReaderWriter
+class EncryptedValueJsonReaderWriter
 {
 
     /**
@@ -19,7 +19,7 @@ public class EncryptedValueJsonReaderWriter
      * @param jsonNode serialized JSON object
      * @return the value, or null
      */
-    public EncryptedValue read(JSONObject jsonNode)
+    EncryptedValue read(JSONObject jsonNode)
     {
         EncryptedValue value;
 
@@ -45,7 +45,7 @@ public class EncryptedValueJsonReaderWriter
      * @param jsonNode JSON object to which to write the encrypted value's data
      * @param value the encrypted value to be written; can be null
      */
-    public void write(JSONObject jsonNode, EncryptedValue value)
+    void write(JSONObject jsonNode, EncryptedValue value)
     {
         if (value != null)
         {

@@ -26,7 +26,7 @@ public class CryptoParams implements Serializable
     // Generated from above - the actual secret key; cannot be serialized
     transient SecretKey secretKey;
 
-    CryptoParams(byte[] salt, int rounds, long lastModified, SecretKey secretKey) throws Exception
+    CryptoParams(byte[] salt, int rounds, long lastModified, SecretKey secretKey)
     {
         this.salt = salt;
         this.rounds = rounds;

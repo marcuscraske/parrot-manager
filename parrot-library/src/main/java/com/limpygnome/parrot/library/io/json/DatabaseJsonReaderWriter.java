@@ -64,6 +64,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 {
     private CryptoReaderWriter cryptoReaderWriter;
     private CryptoParamsFactory cryptoParamsFactory;
+    private CryptoParamsJsonReaderWriter cryptoParamsJsonReaderWriter;
     private EncryptedValueJsonReaderWriter encryptedValueJsonReaderWriter;
 
     /**
@@ -73,6 +74,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     {
         this.cryptoReaderWriter = new CryptoReaderWriter();
         this.cryptoParamsFactory = new CryptoParamsFactory();
+        this.cryptoParamsJsonReaderWriter = new CryptoParamsJsonReaderWriter(cryptoParamsFactory);
         this.encryptedValueJsonReaderWriter = new EncryptedValueJsonReaderWriter();
     }
 
@@ -93,7 +95,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         JSONObject json = (JSONObject) jsonParser.parse(encryptedText);
 
         // Read params to decrypt database
-        CryptoParams fileCryptoParams = cryptoParamsFactory.parse(json, password);
+        CryptoParams fileCryptoParams = cryptoParamsJsonReaderWriter.parse(json, password);
 
         byte[] iv = Base64.decode((String) json.get("iv"));
         byte[] data = Base64.decode((String) json.get("data"));
@@ -116,7 +118,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         JSONObject json = (JSONObject) jsonParser.parse(text);
 
         // Read params
-        CryptoParams memoryCryptoParams = cryptoParamsFactory.parse(json, password);
+        CryptoParams memoryCryptoParams = cryptoParamsJsonReaderWriter.parse(json, password);
 
         // Setup database
         Database database = new Database(memoryCryptoParams, fileCryptoParams);
@@ -283,7 +285,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         CryptoParams memoryCryptoParams = database.getMemoryCryptoParams();
 
         JSONObject jsonRoot = new JSONObject();
-        writeCryptoParams(jsonRoot, memoryCryptoParams);
+        cryptoParamsJsonReaderWriter.write(jsonRoot, memoryCryptoParams);
 
         writeDatabaseNode(rootNode, jsonRoot, true);
 
@@ -305,7 +307,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         // Build JSON wrapper
         JSONObject jsonFileEncrypted = new JSONObject();
 
-        writeCryptoParams(jsonFileEncrypted, fileCryptoParams);
+        cryptoParamsJsonReaderWriter.write(jsonFileEncrypted, fileCryptoParams);
 
         jsonFileEncrypted.put("iv", Base64.toBase64String(fileEncrypted.getIv()));
         jsonFileEncrypted.put("data", Base64.toBase64String(fileEncrypted.getValue()));
@@ -330,13 +332,6 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 
         // Write to path
         Files.write(file.toPath(), fileEncrypted);
-    }
-
-    private void writeCryptoParams(JSONObject object, CryptoParams cryptoParams)
-    {
-        object.put("cryptoParams.salt", Base64.toBase64String(cryptoParams.getSalt()));
-        object.put("cryptoParams.rounds", cryptoParams.getRounds());
-        object.put("cryptoParams.modified", cryptoParams.getLastModified());
     }
 
 }

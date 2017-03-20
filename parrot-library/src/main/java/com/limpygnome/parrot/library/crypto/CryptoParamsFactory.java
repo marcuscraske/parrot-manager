@@ -1,8 +1,5 @@
 package com.limpygnome.parrot.library.crypto;
 
-import org.bouncycastle.util.encoders.Base64;
-import org.json.simple.JSONObject;
-
 import javax.crypto.SecretKey;
 
 /**
@@ -20,17 +17,9 @@ public class CryptoParamsFactory
         this.cryptoFactory = new CryptoFactory();
     }
 
-    /*
-        TODO: move out of here, does not belong in this layer...
-     */
-    public CryptoParams parse(JSONObject json, char[] password) throws Exception
+    CryptoParamsFactory(CryptoFactory cryptoFactory)
     {
-        byte[] salt = Base64.decode((String) json.get("cryptoParams.salt"));
-        int rounds = (int) (long) json.get("cryptoParams.rounds");
-        long lastModified = (long) json.get("cryptoParams.modified");
-
-        CryptoParams instance = create(password, rounds, lastModified, salt);
-        return instance;
+        this.cryptoFactory = cryptoFactory;
     }
 
     /**

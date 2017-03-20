@@ -32,6 +32,11 @@ public class CryptoFactory
         random = new SecureRandom();
     }
 
+    CryptoFactory(SecureRandom random)
+    {
+        this.random = random;
+    }
+
     /**
      * @return random set of bytes of variable length
      */
