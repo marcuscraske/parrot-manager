@@ -1,40 +1,53 @@
 package com.limpygnome.parrot.library.db;
 
+import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.UUID;
-
 import static com.limpygnome.parrot.library.test.ParrotAssert.assertArrayContentsEqual;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseNodeTest
 {
+    private static final String NAME = "foobar";
+    private static final long LAST_MODIFIED = 11223344;
+
     // SUT
     private DatabaseNode node;
 
     // Mock objects
+    @Mock
     private Database database;
     private UUID uuid;
     @Mock
     private EncryptedValue encryptedValue;
     @Mock
     private EncryptedValue encryptedValue2;
+    @Mock
+    private CryptoParams cryptoParams;
+    @Mock
+    private Map<UUID, DatabaseNode> databaseLookup;
 
     @Before
     public void setup()
     {
-        database = new Database(null, null);
         uuid = UUID.randomUUID();
-        node = new DatabaseNode(database, null);
+        node = new DatabaseNode(database, uuid, NAME, LAST_MODIFIED, encryptedValue);
+        given(database.getLookup()).willReturn(databaseLookup);
     }
 
     @Test
@@ -85,14 +98,35 @@ public class DatabaseNodeTest
     @Test
     public void setId_setsDirty()
     {
-        // Given
-        assertFalse("Database should not be dirty", database.isDirty());
-
         // When
-        database.setDirty(true);
+        node.setId(UUID.randomUUID());
 
         // Then
-        assertTrue("Database should be dirty", database.isDirty());
+        verify(database).setDirty(true);
+    }
+
+    @Test
+    public void setId_removesOldFromLookup()
+    {
+        // Given
+        UUID uuid = UUID.randomUUID();
+
+        // When
+        node.setId(uuid);
+
+        // Then
+        verify(databaseLookup).remove(this.uuid);
+        verify(databaseLookup).put(uuid, node);
+    }
+
+    @Test
+    public void setId_addsNewToLookup()
+    {
+        // Given
+
+        // When
+
+        // Then
     }
 
     @Test
@@ -111,14 +145,11 @@ public class DatabaseNodeTest
     @Test
     public void setName_setsDirty()
     {
-        // Given
-        assertFalse("Database should have not yet changed", database.isDirty());
-
         // WHen
         node.setName("foobar");
 
         // Then
-        assertTrue("Database should now be dirty", database.isDirty());
+        verify(database).setDirty(true);
     }
 
     @Test
@@ -147,14 +178,11 @@ public class DatabaseNodeTest
     @Test
     public void setValue_setsDirty()
     {
-        // Given
-        assertFalse("Database should have not yet changed", database.isDirty());
-
         // When
         node.setValue(encryptedValue2);
 
         // Then
-        assertTrue("Database should now be dirty", database.isDirty());
+        verify(database, times(2)).setDirty(true);
     }
 
     @Test
@@ -201,41 +229,104 @@ public class DatabaseNodeTest
     @Test
     public void getByName_handlesNullName()
     {
+        // When
+        node.getByName(null);
     }
 
     @Test
     public void getByName_isNullWhenNotExists()
     {
+        // Given
+        node.addNew().setName("blah");
+
+        // When
+        DatabaseNode result = node.getByName("foobar");
+
+        // Then
+        assertNull("Should have not been found", result);
     }
 
     @Test
     public void getByName_isReturned()
     {
+        // Given
+        DatabaseNode newChild = node.addNew();
+        newChild.setName("blah");
+
+        // When
+        DatabaseNode result = node.getByName("blah");
+
+        // Then
+        assertEquals("New node should be returned by its name", newChild, result);
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void getChildrenMap_isUnmodifiable()
     {
+        // When
+        Map<UUID, DatabaseNode> children = node.getChildrenMap();
+        children.put(UUID.randomUUID(), new DatabaseNode(database, null));
     }
 
     @Test
     public void getChildCount_isCorrect()
     {
+        // Given
+        assertEquals("Should be no children", 0, node.getChildCount());
+
+        // When
+        node.addNew();
+        node.add(new DatabaseNode(database, null));
+
+        // Then
+        assertEquals("Should be two children", 2, node.getChildCount());
     }
 
     @Test
     public void getDeletedChildren_hasDeletedNode()
     {
+        // Given
+        DatabaseNode child = node.addNew();
+        assertEquals("Should be no deleted children", 0, node.getDeletedChildren().size());
+
+        // When
+        child.remove();
+
+        // Then
+        assertEquals("Should be deleted child", 1, node.getDeletedChildren().size());
+        assertEquals("Should be identifier of deleted child", child.getUuid(), node.getDeletedChildren().iterator().next());
     }
 
     @Test
-    public void rebuildCrypto_noDecryptForNullValue()
+    public void rebuildCrypto_noReEncryptForNullValue() throws Exception
     {
+        // Given
+        node.setValue(null);
+
+        // When
+        node.rebuildCrypto(cryptoParams);
+
+        // Then
+        verify(database, never()).encrypt(any());
+        verify(database, never()).decrypt(any());
     }
 
     @Test
-    public void rebuildCrypto_reEncryptsValue()
+    public void rebuildCrypto_reEncryptsValue() throws Exception
     {
+        // Given
+        byte[] decrypted = { 0x77, 0x66, 0x55 };
+        given(database.decrypt(encryptedValue, cryptoParams)).willReturn(decrypted);
+        given(database.encrypt(decrypted)).willReturn(encryptedValue2);
+
+        // When
+        node.rebuildCrypto(cryptoParams);
+
+        // Then
+        verify(database).decrypt(encryptedValue, cryptoParams);
+        verify(database).encrypt(decrypted);
+
+        assertEquals("Value of node should be re-encrypted instance", encryptedValue2, node.getValue());
     }
 
     @Test

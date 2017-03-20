@@ -81,6 +81,11 @@ public class Database
         this.fileCryptoParams = fileCryptoParams;
     }
 
+    Map<UUID, DatabaseNode> getLookup()
+    {
+        return lookup;
+    }
+
     /**
      * @return the root db of this database
      */

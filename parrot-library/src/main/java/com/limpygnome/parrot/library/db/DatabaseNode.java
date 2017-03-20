@@ -65,7 +65,7 @@ public class DatabaseNode
         this.history = new DatabaseNodeHistory(this);
 
         // Add ref to database lookup
-        database.lookup.put(id, this);
+        database.getLookup().put(id, this);
     }
 
     /**
@@ -116,8 +116,8 @@ public class DatabaseNode
     public synchronized void setId(UUID id)
     {
         // Update lookup
-        database.lookup.remove(this.id);
-        database.lookup.put(id, this);
+        database.getLookup().remove(this.id);
+        database.getLookup().put(id, this);
 
         // Update ID
         this.id = id;
@@ -217,7 +217,8 @@ public class DatabaseNode
             result = children.values()
                     .stream()
                     .filter(node -> name.equals(node.name))
-                    .findFirst().get();
+                    .findFirst()
+                    .orElse(null);
         }
 
         return result;
@@ -350,7 +351,7 @@ public class DatabaseNode
             parent.deletedChildren.add(id);
 
             // Remove from lookup
-            database.lookup.remove(id);
+            database.getLookup().remove(id);
 
             // Set as orphan
             parent = null;
