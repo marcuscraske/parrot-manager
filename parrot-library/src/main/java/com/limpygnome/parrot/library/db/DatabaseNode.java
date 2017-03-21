@@ -232,6 +232,11 @@ public class DatabaseNode
         return Collections.unmodifiableMap(children);
     }
 
+    void setParent(DatabaseNode node)
+    {
+        this.parent = node;
+    }
+
     /**
      * @return the number of child nodes / entries
      */
@@ -313,7 +318,7 @@ public class DatabaseNode
         children.put(node.id, node);
 
         // Update parent
-        node.parent = this;
+        node.setParent(this);
 
         // Set dirty flag
         database.setDirty(true);
@@ -322,9 +327,7 @@ public class DatabaseNode
     }
 
     /**
-     * @return creates a new instance and adds it as a child of this current node
-     *
-     * TODO: add tests
+     * @return creates a new node and adds it as a child of this current node
      */
     public synchronized DatabaseNode addNew()
     {

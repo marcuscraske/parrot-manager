@@ -2,23 +2,29 @@ package com.limpygnome.parrot.library.db;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
-import java.util.Map;
-import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Map;
+import java.util.UUID;
+
 import static com.limpygnome.parrot.library.test.ParrotAssert.assertArrayContentsEqual;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseNodeTest
@@ -41,6 +47,10 @@ public class DatabaseNodeTest
     private CryptoParams cryptoParams;
     @Mock
     private Map<UUID, DatabaseNode> databaseLookup;
+    @Mock
+    private DatabaseNode mockDatabaseNode;
+    @Mock
+    private DatabaseNode mockDatabaseNode2;
 
     @Before
     public void setup()
@@ -330,98 +340,258 @@ public class DatabaseNodeTest
     }
 
     @Test
-    public void rebuildCrypto_isRecursive()
+    public void rebuildCrypto_isRecursive() throws Exception
     {
+        // Given
+        node.add(mockDatabaseNode);
+
+        // When
+        node.rebuildCrypto(cryptoParams);
+
+        // Then
+        verify(mockDatabaseNode).rebuildCrypto(cryptoParams);
     }
 
     @Test
-    public void clone_isNullWhenNullValue()
+    public void clone_isNullValue()
     {
+        // Given
+        node.setValue(null);
+
+        // When
+        DatabaseNode clone = node.clone(database);
+
+        // THen
+        assertNull("Value should still be null in cloned instance", clone.getValue());
     }
 
     @Test
-    public void clone_hasSameValues()
+    public void clone_valueIsCloned()
     {
+        // Given
+        given(encryptedValue.clone()).willReturn(encryptedValue2);
+
+        // When
+        DatabaseNode clone = node.clone(database);
+
+        // THen
+        assertEquals("Value should be cloned instance", encryptedValue2, clone.getValue());
     }
 
     @Test
     public void clone_hasClonedChildren()
     {
+        // Given
+        node.add(mockDatabaseNode);
+        given(mockDatabaseNode.clone(database)).willReturn(mockDatabaseNode2);
+
+        // When
+        DatabaseNode clone = node.clone(database);
+
+        // THen
+        verify(mockDatabaseNode).clone(database);
+        assertEquals("Child should be cloned instance", mockDatabaseNode2, clone.getChildren()[0]);
     }
 
     @Test
     public void add_isReflected()
     {
+        // When
+        node.add(mockDatabaseNode);
+
+        // Then
+        assertEquals("Child not present", mockDatabaseNode, node.getChildren()[0]);
     }
 
     @Test
     public void add_setsParentOnChild()
     {
+        // When
+        node.add(mockDatabaseNode);
+
+        // Then
+        verify(mockDatabaseNode).setParent(node);
     }
 
     @Test
     public void add_setsDirty()
     {
+        // When
+        node.add(mockDatabaseNode);
+
+        // Then
+        verify(database).setDirty(true);
     }
 
     @Test
-    public void addNew_blankValuesAndChild()
+    public void addNew_isChildAndParentCorrect()
     {
+        // When
+        DatabaseNode newNode = node.addNew();
+
+        // Then
+        assertEquals("Should be child of node", newNode, node.getChildren()[0]);
+        assertEquals("Parent of child should be node", node, newNode.getParent());
+    }
+
+    @Test
+    public void addNew_hasBlankValues()
+    {
+        // When
+        DatabaseNode newNode = node.addNew();
+
+        // Then
+        assertNotNull("UUID should be set", newNode.getId());
+        assertNull("Name should be null", newNode.getName());
+        assertNotEquals("Last modified should be set", newNode.getLastModified());
+        assertEquals("Database should be same as parent", database, newNode.database);
     }
 
     @Test
     public void addNew_setsDirty()
     {
+        // When
+        node.addNew();
+
+        // Then
+        verify(database).setDirty(true);
     }
 
     @Test
     public void remove_nothingWhenParentNull()
     {
+        // Given
+        node.setParent(null);
+
+        // When
+        node.remove();
+
+        // Then
+        // TODO: should be one interaction with lookup during constrution...?
+        verify(database).getLookup();
+        verifyNoMoreInteractions(database);
+        verifyZeroInteractions(databaseLookup);
     }
 
     @Test
-    public void remove_isReflected()
+    public void remove_isRemovedFromParentNode()
     {
+        // Given
+        DatabaseNode node = new DatabaseNode(database, null);
+        DatabaseNode child = node.addNew();
+
+        // When
+        child.remove();
+
+        // Then
+        assertEquals("Should have no children", 0, node.getChildCount());
+        assertNull("Child should not have a parent", child.getParent());
     }
 
     @Test
-    public void remove_isNoLongerInDatabaseLookup()
+    public void remove_invokesRemovalFromDatabaseLookup()
     {
-    }
+        // Given
+        DatabaseNode node = new DatabaseNode(database, null);
+        DatabaseNode child = node.addNew();
+        UUID uuid = child.getUuid();
 
-    @Test
-    public void remove_parentNull()
-    {
+        // When
+        child.remove();
+
+        // Then
+        verify(databaseLookup).remove(uuid);
     }
 
     @Test
     public void remove_setsDirty()
     {
+        // Given
+        DatabaseNode node = new DatabaseNode(database, null);
+        DatabaseNode child = node.addNew();
+
+        // When
+        child.remove();
+
+        // Then
+        verify(database, times(2)).setDirty(true);
     }
 
     @Test
     public void isRoot_whenParentNull()
     {
+        // Given
+        node.setParent(null);
+
+        // When
+        boolean isRoot = node.isRoot();
+
+        // Then
+        assertTrue("Node has no parent, therefore it should be root/hgihest in tree", isRoot);
     }
 
     @Test
     public void isRoot_notWhenParentNotNUll()
     {
+        // Given
+        DatabaseNode node = new DatabaseNode(database, null);
+        DatabaseNode child = node.addNew();
+
+        // When
+        boolean isRoot = child.isRoot();
+
+        // Then
+        assertFalse("Should not be root as child of node", isRoot);
     }
 
     @Test
     public void getParent_isReflected()
     {
+        // Given
+        node.setParent(mockDatabaseNode2);
+
+        // When
+        DatabaseNode parent = node.getParent();
+
+        // Then
+        assertEquals("Parent should be the set value", mockDatabaseNode2, parent);
     }
 
     @Test
-    public void getPath_whenRoot()
+    public void getPath_whenName()
     {
+        // When
+        String path = node.getPath();
+
+        // Then
+        assertEquals("Unexpected format", path, NAME);
+    }
+
+    @Test
+    public void getPath_noNameIsUUid()
+    {
+        // Given
+        node.setName(null);
+
+        // When
+        String path = node.getPath();
+
+        // Then
+        assertEquals("Unexpected format", "[" + uuid.toString() + "]", path);
     }
 
     @Test
     public void getPath_whenChild()
     {
+        // Given
+        DatabaseNode node = new DatabaseNode(database, NAME);
+        DatabaseNode child = node.addNew();
+
+        // When
+        String path = child.getPath();
+
+        // Then
+        assertEquals("Unexpected format", NAME + "/[" + child.getId() + "]", path);
     }
 
 }
