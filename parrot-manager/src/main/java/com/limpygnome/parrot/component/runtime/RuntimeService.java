@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * A service for runtime state and functionality.
+ * A archive for runtime state and functionality.
  */
 @Service
 public class RuntimeService

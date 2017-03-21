@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Pass-through service for optimisation functions of {@link DatabaseOptimizer}.
+ * Pass-through archive for optimisation functions of {@link DatabaseOptimizer}.
  */
 @Service
 public class DatabaseOptimizerService

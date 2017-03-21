@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * A service for maintaining the current (primary) database open.
+ * A archive for maintaining the current (primary) database open.
  */
 @Service
 public class DatabaseService

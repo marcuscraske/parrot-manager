@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 /**
- * A service for downloading and uploading remote files using SSH.
+ * A archive for downloading and uploading remote files using SSH.
  */
 @Service
 public class RemoteSshFileService

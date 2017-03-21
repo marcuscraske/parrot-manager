@@ -44,7 +44,11 @@ public class EncryptedValueService
         {
             Database database = getDatabase();
             byte[] decrypted = database.decrypt(encryptedValue);
-            result = new String(decrypted, "UTF-8");
+
+            if (decrypted != null)
+            {
+                result = new String(decrypted, "UTF-8");
+            }
         }
 
         return result;

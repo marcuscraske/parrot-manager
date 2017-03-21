@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 
 /**
- * A service for generating secure random values.
+ * A archive for generating secure random values.
  */
 @Service
 public class RandomGeneratorService

@@ -13,7 +13,7 @@ import java.util.Map;
  * This opens up the potential of memory leaks.
  *
  * Notes:
- * - This service is consumed by other services and is not injected.
+ * - This archive is consumed by other services and is not injected.
  * - All data is wiped when opening/closing a database.
  */
 @Service

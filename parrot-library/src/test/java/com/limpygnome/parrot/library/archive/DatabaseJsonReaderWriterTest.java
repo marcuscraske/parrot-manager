@@ -17,7 +17,7 @@ public class DatabaseJsonReaderWriterTest
 //
 //    // SUT
 //    @InjectMocks
-//    private DatabaseReaderWriter service;
+//    private DatabaseReaderWriter archive;
 //
 //    // Objects
 //    private CryptoParams memoryCryptoParams;
@@ -49,7 +49,7 @@ public class DatabaseJsonReaderWriterTest
 //        Database database = createDatabaseWithChildren();
 //
 //        // When
-//        byte[] data = service.saveMemoryEncrypted(controller, database);
+//        byte[] data = archive.saveMemoryEncrypted(controller, database);
 //
 //        // Then
 //        JSONObject json = convertToJson(data);
@@ -68,7 +68,7 @@ public class DatabaseJsonReaderWriterTest
 //        Database database = createDatabaseWithChildren();
 //
 //        // When
-//        byte[] data = service.saveMemoryEncrypted(controller, database);
+//        byte[] data = archive.saveMemoryEncrypted(controller, database);
 //
 //        // Then
 //        JSONObject json = convertToJson(data);
@@ -91,7 +91,7 @@ public class DatabaseJsonReaderWriterTest
 //        Database database = createDatabaseWithChildren();
 //
 //        // When
-//        byte[] data = service.saveMemoryEncrypted(controller, database);
+//        byte[] data = archive.saveMemoryEncrypted(controller, database);
 //
 //        // Then
 //        JSONObject json = convertToJson(data);
@@ -116,7 +116,7 @@ public class DatabaseJsonReaderWriterTest
 //        Database database = createDatabaseWithChildren();
 //
 //        // When
-//        byte[] data = service.saveFileEncrypted(controller, database);
+//        byte[] data = archive.saveFileEncrypted(controller, database);
 //
 //        // Then
 //        JSONObject json = convertToJson(data);
@@ -141,7 +141,7 @@ public class DatabaseJsonReaderWriterTest
 //        assertFalse("Expecting file to not exist at " + path, tmp.exists());
 //
 //        // When
-//        service.save(controller, database, path);
+//        archive.save(controller, database, path);
 //
 //        // Then
 //        assertTrue("Expecting file to exist at " + path, tmp.exists());
@@ -157,7 +157,7 @@ public class DatabaseJsonReaderWriterTest
 //        Database database = createDatabaseWithChildren();
 //
 //        // When
-//        service.save(controller, database, nonExistentPath.getAbsolutePath());
+//        archive.save(controller, database, nonExistentPath.getAbsolutePath());
 //    }
 //
 //    @Test
@@ -165,10 +165,10 @@ public class DatabaseJsonReaderWriterTest
 //    {
 //        // Given
 //        Database database = createDatabaseWithChildren();
-//        byte[] memoryEncrypted = service.saveMemoryEncrypted(controller, database);
+//        byte[] memoryEncrypted = archive.saveMemoryEncrypted(controller, database);
 //
 //        // When
-//        Database databaseOpened = service.openMemoryEncrypted(memoryEncrypted, PASSWORD, fileCryptoParams);
+//        Database databaseOpened = archive.openMemoryEncrypted(memoryEncrypted, PASSWORD, fileCryptoParams);
 //
 //        // Then
 //        assertEquals("Databases should be exactly the same", databaseOpened, database);
@@ -179,10 +179,10 @@ public class DatabaseJsonReaderWriterTest
 //    {
 //        // Given
 //        Database database = createDatabaseWithChildren();
-//        byte[] fileEncrypted = service.saveFileEncrypted(controller, database);
+//        byte[] fileEncrypted = archive.saveFileEncrypted(controller, database);
 //
 //        // When
-//        Database databaseOpened = service.openFileEncrypted(controller, fileEncrypted, PASSWORD);
+//        Database databaseOpened = archive.openFileEncrypted(controller, fileEncrypted, PASSWORD);
 //
 //        // Then
 //        assertEquals("Databases should be exactly the same", databaseOpened, database);
@@ -199,11 +199,11 @@ public class DatabaseJsonReaderWriterTest
 //        Database database = createDatabaseWithChildren();
 //
 //        assertFalse("Expecting file to not exist at " + path, tmp.exists());
-//        service.save(controller, database, path);
+//        archive.save(controller, database, path);
 //        assertTrue("Expecting file to exist at " + path, tmp.exists());
 //
 //        // When
-//        Database databaseOpened = service.open(controller, path, PASSWORD);
+//        Database databaseOpened = archive.open(controller, path, PASSWORD);
 //
 //        // Then
 //        assertEquals("Databases should be exactly the same", databaseOpened, database);
@@ -247,7 +247,7 @@ public class DatabaseJsonReaderWriterTest
 //
 //    private Database createDatabase() throws Exception
 //    {
-//        Database database = service.create(memoryCryptoParams, fileCryptoParams);
+//        Database database = archive.create(memoryCryptoParams, fileCryptoParams);
 //        return database;
 //    }
 

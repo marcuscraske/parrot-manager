@@ -17,12 +17,6 @@ import java.security.SecureRandom;
  */
 public class CryptoReaderWriter
 {
-
-    /**
-     * The default rounds used by cryptographic hashing functions.
-     */
-    public static final int ROUNDS_DEFAULT = 65536;
-
     private SecureRandom random;
 
     /**
@@ -44,27 +38,30 @@ public class CryptoReaderWriter
     public EncryptedValue encrypt(CryptoParams cryptoParams, byte[] value) throws Exception
     {
         SecretKey secretKey = cryptoParams.getSecretKey();
+        byte[] iv, encryptedBytes;
 
-        // In the result of null, just set to empty...
-        if (value == null)
+        if (value != null)
         {
-            value = new byte[0];
+            // Build IV
+            iv = new byte[16];
+            random.nextBytes(iv);
+
+            // Setup cipher
+            CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), iv);
+            PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
+            aes.init(true, cipherParams);
+
+            // Process data
+            encryptedBytes = processCrypto(aes, value);
+        }
+        else
+        {
+            iv = null;
+            encryptedBytes = null;
         }
 
-        // Build IV
-        byte[] iv = new byte[16];
-        random.nextBytes(iv);
-
-        // Setup cipher
-        CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), iv);
-        PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
-        aes.init(true, cipherParams);
-
-        // Process data
-        byte[] rawResult = processCrypto(aes, value);
-
         // Build encrypted result
-        EncryptedValue result = new EncryptedAesValue(System.currentTimeMillis(), iv, rawResult);
+        EncryptedValue result = new EncryptedAesValue(System.currentTimeMillis(), iv, encryptedBytes);
         return result;
     }
 
@@ -81,12 +78,24 @@ public class CryptoReaderWriter
         SecretKey secretKey = cryptoParams.getSecretKey();
         EncryptedAesValue aesValue = (EncryptedAesValue) value;
 
-        CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), aesValue.getIv());
-        PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
-        aes.init(false, cipherParams);
+        byte[] iv = aesValue.getIv();
+        byte[] encryptedBytes = aesValue.getValue();
+        byte[] result;
 
-        // Process data
-        byte[] result = processCrypto(aes, aesValue.getValue());
+        if (iv != null && encryptedBytes != null)
+        {
+            CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), aesValue.getIv());
+            PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
+            aes.init(false, cipherParams);
+
+            // Process data
+            result = processCrypto(aes, aesValue.getValue());
+        }
+        else
+        {
+            result = null;
+        }
+
         return result;
     }
 

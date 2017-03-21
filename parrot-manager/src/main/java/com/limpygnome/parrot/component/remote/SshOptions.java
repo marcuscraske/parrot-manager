@@ -34,7 +34,7 @@ public class SshOptions implements Serializable, Cloneable
     private int port;
     private String user;
     // -- Don't serialize the local/destination path, allow database to be dynamically moved around, as this is
-    //    stored in the database service during runtime
+    //    stored in the database archive during runtime
     @JsonIgnore
     private String destinationPath;
     private String remotePath;

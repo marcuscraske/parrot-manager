@@ -79,7 +79,7 @@ public class RecentFileService
     {
         RecentFile[] recentFiles = this.recentFiles.toArray(new RecentFile[this.recentFiles.size()]);
 
-        // Persist to session service to prevent GC
+        // Persist to session archive to prevent GC
         sessionService.put("recentFiles", recentFiles);
 
         return recentFiles;

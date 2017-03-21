@@ -11,7 +11,7 @@ public class EncryptedAesValue extends EncryptedValue
     private byte[] value;
 
     /**
-     * creates a new instance.
+     * Creates a new instance.
      *
      * @param lastModified epoch time at which last modified
      * @param iv initialization vector
