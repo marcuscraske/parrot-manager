@@ -229,6 +229,9 @@ public class Database
 
         // Update params
         this.fileCryptoParams = cryptoParamsFactory.clone(fileCryptoParams, password);
+
+        // Set dirty flag
+        setDirty(true);
     }
 
     /**

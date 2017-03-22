@@ -341,8 +341,6 @@ public class DatabaseNode
 
     /**
      * Removes this node from the database, unless this is a root node (cannot ever be removed).
-     *
-     * TODO: add tests
      */
     public synchronized DatabaseNode remove()
     {
@@ -395,6 +393,11 @@ public class DatabaseNode
         }
 
         return path;
+    }
+
+    Database getDatabase()
+    {
+        return database;
     }
 
     private void setDirty()

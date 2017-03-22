@@ -68,6 +68,9 @@ export class GenerateRandomComponent
 
             // Refresh value
             this.refreshValue.emit();
+
+            // Show notification
+            toastr.info("Updated with random value");
         }
         else
         {

@@ -19,7 +19,7 @@ public class MergeInfo {
     }
 
     public void addMergeMessage(String message) {
-        actionsLog.add(new Action(nodePath + " - " + message));
+        actionsLog.add(nodePath + " - " + message);
     }
 
 }

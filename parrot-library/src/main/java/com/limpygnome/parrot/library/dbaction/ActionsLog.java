@@ -10,21 +10,33 @@ import java.util.List;
  */
 public class ActionsLog
 {
-    private List<Action> actions;
+    private List<String> messages;
 
     public ActionsLog()
     {
-        this.actions = new LinkedList<>();
+        this.messages = new LinkedList<>();
     }
 
-    public void add(Action action)
+    public void add(String message)
     {
-        actions.add(action);
+        messages.add(message);
     }
 
-    public List<Action> getActions()
+    public String getMessages()
     {
-        return actions;
+        String separator = System.lineSeparator();
+        StringBuilder buffer = new StringBuilder();
+
+        messages.stream().forEach(action -> buffer.append(action).append(separator));
+        if (buffer.length() > 0)
+        {
+            int separatorLen = separator.length();
+            int len = buffer.length();
+            buffer.delete(len - separatorLen, len);
+        }
+
+        String result = buffer.toString();
+        return result;
     }
 
 }

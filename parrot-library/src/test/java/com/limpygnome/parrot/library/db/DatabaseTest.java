@@ -220,6 +220,19 @@ public class DatabaseTest
     }
 
     @Test
+    public void updateFileCryptoParams_setsDirty() throws Exception
+    {
+        // Given
+        assertFalse("Database dirty flag should not be set", database.isDirty());
+
+        // When
+        database.updateFileCryptoParams(cryptoParams, PASSWORD_CHAR_ARRAY);
+
+        // Then
+        assertTrue("Database dirty flag should be set", database.isDirty());
+    }
+
+    @Test
     public void updateMemoryCryptoParams_isReflected() throws Exception
     {
         // Given

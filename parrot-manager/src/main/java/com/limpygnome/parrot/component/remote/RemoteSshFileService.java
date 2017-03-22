@@ -6,7 +6,6 @@ import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.dbaction.Action;
 import com.limpygnome.parrot.library.dbaction.ActionsLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.apache.logging.log4j.LogManager;
@@ -215,10 +214,10 @@ public class RemoteSshFileService
                     actionsLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
 
                     // Check if we need to upload...
-                    if (database.isDirty() || remoteDatabase.isDirty())
+                    if (database.isDirty())
                     {
                         // Save current database
-                        LOG.info("sync - database(s) dirty, saving... - local: {}, remote: {}", database.isDirty(), remoteDatabase.isDirty());
+                        LOG.info("sync - database(s) dirty, saving...");
                         databaseReaderWriter.save(database, options.getDestinationPath());
 
                         // Upload to remote
@@ -235,25 +234,16 @@ public class RemoteSshFileService
                     LOG.info("sync - uploading current database");
 
                     actionsLog = new ActionsLog();
-                    actionsLog.add(new Action("uploading current database, as does not exist remotely"));
+                    actionsLog.add("uploading current database, as does not exist remotely");
 
                     String currentPath = databaseService.getPath();
                     sshComponent.upload(session, options, currentPath);
 
-                    actionsLog.add(new Action("uploaded successfully"));
+                    actionsLog.add("uploaded successfully");
                 }
 
                 // Build result
-                String separator = System.lineSeparator();
-                StringBuilder buffer = new StringBuilder();
-                actionsLog.getActions().stream().forEach(action -> buffer.append(action.getAction()).append(separator));
-                if (buffer.length() > 0)
-                {
-                    int separatorLen = separator.length();
-                    int len = buffer.length();
-                    buffer.delete(len - separatorLen, len);
-                }
-                result = buffer.toString();
+                result = actionsLog.getMessages();
             }
         }
         catch (InvalidCipherTextException e)

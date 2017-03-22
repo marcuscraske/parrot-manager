@@ -12,13 +12,13 @@ import java.util.List;
 public class DatabaseNodeHistory
 {
     // The node to which this collection belongs
-    DatabaseNode currentNode;
+    private DatabaseNode currentNode;
 
     // Cached array of historic values retrieved; same reason as children being cached
-    EncryptedValue[] historyCached;
+    private EncryptedValue[] historyCached;
 
     // Previous values stored at this node
-    List<EncryptedValue> history;
+    private List<EncryptedValue> history;
 
     DatabaseNodeHistory(DatabaseNode currentNode)
     {
@@ -34,7 +34,7 @@ public class DatabaseNodeHistory
         history.add(encryptedValue);
 
         // Mark database as dirty
-        currentNode.database.setDirty(true);
+        currentNode.getDatabase().setDirty(true);
     }
 
     /**
@@ -64,7 +64,7 @@ public class DatabaseNodeHistory
         history.remove(encryptedValue);
 
         // Mark database as dirty
-        currentNode.database.setDirty(true);
+        currentNode.getDatabase().setDirty(true);
     }
 
     /**
