@@ -1,5 +1,7 @@
 package com.limpygnome.parrot.library.dbaction;
 
+import com.limpygnome.parrot.library.db.DatabaseNode;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,20 +10,49 @@ import java.util.List;
  *
  * THis is currently used for merging, and not intended to be general.
  */
-public class ActionsLog
+public class ActionLog
 {
     private List<String> messages;
 
-    public ActionsLog()
+    /**
+     * Creates a new instance.
+     */
+    public ActionLog()
     {
         this.messages = new LinkedList<>();
     }
 
+    /**
+     * Adds a new message.
+     *
+     * @param message the message
+     */
     public void add(String message)
     {
-        messages.add(message);
+        add(null, message);
     }
 
+    /**
+     * Adds a new message.
+     *
+     * @param node the node at which an action/event had taken place
+     * @param message the message
+     */
+    public void add(DatabaseNode node, String message)
+    {
+        if (node != null)
+        {
+            messages.add(node.getPath() + " : " + message);
+        }
+        else
+        {
+            messages.add(message);
+        }
+    }
+
+    /**
+     * @return an instance with all messages joined together, using the system's/native line separator
+     */
     public String getMessages()
     {
         String separator = System.lineSeparator();

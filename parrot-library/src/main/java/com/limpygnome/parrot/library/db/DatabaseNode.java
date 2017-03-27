@@ -5,7 +5,6 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.joda.time.DateTime;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,25 +21,25 @@ import java.util.UUID;
 public class DatabaseNode
 {
     // The database to which this belongs
-    Database database;
+    private Database database;
 
     // The parent of this node
-    DatabaseNode parent;
+    private DatabaseNode parent;
 
     // A unique ID for this node
-    UUID id;
+    private UUID id;
 
     // The name of the node
-    String name;
+    private String name;
 
     // The epoch time of when the node was last changed
-    long lastModified;
+    private long lastModified;
 
     // The value stored at this node
-    EncryptedValue value;
+    private EncryptedValue value;
 
     // Any sub-nodes which belong to this node
-    Map<UUID, DatabaseNode> children;
+    private Map<UUID, DatabaseNode> children;
 
     // Cached array of children retrieved; this is because to provide an array, we need to keep a permanent reference
     // to avoid garbage collection
@@ -48,9 +47,9 @@ public class DatabaseNode
     DatabaseNode[] childrenCached;
 
     // A list of previously deleted children; used for merging
-    Set<UUID> deletedChildren;
+    private Set<UUID> deletedChildren;
 
-    DatabaseNodeHistory history;
+    private DatabaseNodeHistory history;
 
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
@@ -151,6 +150,12 @@ public class DatabaseNode
         return lastModified;
     }
 
+    void setLastModified(long lastModified)
+    {
+        this.lastModified = lastModified;
+        database.setDirty(true);
+    }
+
     /**
      * @return formatted date time
      */
@@ -244,9 +249,9 @@ public class DatabaseNode
     /**
      * @return retrieves read-only underlying map of children
      */
-    Map<UUID, DatabaseNode> getChildrenMap()
+    synchronized Map<UUID, DatabaseNode> getChildrenMap()
     {
-        return Collections.unmodifiableMap(children);
+        return children;
     }
 
     void setParent(DatabaseNode node)

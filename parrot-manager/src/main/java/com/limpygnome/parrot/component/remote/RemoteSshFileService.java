@@ -6,7 +6,7 @@ import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.dbaction.ActionsLog;
+import com.limpygnome.parrot.library.dbaction.ActionLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -201,7 +201,7 @@ public class RemoteSshFileService
                 LOG.info("sync - downloading");
                 boolean exists = sshComponent.download(session, options, syncPath);
 
-                ActionsLog actionsLog;
+                ActionLog actionLog;
 
                 if (exists)
                 {
@@ -211,7 +211,7 @@ public class RemoteSshFileService
 
                     // Perform merge and check if any change occurred...
                     LOG.info("sync - performing merge...");
-                    actionsLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
+                    actionLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
 
                     // Check if we need to upload...
                     if (database.isDirty())
@@ -233,17 +233,17 @@ public class RemoteSshFileService
                 {
                     LOG.info("sync - uploading current database");
 
-                    actionsLog = new ActionsLog();
-                    actionsLog.add("uploading current database, as does not exist remotely");
+                    actionLog = new ActionLog();
+                    actionLog.add("uploading current database, as does not exist remotely");
 
                     String currentPath = databaseService.getPath();
                     sshComponent.upload(session, options, currentPath);
 
-                    actionsLog.add("uploaded successfully");
+                    actionLog.add("uploaded successfully");
                 }
 
                 // Build result
-                result = actionsLog.getMessages();
+                result = actionLog.getMessages();
             }
         }
         catch (InvalidCipherTextException e)

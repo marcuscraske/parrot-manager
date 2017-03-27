@@ -67,7 +67,7 @@ public class DatabaseNodeTest
         DatabaseNode node = new DatabaseNode(database, uuid, "test", 1234L, encryptedValue);
 
         // Then
-        assertEquals("Database is different", database, node.database);
+        assertEquals("Database is different", database, node.getDatabase());
         assertEquals("Identifier is different", uuid.toString(), node.getId());
         assertEquals("Name is different", "test", node.getName());
         assertEquals("Last modified is different", 1234L, node.getLastModified());
@@ -284,14 +284,6 @@ public class DatabaseNodeTest
         assertEquals("New node should be returned by its name", newChild, result);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void getChildrenMap_isUnmodifiable()
-    {
-        // When
-        Map<UUID, DatabaseNode> children = node.getChildrenMap();
-        children.put(UUID.randomUUID(), new DatabaseNode(database, null));
-    }
-
     @Test
     public void getChildCount_isCorrect()
     {
@@ -458,7 +450,7 @@ public class DatabaseNodeTest
         assertNotNull("UUID should be set", newNode.getId());
         assertNull("Name should be null", newNode.getName());
         assertNotEquals("Last modified should be set", newNode.getLastModified());
-        assertEquals("Database should be same as parent", database, newNode.database);
+        assertEquals("Database should be same as parent", database, newNode.getDatabase());
     }
 
     @Test

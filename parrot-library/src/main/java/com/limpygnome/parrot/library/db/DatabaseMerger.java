@@ -1,8 +1,7 @@
 package com.limpygnome.parrot.library.db;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
-import com.limpygnome.parrot.library.dbaction.ActionsLog;
-import com.limpygnome.parrot.library.dbaction.MergeInfo;
+import com.limpygnome.parrot.library.dbaction.ActionLog;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -27,31 +26,42 @@ public class DatabaseMerger
      * @return a log of actions performed on the database
      * @throws Exception if a crypto operation fails
      */
-    public synchronized ActionsLog merge(Database source, Database destination, char[] password) throws Exception
+    public synchronized ActionLog merge(Database source, Database destination, char[] password) throws Exception
     {
-        ActionsLog actionsLog = new ActionsLog();
+        ActionLog actionLog = new ActionLog();
 
-        // Check if databases are the same, skip if so...
-        if (destination.equals(source))
+        synchronized (source)
         {
-            actionsLog.add("no changes detected");
+            synchronized (destination)
+            {
+                // Check if databases are the same, skip if so...
+                if (destination.equals(source))
+                {
+                    actionLog.add("no changes detected");
+                }
+                else
+                {
+                    actionLog.add("changes detected, merging...");
+
+                    // Merge crypto params
+                    mergeDatabaseFileCryptoParams(actionLog, source, destination, password);
+                    mergeDatabaseMemoryCryptoParams(actionLog, source, destination, password);
+
+                    // Merge nodes
+                    boolean changed = mergeNode(actionLog, destination, source.getRoot(), destination.getRoot());
+
+                    if (changed)
+                    {
+                        destination.setDirty(true);
+                    }
+                }
+            }
         }
-        else
-        {
-            actionsLog.add("changes detected, merging...");
 
-            // Merge crypto params
-            mergeDatabaseFileCryptoParams(actionsLog, source, destination, password);
-            mergeDatabaseMemoryCryptoParams(actionsLog, source, destination, password);
-
-            // Merge nodes
-            mergeNode(new MergeInfo(actionsLog, destination.root), source.root, destination.root);
-        }
-
-        return actionsLog;
+        return actionLog;
     }
 
-    void mergeDatabaseFileCryptoParams(ActionsLog actionsLog, Database source, Database destination, char[] password) throws Exception
+    void mergeDatabaseFileCryptoParams(ActionLog actionLog, Database source, Database destination, char[] password) throws Exception
     {
         CryptoParams destFileCryptoParams = destination.getFileCryptoParams();
         CryptoParams srcFileCryptoParams = source.getFileCryptoParams();
@@ -59,12 +69,12 @@ public class DatabaseMerger
         if (destFileCryptoParams.getLastModified() < srcFileCryptoParams.getLastModified())
         {
             destination.updateFileCryptoParams(srcFileCryptoParams, password);
-            actionsLog.add("updated file crypto parameters");
+            actionLog.add("updated file crypto parameters");
         }
         else if (destFileCryptoParams.getLastModified() > srcFileCryptoParams.getLastModified())
         {
             destination.setDirty(true);
-            actionsLog.add("local file params are newer");
+            actionLog.add("local file params are newer");
         }
 
         CryptoParams destMemoryCryptoParams = destination.getMemoryCryptoParams();
@@ -73,16 +83,16 @@ public class DatabaseMerger
         if (destMemoryCryptoParams.getLastModified() < srcMemoryCryptoParams.getLastModified())
         {
             destination.updateMemoryCryptoParams(srcMemoryCryptoParams, password);
-            actionsLog.add("updated memory crypto parameters");
+            actionLog.add("updated memory crypto parameters");
         }
         else if (destMemoryCryptoParams.getLastModified() > srcMemoryCryptoParams.getLastModified())
         {
             destination.setDirty(true);
-            actionsLog.add("local memory params are newer");
+            actionLog.add("local memory params are newer");
         }
     }
 
-    void mergeDatabaseMemoryCryptoParams(ActionsLog actionsLog, Database source, Database destination, char[] password) throws Exception
+    void mergeDatabaseMemoryCryptoParams(ActionLog actionLog, Database source, Database destination, char[] password) throws Exception
     {
         CryptoParams destMemoryCryptoParams = destination.getMemoryCryptoParams();
         CryptoParams srcMemoryCryptoParams = source.getMemoryCryptoParams();
@@ -90,7 +100,7 @@ public class DatabaseMerger
         if (destMemoryCryptoParams.getLastModified() < srcMemoryCryptoParams.getLastModified())
         {
             destination.updateMemoryCryptoParams(srcMemoryCryptoParams, password);
-            actionsLog.add("updated memory crypto parameters");
+            actionLog.add("updated memory crypto parameters");
         }
         else if (destMemoryCryptoParams.getLastModified() > srcMemoryCryptoParams.getLastModified())
         {
@@ -105,132 +115,174 @@ public class DatabaseMerger
 
         Both nodes should be at the same level in their respected databases.
      */
-    void mergeNode(MergeInfo mergeInfo, DatabaseNode src, DatabaseNode dest)
+    boolean mergeNode(ActionLog actionLog, Database destination, DatabaseNode src, DatabaseNode dest)
     {
-        mergeNodeDetails(mergeInfo, src, dest);
-        mergeDestNodeChildren(mergeInfo, src, dest);
-        mergeSrcNodeChildren(mergeInfo, src, dest);
+        boolean changed;
+
+        changed  = mergeNodeDetails(actionLog, src, dest);
+        changed |= mergeDestNodeChildren(actionLog, destination, src, dest);
+        changed |= mergeSrcNodeChildren(actionLog, destination, src, dest);
+
+        return changed;
     }
 
-    void mergeNodeDetails(MergeInfo mergeInfo, DatabaseNode src, DatabaseNode dest)
+    boolean mergeNodeDetails(ActionLog actionLog, DatabaseNode src, DatabaseNode dest)
     {
+        boolean changed = false;
+
         // Check if this db was modified before/after
-        if (src.lastModified > dest.lastModified)
+        if (src.getLastModified() > dest.getLastModified())
         {
             // Compare/clone first level props
             // -- Name
-            if (!dest.name.equals(src.name))
+            if (isDifferent(dest.getName(), src.getName()))
             {
-                dest.name = src.name;
-                mergeInfo.addMergeMessage("changing name to '" + src.name + "'");
+                dest.setName(src.getName());
+                actionLog.add(dest, "changing name to '" + src.getName() + "'");
             }
 
             // -- Value
-            if (!dest.value.equals(src.value))
+            if (isDifferent(dest.getValue(), src.getValue()))
             {
-                dest.value = src.value.clone();
-                mergeInfo.addMergeMessage("value updated");
+                dest.setValue(src.getValue().clone());
+                actionLog.add(dest, "value updated");
             }
 
             // -- History
-            if (!dest.history.equals(src.history))
+            if (isDifferent(dest.getHistory(), src.getHistory()))
             {
-                dest.history.cloneToNode(src);
-                mergeInfo.addMergeMessage("history updated");
+                dest.getHistory().cloneToNode(src);
+                actionLog.add(dest, "history updated");
             }
 
             // Copy last modified
-            dest.lastModified = src.lastModified;
+            dest.setLastModified(src.getLastModified());
 
             // Mark as dirty due to changes
-            dest.database.setDirty(true);
+            changed = true;
 
-            mergeInfo.addMergeMessage("updated node properties");
+            actionLog.add(dest, "updated node properties");
         }
-        else if (src.lastModified < dest.lastModified)
+        else if (src.getLastModified() < dest.getLastModified())
         {
-            dest.database.setDirty(true);
-            mergeInfo.addMergeMessage("node older on remote side");
+            changed = true;
+            actionLog.add(dest, "node older on remote side");
         }
 
         // Merge any deleted items
-        boolean change = dest.deletedChildren.addAll(src.deletedChildren);
+        boolean change = dest.getDeletedChildren().addAll(src.getDeletedChildren());
 
         // Set dirty flag
         if (change)
         {
-            mergeInfo.addMergeMessage("updated list of deleted nodes");
-            dest.database.setDirty(true);
+            actionLog.add(dest, "updated list of deleted nodes");
+            changed = true;
         }
+
+        return changed;
     }
 
-    void mergeDestNodeChildren(MergeInfo mergeInfo, DatabaseNode src, DatabaseNode dest)
+    boolean mergeDestNodeChildren(ActionLog actionLog, Database destination, DatabaseNode src, DatabaseNode dest)
     {
+        boolean changed = false;
+
         DatabaseNode child;
         DatabaseNode otherNode;
 
-        Iterator<Map.Entry<UUID, DatabaseNode>> iterator = dest.children.entrySet().iterator();
+        Map<UUID, DatabaseNode> children = dest.getChildrenMap();
+        Iterator<Map.Entry<UUID, DatabaseNode>> iterator = children.entrySet().iterator();
         Map.Entry<UUID, DatabaseNode> kv;
+
+        Map<UUID, DatabaseNode> srcChildren = src.getChildrenMap();
 
         while (iterator.hasNext())
         {
             kv = iterator.next();
             child = kv.getValue();
 
-            otherNode = src.children.get(kv.getKey());
+            otherNode = srcChildren.get(kv.getKey());
 
             // src not missing node - recursively update src and dest nodes at same level
             if (otherNode != null)
             {
-                mergeNode(mergeInfo, child, otherNode);
+                mergeNode(actionLog, destination, child, otherNode);
             }
 
             // src deleted this node
-            else if (src.deletedChildren.contains(child.id))
+            else if (src.getDeletedChildren().contains(child.getUuid()))
             {
                 // Remove from our tree, this node has been deleted
                 iterator.remove();
-                dest.database.lookup.remove(child.id);
+                destination.getLookup().remove(child.getUuid());
 
-                mergeInfo.addMergeMessage("removed child - " + child.getPath());
-                dest.database.setDirty(true);
+                actionLog.add(dest, "removed child - " + child.getPath());
+                changed = true;
             }
             // src is missing this node
             else
             {
-                mergeInfo.addMergeMessage("remote node missing our child - " + child.getPath());
-                dest.database.setDirty(true);
+                actionLog.add(dest, "remote node missing our child - " + child.getPath());
+                changed = true;
             }
         }
+
+        return changed;
     }
 
-    void mergeSrcNodeChildren(MergeInfo mergeInfo, DatabaseNode src, DatabaseNode dest)
+    boolean mergeSrcNodeChildren(ActionLog actionLog, Database destination, DatabaseNode src, DatabaseNode dest)
     {
+        boolean changed = false;
+
         DatabaseNode otherChild;
         DatabaseNode newNode;
         boolean isDeleted;
 
-        for (Map.Entry<UUID, DatabaseNode> kv : src.children.entrySet())
+        Map<UUID, DatabaseNode> children = src.getChildrenMap();
+        Map<UUID, DatabaseNode> destChildren = dest.getChildrenMap();
+
+        for (Map.Entry<UUID, DatabaseNode> kv : children.entrySet())
         {
             otherChild = kv.getValue();
 
             // New node on their side that we don't have...
-            isDeleted = dest.deletedChildren.contains(otherChild.id);
+            isDeleted = dest.getDeletedChildren().contains(otherChild.getUuid());
 
-            if (!dest.children.containsKey(otherChild.id) && !isDeleted)
+            if (!destChildren.containsKey(otherChild.getUuid()) && !isDeleted)
             {
-                newNode = otherChild.clone(dest.database);
+                newNode = otherChild.clone(destination);
                 dest.add(newNode);
-                mergeInfo.addMergeMessage("added child - " + newNode.getPath());
-                dest.database.setDirty(true);
+                actionLog.add(dest, "added child - " + newNode.getPath());
+                changed = true;
             }
             else if (isDeleted)
             {
                 // Looks like we deleted the current node on our side...
-                mergeInfo.addMergeMessage("node already deleted in local database - " + otherChild.getPath());
-                dest.database.setDirty(true);
+                actionLog.add(dest, "node already deleted in local database - " + otherChild.getPath());
+                changed = true;
             }
         }
+
+        return changed;
+    }
+
+    boolean isDifferent(Object a, Object b)
+    {
+        boolean differ;
+
+        if (a != null)
+        {
+            differ = !a.equals(b);
+        }
+        else if (b != null)
+        {
+            differ = !b.equals(a);
+        }
+        else
+        {
+            differ = false;
+        }
+
+        return differ;
     }
 
 }

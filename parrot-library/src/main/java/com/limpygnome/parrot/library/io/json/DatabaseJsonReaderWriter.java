@@ -64,6 +64,8 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 {
     private CryptoReaderWriter cryptoReaderWriter;
     private CryptoParamsFactory cryptoParamsFactory;
+
+    // JSON readers/writers
     private CryptoParamsJsonReaderWriter cryptoParamsJsonReaderWriter;
     private EncryptedValueJsonReaderWriter encryptedValueJsonReaderWriter;
 
