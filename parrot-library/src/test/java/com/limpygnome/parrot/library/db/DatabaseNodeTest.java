@@ -196,13 +196,27 @@ public class DatabaseNodeTest
     }
 
     @Test
-    public void history_isInstance()
+    public void setHistory_setsDirty()
     {
         // When
-        DatabaseNodeHistory history = node.history();
+        node.setHistory(null);
 
         // Then
-        assertNotNull("Should be an instance", history);
+        verify(database).setDirty(true);
+    }
+
+    @Test
+    public void setHistory_isReflected()
+    {
+        // Given
+        DatabaseNodeHistory history = node.getHistory();
+
+        // When
+        node.setHistory(history);
+
+        // Then
+        DatabaseNodeHistory retrieved = node.getHistory();
+        assertEquals("Should be same as set instance", history, retrieved);
     }
 
     @Test

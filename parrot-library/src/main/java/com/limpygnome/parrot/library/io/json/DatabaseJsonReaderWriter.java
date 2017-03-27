@@ -194,7 +194,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             // Create new DB db
             child = new DatabaseNode(database, id, name, lastModified, encryptedValue);
             child.getDeletedChildren().addAll(deletedChildren);
-            child.history().addAll(history);
+            child.getHistory().addAll(history);
 
             // Append to current parent
             nodeParent.add(child);
@@ -247,7 +247,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 
             JSONArray jsonHistory = new JSONArray();
             JSONObject jsonHistoryItem;
-            for (EncryptedValue historicValue : node.history().fetch())
+            for (EncryptedValue historicValue : node.getHistory().fetch())
             {
                 jsonHistoryItem = new JSONObject();
                 encryptedValueJsonReaderWriter.write(jsonHistoryItem, historicValue);

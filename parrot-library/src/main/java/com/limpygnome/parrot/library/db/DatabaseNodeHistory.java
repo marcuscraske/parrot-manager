@@ -15,7 +15,7 @@ public class DatabaseNodeHistory
     private DatabaseNode currentNode;
 
     // Cached array of historic values retrieved; same reason as children being cached
-    private EncryptedValue[] historyCached;
+    EncryptedValue[] historyCached;
 
     // Previous values stored at this node
     private List<EncryptedValue> history;
@@ -32,9 +32,7 @@ public class DatabaseNodeHistory
     public synchronized void add(EncryptedValue encryptedValue)
     {
         history.add(encryptedValue);
-
-        // Mark database as dirty
-        currentNode.getDatabase().setDirty(true);
+        setDirty();
     }
 
     /**
@@ -43,6 +41,7 @@ public class DatabaseNodeHistory
     public synchronized void addAll(Collection<? extends EncryptedValue> values)
     {
         history.addAll(values);
+        setDirty();
     }
 
     /**
@@ -62,9 +61,7 @@ public class DatabaseNodeHistory
     public void remove(EncryptedValue encryptedValue)
     {
         history.remove(encryptedValue);
-
-        // Mark database as dirty
-        currentNode.getDatabase().setDirty(true);
+        setDirty();
     }
 
     /**
@@ -73,6 +70,7 @@ public class DatabaseNodeHistory
     public void clearAll()
     {
         history.clear();
+        setDirty();
     }
 
     /**
@@ -94,7 +92,13 @@ public class DatabaseNodeHistory
         }
 
         // Update target node with cloned history
-        targetNode.history = result;
+        targetNode.setHistory(result);
+    }
+
+    private void setDirty()
+    {
+        // Mark database as dirty
+        currentNode.getDatabase().setDirty(true);
     }
 
     @Override

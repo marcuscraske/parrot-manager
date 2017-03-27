@@ -186,7 +186,24 @@ public class DatabaseNode
         return value;
     }
 
-    public DatabaseNodeHistory history()
+    /**
+     * Sets the the instance of {@link DatabaseNodeHistory}, which holds
+     * historic encrypted values for this node.
+     *
+     * @param history the instance
+     */
+    public void setHistory(DatabaseNodeHistory history)
+    {
+        this.history = history;
+
+        // Mark as dirty
+        setDirty();
+    }
+
+    /**
+     * @return an instance to manage the history of old values
+     */
+    public DatabaseNodeHistory getHistory()
     {
         return history;
     }

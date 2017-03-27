@@ -17,13 +17,13 @@
         </th>
     </tr>
 
-    <tr *ngIf="currentNode.history().size() == 0">
+    <tr *ngIf="currentNode.getHistory().size() == 0">
         <td colspan="3">
             None
         </td>
     </tr>
 
-    <tr *ngFor="let historicValue of (currentNode.history().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
+    <tr *ngFor="let historicValue of (currentNode.getHistory().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
         <td>
             {{ historicValue.getFormattedLastModified() }}
         </td>

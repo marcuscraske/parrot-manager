@@ -1,7 +1,5 @@
 package com.limpygnome.parrot.library.db;
 
-import java.util.stream.Stream;
-
 /**
  * Common operations for optimizing a database.
  */
@@ -29,7 +27,7 @@ public class DatabaseOptimizer
         // Iterate children
         for (DatabaseNode childNode : node.getChildren())
         {
-            deleteAllValueHistoryIterate(childNode);
+            deleteAllDeletedNodeHistoryIterate(childNode);
         }
     }
 
@@ -40,21 +38,20 @@ public class DatabaseOptimizer
      */
     public void deleteAllValueHistory(Database database)
     {
-        DatabaseNode root = database.root;
+        DatabaseNode root = database.getRoot();
         deleteAllValueHistoryIterate(root);
-
-        database.setDirty(true);
     }
 
     private void deleteAllValueHistoryIterate(DatabaseNode node)
     {
         // Clear history
-        node.history().clearAll();
+        node.getHistory().clearAll();
 
         // Iterate children
-        Stream.of(node.getChildren()).forEach(
-            childNode -> deleteAllValueHistoryIterate(childNode)
-        );
+        for (DatabaseNode childNode : node.getChildren())
+        {
+            deleteAllValueHistoryIterate(childNode);
+        }
     }
 
 }

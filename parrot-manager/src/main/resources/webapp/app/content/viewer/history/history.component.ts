@@ -26,12 +26,12 @@ export class HistoryComponent
 
     clearAll()
     {
-        this.currentNode.history().clearAll();
+        this.currentNode.getHistory().clearAll();
     }
 
     delete(encryptedValue)
     {
-        this.currentNode.history().remove(encryptedValue);
+        this.currentNode.getHistory().remove(encryptedValue);
     }
 
 }
