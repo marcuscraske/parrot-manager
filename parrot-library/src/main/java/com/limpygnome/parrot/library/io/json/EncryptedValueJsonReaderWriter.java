@@ -5,6 +5,8 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONObject;
 
+import java.util.UUID;
+
 /**
  * Reads/writes encrypted values.
  *
@@ -25,11 +27,12 @@ class EncryptedValueJsonReaderWriter
 
         if (jsonNode.containsKey("iv") && jsonNode.containsKey("data"))
         {
+            UUID id = jsonNode.containsKey ("id") ? UUID.fromString((String) jsonNode.get("id")) : null;
             byte[] iv = Base64.decode((String) jsonNode.get("iv"));
             byte[] data = Base64.decode((String) jsonNode.get("data"));
             long modified = jsonNode.containsKey("modified") ? (Long) jsonNode.get("modified") : 0;
 
-            value = new EncryptedAesValue(modified, iv, data);
+            value = new EncryptedAesValue(id, modified, iv, data);
         }
         else
         {
@@ -54,6 +57,7 @@ class EncryptedValueJsonReaderWriter
             String ivStr = Base64.toBase64String(aesValue.getIv());
             String dataStr = Base64.toBase64String(aesValue.getValue());
 
+            jsonNode.put("id", aesValue.getId());
             jsonNode.put("iv", ivStr);
             jsonNode.put("data", dataStr);
             jsonNode.put("modified", aesValue.getLastModified());

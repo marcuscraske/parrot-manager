@@ -151,7 +151,8 @@ public class DatabaseMerger
             // -- History
             if (isDifferent(dest.getHistory(), src.getHistory()))
             {
-                dest.getHistory().cloneToNode(src);
+                // TODO: NULL CHECK!!! either could be null!
+                dest.getHistory().merge(src.getHistory());
                 actionLog.add(dest, "history updated");
             }
 

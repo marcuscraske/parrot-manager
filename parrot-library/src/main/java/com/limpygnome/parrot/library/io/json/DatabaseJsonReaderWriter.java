@@ -16,7 +16,6 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -68,6 +67,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     // JSON readers/writers
     private CryptoParamsJsonReaderWriter cryptoParamsJsonReaderWriter;
     private EncryptedValueJsonReaderWriter encryptedValueJsonReaderWriter;
+    private DatabaseNodeHistoryReaderWriter databaseNodeHistoryReaderWriter;
 
     /**
      * Creates an instance.
@@ -78,6 +78,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         this.cryptoParamsFactory = new CryptoParamsFactory();
         this.cryptoParamsJsonReaderWriter = new CryptoParamsJsonReaderWriter(cryptoParamsFactory);
         this.encryptedValueJsonReaderWriter = new EncryptedValueJsonReaderWriter();
+        this.databaseNodeHistoryReaderWriter = new DatabaseNodeHistoryReaderWriter(encryptedValueJsonReaderWriter);
     }
 
     @Override
@@ -177,26 +178,12 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 
             EncryptedValue encryptedValue = encryptedValueJsonReaderWriter.read(jsonNode);
 
-            // -- History
-            LinkedList<EncryptedValue> history = new LinkedList<>();
-            JSONArray jsonHistory = (JSONArray) jsonNode.get("history");
-
-            if (jsonHistory != null)
-            {
-                EncryptedValue historicValue;
-                JSONObject jsonHistoricValue;
-                for (Object rawHistory : jsonHistory)
-                {
-                    jsonHistoricValue = (JSONObject) rawHistory;
-                    historicValue = encryptedValueJsonReaderWriter.read(jsonHistoricValue);
-                    history.add(historicValue);
-                }
-            }
-
-            // Create new DB db
+            // Create new node
             child = new DatabaseNode(database, id, name, lastModified, encryptedValue);
             child.getDeletedChildren().addAll(deletedChildren);
-            child.getHistory().addAll(history);
+
+            // -- History
+            databaseNodeHistoryReaderWriter.read(jsonNode, child.getHistory());
 
             // Append to current parent
             nodeParent.add(child);
@@ -244,18 +231,12 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             jsonChild.put("modified", node.getLastModified());
             jsonChild.put("deleted", jsonDeleted);
 
+            // -- value
             EncryptedValue encryptedValue = node.getValue();
             encryptedValueJsonReaderWriter.write(jsonChild, encryptedValue);
 
-            JSONArray jsonHistory = new JSONArray();
-            JSONObject jsonHistoryItem;
-            for (EncryptedValue historicValue : node.getHistory().fetch())
-            {
-                jsonHistoryItem = new JSONObject();
-                encryptedValueJsonReaderWriter.write(jsonHistoryItem, historicValue);
-                jsonHistory.add(jsonHistoryItem);
-            }
-            jsonChild.put("history", jsonHistory);
+            // -- history
+            databaseNodeHistoryReaderWriter.write(jsonChild, node.getHistory());
 
             // Add to parent
             if (!jsonRoot.containsKey("children"))

@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.library.crypto;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Used to hold AES encrypted binary / byte array.
@@ -19,7 +20,20 @@ public class EncryptedAesValue extends EncryptedValue
      */
     public EncryptedAesValue(long lastModified, byte[] iv, byte[] value)
     {
-        super(lastModified);
+        this(null, lastModified, iv, value);
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param id unique identifier for this value; can be null (although a random value will be generated)
+     * @param lastModified epoch time at which last modified
+     * @param iv initialization vector
+     * @param value encrypted byte data
+     */
+    public EncryptedAesValue(UUID id, long lastModified, byte[] iv, byte[] value)
+    {
+        super(id, lastModified);
 
         this.iv = iv;
         this.value = value;

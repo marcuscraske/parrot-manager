@@ -3,11 +3,16 @@ package com.limpygnome.parrot.library.db;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Manages the collection of historic values for a node.
+ *
+ * TODO: how is this serialized? need to serialize deleted nodes too
  */
 public class DatabaseNodeHistory
 {
@@ -20,10 +25,14 @@ public class DatabaseNodeHistory
     // Previous values stored at this node
     private List<EncryptedValue> history;
 
+    // The hashcode's of deleted values (used for syncing)
+    private Set<UUID> deleted;
+
     DatabaseNodeHistory(DatabaseNode currentNode)
     {
         this.currentNode = currentNode;
         this.history = new LinkedList<>();
+        this.deleted = new HashSet<>();
     }
 
     /**
@@ -60,7 +69,13 @@ public class DatabaseNodeHistory
      */
     public void remove(EncryptedValue encryptedValue)
     {
-        history.remove(encryptedValue);
+        // Remove from collection
+        if (history.remove(encryptedValue))
+        {
+            // Add to list of values deleted
+            deleted.add(encryptedValue.getId());
+        }
+
         setDirty();
     }
 
@@ -69,7 +84,12 @@ public class DatabaseNodeHistory
      */
     public void clearAll()
     {
+        // Clear history
         history.clear();
+
+        // Clear deleted values
+        deleted.clear();
+
         setDirty();
     }
 
@@ -81,18 +101,24 @@ public class DatabaseNodeHistory
         return history.size();
     }
 
-    public void cloneToNode(DatabaseNode targetNode)
+    /**
+     * Merges items from another history into this history.
+     *
+     * @param otherHistory the other history
+     */
+    public void merge(DatabaseNodeHistory otherHistory)
     {
-        // Build cloned instance
-        DatabaseNodeHistory result = new DatabaseNodeHistory(currentNode);
-
-        for (EncryptedValue encryptedValue : history)
+        // Add any missing values
+        for (EncryptedValue encryptedValue : otherHistory.history)
         {
-            result.add(encryptedValue.clone());
+            if (!this.history.contains(encryptedValue))
+            {
+                this.history.add(encryptedValue.clone());
+            }
         }
 
-        // Update target node with cloned history
-        targetNode.setHistory(result);
+        // Mark database as dirty
+        setDirty();
     }
 
     private void setDirty()

@@ -2,6 +2,8 @@ package com.limpygnome.parrot.library.crypto;
 
 import org.joda.time.DateTime;
 
+import java.util.UUID;
+
 /**
  * Immutable generic encrypted value.
  *
@@ -9,12 +11,30 @@ import org.joda.time.DateTime;
  */
 public abstract class EncryptedValue
 {
+    // Unique identifier for this value
+    private UUID id;
+
     // The epoch time at which this value was last modified
     private long lastModified;
 
-    protected EncryptedValue(long lastModified)
+    /**
+     * Sets generic data.
+     *
+     * @param id unique identifier; can be null for randomly generated value to be assigned
+     * @param lastModified the epoch time at which this value was last modified
+     */
+    protected EncryptedValue(UUID id, long lastModified)
     {
+        this.id = id != null ? id : UUID.randomUUID();
         this.lastModified = lastModified;
+    }
+
+    /**
+     * @return unique identifier for this value
+     */
+    public final UUID getId()
+    {
+        return id;
     }
 
     /**

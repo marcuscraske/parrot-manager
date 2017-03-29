@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -14,12 +16,17 @@ public class EncryptedValueTest
 {
     private static final long LAST_MODIFIED = 1490127843L * 1000L;
 
+    // SUT
     private TestEncryptedValue encryptedValue;
+
+    // Test data
+    private UUID id;
 
     @Before
     public void setup()
     {
-        encryptedValue = new TestEncryptedValue(LAST_MODIFIED);
+        id = UUID.randomUUID();
+        encryptedValue = new TestEncryptedValue(id, LAST_MODIFIED);
     }
 
     @Test
@@ -43,10 +50,20 @@ public class EncryptedValueTest
     }
 
     @Test
+    public void getId_isReflected()
+    {
+        // when
+        UUID id = encryptedValue.getId();
+
+        // then
+        assertEquals("Identifier should be same as construction", this.id, id);
+    }
+
+    @Test
     public void equals_isTrueWhenSame()
     {
         // Given
-        TestEncryptedValue similar = new TestEncryptedValue(LAST_MODIFIED);
+        TestEncryptedValue similar = new TestEncryptedValue(id, LAST_MODIFIED);
 
         // When
         boolean isEqual = similar.equals(encryptedValue);
@@ -59,7 +76,7 @@ public class EncryptedValueTest
     public void equals_isFalseWhenDifferent()
     {
         // Given
-        TestEncryptedValue similar = new TestEncryptedValue(1234);
+        TestEncryptedValue similar = new TestEncryptedValue(id, 1234);
 
         // When
         boolean isEqual = similar.equals(encryptedValue);
@@ -71,9 +88,9 @@ public class EncryptedValueTest
     // Test instance
     static class TestEncryptedValue extends EncryptedValue
     {
-        public TestEncryptedValue(long lastModified)
+        public TestEncryptedValue(UUID id, long lastModified)
         {
-            super(lastModified);
+            super(id, lastModified);
         }
 
         @Override

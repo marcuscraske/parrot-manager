@@ -34,13 +34,15 @@ public class DatabaseNodeHistoryTest
     @Mock
     private DatabaseNode currentNode;
     @Mock
-    private DatabaseNode targetNode;
-    @Mock
     private Database database;
     @Mock
     private EncryptedValue encryptedValue;
     @Mock
+    private EncryptedValue encryptedValueClone;
+    @Mock
     private EncryptedValue encryptedValue2;
+    @Mock
+    private EncryptedValue encryptedValue2Clone;
 
     // Test data
     private List<EncryptedValue> values;
@@ -56,6 +58,10 @@ public class DatabaseNodeHistoryTest
         values = new LinkedList<>();
         values.add(encryptedValue);
         values.add(encryptedValue2);
+
+        // Allow cloning of values
+        given(encryptedValue.clone()).willReturn(encryptedValueClone);
+        given(encryptedValue2.clone()).willReturn(encryptedValue2Clone);
     }
 
     @Test
@@ -172,21 +178,39 @@ public class DatabaseNodeHistoryTest
     }
 
     @Test
-    public void cloneToNode_targetHasNewInstanceWithClonedChildren()
+    public void merge_missingValuesAdded()
     {
-        // Given
+        // given
+        DatabaseNodeHistory otherHistory = new DatabaseNodeHistory(currentNode);
         history.add(encryptedValue);
-        given(encryptedValue.clone()).willReturn(encryptedValue2);
+        history.add(encryptedValue2);
 
-        // When
-        history.cloneToNode(targetNode);
+        // when
+        otherHistory.merge(history);
 
-        // Then
-        verify(encryptedValue).clone();
-        verify(targetNode).setHistory(historyCaptor.capture());
+        // then
+        EncryptedValue[] result = otherHistory.fetch();
+        EncryptedValue[] expected = { encryptedValueClone, encryptedValue2Clone };
+        assertArrayContentsEqual("Should contain same elements", expected, result);
+    }
 
-        EncryptedValue clonedInstance = historyCaptor.getValue().fetch()[0];
-        assertEquals("Cloned instance should be in target result", encryptedValue2, clonedInstance);
+    @Test
+    public void merge_existingValueNotAdded()
+    {
+        // given
+        DatabaseNodeHistory otherHistory = new DatabaseNodeHistory(currentNode);
+        otherHistory.add(encryptedValue);
+
+        history.add(encryptedValue);
+        history.add(encryptedValue2);
+
+        // when
+        otherHistory.merge(history);
+
+        // then
+        EncryptedValue[] result = otherHistory.fetch();
+        EncryptedValue[] expected = { encryptedValue, encryptedValue2Clone };
+        assertArrayContentsEqual("Should contain same elements", expected, result);
     }
 
 }
