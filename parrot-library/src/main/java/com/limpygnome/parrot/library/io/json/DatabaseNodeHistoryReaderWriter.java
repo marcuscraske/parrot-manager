@@ -5,6 +5,8 @@ import com.limpygnome.parrot.library.db.DatabaseNodeHistory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.UUID;
+
 /**
  * Reads and writes instances of {@link com.limpygnome.parrot.library.db.DatabaseNodeHistory} in JSON.
  */
@@ -17,7 +19,7 @@ class DatabaseNodeHistoryReaderWriter
         this.encryptedValueJsonReaderWriter = encryptedValueJsonReaderWriter;
     }
 
-    DatabaseNodeHistory read(JSONObject json, DatabaseNodeHistory history)
+    void read(JSONObject json, DatabaseNodeHistory history)
     {
         // Historic values
         JSONArray jsonHistory = (JSONArray) json.get("history");
@@ -35,7 +37,17 @@ class DatabaseNodeHistoryReaderWriter
         }
 
         // Deleted historic values
-        // TODO: complete...
+        JSONArray jsonDeletedHistory = (JSONArray) json.get("deleted-history");
+
+        if (jsonDeletedHistory != null)
+        {
+            UUID id;
+            for (Object rawId : jsonDeletedHistory)
+            {
+                id = UUID.fromString((String) rawId);
+                history.addDeleted(id);
+            }
+        }
     }
 
     void write(JSONObject json, DatabaseNodeHistory history)
@@ -54,7 +66,13 @@ class DatabaseNodeHistoryReaderWriter
         json.put("history", jsonHistory);
 
         // Deleted historic values
-        // TODO: complete...
+        JSONArray jsonDeletedHistory = new JSONArray();
+
+        for (UUID id : history.getDeleted())
+        {
+            jsonDeletedHistory.add(id.toString());
+        }
+        json.put("deleted-history", jsonDeletedHistory);
     }
 
 }

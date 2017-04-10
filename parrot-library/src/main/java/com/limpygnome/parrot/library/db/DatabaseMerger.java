@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.library.db;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.dbaction.ActionLog;
 
 import java.util.Iterator;
@@ -144,14 +145,14 @@ public class DatabaseMerger
             // -- Value
             if (isDifferent(dest.getValue(), src.getValue()))
             {
-                dest.setValue(src.getValue().clone());
+                EncryptedValue srcValue = src.getValue();
+                dest.setValue(srcValue != null ? srcValue.clone() : null);
                 actionLog.add(dest, "value updated");
             }
 
             // -- History
             if (isDifferent(dest.getHistory(), src.getHistory()))
             {
-                // TODO: NULL CHECK!!! either could be null!
                 dest.getHistory().merge(src.getHistory());
                 actionLog.add(dest, "history updated");
             }

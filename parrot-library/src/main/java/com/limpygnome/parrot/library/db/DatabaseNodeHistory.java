@@ -36,6 +36,26 @@ public class DatabaseNodeHistory
     }
 
     /**
+     * Adds the identifier of a deleted item.
+     *
+     * @param id ID from a deleted {@link EncryptedValue}
+     */
+    public synchronized void addDeleted(UUID id)
+    {
+        deleted.add(id);
+    }
+
+    /**
+     * An array of identifiers of deleted values.
+     *
+     * @return an array, or empty
+     */
+    public synchronized UUID[] getDeleted()
+    {
+        return deleted.toArray(new UUID[deleted.size()]);
+    }
+
+    /**
      * @param encryptedValue value to be added
      */
     public synchronized void add(EncryptedValue encryptedValue)
@@ -108,17 +128,28 @@ public class DatabaseNodeHistory
      */
     public void merge(DatabaseNodeHistory otherHistory)
     {
-        // Add any missing values
+        boolean isDirty = false;
+
+        // Add any missing values, unless deleted
         for (EncryptedValue encryptedValue : otherHistory.history)
         {
-            if (!this.history.contains(encryptedValue))
+            if (!deleted.contains(encryptedValue.getId()) && this.history.add(encryptedValue.clone()))
             {
-                this.history.add(encryptedValue.clone());
+                isDirty = true;
             }
         }
 
+        // Add any missing deleted values
+        if (deleted.addAll(otherHistory.deleted))
+        {
+            isDirty = true;
+        }
+
         // Mark database as dirty
-        setDirty();
+        if (isDirty)
+        {
+            setDirty();
+        }
     }
 
     private void setDirty()

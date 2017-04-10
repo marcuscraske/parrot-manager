@@ -8,6 +8,8 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -61,6 +63,8 @@ import java.util.UUID;
  */
 public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 {
+    private static final Logger LOG = LogManager.getLogger(DatabaseJsonReaderWriter.class);
+
     private CryptoReaderWriter cryptoReaderWriter;
     private CryptoParamsFactory cryptoParamsFactory;
 
@@ -118,7 +122,20 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 
         // Parse as JSON object
         JSONParser jsonParser = new JSONParser();
-        JSONObject json = (JSONObject) jsonParser.parse(text);
+        JSONObject json;
+
+        try
+        {
+            json = (JSONObject) jsonParser.parse(text);
+        }
+        catch (Exception e)
+        {
+            // Add some more useful debugging logging
+            LOG.debug("JSON text being parsed: " + text);
+
+            // Re-throw exception...
+            throw e;
+        }
 
         // Read params
         CryptoParams memoryCryptoParams = cryptoParamsJsonReaderWriter.parse(json, password);
