@@ -243,7 +243,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             // Create new JSON object
             jsonChild = new JSONObject();
 
-            jsonChild.put("id", node.getUuid().toString());
+            jsonChild.put("id", node.getId());
             jsonChild.put("name", node.getName());
             jsonChild.put("modified", node.getLastModified());
             jsonChild.put("deleted", jsonDeleted);
@@ -256,17 +256,23 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             databaseNodeHistoryReaderWriter.write(jsonChild, node.getHistory());
 
             // Add to parent
+            JSONArray rootChildren;
+
             if (!jsonRoot.containsKey("children"))
             {
-                jsonRoot.put("children", new JSONArray());
+                rootChildren = new JSONArray();
+                jsonRoot.put("children", rootChildren);
+            }
+            else
+            {
+                rootChildren = (JSONArray) jsonRoot.get("children");
             }
 
-            JSONArray rootChildren = (JSONArray) jsonRoot.get("children");
             rootChildren.add(jsonChild);
         }
         else
         {
-            jsonRoot.put("id", node.getUuid().toString());
+            jsonRoot.put("id", node.getId());
             jsonRoot.put("deleted", jsonDeleted);
             jsonChild = jsonRoot;
         }

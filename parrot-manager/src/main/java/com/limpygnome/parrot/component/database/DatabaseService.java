@@ -58,6 +58,8 @@ public class DatabaseService
     {
         try
         {
+            // Ensure path is resolved
+            location = fileComponent.resolvePath(location);
             LOG.info("creating new database - location: {}, rounds: {}", location, rounds);
 
             // Create DB
