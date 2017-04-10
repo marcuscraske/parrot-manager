@@ -1,8 +1,8 @@
 package com.limpygnome.parrot.component.database;
 
+import com.google.gson.JsonObject;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,13 +54,13 @@ public class EncryptedValueService
         return result;
     }
 
-    public EncryptedValue fromJson(JSONObject json) throws Exception
+    public EncryptedValue fromJson(JsonObject json) throws Exception
     {
         EncryptedValue result = null;
 
         if (json != null)
         {
-            String text = json.toJSONString();
+            String text = json.toString();
             result = fromString(text);
         }
 

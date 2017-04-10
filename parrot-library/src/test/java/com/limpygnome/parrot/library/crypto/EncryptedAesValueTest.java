@@ -53,6 +53,7 @@ public class EncryptedAesValueTest
         EncryptedAesValue clone = (EncryptedAesValue) encryptedAesValue.clone();
 
         // Then
+        assertEquals("Identifier should be same", encryptedAesValue.getId(), clone.getId());
         assertArrayEquals("IV should be same", IV, clone.getIv());
         assertArrayEquals("Value should be same", VALUE, clone.getValue());
     }

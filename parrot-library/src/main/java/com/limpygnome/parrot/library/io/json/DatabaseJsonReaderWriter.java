@@ -1,5 +1,9 @@
 package com.limpygnome.parrot.library.io.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
@@ -11,9 +15,6 @@ import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -98,14 +99,14 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         // Convert to JSON
         String encryptedText = new String(encryptedData, "UTF-8");
 
-        JSONParser jsonParser = new JSONParser();
-        JSONObject json = (JSONObject) jsonParser.parse(encryptedText);
+        JsonParser parser = new JsonParser();
+        JsonObject json = parser.parse(encryptedText).getAsJsonObject();
 
         // Read params to decrypt database
         CryptoParams fileCryptoParams = cryptoParamsJsonReaderWriter.parse(json, password);
 
-        byte[] iv = Base64.decode((String) json.get("iv"));
-        byte[] data = Base64.decode((String) json.get("data"));
+        byte[] iv = Base64.decode(json.get("iv").getAsString());
+        byte[] data = Base64.decode(json.get("data").getAsString());
 
         // Decrypt it...
         byte[] decryptedData = cryptoReaderWriter.decrypt(fileCryptoParams, new EncryptedAesValue(0, iv, data));
@@ -121,12 +122,12 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         String text = new String(rawData, "UTF-8");
 
         // Parse as JSON object
-        JSONParser jsonParser = new JSONParser();
-        JSONObject json;
+        JsonParser jsonParser = new JsonParser();
+        JsonObject json;
 
         try
         {
-            json = (JSONObject) jsonParser.parse(text);
+            json = jsonParser.parse(text).getAsJsonObject();
         }
         catch (Exception e)
         {
@@ -157,7 +158,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         return database;
     }
 
-    private void readDatabaseNode(Database database, DatabaseNode nodeParent, JSONObject jsonNode, boolean isRootNode) throws Exception
+    private void readDatabaseNode(Database database, DatabaseNode nodeParent, JsonObject jsonNode, boolean isRootNode) throws Exception
     {
         // Read current db - skip if not defined; expected on initial read
         DatabaseNode child;
@@ -166,15 +167,15 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         // Parse list of deleted children
         Set<UUID> deletedChildren;
 
-        if (jsonNode.containsKey("deleted"))
+        if (jsonNode.has("deleted"))
         {
             // Parse deleted children
-            JSONArray jsonDeleted = (JSONArray) jsonNode.get("deleted");
+            JsonArray jsonDeleted = jsonNode.get("deleted").getAsJsonArray();
             deletedChildren = new HashSet<>(jsonDeleted.size());
 
-            for (Object rawId : jsonDeleted)
+            for (JsonElement rawId : jsonDeleted)
             {
-                id = UUID.fromString((String) rawId);
+                id = UUID.fromString(rawId.getAsString());
                 deletedChildren.add(id);;
             }
         }
@@ -184,14 +185,14 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         }
 
         // Parse actual ID of new db
-        id = UUID.fromString((String) jsonNode.get("id"));
+        id = UUID.fromString(jsonNode.get("id").getAsString());
 
         // Add new child to parent if not root
         if (!isRootNode)
         {
             // Read values
-            String name = (String) jsonNode.get("name");
-            long lastModified = (long) jsonNode.get("modified");
+            String name = !jsonNode.get("name").isJsonNull() ? jsonNode.get("name").getAsString() : null;
+            long lastModified = jsonNode.get("modified").getAsLong();
 
             EncryptedValue encryptedValue = encryptedValueJsonReaderWriter.read(jsonNode);
 
@@ -213,25 +214,25 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         }
 
         // Recurse children
-        if (jsonNode.containsKey("children"))
+        if (jsonNode.has("children"))
         {
-            JSONArray jsonChildren = (JSONArray) jsonNode.get("children");
-            JSONObject jsonChild;
+            JsonArray jsonChildren = jsonNode.get("children").getAsJsonArray();
 
-            for (Object rawChild : jsonChildren)
+            JsonObject jsonChild;
+            for (JsonElement rawChild : jsonChildren)
             {
-                jsonChild = (JSONObject) rawChild;
+                jsonChild = rawChild.getAsJsonObject();
                 readDatabaseNode(database, child, jsonChild, false);
             }
         }
     }
 
-    private void writeDatabaseNode(DatabaseNode node, JSONObject jsonRoot, boolean isRootNode)
+    private void writeDatabaseNode(DatabaseNode node, JsonObject jsonRoot, boolean isRootNode)
     {
-        JSONObject jsonChild;
+        JsonObject jsonChild;
 
         // Build list of deleted IDs
-        JSONArray jsonDeleted = new JSONArray();
+        JsonArray jsonDeleted = new JsonArray();
         for (UUID id : node.getDeletedChildren())
         {
             jsonDeleted.add(id.toString());
@@ -241,12 +242,12 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         if (!isRootNode)
         {
             // Create new JSON object
-            jsonChild = new JSONObject();
+            jsonChild = new JsonObject();
 
-            jsonChild.put("id", node.getId());
-            jsonChild.put("name", node.getName());
-            jsonChild.put("modified", node.getLastModified());
-            jsonChild.put("deleted", jsonDeleted);
+            jsonChild.addProperty("id", node.getId());
+            jsonChild.addProperty("name", node.getName());
+            jsonChild.addProperty("modified", node.getLastModified());
+            jsonChild.add("deleted", jsonDeleted);
 
             // -- value
             EncryptedValue encryptedValue = node.getValue();
@@ -256,24 +257,24 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             databaseNodeHistoryReaderWriter.write(jsonChild, node.getHistory());
 
             // Add to parent
-            JSONArray rootChildren;
+            JsonArray rootChildren;
 
-            if (!jsonRoot.containsKey("children"))
+            if (!jsonRoot.has("children"))
             {
-                rootChildren = new JSONArray();
-                jsonRoot.put("children", rootChildren);
+                rootChildren = new JsonArray();
+                jsonRoot.add("children", rootChildren);
             }
             else
             {
-                rootChildren = (JSONArray) jsonRoot.get("children");
+                rootChildren = jsonRoot.get("children").getAsJsonArray();
             }
 
             rootChildren.add(jsonChild);
         }
         else
         {
-            jsonRoot.put("id", node.getId());
-            jsonRoot.put("deleted", jsonDeleted);
+            jsonRoot.addProperty("id", node.getId());
+            jsonRoot.add("deleted", jsonDeleted);
             jsonChild = jsonRoot;
         }
 
@@ -290,13 +291,13 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         DatabaseNode rootNode = database.getRoot();
         CryptoParams memoryCryptoParams = database.getMemoryCryptoParams();
 
-        JSONObject jsonRoot = new JSONObject();
+        JsonObject jsonRoot = new JsonObject();
         cryptoParamsJsonReaderWriter.write(jsonRoot, memoryCryptoParams);
 
         writeDatabaseNode(rootNode, jsonRoot, true);
 
         // Convert JSON object to bytes
-        String jsonMemoryEncrypted = jsonRoot.toJSONString();
+        String jsonMemoryEncrypted = jsonRoot.toString();
         byte[] result = jsonMemoryEncrypted.getBytes("UTF-8");
         return result;
     }
@@ -311,15 +312,15 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         EncryptedAesValue fileEncrypted = (EncryptedAesValue) cryptoReaderWriter.encrypt(fileCryptoParams, memoryEncrypted);
 
         // Build JSON wrapper
-        JSONObject jsonFileEncrypted = new JSONObject();
+        JsonObject jsonFileEncrypted = new JsonObject();
 
         cryptoParamsJsonReaderWriter.write(jsonFileEncrypted, fileCryptoParams);
 
-        jsonFileEncrypted.put("iv", Base64.toBase64String(fileEncrypted.getIv()));
-        jsonFileEncrypted.put("data", Base64.toBase64String(fileEncrypted.getValue()));
+        jsonFileEncrypted.addProperty("iv", Base64.toBase64String(fileEncrypted.getIv()));
+        jsonFileEncrypted.addProperty("data", Base64.toBase64String(fileEncrypted.getValue()));
 
         // Convert JSON wrapper to bytes
-        String fileEncryptedStr = jsonFileEncrypted.toJSONString();
+        String fileEncryptedStr = jsonFileEncrypted.toString();
         byte[] result = fileEncryptedStr.getBytes("UTF-8");
         return result;
     }

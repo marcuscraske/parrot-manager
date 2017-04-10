@@ -10,4 +10,5 @@
 {
     max-width: 40em;
     overflow: hidden;
+    resize: none;
 }

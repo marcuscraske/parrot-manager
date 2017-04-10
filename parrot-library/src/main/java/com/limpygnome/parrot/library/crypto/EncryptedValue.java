@@ -32,7 +32,7 @@ public abstract class EncryptedValue
     /**
      * @return unique identifier for this value
      */
-    public final UUID getId()
+    public UUID getId()
     {
         return id;
     }
@@ -40,7 +40,7 @@ public abstract class EncryptedValue
     /**
      * @return epoch time of when this value was last modified
      */
-    public final long getLastModified()
+    public long getLastModified()
     {
         return lastModified;
     }
@@ -48,13 +48,15 @@ public abstract class EncryptedValue
     /**
      * @return formatted date time
      */
-    public final String getFormattedLastModified()
+    public String getFormattedLastModified()
     {
         DateTime dateTime = new DateTime(lastModified);
         return dateTime.toString("dd-MM-yyyy HH:mm:ss");
     }
 
     /**
+     * Creates a cloned instance, whereby identifier is also inherited.
+     *
      * @return cloned instance
      */
     public abstract EncryptedValue clone();

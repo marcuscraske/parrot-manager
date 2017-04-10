@@ -1,5 +1,7 @@
 package com.limpygnome.parrot.component.remote;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
@@ -10,8 +12,6 @@ import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.Serializable;
 
@@ -315,8 +315,8 @@ public class SshOptions implements Serializable, Cloneable
 
         // Parse as JSON for sanity
         // TODO: we could just use pretty printer and save to node as string, may be a lot less efficient doing this...
-        JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(rawJson);
+        JsonParser parser = new JsonParser();
+        JsonObject json = parser.parse(rawJson).getAsJsonObject();
 
         // Create encrypted JSON object
         EncryptedValue encryptedValue = encryptedValueService.fromJson(json);

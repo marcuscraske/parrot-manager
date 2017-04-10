@@ -77,20 +77,6 @@ public class DatabaseMerger
             destination.setDirty(true);
             actionLog.add("local file params are newer");
         }
-
-        CryptoParams destMemoryCryptoParams = destination.getMemoryCryptoParams();
-        CryptoParams srcMemoryCryptoParams = source.getMemoryCryptoParams();
-
-        if (destMemoryCryptoParams.getLastModified() < srcMemoryCryptoParams.getLastModified())
-        {
-            destination.updateMemoryCryptoParams(srcMemoryCryptoParams, password);
-            actionLog.add("updated memory crypto parameters");
-        }
-        else if (destMemoryCryptoParams.getLastModified() > srcMemoryCryptoParams.getLastModified())
-        {
-            destination.setDirty(true);
-            actionLog.add("local memory params are newer");
-        }
     }
 
     void mergeDatabaseMemoryCryptoParams(ActionLog actionLog, Database source, Database destination, char[] password) throws Exception

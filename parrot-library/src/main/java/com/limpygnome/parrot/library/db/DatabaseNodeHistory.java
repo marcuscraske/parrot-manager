@@ -3,9 +3,9 @@ package com.limpygnome.parrot.library.db;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class DatabaseNodeHistory
     EncryptedValue[] historyCached;
 
     // Previous values stored at this node
-    private List<EncryptedValue> history;
+    private Map<UUID, EncryptedValue> history;
 
     // The hashcode's of deleted values (used for syncing)
     private Set<UUID> deleted;
@@ -31,7 +31,7 @@ public class DatabaseNodeHistory
     DatabaseNodeHistory(DatabaseNode currentNode)
     {
         this.currentNode = currentNode;
-        this.history = new LinkedList<>();
+        this.history = new HashMap<>();
         this.deleted = new HashSet<>();
     }
 
@@ -60,7 +60,7 @@ public class DatabaseNodeHistory
      */
     public synchronized void add(EncryptedValue encryptedValue)
     {
-        history.add(encryptedValue);
+        history.put(encryptedValue.getId(), encryptedValue);
         setDirty();
     }
 
@@ -69,7 +69,8 @@ public class DatabaseNodeHistory
      */
     public synchronized void addAll(Collection<? extends EncryptedValue> values)
     {
-        history.addAll(values);
+        // Add each value
+        values.stream().forEach(encryptedValue -> history.put(encryptedValue.getId(), encryptedValue));
         setDirty();
     }
 
@@ -78,7 +79,7 @@ public class DatabaseNodeHistory
      */
     public synchronized EncryptedValue[] fetch()
     {
-        historyCached = history.toArray(new EncryptedValue[history.size()]);
+        historyCached = history.values().toArray(new EncryptedValue[history.size()]);
         return historyCached;
     }
 
@@ -90,7 +91,7 @@ public class DatabaseNodeHistory
     public void remove(EncryptedValue encryptedValue)
     {
         // Remove from collection
-        if (history.remove(encryptedValue))
+        if (history.remove(encryptedValue.getId()) != null)
         {
             // Add to list of values deleted
             deleted.add(encryptedValue.getId());
@@ -131,10 +132,14 @@ public class DatabaseNodeHistory
         boolean isDirty = false;
 
         // Add any missing values, unless deleted
-        for (EncryptedValue encryptedValue : otherHistory.history)
+        EncryptedValue clone;
+
+        for (EncryptedValue encryptedValue : otherHistory.history.values())
         {
-            if (!deleted.contains(encryptedValue.getId()) && this.history.add(encryptedValue.clone()))
+            if (!deleted.contains(encryptedValue.getId()) && !this.history.containsKey(encryptedValue.getId()))
             {
+                clone = encryptedValue.clone();
+                this.history.put(clone.getId(), clone);
                 isDirty = true;
             }
         }

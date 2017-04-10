@@ -11,6 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.limpygnome.parrot.library.test.ParrotAssert.assertArrayContentsEqual;
 import static org.junit.Assert.assertArrayEquals;
@@ -53,6 +54,15 @@ public class DatabaseNodeHistoryTest
         history = new DatabaseNodeHistory(currentNode);
 
         given(currentNode.getDatabase()).willReturn(database);
+
+        // Setup fake IDs
+        UUID encryptedValueId = UUID.randomUUID();
+        UUID encryptedValueId2 = UUID.randomUUID();
+
+        given(encryptedValue.getId()).willReturn(encryptedValueId);
+        given(encryptedValue2.getId()).willReturn(encryptedValueId2);
+        given(encryptedValueClone.getId()).willReturn(encryptedValueId);
+        given(encryptedValue2Clone.getId()).willReturn(encryptedValueId2);
 
         // Setup array of multiple values
         values = new LinkedList<>();

@@ -63,3 +63,5 @@ following arg:
 ````
 --development=true
 ````
+
+**Note**: Make sure the working directory is set to `parrot-manager` sub-directory.

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 public class DatabaseMergerTest
 {
     private static final char[] PASSWORD = "password".toCharArray();
-    
+
     // SUT
     private DatabaseMerger merger;
 

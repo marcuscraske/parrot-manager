@@ -1,12 +1,14 @@
 # TODO / Roadmap
 
 ## Bugs
-- History is not updated when changing value
+(none for now)
 
 ## Features
 ### Upcoming
 
 ### Next Release
+- Move JSON part of library into own module
+- Backups on remote host when syncing
 - Implement generic key combos
   - ctrl+o for open
 - Save-as
