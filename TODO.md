@@ -7,6 +7,7 @@
 ### Upcoming
 
 ### Next Release
+- Compress final build's artifacts
 - Move JSON part of library into own module
 - Backups on remote host when syncing
 - Implement generic key combos
