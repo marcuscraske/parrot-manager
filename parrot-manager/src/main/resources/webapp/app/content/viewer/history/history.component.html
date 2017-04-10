@@ -1,0 +1,41 @@
+<div class="form-group">
+    <button class="btn btn-danger" (click)="clearAll()">
+        Clear History
+    </button>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            Created
+        </th>
+        <th>
+            Value
+        </th>
+        <th>
+            Options
+        </th>
+    </tr>
+
+    <tr *ngIf="currentNode.getHistory().size() == 0">
+        <td colspan="3">
+            None
+        </td>
+    </tr>
+
+    <tr *ngFor="let historicValue of (currentNode.getHistory().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
+        <td>
+            {{ historicValue.getFormattedLastModified() }}
+        </td>
+        <td>
+            <toggle-value [encryptedValue]="historicValue"></toggle-value>
+        </td>
+        <td>
+            <button class="btn btn-danger" (click)="delete(historicValue)">
+                Delete
+            </button>
+            <copy-clipboard [encryptedValue]="historicValue"></copy-clipboard>
+        </td>
+    </tr>
+
+</table>

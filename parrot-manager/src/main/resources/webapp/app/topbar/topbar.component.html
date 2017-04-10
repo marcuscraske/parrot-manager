@@ -2,16 +2,16 @@
     <div class="actions">
 
         <div class="general-file" *ngIf="!databaseService.isOpen()">
-            <a routerLink="open" title="Open">
+            <a routerLink="/open" title="Open">
                 <span class="icon icon-folder"></span>
             </a>
-            <a routerLink="create" title="Create">
+            <a routerLink="/create" title="Create">
                 <span class="icon icon-file-text2"></span>
             </a>
         </div>
 
         <div class="db-open" *ngIf="databaseService.isOpen()">
-            <a routerLink="viewer" title="Viewer">
+            <a routerLink="/viewer" title="Viewer">
                 <span class="icon icon-search"></span>
             </a>
             <a title="Save" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
@@ -23,17 +23,17 @@
             <a routerLink="/backups" title="Backups">
                 <span class="icon icon-database"></span>
             </a>
-            <a routerLink="/options" title="Options">
-                <span class="icon icon-cog"></span>
-            </a>
             <a title="Close" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>
             </a>
 
         </div>
 
-        <div class="development" *ngIf="runtimeService.isDevelopmentMode()">
-            <a title="Refresh" (click)="runtimeService.refreshPage(router.url)">
+        <div>
+            <a routerLink="/settings" title="Settings">
+                <span class="icon icon-cog"></span>
+            </a>
+            <a *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="runtimeService.refreshPage(router.url)">
                 <span class="icon icon-loop2"></span>
             </a>
         </div>
@@ -45,9 +45,6 @@
     </div>
 
     <div class="options">
-                <span class="version">
-                    version 1.x.x
-                </span>
         <a routerLink="help">
             <span class="icon icon-question"></span>
         </a>

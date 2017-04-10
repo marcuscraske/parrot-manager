@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
+
 @Injectable()
 export class RuntimeService {
 
     oldHeight: number;
     runtimeService : any;
 
-    constructor()
+    constructor(
+        private encryptedValueService: EncryptedValueService,
+    )
     {
         setInterval( () => { this.updateHeight(); }, 50);
         this.runtimeService = (window as any).runtimeService;
@@ -46,33 +50,11 @@ export class RuntimeService {
 
     setClipboard(value)
     {
+        // Set clipboard
         this.runtimeService.setClipboard(value);
-    }
 
-    copyNodeValueToClipboard(node)
-    {
-        // Update clipboard
-        if (node != null)
-        {
-            var nodeId = node.getId();
-            console.log("copying value to clipboard - node id: " + nodeId);
-
-            var decryptedValue = node.getDecryptedValueString();
-
-            if (decryptedValue != null)
-            {
-                this.runtimeService.setClipboard(decryptedValue);
-                console.log("updated clipboard with value from node - node id: " + nodeId + ", value length: " + decryptedValue.length);
-            }
-            else
-            {
-                console.log("skipped copying to clipboard, value is empty/null - node id: " + nodeId);
-            }
-        }
-        else
-        {
-            console.log("unable to copy to clipboard - null node passed");
-        }
+        // Show notification
+        toastr.info("Copied to clipboard");
     }
 
     isDevelopmentMode() : boolean

@@ -1,7 +1,3 @@
-<h2>
-    Entries
-</h2>
-
 <div class="form-group">
     <button class="btn btn-default" (click)="addNewEntry()">
         Add New Entry
@@ -43,12 +39,7 @@
             </span>
         </td>
         <td>
-            <button class="btn btn-default" (click)="toggleMask('#' + node.getId() + '-value', node, false)">
-                Toggle Masking
-            </button>
-            <span id="{{ node.getId() }}-value">
-                ********
-            </span>
+            <toggle-value [encryptedValue]="node.getValue()"></toggle-value>
         </td>
         <td>
             <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())">
@@ -57,9 +48,7 @@
             <button class="btn btn-danger" (click)="deleteEntry(node.getId())">
                 Delete
             </button>
-            <button class="btn btn-default" (click)="runtimeService.copyNodeValueToClipboard(node)">
-                Copy to Clipboard
-            </button>
+            <copy-clipboard [encryptedValue]="node.getValue()"></copy-clipboard>
         </td>
     </tr>
 

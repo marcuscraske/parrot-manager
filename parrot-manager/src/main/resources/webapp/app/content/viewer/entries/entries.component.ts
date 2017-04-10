@@ -1,13 +1,14 @@
 import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
     selector: 'viewer-entries',
     templateUrl: 'entries.component.html',
     styleUrls: ['entries.component.css'],
-    providers: [RuntimeService, DatabaseService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ViewerEntriesComponent
@@ -20,10 +21,12 @@ export class ViewerEntriesComponent
     @Output() updateTree = new EventEmitter();
     @Output() changeNodeBeingViewed = new EventEmitter();
 
-    constructor(private runtimeService: RuntimeService, private databaseService: DatabaseService,
-                private renderer: Renderer)
-    {
-    }
+    constructor(
+        private runtimeService: RuntimeService,
+        private databaseService: DatabaseService,
+        private encryptedValueService: EncryptedValueService,
+        private renderer: Renderer
+    ) { }
 
     addNewEntry()
     {
@@ -107,46 +110,6 @@ export class ViewerEntriesComponent
     trackChildren(index, node)
     {
         return node ? node.getId() : null;
-    }
-
-    toggleMask(target, targetNode, isInput)
-    {
-        var field = $(target);
-        var masked = field.data("data-masked");
-
-        // Determine new value
-        var newValue;
-
-        if (masked == null || masked)
-        {
-            // Switch to unmasked
-            if (targetNode == null)
-            {
-                newValue = this.currentNode.getDecryptedValueString();
-            }
-            else
-            {
-                newValue = targetNode.getDecryptedValueString();
-            }
-
-            field.data("data-masked", false);
-        }
-        else
-        {
-            // Switch to masked
-            newValue = "********";
-            field.data("data-masked", true);
-        }
-
-        // Update element with new value
-        if (isInput)
-        {
-            field.val(newValue);
-        }
-        else
-        {
-            field.text(newValue);
-        }
     }
 
 }

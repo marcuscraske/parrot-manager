@@ -69,7 +69,18 @@ export class DatabaseService
 
     save() : string
     {
-        return this.databaseService.save();
+        var result = this.databaseService.save();
+
+        if (result == null)
+        {
+            toastr.success("Saved");
+        }
+        else
+        {
+            toastr.error("Failed to save database - " + result);
+        }
+
+        return result;
     }
 
     close()
@@ -134,7 +145,7 @@ export class DatabaseService
 
         var newJsonNode = {
             "id" : databaseNode.getId(),
-            "text" : name != null ? name : "(unnamed)",
+            "text" : name != null ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
             "children" : []
         };
 

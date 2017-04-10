@@ -2,6 +2,23 @@
     Simple JS file for mocking injected dependencies during Parrot runtime.
 */
 
+if (window.settingsService == null)
+{
+    window.settingsService = (function(){
+        return {
+            getSettings : function() {
+                return {
+                    getRecentFilesEnabled : function() { return { getValue : function() { return "true" } } },
+                    getRecentFilesOpenLastOnStartup : function() { return { getValue : function() { return "true" } } },
+                    getAutomaticBackupsOnSave : function() { return { getValue : function() { return "true" } } },
+                    getAutomaticBackupsRetained : function() { return { getValue : function() { return "20" } } }
+                }
+            }
+        }
+    })();
+}
+
+
 if (window.runtimeService == null)
 {
     window.runtimeService = (function(){
@@ -15,6 +32,7 @@ if (window.runtimeService == null)
     })();
 }
 
+
 if (window.randomGeneratorService == null)
 {
     window.randomGeneratorService = (function(){
@@ -27,6 +45,7 @@ if (window.randomGeneratorService == null)
 
     })();
 }
+
 
 if (window.databaseService == null)
 {
@@ -55,7 +74,8 @@ if (window.databaseService == null)
                                     getChildren : function() { return [] }
                                 }
 
-                            ] }
+                            ] },
+                            isRoot : function() { return false }
                         }
                     },
 
@@ -79,7 +99,7 @@ if (window.databaseService == null)
                                 }
 
                            ] },
-                           isRoot : function() { return true },
+                           isRoot : function() { return false },
                            setValueString : function() {}
                        }
                     }
@@ -89,4 +109,34 @@ if (window.databaseService == null)
 
     })();
 
+}
+
+
+if (window.recentFileService == null)
+{
+    window.recentFileService = (function(){
+
+        return {
+
+           fetch : function() { return []; },
+           clear : function() { }
+
+        }
+
+    })();
+}
+
+
+if (window.encryptedValueService == null)
+{
+    window.encryptedValueService = (function(){
+
+        return {
+
+           asString : function() { return "decrypted value test" },
+           fromString : function() { }
+
+        }
+
+    })();
 }

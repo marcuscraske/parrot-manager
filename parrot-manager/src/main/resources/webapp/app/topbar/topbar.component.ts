@@ -1,7 +1,8 @@
 import { Component, Renderer } from '@angular/core';
-import { RuntimeService } from '../service/runtime.service'
-import { DatabaseService } from '../service/database.service'
 import { Router } from '@angular/router';
+
+import { RuntimeService } from 'app/service/runtime.service'
+import { DatabaseService } from 'app/service/database.service'
 
 import "app/global-vars"
 
@@ -9,8 +10,7 @@ import "app/global-vars"
   moduleId: module.id,
   selector: 'topbar',
   templateUrl: 'topbar.component.html',
-  styleUrls: ['topbar.component.css'],
-  providers: [RuntimeService, DatabaseService]
+  styleUrls: ['topbar.component.css']
 })
 export class TopBarComponent
 {
@@ -18,7 +18,9 @@ export class TopBarComponent
     private nativeExitListener: Function;
 
     constructor(
-        private runtimeService: RuntimeService, private databaseService: DatabaseService, private router: Router,
+        private runtimeService: RuntimeService,
+        private databaseService: DatabaseService,
+        private router: Router,
         private renderer: Renderer
     )
     {

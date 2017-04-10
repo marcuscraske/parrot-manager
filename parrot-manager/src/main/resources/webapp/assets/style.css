@@ -18,6 +18,9 @@ header p
 body
 {
     font: normal 16px "OpenSans-Regular",sans-serif;
+
+    /* Disable general text selection, adds to feel of real desktop app */
+    -webkit-user-select: none;
 }
 
 main
@@ -51,4 +54,11 @@ a
     border-color: none;
 }
 
+/*
+    toastr theme overrides
+*/
 
+.toast-top-center
+{
+    margin-top: 1em;
+}

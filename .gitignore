@@ -12,4 +12,5 @@ target/
 
 # Parrot files
 *.parrot
+*.parrot.*
 *.sync

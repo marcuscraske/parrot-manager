@@ -1,0 +1,165 @@
+<h1>
+    settings
+</h1>
+
+<form [formGroup]="settingsForm" (ngSubmit)="save($event)" #form="ngForm">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                Recent files
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="checkbox-inline">
+                    <input type="checkbox"
+                           id="recentFilesEnabled"
+                           formControlName="recentFilesEnabled"
+                           [(ngModel)]="settingsForm.value['recentFilesEnabled']"
+                    />
+                    Enabled
+                </label>
+                <label class="checkbox-inline">
+                    <input type="checkbox"
+                           id="recentFilesOpenLastOnStartup"
+                           formControlName="recentFilesOpenLastOnStartup"
+                           [(ngModel)]="settingsForm.value['recentFilesOpenLastOnStartup']"
+                    />
+                    Open last file on startup
+                </label>
+            </div>
+
+            <div class="form-group" *ngIf="recentFilesClearEnabled">
+                <a class="btn btn-default" (click)="recentFilesClear()">
+                    Clear recent files
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                Backups
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="checkbox-inline">
+                    <input type="checkbox"
+                           id="automaticBackupsOnSave"
+                           formControlName="automaticBackupsOnSave"
+                           [(ngModel)]="settingsForm.value['automaticBackupsOnSave']"
+                    />
+                    Backup on save
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-control-label" for="automaticBackupsRetained">
+                    Maximum backups retained
+                </label>
+                <input id="automaticBackupsRetained"
+                       type="number"
+                       class="form-control"
+                       placeholder="Leave empty for unlimited"
+                       formControlName="automaticBackupsRetained"
+                       [(ngModel)]="settingsForm.value['automaticBackupsRetained']"
+                />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="panel panel-default" *ngIf="databaseService.isOpen()">
+        <div class="panel-heading">
+            <div class="panel-title">
+                Change Database Password
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="form-control-label" for="newPassword">
+                    Enter password:
+                </label>
+                <input id="newPassword"
+                       type="password"
+                       class="form-control"
+                       placeholder="Leave empty to not change"
+                       formControlName="newPassword"
+                       [(ngModel)]="settingsForm.value['newPassword']"
+                />
+            </div>
+            <div class="form-group">
+                <label class="form-control-label" for="newPasswordConfirm">
+                    Confirm password:
+                </label>
+                <input id="newPasswordConfirm"
+                       type="password"
+                       class="form-control"
+                       placeholder="Type again to confirm"
+                       formControlName="newPasswordConfirm"
+                       [(ngModel)]="settingsForm.value['newPasswordConfirm']"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" *ngIf="databaseService.isOpen()">
+        <div class="panel-heading">
+            <div class="panel-title">
+                Database Optimization
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <a class="btn btn-default" (click)="optimizeDeletedNodeHistory()">
+                        Clear deleted node history
+                    </a>
+                </div>
+                <div class="col-xs-9">
+                    <p>
+                        The identifiers of deleted nodes are retained for remote synchronisation of the database. If you have
+                        synchronised your database with all remote copies, you can wipe the history to reduce storage and memory
+                        usage.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <a class="btn btn-default" (click)="optimizeValueHistory()">
+                        Clear history
+                    </a>
+                </div>
+                <div class="col-xs-9">
+                    <p>
+                        The history of values is retained, which can be wiped to reduce storage and memory.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary btn-lg">
+                Save
+            </button>
+        </div>
+
+        <div class="form-group text-center">
+            <button type="button" class="btn btn-default" (click)="resetToDefault()">
+                Reset to default
+            </button>
+        </div>
+
+    </div>
+
+</form>

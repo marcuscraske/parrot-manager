@@ -9,86 +9,43 @@
     <div class="editor">
 
         <!--
-            No node selected - display home page
+            Main view for child node
         -->
-        <div class="home" *ngIf="currentNode == null">
-            <h1>
-                {{ databaseService.getFileName() }}
-            </h1>
-            <p>
-                Select a node to begin editing.
-            </p>
+        <div *ngIf="!this.currentNode.isRoot()">
+            <current-entry [currentNode]="currentNode"
+                           [updateEntryForm]="updateEntryForm"
+                           (updateTree)="updateTree()"
+                           (updateTreeSelection)="updateTreeSelection()"
+                           (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
+                           (continueActionWithPromptForDirtyValue)="continueActionWithPromptForDirtyValue($event)"
+                           (saveValue)="saveValue()"
+            ></current-entry>
         </div>
 
-        <!--
-            Node selected
-        -->
-        <div class="view" *ngIf="currentNode != null">
-
-            <div class="header">
-                <div class="button">
-                    <button class="btn btn-default" *ngIf="!this.currentNode.isRoot()" (click)="changeNodeBeingViewed(currentNode.getParent().getId())">
-                        <span class="icon icon-arrow-up2"></span>
-                    </button>
-                </div>
-                <div class="title">
-                    <input type="text" class="title-input"
-                           (change)="updateName($event)"
-                           (click)="preUpdateName($event)"
-                           (blur)="postUpdateName($event)"
-                           value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}"
-                    />
-                </div>
-            </div>
-
-            <p title="{{ currentNode.getFormattedLastModified() }}">
-                Last modified: {{ currentNode.getFormattedLastModified() }}
-            </p>
-
-            <!-- Value Options -->
-            <div class="form-group options">
-                <button class="btn btn-primary" (click)="saveValue()">
-                    Save Value
-                </button>
-                <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteCurrentEntry(currentNode.getId())">
-                    Delete
-                </button>
-                <button class="btn btn-default" (click)="hideValue()">
-                    Hide Value
-                </button>
-                <button class="btn btn-default" (click)="runtimeService.copyNodeValueToClipboard(currentNode)">
-                    Copy to Clipboard
-                </button>
-                <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer">
-                    Generate Random
-                </button>
-                <button class="btn btn-default">
+        <ul class="nav nav-tabs">
+            <li (click)="currentSubView = 'entries'" [ngClass]="{ 'active' : currentSubView == 'entries' }">
+                <a>
+                    Entries
+                </a>
+            </li>
+            <li *ngIf="!this.currentNode.isRoot()" (click)="currentSubView = 'history'" [ngClass]="{ 'active' : currentSubView == 'history' }">
+                <a>
                     History
-                </button>
-            </div>
+                </a>
+            </li>
+        </ul>
 
-            <!-- Generate Random Value Options -->
-            <generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode" (refreshValue)="refreshValue()"></generate-random>
+        <!-- List entries -->
+        <viewer-entries *ngIf="currentSubView == 'entries'"
+                        [currentNode]="currentNode"
+                        (updateTree)="updateTree()"
+                        (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
+        ></viewer-entries>
 
-            <form [formGroup]="updateEntryForm" #form="ngForm">
-                <!-- Current value -->
-                <div class="form-group">
-                    <textarea id="currentValue"
-                              class="form-control"
-                              rows="1"
-                              placeholder="Click to reveal value"
-                              formControlName="currentValue"
-                              (click)="preUpdateValue($event)"
-                              (keydown)="updateValue($event)"
-                    >********</textarea>
-                </div>
-
-            </form>
-
-            <!-- List entries -->
-            <viewer-entries [currentNode]="currentNode" (updateTree)="updateTree()" (changeNodeBeingViewed)="changeNodeBeingViewed($event)"></viewer-entries>
-
-        </div>
+        <!-- List historic values -->
+        <history *ngIf="currentSubView == 'history'"
+                 [currentNode]="currentNode"
+        ></history>
 
     </div>
 

@@ -7,12 +7,19 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-manager</artifactId>
 
     <dependencies>
+
+        <!-- Local -->
+        <dependency>
+            <groupId>com.limpygnome.parrot</groupId>
+            <artifactId>parrot-library</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Cryptography -->
         <dependency>
@@ -28,16 +35,16 @@
             <version>0.1.54</version>
         </dependency>
 
-        <!-- JSON -->
+        <!-- Spring -->
         <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.1.6.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>4.1.6.RELEASE</version>
         </dependency>
 
         <!-- Unit testing -->
@@ -124,6 +131,9 @@
                 </executions>
             </plugin>
 
+            <!-- Create build.properties file -->
+
+
             <!-- Build JAR distribution -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -200,6 +210,21 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Ensures MANIFEST.MF entries present when creating JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
 
         </plugins>
