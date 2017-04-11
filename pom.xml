@@ -11,6 +11,7 @@
 
     <modules>
         <module>parrot-library</module>
+        <module>parrot-library-json</module>
         <module>parrot-manager</module>
         <module>dist</module>
     </modules>

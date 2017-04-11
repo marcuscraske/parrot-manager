@@ -20,6 +20,11 @@
             <artifactId>parrot-library</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.limpygnome.parrot</groupId>
+            <artifactId>parrot-library-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Cryptography -->
         <dependency>

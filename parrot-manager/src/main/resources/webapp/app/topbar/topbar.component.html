@@ -11,19 +11,27 @@
         </div>
 
         <div class="db-open" *ngIf="databaseService.isOpen()">
-            <a routerLink="/viewer" title="Viewer">
+            <a title="View Entries" routerLink="/viewer">
                 <span class="icon icon-search"></span>
             </a>
-            <a title="Save" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
-                <span class="icon icon-floppy-disk"></span>
-            </a>
-            <a routerLink="/remote-sync" title="Remote Sync">
-                <span class="icon icon-loop2"></span>
-            </a>
-            <a routerLink="/backups" title="Backups">
+            <a title="Backups" routerLink="/backups">
                 <span class="icon icon-database"></span>
             </a>
-            <a title="Close" (click)="attemptToCloseDatabase(false)">
+            <a title="Remote Sync" routerLink="/remote-sync">
+                <span class="icon icon-loop2"></span>
+            </a>
+        </div>
+        <div class="db-open" *ngIf="databaseService.isOpen()">
+            <a title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
+                <span class="icon icon-floppy-disk"></span>
+            </a>
+            <a title="Save Database As">
+                <span class="icon icon-copy"></span>
+            </a>
+            <a title="Change Database" (click)="attemptToCloseDatabase(false)">
+                <span class="icon icon-folder-open"></span>
+            </a>
+            <a title="Exit">
                 <span class="icon icon-exit"></span>
             </a>
 

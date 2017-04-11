@@ -116,12 +116,18 @@ export class ViewerComponent
         $(() => {
 
             // Setup tree with drag-and-drop enabled
-            var tree = $("#sidebar").jstree({
-                core: {
+            var tree = $("#sidebar").jstree(
+            {
+                core:
+                {
                     check_callback: true,
                     data: {}
                 },
                 dnd : { },
+                sort : function(a, b)
+                {
+                    return a.text > b.text;
+                },
                 plugins: [ "dnd" ]
             });
 

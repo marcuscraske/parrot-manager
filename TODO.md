@@ -5,15 +5,18 @@
 
 ## Features
 ### Upcoming
-
-### Next Release
-- Compress final build's artifacts
-- Move JSON part of library into own module
-- Backups on remote host when syncing
+- Clear clipboard after copy
+  - Option to be toggled in settings
 - Implement generic key combos
   - ctrl+o for open
+- Implement drag+drop of nodes
 - Save-as
-- Minification of resources and bundling only compiled assets
+- Compress final build's artifacts
+  - Minification of resources and bundling only compiled assets
+- Backups on remote host when syncing
+
+### Next Release
+- TBC
 
 ### Ideas
 - Import/export
