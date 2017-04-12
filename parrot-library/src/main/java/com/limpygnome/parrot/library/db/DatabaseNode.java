@@ -62,9 +62,6 @@ public class DatabaseNode
         this.children = new HashMap<>(0);
         this.deletedChildren = new HashSet<>();
         this.history = new DatabaseNodeHistory(this);
-
-        // Add ref to database lookup
-        database.getLookup().put(id, this);
     }
 
     /**
@@ -114,12 +111,16 @@ public class DatabaseNode
      */
     public synchronized void setId(UUID id)
     {
-        // Update lookup
-        database.getLookup().remove(this.id);
-        database.getLookup().put(id, this);
+        DatabaseLookup lookup = database.getLookup();
+
+        // Remove from lookup
+        lookup.remove(this);
 
         // Update ID
         this.id = id;
+
+        // Add to lookup
+        lookup.add(this);
 
         // Set dirty flag
         database.setDirty(true);
@@ -345,6 +346,9 @@ public class DatabaseNode
         // Set dirty flag
         database.setDirty(true);
 
+        // Add to database lookup
+        database.getLookup().add(this);
+
         return node;
     }
 
@@ -374,7 +378,7 @@ public class DatabaseNode
             parent.deletedChildren.add(id);
 
             // Remove from lookup
-            database.getLookup().remove(id);
+            database.getLookup().remove(this);
 
             // Set as orphan
             parent = null;
@@ -384,6 +388,38 @@ public class DatabaseNode
         }
 
         return this;
+    }
+
+    /**
+     * Moves this node to become the child of a different parent.
+     *
+     * @param newParent the destination parent node
+     */
+    public synchronized void moveTo(DatabaseNode newParent)
+    {
+        if (parent == null)
+        {
+            throw new IllegalStateException("Root node cannot be moved / this node has no parent");
+        }
+
+        // Remove from previous parent
+        remove();
+
+        // Re-generate IDs recursively
+        regenerateIds();
+
+        // Attach to target node
+        newParent.add(this);
+    }
+
+    private void regenerateIds()
+    {
+        id = UUID.randomUUID();
+
+        for (DatabaseNode child : children.values())
+        {
+            child.regenerateIds();
+        }
     }
 
     /**

@@ -70,7 +70,19 @@ if (window.databaseService == null)
 
                                 {
                                     getId : function() { return "a1b07836-83d0-486e-b329-4c41d317295d" },
-                                    getName : function() { return "hello" },
+                                    getName : function() { return "child 1" },
+                                    getChildren : function() { return [] }
+                                },
+
+                                {
+                                    getId : function() { return "66aaf8d3-05fc-4bc7-afe5-d04e2cbaa26c" },
+                                    getName : function() { return "child 2" },
+                                    getChildren : function() { return [] }
+                                },
+
+                                {
+                                    getId : function() { return "97245ef0-d33c-4b7c-8f2f-dba4641f713c" },
+                                    getName : function() { return "child 3" },
                                     getChildren : function() { return [] }
                                 }
 

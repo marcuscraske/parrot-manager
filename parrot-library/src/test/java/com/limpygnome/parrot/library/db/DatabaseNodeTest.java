@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static com.limpygnome.parrot.library.test.ParrotAssert.assertArrayContentsEqual;
@@ -46,7 +45,7 @@ public class DatabaseNodeTest
     @Mock
     private CryptoParams cryptoParams;
     @Mock
-    private Map<UUID, DatabaseNode> databaseLookup;
+    private DatabaseLookup databaseLookup;
     @Mock
     private DatabaseNode mockDatabaseNode;
     @Mock
@@ -125,8 +124,8 @@ public class DatabaseNodeTest
         node.setId(uuid);
 
         // Then
-        verify(databaseLookup).remove(this.uuid);
-        verify(databaseLookup).put(uuid, node);
+        verify(databaseLookup).remove(node);
+        verify(databaseLookup).add(node);
     }
 
     @Test
@@ -506,7 +505,7 @@ public class DatabaseNodeTest
         child.remove();
 
         // Then
-        verify(databaseLookup).remove(uuid);
+        verify(databaseLookup).remove(child);
     }
 
     @Test

@@ -1,15 +1,15 @@
 # TODO / Roadmap
 
 ## Bugs
-(none for now)
+- Remote sync - when prompted for multiple database passwords, the second prompt does not have focus.
 
 ## Features
 ### Upcoming
+- Implement drag+drop of nodes
 - Clear clipboard after copy
   - Option to be toggled in settings
 - Implement generic key combos
   - ctrl+o for open
-- Implement drag+drop of nodes
 - Save-as
 - Compress final build's artifacts
   - Minification of resources and bundling only compiled assets

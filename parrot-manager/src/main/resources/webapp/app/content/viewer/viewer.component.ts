@@ -124,11 +124,7 @@ export class ViewerComponent
                     data: {}
                 },
                 dnd : { },
-                sort : function(a, b)
-                {
-                    return a.text > b.text;
-                },
-                plugins: [ "dnd" ]
+                plugins: [ "dnd", "sort" ]
             });
 
             // Hook tree for select event
@@ -151,6 +147,33 @@ export class ViewerComponent
 
                 // Update current node being edited
                 this.changeNodeBeingViewed(nodeId);
+            });
+
+            // Hook tree for move/dnd event
+            // TODO: restrict root node from being moved
+            $("#sidebar").on("move_node.jstree", (e, data) => {
+                var nodeId = data.node.id;
+                var newParentId = data.parent;
+
+                var node = this.databaseService.getNode(nodeId);
+                var newParentNode = this.databaseService.getNode(newParentId);
+                var isCurrentNode = (nodeId == node.getId());
+
+                // Move the node to new target node
+                console.log("moving node: " + nodeId);
+                node.moveTo(newParentNode);
+
+                // Update tree data
+                this.updateTree();
+
+                // Re-navigate to moved node if we're currently viewing it
+                if (isCurrentNode)
+                {
+                    console.log("viewing moved node, re-navigating...");
+
+                    var newNodeId = node.getId();
+                    this.changeNodeBeingViewed(newNodeId);
+                }
             });
 
         });

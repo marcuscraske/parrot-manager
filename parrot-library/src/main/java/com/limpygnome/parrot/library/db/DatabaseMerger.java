@@ -199,9 +199,8 @@ public class DatabaseMerger
             // src deleted this node
             else if (src.getDeletedChildren().contains(child.getUuid()))
             {
-                // Remove from our tree, this node has been deleted
-                iterator.remove();
-                destination.getLookup().remove(child.getUuid());
+                // Remove node from our database as it has been removed remotely
+                child.remove();
 
                 actionLog.add(dest, "removed child - " + child.getPath());
                 changed = true;

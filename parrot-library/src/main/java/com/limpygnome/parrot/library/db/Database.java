@@ -8,8 +8,6 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -33,21 +31,21 @@ public class Database
     private boolean isDirty;
 
     // Params used for file crypto
-    protected CryptoParams fileCryptoParams;
+    private CryptoParams fileCryptoParams;
 
     // Params used for memory crypto
-    protected CryptoParams memoryCryptoParams;
+    private CryptoParams memoryCryptoParams;
 
     // The root node of the database
-    protected DatabaseNode root;
+    private DatabaseNode root;
 
     // Quick ref map of UUID (String) to node; this must be updated in places where nodes are added/removed etc
-    protected Map<UUID, DatabaseNode> lookup;
+    private DatabaseLookup lookup;
 
     private Database()
     {
         // Setup an initial blank root node
-        lookup = new HashMap<>();
+        lookup = new DatabaseLookup();
         root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
     }
 
@@ -81,7 +79,7 @@ public class Database
         this.fileCryptoParams = fileCryptoParams;
     }
 
-    Map<UUID, DatabaseNode> getLookup()
+    DatabaseLookup getLookup()
     {
         return lookup;
     }
