@@ -347,7 +347,7 @@ public class DatabaseNode
         database.setDirty(true);
 
         // Add to database lookup
-        database.getLookup().add(this);
+        database.getLookup().add(node);
 
         return node;
     }
@@ -397,11 +397,6 @@ public class DatabaseNode
      */
     public synchronized void moveTo(DatabaseNode newParent)
     {
-        if (parent == null)
-        {
-            throw new IllegalStateException("Root node cannot be moved / this node has no parent");
-        }
-
         // Remove from previous parent
         remove();
 

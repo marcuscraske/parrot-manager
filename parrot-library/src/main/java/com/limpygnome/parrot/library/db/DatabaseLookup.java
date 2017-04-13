@@ -39,7 +39,7 @@ public class DatabaseLookup
         // Remove children recursively
         for (DatabaseNode child : node.getChildren())
         {
-            lookup.remove(child);
+            remove(child);
         }
     }
 

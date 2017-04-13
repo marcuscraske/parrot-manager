@@ -14,6 +14,7 @@
 - Compress final build's artifacts
   - Minification of resources and bundling only compiled assets
 - Backups on remote host when syncing
+- Add gzip compression to database file
 
 ### Next Release
 - TBC

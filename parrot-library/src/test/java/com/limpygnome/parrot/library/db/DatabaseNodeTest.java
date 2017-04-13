@@ -429,6 +429,16 @@ public class DatabaseNodeTest
     }
 
     @Test
+    public void add_databaseLookupUpdated()
+    {
+        // when
+        node.add(mockDatabaseNode);
+
+        // then
+        verify(databaseLookup).add(mockDatabaseNode);
+    }
+
+    @Test
     public void addNew_isChildAndParentCorrect()
     {
         // When
@@ -463,6 +473,16 @@ public class DatabaseNodeTest
     }
 
     @Test
+    public void addNew_databaseLookupUpdated()
+    {
+        // when
+        DatabaseNode newNode = node.addNew();
+
+        // then
+        verify(databaseLookup).add(newNode);
+    }
+
+    @Test
     public void remove_nothingWhenParentNull()
     {
         // Given
@@ -472,9 +492,7 @@ public class DatabaseNodeTest
         node.remove();
 
         // Then
-        // TODO: should be one interaction with lookup during constrution...?
-        verify(database).getLookup();
-        verifyNoMoreInteractions(database);
+        verifyZeroInteractions(database);
         verifyZeroInteractions(databaseLookup);
     }
 
@@ -494,12 +512,11 @@ public class DatabaseNodeTest
     }
 
     @Test
-    public void remove_invokesRemovalFromDatabaseLookup()
+    public void remove_removalFromDatabaseLookup()
     {
         // Given
         DatabaseNode node = new DatabaseNode(database, null);
         DatabaseNode child = node.addNew();
-        UUID uuid = child.getUuid();
 
         // When
         child.remove();
@@ -597,6 +614,68 @@ public class DatabaseNodeTest
 
         // Then
         assertEquals("Unexpected format", NAME + "/[" + child.getId() + "]", path);
+    }
+
+    @Test
+    public void moveTo_isRemovedFromParent()
+    {
+        // given
+        DatabaseNode parent = new DatabaseNode(database, null);
+        parent.add(node);
+
+        assertEquals("should be child of parent node", 1, parent.getChildCount());
+
+        // when
+        node.moveTo(mockDatabaseNode2);
+
+        // then
+        assertEquals("old parent should have no children", 0, parent.getChildCount());
+    }
+
+    @Test
+    public void moveTo_databaseLookupInteraction()
+    {
+        // given
+        DatabaseNode parent = new DatabaseNode(database, null);
+        parent.add(node);
+
+        // when
+        node.moveTo(mockDatabaseNode);
+
+        // then
+        verify(databaseLookup).remove(node);
+        verify(databaseLookup).add(node);
+        verifyNoMoreInteractions(databaseLookup);
+    }
+
+    @Test
+    public void moveTo_hasDifferentId_newIdOnDatabaseLookup()
+    {
+        // given
+        Database database = new Database(null, null);
+
+        DatabaseNode parent = new DatabaseNode(database, null);
+        DatabaseNode node = parent.addNew();
+
+        DatabaseNode newParent = new DatabaseNode(database, null);
+
+        // when
+        node.moveTo(newParent);
+
+        // then
+        assertNotEquals("id should have changed on node", uuid, node.getId());
+        assertNull("old uuid should not retrieve node", database.getLookup().get(uuid));
+        assertEquals("new uuid should retrieve node", node, database.getLookup().get(node.getUuid()));
+    }
+
+    @Test
+    public void moveTo_isAddedToTarget()
+    {
+        // when
+        node.moveTo(mockDatabaseNode);
+
+        // then
+        verify(mockDatabaseNode).add(node);
     }
 
 }
