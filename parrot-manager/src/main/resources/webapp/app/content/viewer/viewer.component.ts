@@ -124,7 +124,14 @@ export class ViewerComponent
                     data: {}
                 },
                 dnd : { },
-                plugins: [ "dnd", "sort" ]
+                types:
+                {
+                    "#":
+                    {
+                        max_children: 1
+                    }
+                },
+                plugins: [ "types", "dnd", "sort" ]
             });
 
             // Hook tree for select event
