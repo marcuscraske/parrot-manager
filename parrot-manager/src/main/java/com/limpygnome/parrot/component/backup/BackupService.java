@@ -31,22 +31,6 @@ public class BackupService
     @Autowired
     private SessionService sessionService;
 
-    public String createBackupBeforeSave()
-    {
-        String result = null;
-
-        // Check if enabled
-        Settings settings = settingsService.getSettings();
-        boolean isEnabled = settings.getAutomaticBackupsOnSave().getValue();
-
-        if (isEnabled)
-        {
-            result = create();
-        }
-
-        return result;
-    }
-
     /**
      * Creates a new backup.
      *
@@ -54,45 +38,42 @@ public class BackupService
      */
     public String create()
     {
-        String result = null;
+        String errorMessage = null;
 
-        LOG.info("creating backup...");
+        // Check if enabled
+        Settings settings = settingsService.getSettings();
+        boolean isEnabled = settings.getAutomaticBackupsOnSave().getValue();
 
-        try
+        if (isEnabled)
         {
-            // Fetch the database currently open
-            Database database = databaseService.getDatabase();
+            LOG.info("creating backup...");
 
-            // Check if max retained databases has been met
-            checkRetainedDatabases();
+            try
+            {
+                // Fetch the database currently open
+                Database database = databaseService.getDatabase();
 
-            // Build path
-            File currentFile = databaseService.getFile();
-            File currentParentFile = currentFile.getParentFile();
-            File backupFile = new File(currentParentFile, "." + databaseService.getFileName() + "." + System.currentTimeMillis());
+                // Check if max retained databases has been met
+                checkRetainedDatabases();
 
-            // Save as backup...
-            databaseReaderWriter.save(database, backupFile);
+                // Build path
+                File currentFile = databaseService.getFile();
+                File currentParentFile = currentFile.getParentFile();
+                File backupFile = new File(currentParentFile, "." + databaseService.getFileName() + "." + System.currentTimeMillis());
 
-            LOG.info("backup created - name: {}", backupFile.getAbsolutePath());
+                // Save as backup...
+                databaseReaderWriter.save(database, backupFile);
+
+                LOG.info("backup created - name: {}", backupFile.getAbsolutePath());
+            }
+            catch (Exception e)
+            {
+                errorMessage = "Failed to create backup - " + e.getMessage();
+                LOG.error("failed to create backup", e);
+            }
         }
-        catch (Exception e)
-        {
-            result = "Failed to create backup - " + e.getMessage();
-            LOG.error("failed to create backup", e);
-        }
 
-        return result;
-    }
-
-    private File[] fetchFiles()
-    {
-        // Fetch backup files
-        File currentFile = databaseService.getFile();
-        File parentFile = currentFile.getParentFile();
-        String currentName = currentFile.getName();
-        File[] files = parentFile.listFiles((dir, name) -> name.startsWith("." + currentName));
-        return files;
+        return errorMessage;
     }
 
     /**
@@ -113,6 +94,47 @@ public class BackupService
         sessionService.put("backups", backupFiles);
 
         return backupFiles;
+    }
+
+    /**
+     * Deletes a backup.
+     *
+     * @param backupFile the instance to be deleted
+     * @return error message; null if successful
+     */
+    public String delete(BackupFile backupFile)
+    {
+        String result = null;
+        File file = new File(backupFile.getPath());
+
+        if (!file.delete())
+        {
+            result = "Unable to delete file (unknown reason)";
+        }
+
+        return result;
+    }
+
+    private File[] fetchFiles()
+    {
+        File[] files;
+
+        // Fetch backup files
+        File currentFile = databaseService.getFile();
+
+        if (currentFile != null)
+        {
+            File parentFile = currentFile.getParentFile();
+            String currentName = currentFile.getName();
+            files = parentFile.listFiles((dir, name) -> name.startsWith("." + currentName));
+        }
+        else
+        {
+            files = new File[0];
+            LOG.warn("attempted to fetch backup files when database closed");
+        }
+
+        return files;
     }
 
     private void checkRetainedDatabases()
@@ -140,19 +162,6 @@ public class BackupService
                     file.delete();
                     LOG.info("deleted old retained file (max reached) - name: {}", file.getName());
                 });
-    }
-
-    public String delete(BackupFile backupFile)
-    {
-        String result = null;
-        File file = new File(backupFile.getPath());
-
-        if (!file.delete())
-        {
-            result = "Unable to delete file (unknown reason)";
-        }
-
-        return result;
     }
 
 }

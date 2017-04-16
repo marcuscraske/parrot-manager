@@ -152,3 +152,16 @@ if (window.encryptedValueService == null)
 
     })();
 }
+
+if (window.backupService == null)
+{
+    window.backupService = (function(){
+
+        return {
+
+           create : function() { return true }
+
+        }
+
+    })();
+}

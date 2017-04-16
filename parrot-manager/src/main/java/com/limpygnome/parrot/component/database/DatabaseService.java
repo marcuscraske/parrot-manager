@@ -145,14 +145,9 @@ public class DatabaseService
             LOG.info("saving database - path: {}", path);
 
             // Create backup
-            result = backupService.createBackupBeforeSave();
+            result = backupService.create();
 
-            if (result != null)
-            {
-                LOG.error("failed to backup database on save - result: {}", result);
-                result = "Failed to create automatic backup on save - " + result;
-            }
-            else
+            if (result == null)
             {
                 // Save the database
                 databaseReaderWriter.save(database, path);

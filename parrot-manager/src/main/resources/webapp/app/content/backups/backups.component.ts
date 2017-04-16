@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 @Component({
     moduleId: module.id,
     templateUrl: "backups.component.html",
-    providers: [BackupService],
+    providers: [],
     styleUrls: ["backups.component.css"]
 })
 export class BackupsComponent {
@@ -33,11 +33,7 @@ export class BackupsComponent {
         console.log("creating backup...");
 
         // Create backup
-        this.errorMessage = this.backupService.create();
-        console.log("backup result: " + this.errorMessage);
-
-        // Refresh list of backups if no error occurred
-        if (this.errorMessage == null)
+        if (this.backupService.create())
         {
             this.refreshBackups();
         }

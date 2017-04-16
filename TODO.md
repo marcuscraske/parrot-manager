@@ -8,16 +8,15 @@
 - Send keys to next available application
 - Setting to wipe clipboard within time period, after copying an entry.
   - Option to be toggled in settings
-- Implement generic key combos
-  - ctrl+o for open
 - Backups on remote host when syncing
 - Save-as
 - Compress final build's artifacts
   - Minification of resources and bundling only compiled assets
 - Add gzip compression to database file
 
-### Next Release
-- TBC
+### Future
+- Implement generic key combos
+  - ctrl+o for open
 
 ### Ideas
 - Import/export

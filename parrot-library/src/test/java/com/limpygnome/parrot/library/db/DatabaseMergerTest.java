@@ -2,6 +2,7 @@ package com.limpygnome.parrot.library.db;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,8 @@ import static org.mockito.Mockito.verify;
 public class DatabaseMergerTest
 {
     private static final char[] PASSWORD = "password".toCharArray();
+    private static final long LAST_MODIFIED_OLDER = 123L;
+    private static final long LAST_MODIFIED_NEWER = 456L;
 
     // SUT
     private DatabaseMerger merger;
@@ -59,6 +62,9 @@ public class DatabaseMergerTest
     @Mock
     private DatabaseNodeHistory clonedHistory;
 
+    // Test data
+    private Set<UUID> deletedChildren;
+
 
     @Before
     public void setup()
@@ -78,6 +84,13 @@ public class DatabaseMergerTest
         given(destination.getRoot()).willReturn(destinationRoot);
 
         given(destinationRoot.getDeletedChildren()).willReturn(destinationRootDeletedChildren);
+
+        // Setup fake deleted children
+        deletedChildren = new HashSet<>();
+        for (int i = 0; i < 5; i++)
+        {
+            deletedChildren.add(UUID.randomUUID());
+        }
     }
 
 
@@ -86,8 +99,8 @@ public class DatabaseMergerTest
     public void mergeDatabaseFileCryptoParams_destOlder_isUpdated()  throws Exception
     {
         // given
-        given(sourceFileCryptoParams.getLastModified()).willReturn(456L);
-        given(destFileCryptoParams.getLastModified()).willReturn(123L);
+        given(sourceFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
+        given(destFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
 
         // when
         merger.merge(source, destination, PASSWORD);
@@ -100,8 +113,8 @@ public class DatabaseMergerTest
     public void mergeDatabaseFileCryptoParams_destNewer_setsDirty()  throws Exception
     {
         // given
-        given(sourceFileCryptoParams.getLastModified()).willReturn(123L);
-        given(destFileCryptoParams.getLastModified()).willReturn(456L);
+        given(sourceFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
+        given(destFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
 
         // when
         merger.merge(source, destination, PASSWORD);
@@ -116,8 +129,8 @@ public class DatabaseMergerTest
     public void mergeDatabaseMemoryCryptoParams_destOlder_isUpdated()  throws Exception
     {
         // given
-        given(sourceMemoryCryptoParams.getLastModified()).willReturn(456L);
-        given(destMemoryCryptoParams.getLastModified()).willReturn(123L);
+        given(sourceMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
+        given(destMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
 
         // when
         merger.merge(source, destination, PASSWORD);
@@ -130,8 +143,8 @@ public class DatabaseMergerTest
     public void mergeDatabaseMemoryCryptoParams_destNewer_setsDirty()  throws Exception
     {
         // given
-        given(sourceFileCryptoParams.getLastModified()).willReturn(123L);
-        given(destFileCryptoParams.getLastModified()).willReturn(456L);
+        given(sourceFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
+        given(destFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
 
         // when
         merger.merge(source, destination, PASSWORD);
@@ -143,7 +156,7 @@ public class DatabaseMergerTest
 
 
     @Test
-    public void mergeNodeDetails_srcNewerThanDest_updatesName()  throws Exception
+    public void mergeNodeProperties_srcNewerThanDest_updatesName()  throws Exception
     {
         // given
         givenSourceRootNewerThanDest();
@@ -159,7 +172,7 @@ public class DatabaseMergerTest
     }
 
     @Test
-    public void mergeNodeDetails_srcNewerThanDest_updatesValue()  throws Exception
+    public void mergeNodeProperties_srcNewerThanDest_updatesValue()  throws Exception
     {
         // given
         givenSourceRootNewerThanDest();
@@ -177,7 +190,7 @@ public class DatabaseMergerTest
     }
 
     @Test
-    public void mergeNodeDetails_srcNewerThanDest_mergesHistory()  throws Exception
+    public void mergeNodeProperties_srcNewerThanDest_mergesHistory()  throws Exception
     {
         // given
         givenSourceRootNewerThanDest();
@@ -193,25 +206,29 @@ public class DatabaseMergerTest
     }
 
     @Test
-    public void mergeNodeDetails_srcNewerThanDest_updatesLastModified()  throws Exception
+    public void mergeNodeProperties_srcNewerThanDest_updatesLastModified()  throws Exception
     {
         // given
+        givenSourceRootNewerThanDest();
 
         // when
         merger.merge(source, destination, PASSWORD);
 
         // then
+        verify(destinationRoot).setLastModified(LAST_MODIFIED_NEWER);
     }
 
     @Test
-    public void mergeNodeDetails_srcNewerThanDest_setsDirty()  throws Exception
+    public void mergeNodeProperties_srcNewerThanDest_setsDirty()  throws Exception
     {
         // given
+        givenSourceRootNewerThanDest();
 
         // when
         merger.merge(source, destination, PASSWORD);
 
         // then
+        verify(destination).setDirty(true);
     }
 
     private void givenSourceRootNewerThanDest()
@@ -224,19 +241,23 @@ public class DatabaseMergerTest
     public void mergeNodeDetails_deletedChildrenUpdated()  throws Exception
     {
         // given
+        given(sourceRoot.getDeletedChildren()).willReturn(deletedChildren);
+        given(destinationRootDeletedChildren.addAll(deletedChildren)).willReturn(true);
 
         // when
         merger.merge(source, destination, PASSWORD);
 
         // then
+        verify(destinationRootDeletedChildren).addAll(deletedChildren);
+        verify(destination).setDirty(true);
     }
-
 
 
     @Test
     public void mergeDestNodeChildren_srcAndDestNodesExist_areRecursivelyMerged()  throws Exception
     {
         // given
+
 
         // when
         merger.merge(source, destination, PASSWORD);

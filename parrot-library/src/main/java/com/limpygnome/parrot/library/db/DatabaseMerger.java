@@ -106,14 +106,14 @@ public class DatabaseMerger
     {
         boolean changed;
 
-        changed  = mergeNodeDetails(actionLog, src, dest);
+        changed  = mergeNodeProperties(actionLog, src, dest);
         changed |= mergeDestNodeChildren(actionLog, destination, src, dest);
         changed |= mergeSrcNodeChildren(actionLog, destination, src, dest);
 
         return changed;
     }
 
-    boolean mergeNodeDetails(ActionLog actionLog, DatabaseNode src, DatabaseNode dest)
+    boolean mergeNodeProperties(ActionLog actionLog, DatabaseNode src, DatabaseNode dest)
     {
         boolean changed = false;
 
@@ -205,6 +205,7 @@ public class DatabaseMerger
                 actionLog.add(dest, "removed child - " + child.getPath());
                 changed = true;
             }
+
             // src is missing this node
             else
             {
