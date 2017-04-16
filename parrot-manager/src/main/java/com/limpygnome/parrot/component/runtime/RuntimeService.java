@@ -128,18 +128,19 @@ public class RuntimeService
      */
     public void setClipboard(String value)
     {
-        if (value != null)
+        // Replace null with empty value
+        if (value == null)
         {
-            // TODO: make single use? might not be easily possible...
-            StringSelection selection = new StringSelection(value);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+            value = "";
+        }
 
-            LOG.info("copied value to clipboard - length: {}", value.length());
-        }
-        else
-        {
-            LOG.warn("attempted to set null value as clipboard");
-        }
+        StringSelection selection = new StringSelection(value);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+
+        // Wipe clipboard within timeout period if enabled
+
+
+        LOG.info("copied value to clipboard - length: {}", value.length());
     }
 
 }
