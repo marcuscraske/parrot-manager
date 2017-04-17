@@ -100,6 +100,17 @@ export class ViewerComponent
         // Set root node as current by default
         var database = this.databaseService.getDatabase();
         var rootNode = database.getRoot();
+
+        if (database == null)
+        {
+            console.error("database is null");
+        }
+
+        if (rootNode == null)
+        {
+            console.error("root node is null");
+        }
+
         this.changeNodeBeingViewed(rootNode.getId());
     }
 

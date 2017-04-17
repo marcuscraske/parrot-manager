@@ -46,7 +46,9 @@ public class Database
     {
         // Setup an initial blank root node
         lookup = new DatabaseLookup();
+
         root = new DatabaseNode(this, UUID.randomUUID(), null, 0, (EncryptedAesValue) null);
+        lookup.add(root);
     }
 
     /**
@@ -95,8 +97,6 @@ public class Database
     /**
      * Retrieves a node by its identifier.
      *
-     * TODO: add tests
-     *
      * @param rawUuid the id/uuid as raw text
      * @return the node, or null if not found or the id cannot be parsed as a uuid
      */
@@ -121,8 +121,6 @@ public class Database
     /**
      * Retrieves a node by its identifier.
      *
-     * TODO: add tests
-     *
      * @param uuid the node identifier
      * @return the node, or null if not found
      */
@@ -139,7 +137,14 @@ public class Database
      */
     public synchronized void setRoot(DatabaseNode node)
     {
-        this.root = node;
+        if (this.root != node)
+        {
+            // Remove old root from lookup
+            lookup.remove(this.root);
+
+            // Update to new root
+            this.root = node;
+        }
     }
 
     /**

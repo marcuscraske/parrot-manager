@@ -21,6 +21,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+// TODO: need to review tests i.e. for constructors, setRoot changing lookup behaviour etc
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseTest
 {
