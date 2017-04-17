@@ -3,7 +3,7 @@
     <img src="parrot-manager/src/main/resources/icons/parrot-icon.png" alt="parrot logo" />
 </p>
 
-[![Build Status](https://travis-ci.org/limpygnome/parrot-manager.svg?branch=master)](https://travis-ci.org/limpygnome/parrot-manager)
+[![Build Status](https://travis-ci.org/limpygnome/parrot-manager.svg)](https://travis-ci.org/limpygnome/parrot-manager)
 [![Code Climate](https://codeclimate.com/github/limpygnome/parrot-manager/badges/gpa.svg)](https://codeclimate.com/github/limpygnome/parrot-manager)
 [![Issue Count](https://codeclimate.com/github/limpygnome/parrot-manager/badges/issue_count.svg)](https://codeclimate.com/github/limpygnome/parrot-manager)
 [![Dependency Status](https://gemnasium.com/badges/github.com/limpygnome/parrot-manager.svg)](https://gemnasium.com/github.com/limpygnome/parrot-manager)
