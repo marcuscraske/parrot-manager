@@ -24,8 +24,8 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
+                        <id>create-archive</id>
+                        <phase>package</phase>
                         <configuration>
                             <tasks>
 

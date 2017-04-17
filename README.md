@@ -1,17 +1,25 @@
 # parrot
-A simple password manager, intended to securely share password databases across machines.
+# ![parrot-manager](parrot-manager/src/main/resources/icons/parrot-icon.png)
+[![Build Status](https://travis-ci.org/limpygnome/pageres.svg?branch=master)](https://travis-ci.org/limpygnome/parrot-manager)
 
-## features
-- File and partial in-memory encryption of sensitive information (passwords, files, text)
-- Sync databases using SSH, with automatic merge to avoid conflicts and losing data
+A simple password manager with a modern interface, with ability to synchronize databases using SSH.
 
+## Features
+- File encryption
+- In-memory encryption (until revealed/copied/etc)
+- Automatic backups on save
+- Sync databases using SSH
+    - Multiple hosts at once
+    - Automatic merge to avoid conflicts and losing data
+- Copy values to clipboard
+- Send values as keys to other applications
+- Modern UI
 
-## getting started
-Dependencies:
-- Requires JRE 1.8 or greater - [download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+## Prerequisites
+- Requires at least Java Runtime 1.8 - [download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 
-## installation
-### ubuntu/debian
+## Installation
+### Ubuntu / Debian
 Download the latest deb file, to anywhere, and run the following command in the same directory; the file name
 may differ:
 
@@ -19,11 +27,11 @@ may differ:
 sudo dpkg -i parrot-manager.deb
 ````
 
-### windows
+### Windows
 Download the latest Windows zip file and extract the executable where needed. No installation process is required,
 as the application is standalone.
 
-### jar
+### JAR
 Download the latest zip or tar archive, extract the jar file and run:
 
 ````
@@ -33,21 +41,21 @@ java -jar parrot-manager.jar
 File name may differ and no installation process is required, as the JAR is standalone.
 
 
-## contribute
-- Raise any suggestions or bugs as issues
+## Contribute
+- Issues - raise any suggestions or bugs, or help others
 - This project is open to pull requests
 
 This project uses Java, JavaFX WebView and AngularJS 2; as well as many front-end libraries, managed by `npm`. Each
 module should have its own `README.md` file for purpose.
 
-### main
+### Main
 The entire project, including distributions, can be built using:
 
 ````
 mvn clean package
 ````
 
-### front-end / angularjs2
+### Front-end / angularjs2
 You can launch the node lite server to build the front-end on the fly, although parts are limited / not mocked:
 
 ````
@@ -56,7 +64,7 @@ You can launch the node lite server to build the front-end on the fly, although 
 
 This will require `npm` v3 to be installed.
     
-### development mode
+### Development Mode
 If you need the ability to refresh files from the `target` directory from your IDE, launch `parrot-manager` using the
 following arg:
 
