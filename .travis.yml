@@ -13,4 +13,3 @@ install:
   - npm install
 os:
   - linux
-  - osx
