@@ -1,3 +1,9 @@
-<button class="btn btn-default" (click)="sendKeys()">
+<button class="btn btn-default" (click)="sendKeys()"
+        title="After pressing this button, click in a different application to send value using key presses"
+        [ngClass]="{ 'queued' : isQueued }"
+>
+
+    <span class="icon icon-keyboard"></span>
     Send Keys
+
 </button>

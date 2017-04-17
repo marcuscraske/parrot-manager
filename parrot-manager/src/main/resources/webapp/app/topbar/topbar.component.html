@@ -25,9 +25,6 @@
             <a title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
-            <a title="Save Database As">
-                <span class="icon icon-copy"></span>
-            </a>
             <a title="Change Database" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-folder-open"></span>
             </a>

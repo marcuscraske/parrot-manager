@@ -16,4 +16,9 @@ export class SendKeysService {
         return result;
     }
 
+    isQueued(encryptedValue) : boolean
+    {
+        return this.sendKeysService.isQueued(encryptedValue);
+    }
+
 }

@@ -7,6 +7,7 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class SendKeysService
     private boolean isMinimizeHooked = false;
     // -- Data to be sent when the app is next minimized
     private String pendingData = null;
+    // -- The encrypted value pending being sent
+    private UUID pendingEncryptedValueId = null;
 
     /**
      * Sends keys once the application is minimized.
@@ -39,13 +42,21 @@ public class SendKeysService
      */
     public synchronized void send(EncryptedValue encryptedValue) throws Exception
     {
-        LOG.info("queueing sending keys");
+        if (encryptedValue != null)
+        {
+            LOG.info("queueing sending keys");
 
-        // Fetch and store decrypted value
-        pendingData = encryptedValueService.asString(encryptedValue);
+            // Fetch and store decrypted value and id
+            pendingEncryptedValueId = encryptedValue.getId();
+            pendingData = encryptedValueService.asString(encryptedValue);
 
-        // Ensure we know when the app is minimized
-        hookStageMinimized();
+            // Ensure we know when the app is minimized
+            hookStageMinimized();
+        }
+        else
+        {
+            LOG.debug("null encrypted value, not sending keys");
+        }
     }
 
     private synchronized void hookStageMinimized()
@@ -99,9 +110,11 @@ public class SendKeysService
                 }
 
                 // Wipe stored data
+                pendingEncryptedValueId = null;
                 pendingData = null;
 
                 LOG.debug("finished simulating keys");
+
             } catch (AWTException e)
             {
                 LOG.error("failed to send keys", e);
@@ -111,6 +124,14 @@ public class SendKeysService
         {
             LOG.debug("skipped simulating keys, pending data is empty");
         }
+    }
+
+    /**
+     * @return indicates if the specified value is pending to be sent as keys
+     */
+    public synchronized boolean isQueued(EncryptedValue value)
+    {
+        return pendingEncryptedValueId != null && value != null && pendingEncryptedValueId.equals(value.getId());
     }
 
 }

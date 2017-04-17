@@ -42,14 +42,14 @@
             <toggle-value [encryptedValue]="node.getValue()"></toggle-value>
         </td>
         <td>
-            <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())">
+            <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())" title="View entry">
                 View
-            </button>
-            <button class="btn btn-danger" (click)="deleteEntry(node.getId())">
-                Delete
             </button>
             <copy-clipboard [encryptedValue]="node.getValue()"></copy-clipboard>
             <send-keys [encryptedValue]="node.getValue()"></send-keys>
+            <button class="btn btn-danger" (click)="deleteEntry(node.getId())" title="Delete">
+                <span class="icon icon-cross"></span>
+            </button>
         </td>
     </tr>
 
