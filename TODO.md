@@ -8,6 +8,7 @@
 - TBC
 
 ### Future
+- parent pom
 - Move from `es5` to `es6`
 - Setting to wipe clipboard within time period, after copying an entry.
   - Option to be toggled in settings
