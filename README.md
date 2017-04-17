@@ -1,6 +1,9 @@
 # parrot
-# ![parrot-manager](parrot-manager/src/main/resources/icons/parrot-icon.png)
-[![Build Status](https://travis-ci.org/limpygnome/pageres.svg?branch=master)](https://travis-ci.org/limpygnome/parrot-manager)
+<p align="center">
+    <img src="parrot-manager/src/main/resources/icons/parrot-icon.png" alt="parrot logo" />
+</p>
+
+[![Build Status](https://travis-ci.org/limpygnome/parrot-manager.svg?branch=master)](https://travis-ci.org/limpygnome/parrot-manager)
 
 A simple password manager with a modern interface, with ability to synchronize databases using SSH.
 
