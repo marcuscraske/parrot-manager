@@ -1,15 +1,16 @@
 package com.limpygnome.parrot.component.sendKeys;
 
-import com.limpygnome.parrot.component.MemoryCompoonent;
+import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.awt.AWTException;
-import java.awt.Robot;
 
 /**
  * A service for sending keys to another application.
@@ -22,27 +23,29 @@ public class SendKeysService
     // Components
     @Autowired
     private WebStageInitService initService;
-
-    private MemoryCompoonent memoryCompoonent;
+    @Autowired
+    private EncryptedValueService encryptedValueService;
 
     // State
     // -- Indicates if a listener has been added for when the application is minimized
     private boolean isMinimizeHooked = false;
     // -- Data to be sent when the app is next minimized
-    private char[] pendingData = null;
+    private String pendingData = null;
 
     /**
      * Sends keys once the application is minimized.
      *
-     * @param text cloned and stored internally; then wiped once sent
+     * @param encryptedValue the value to be sent
      */
-    public synchronized void sendKeys(char[] text)
+    public synchronized void send(EncryptedValue encryptedValue) throws Exception
     {
+        LOG.info("queueing sending keys");
+
+        // Fetch and store decrypted value
+        pendingData = encryptedValueService.asString(encryptedValue);
+
         // Ensure we know when the app is minimized
         hookStageMinimized();
-
-        // Clone and store text to be sent
-        
     }
 
     private synchronized void hookStageMinimized()
@@ -57,37 +60,56 @@ public class SendKeysService
             {
                 LOG.debug("iconified property changed - old: {}, new: {}", oldValue, newValue);
 
-                synchronized (SendKeysService.this)
+                if (newValue)
                 {
-                    if (newValue && pendingData != null)
-                    {
-                        simulateKeys();
-                    }
+                    simulateKeys();
                 }
             });
+
+            stage.focusedProperty().addListener((observable, oldValue, newValue) ->
+            {
+                LOG.debug("foused property changed - old: {}, new: {}", oldValue, newValue);
+
+                if (!newValue)
+                {
+                    simulateKeys();
+                }
+            });
+
+            LOG.debug("iconified hooked");
         }
     }
 
     private synchronized void simulateKeys()
     {
-        try
+        if (pendingData != null)
         {
-            // Simulate key press for each char
-            Robot robot = new Robot();
-
-            for (char key : pendingData)
+            try
             {
-                robot.keyPress(key);
-                robot.keyRelease(key);
-            }
+                LOG.debug("simulating keys...");
 
-            // Wipe the data passed to us
-            memoryCompoonent.wipe(pendingData);
-            pendingData = null;
+                // Simulate key press for each char
+                Robot robot = new Robot();
+                int keyCode;
+                for (char key : pendingData.toCharArray())
+                {
+                    keyCode = KeyEvent.getExtendedKeyCodeForChar(key);
+                    robot.keyPress(keyCode);
+                    robot.keyRelease(keyCode);
+                }
+
+                // Wipe stored data
+                pendingData = null;
+
+                LOG.debug("finished simulating keys");
+            } catch (AWTException e)
+            {
+                LOG.error("failed to send keys", e);
+            }
         }
-        catch (AWTException e)
+        else
         {
-            LOG.error("failed to send keys", e);
+            LOG.debug("skipped simulating keys, pending data is empty");
         }
     }
 

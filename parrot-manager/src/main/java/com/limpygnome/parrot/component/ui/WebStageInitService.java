@@ -9,6 +9,7 @@ import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
 import com.limpygnome.parrot.component.remote.RemoteSshFileService;
 import com.limpygnome.parrot.component.runtime.RuntimeService;
+import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,8 @@ public class WebStageInitService
     private BuildInfoService buildInfoService;
     @Autowired
     private DatabaseOptimizerService databaseOptimizerService;
+    @Autowired
+    private SendKeysService sendKeysService;
 
     // Properties
     @Value("${development:false}")
@@ -74,6 +77,7 @@ public class WebStageInitService
         stage.exposeJsObject("encryptedValueService", encryptedValueService);
         stage.exposeJsObject("buildInfoService", buildInfoService);
         stage.exposeJsObject("databaseOptimizerService", databaseOptimizerService);
+        stage.exposeJsObject("sendKeysService", sendKeysService);
     }
 
     /**

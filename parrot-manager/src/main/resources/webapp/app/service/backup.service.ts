@@ -16,11 +16,11 @@ export class BackupService {
         var result = this.backupService.create();
 
         // Show notification when error message
-        var success = (result != null);
+        var success = (result == null);
 
-        if (success)
+        if (!success)
         {
-            toastr.error(errorMessage);
+            toastr.error(result);
         }
 
         return success;

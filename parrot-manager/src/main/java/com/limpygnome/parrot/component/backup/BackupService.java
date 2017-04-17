@@ -40,11 +40,12 @@ public class BackupService
     {
         String errorMessage = null;
 
-        // Check if enabled
+        // Check database open and backups are enabled
         Settings settings = settingsService.getSettings();
         boolean isEnabled = settings.getAutomaticBackupsOnSave().getValue();
+        File currentFile = databaseService.getFile();
 
-        if (isEnabled)
+        if (currentFile != null && isEnabled)
         {
             LOG.info("creating backup...");
 
@@ -57,7 +58,6 @@ public class BackupService
                 checkRetainedDatabases();
 
                 // Build path
-                File currentFile = databaseService.getFile();
                 File currentParentFile = currentFile.getParentFile();
                 File backupFile = new File(currentParentFile, "." + databaseService.getFileName() + "." + System.currentTimeMillis());
 

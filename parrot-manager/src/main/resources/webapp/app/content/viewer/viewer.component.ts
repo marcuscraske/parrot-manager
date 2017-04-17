@@ -134,6 +134,12 @@ export class ViewerComponent
                 plugins: [ "types", "dnd", "sort" ]
             });
 
+            // Always keep nodes open
+            $("#sidebar").on("refresh.jstree load.jstree", () => {
+                // Expand all nodes
+                $("#sidebar").jstree("open_all");
+            });
+
             // Hook tree for select event
             $("#sidebar").on("select_node.jstree", (e, data) => {
                 // Check button was definitely left click
@@ -199,9 +205,6 @@ export class ViewerComponent
             var tree = $("#sidebar").jstree(true);
             tree.settings.core.data = data;
             tree.refresh();
-
-            // Expand all nodes
-            $("#sidebar").jstree("open_all");
         });
 
         this.updateTreeSelection();

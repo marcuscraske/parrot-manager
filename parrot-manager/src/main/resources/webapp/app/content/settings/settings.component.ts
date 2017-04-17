@@ -62,6 +62,8 @@ export class SettingsComponent {
 
         if (form.valid)
         {
+            console.log("saving settings...");
+
             // Check new passwords match (if changed)
             var newPassword = form.value["newPassword"];
             var newPasswordConfirm = form.value["newPasswordConfirm"];
@@ -104,6 +106,10 @@ export class SettingsComponent {
                 {
                     toastr.error(errorMessage);
                 }
+            }
+            else
+            {
+                console.log("failed to create backup, aborted save settings");
             }
         }
         else

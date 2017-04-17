@@ -24,6 +24,7 @@ import { CurrentEntryComponent }    from 'app/content/viewer/current-entry/curre
 import { ViewerEntriesComponent }   from 'app/content/viewer/entries/entries.component'
 import { ToggleValueComponent }     from 'app/content/viewer/toggle-value/toggleValue.component'
 import { CopyClipboardComponent }   from 'app/content/viewer/copy-clipboard/copyClipboard.component'
+import { SendKeysComponent }        from 'app/content/viewer/send-keys/sendKeys.component'
 import { HistoryComponent }         from 'app/content/viewer/history/history.component'
 
 import { RemoteSyncComponent }      from 'app/content/remote-sync/remote-sync.component'
@@ -72,7 +73,7 @@ const appRoutes: Routes = [
     // Pages - viewer (and components)
     // TODO: try to put most of this into the viewer component
     ViewerComponent, GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent, HistoryComponent,
-    ToggleValueComponent, CopyClipboardComponent
+    ToggleValueComponent, CopyClipboardComponent, SendKeysComponent
 
   ],
   bootstrap: [
