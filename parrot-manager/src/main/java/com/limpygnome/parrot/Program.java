@@ -16,6 +16,9 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 public class Program extends Application
 {
     private static String[] args;
+
+    // Spring beans
+    private UrlStreamOverrideService urlStreamOverrideService;
     private WebStageInitService webStageInitService;
 
     public Program()
@@ -31,14 +34,14 @@ public class Program extends Application
 
         // Create/fetch init component
         webStageInitService = applicationContext.getBean(WebStageInitService.class);
+        urlStreamOverrideService = applicationContext.getBean(UrlStreamOverrideService.class);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        // Serve resources from class path
-        UrlStreamOverrideService urlStreamOverrideService = new UrlStreamOverrideService();
-        urlStreamOverrideService.enable(webStageInitService.isDevelopmentMode());
+        // Sandbox class-path to serve only local files; prevents external requests as well
+        urlStreamOverrideService.enable();
 
         // Create and show stage
         WebViewStage stage = new WebViewStage(webStageInitService);

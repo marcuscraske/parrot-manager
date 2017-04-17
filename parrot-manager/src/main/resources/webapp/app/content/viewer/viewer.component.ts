@@ -250,7 +250,10 @@ export class ViewerComponent
             this.updateTreeSelection();
 
             // Reset form
-            //this.updateEntryForm.reset();
+            this.updateEntryForm.reset();
+
+            // Reset edit mode
+            $("#currentValue").data("edit", false);
 
             // Reset sub-view
             this.currentSubView = "entries";
