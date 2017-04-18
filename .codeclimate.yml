@@ -1,8 +1,4 @@
 engines:
-  rubocop:
-    enabled: true
-  brakeman:
-    enabled: true
   eslint:
     enabled: true
   csslint:
@@ -14,5 +10,9 @@ engines:
     config:
       languages:
       - javascript
+  fixme:
+    enabled: true
+  markdownlint:
+    enabled: true
 exclude_paths:
 - "parrot-manager/src/main/resources/webapp/app/mocks.js"
