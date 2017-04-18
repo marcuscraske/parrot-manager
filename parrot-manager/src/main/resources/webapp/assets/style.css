@@ -78,3 +78,13 @@ a
 {
     background: #ddd;
 }
+
+.jstree-anchor
+{
+    color: #666 !important;
+}
+
+.jstree-anchor .icon
+{
+    color: #999;
+}

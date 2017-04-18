@@ -129,7 +129,7 @@ export class DatabaseService
         }
         else
         {
-            json = [ { "id" : "empty-root-node", "text" : "empty" } ];
+            json = [ { "id" : "empty-root-node", "text" : "empty", "icon" : "icon icon-folder" } ];
             console.log("database is not open / null, cannot rebuild tree");
         }
 
@@ -153,7 +153,8 @@ export class DatabaseService
         var newJsonNode = {
             "id" : databaseNode.getId(),
             "text" : name != null ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
-            "children" : []
+            "children" : [],
+            "icon" : "icon icon-folder"
         };
 
         // Add to JSON representation of parent
