@@ -2,7 +2,7 @@
     Simple JS file for mocking injected dependencies during Parrot runtime.
 */
 
-if (window.settingsService === null)
+if (window.settingsService == null)
 {
     window.settingsService = (function(){
         return {
@@ -19,7 +19,7 @@ if (window.settingsService === null)
 }
 
 
-if (window.runtimeService === null)
+if (window.runtimeService == null)
 {
     window.runtimeService = (function(){
         return {
@@ -33,7 +33,7 @@ if (window.runtimeService === null)
 }
 
 
-if (window.randomGeneratorService === null)
+if (window.randomGeneratorService == null)
 {
     window.randomGeneratorService = (function(){
 
@@ -47,7 +47,7 @@ if (window.randomGeneratorService === null)
 }
 
 
-if (window.databaseService === null)
+if (window.databaseService == null)
 {
     window.databaseService = (function(){
 
@@ -124,7 +124,7 @@ if (window.databaseService === null)
 }
 
 
-if (window.recentFileService === null)
+if (window.recentFileService == null)
 {
     window.recentFileService = (function(){
 
@@ -139,7 +139,7 @@ if (window.recentFileService === null)
 }
 
 
-if (window.encryptedValueService === null)
+if (window.encryptedValueService == null)
 {
     window.encryptedValueService = (function(){
 
@@ -153,7 +153,7 @@ if (window.encryptedValueService === null)
     })();
 }
 
-if (window.backupService === null)
+if (window.backupService == null)
 {
     window.backupService = (function(){
 
