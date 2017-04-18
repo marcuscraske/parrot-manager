@@ -10,5 +10,8 @@ engines:
       - javascript
   fixme:
     enabled: true
+ratings:
+  paths:
+  - "**"
 exclude_paths:
 - "parrot-manager/src/main/resources/webapp/app/mocks.js"
