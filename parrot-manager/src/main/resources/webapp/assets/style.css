@@ -44,14 +44,21 @@ a
 
 .btn-primary
 {
-    background: #000;
+    background: #333;
+    color: #fff;
+    border-color: #333;
 }
 
 .btn-primary:hover,
 .btn-primary:focus
 {
     background: #666;
-    border: none;
+    border-color: #666;
+}
+
+.btn-danger
+{
+    background: #FF5733;
 }
 
 /*
@@ -61,4 +68,13 @@ a
 .toast-top-center
 {
     margin-top: 1em;
+}
+
+/*
+    jstree theme overrides
+*/
+
+.jstree-default .jstree-clicked
+{
+    background: #ddd;
 }
