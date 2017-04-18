@@ -44,17 +44,31 @@ public class SendKeysService
     {
         if (encryptedValue != null)
         {
-            LOG.info("queueing sending keys");
+            // Reset if same key
+            if (pendingEncryptedValueId != null && pendingEncryptedValueId.equals(encryptedValue.getId()))
+            {
+                pendingData = null;
+                pendingEncryptedValueId = null;
 
-            // Fetch and store decrypted value and id
-            pendingEncryptedValueId = encryptedValue.getId();
-            pendingData = encryptedValueService.asString(encryptedValue);
+                LOG.info("reset pending send keys");
+            }
+            else
+            {
+                LOG.info("queueing sending keys");
 
-            // Ensure we know when the app is minimized
-            hookStageMinimized();
+                // Fetch and store decrypted value and id
+                pendingEncryptedValueId = encryptedValue.getId();
+                pendingData = encryptedValueService.asString(encryptedValue);
+
+                // Ensure we know when the app is minimized
+                hookStageMinimized();
+            }
         }
         else
         {
+            pendingData = null;
+            pendingEncryptedValueId = null;
+
             LOG.debug("null encrypted value, not sending keys");
         }
     }

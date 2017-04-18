@@ -1,10 +1,11 @@
 // AngularJS
-import { NgModule }                 from '@angular/core';
+import { NgModule, ErrorHandler }   from '@angular/core';
 import { BrowserModule }            from '@angular/platform-browser';
 import { ReactiveFormsModule }      from '@angular/forms';
 import { RouterModule, Routes }     from '@angular/router';
 
 // Global
+import { ErrorWatcherHandler }      from 'app/error-watcher-handler';
 import { AppComponent }             from 'app/app.component';
 import { TopBarComponent }          from 'app/topbar/topbar.component'
 
@@ -49,6 +50,9 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
+  providers: [
+    { provide: ErrorHandler, useClass: ErrorWatcherHandler }
+  ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,

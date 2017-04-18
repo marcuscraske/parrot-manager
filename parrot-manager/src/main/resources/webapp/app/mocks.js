@@ -165,3 +165,16 @@ if (window.backupService == null)
 
     })();
 }
+
+if (window.buildInfoService == null)
+{
+    window.buildInfoService = (function(){
+
+        return {
+
+           getBuildInfo : function() { return "fake build info" }
+
+        }
+
+    })();
+}

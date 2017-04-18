@@ -83,5 +83,5 @@ header div a:focus
 
 .dirty
 {
-    color: yellow;
+    color: #ff5733 !important;
 }
