@@ -51,7 +51,7 @@ a
 .btn-primary:focus
 {
     background: #666;
-    border-color: none;
+    border: none;
 }
 
 /*

@@ -43,7 +43,6 @@ public class DatabaseNode
 
     // Cached array of children retrieved; this is because to provide an array, we need to keep a permanent reference
     // to avoid garbage collection
-    // TODO: update this on init and as child nodes are added/removed, current imp doesnt save anything
     DatabaseNode[] childrenCached;
 
     // A list of previously deleted children; used for merging

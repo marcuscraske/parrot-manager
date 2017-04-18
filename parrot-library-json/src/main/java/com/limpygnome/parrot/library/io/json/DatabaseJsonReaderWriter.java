@@ -152,7 +152,6 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         database.setRoot(root);
 
         // Unset dirty flag, as we've just loaded it...
-        // TODO: add test
         database.setDirty(false);
 
         return database;

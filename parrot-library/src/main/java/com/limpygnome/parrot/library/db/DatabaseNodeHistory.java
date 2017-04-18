@@ -11,8 +11,6 @@ import java.util.UUID;
 
 /**
  * Manages the collection of historic values for a node.
- *
- * TODO: how is this serialized? need to serialize deleted nodes too
  */
 public class DatabaseNodeHistory
 {

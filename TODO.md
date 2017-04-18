@@ -19,6 +19,7 @@
 - Compress final build's artifacts
 - Minification of resources and bundling only compiled assets
 - Add gzip compression to database file
+- Save random generator settings
 
 ### Ideas
 - Import/export

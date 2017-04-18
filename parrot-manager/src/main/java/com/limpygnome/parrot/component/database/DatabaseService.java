@@ -103,7 +103,6 @@ public class DatabaseService
         String result;
 
         // Ensure path is fully resolved
-        // TODO: unit test resolving?
         path = fileComponent.resolvePath(path);
 
         try

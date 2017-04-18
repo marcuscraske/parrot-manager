@@ -40,7 +40,6 @@ export class ViewerEntriesComponent
             this.changeNodeBeingViewed.emit(nodeId);
 
             // Update tree
-            // TODO: implement events on server side....
             this.updateTree.emit();
 
             console.log("added new entry - id: " + nodeId);

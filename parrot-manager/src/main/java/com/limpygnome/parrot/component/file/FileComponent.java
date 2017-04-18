@@ -8,8 +8,6 @@ import java.io.File;
 
 /**
  * Used to resolve paths and perform common operations for file related functions.
- *
- * TODO: unit test
  */
 @Component
 public class FileComponent

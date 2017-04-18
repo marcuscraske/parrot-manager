@@ -31,7 +31,6 @@ export class GenerateRandomComponent
         public fb: FormBuilder
     ) {
         // Set default values
-        // TODO: read/save in database eventually
         this.randomOptions = this.fb.group({
              useNumbers: ["true"],
              useUppercase: ["true"],

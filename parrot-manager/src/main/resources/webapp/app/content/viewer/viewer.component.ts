@@ -174,7 +174,6 @@ export class ViewerComponent
             });
 
             // Hook tree for move/dnd event
-            // TODO: restrict root node from being moved
             $("#sidebar").on("move_node.jstree", (e, data) => {
                 var nodeId = data.node.id;
                 var newParentId = data.parent;
@@ -235,7 +234,6 @@ export class ViewerComponent
                 // Check the node is not already selected
                 if (currentSelected == null || targetNodeId != currentSelected)
                 {
-                    // TODO: see if this can be improved with single call
                     $("#sidebar").jstree("deselect_all");
                     $("#sidebar").jstree("select_node", "#" + targetNodeId);
                     console.log("updated tree selection - id: " + targetNodeId);

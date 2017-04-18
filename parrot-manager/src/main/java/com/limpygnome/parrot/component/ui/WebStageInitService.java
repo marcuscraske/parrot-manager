@@ -17,9 +17,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * The facade for holding instances of common (shared) runtime services.
- *
- * TODO: get rid of accessors, should be no need for it; we'll almost just want an auto-wiring bean/instance for
- * inecting beans into stage
  */
 @Service
 public class WebStageInitService
@@ -96,20 +93,12 @@ public class WebStageInitService
         return stage;
     }
 
-
+    /**
+     * @return current instance of database service
+     */
     public DatabaseService getDatabaseService()
     {
         return databaseService;
-    }
-
-    public RuntimeService getRuntimeService()
-    {
-        return runtimeService;
-    }
-
-    public EncryptedValueService getEncryptedValueService()
-    {
-        return encryptedValueService;
     }
 
 }

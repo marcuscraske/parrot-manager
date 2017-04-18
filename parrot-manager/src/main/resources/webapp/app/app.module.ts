@@ -10,8 +10,6 @@ import { TopBarComponent }          from 'app/topbar/topbar.component'
 
 // Pages
 import { ErrorComponent }           from 'app/content/error/error.component'
-// TODO: drop home component? not even used anymore?
-import { HomeComponent }            from 'app/content/home/home.component'
 import { CreateComponent }          from 'app/content/create/create.component'
 import { HelpComponent }            from 'app/content/help/help.component'
 import { OpenComponent }            from 'app/content/open/open.component'
@@ -65,7 +63,7 @@ const appRoutes: Routes = [
     AppComponent, TopBarComponent,
 
     // Pages
-    ErrorComponent, HomeComponent,
+    ErrorComponent,
     CreateComponent, OpenComponent, HelpComponent, SettingsComponent,
     RemoteSyncComponent, RemoteSyncSshComponent,
     BackupsComponent,
