@@ -7,7 +7,7 @@
 [![Code Climate](https://codeclimate.com/github/limpygnome/parrot-manager/badges/gpa.svg)](https://codeclimate.com/github/limpygnome/parrot-manager)
 [![Issue Count](https://codeclimate.com/github/limpygnome/parrot-manager/badges/issue_count.svg)](https://codeclimate.com/github/limpygnome/parrot-manager)
 [![Dependency Status](https://gemnasium.com/badges/github.com/limpygnome/parrot-manager.svg)](https://gemnasium.com/github.com/limpygnome/parrot-manager)
-[![Dependency Status](https://www.versioneye.com/user/projects/58f540038b3791003cf8498d/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58f540038b3791003cf8498d)
+[![Dependency Status](https://www.versioneye.com/user/projects/58f5b1d4307d03003e9de24e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58f5b1d4307d03003e9de24e)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 [![Github Issues](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/issues.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/issues)
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/pulls.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/pulls)
