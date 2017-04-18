@@ -1,0 +1,2 @@
+exclude_paths:
+- "parrot-manager/src/main/resources/webapp/app/mocks.js"
