@@ -93,7 +93,7 @@ You can launch the node lite server to build the front-end on the fly, although 
 ````
 
 This will require `npm` v3 to be installed.
-    
+
 ### Development Mode
 If you need the ability to refresh files from the `target` directory from your IDE, launch `parrot-manager` using the
 following arg:

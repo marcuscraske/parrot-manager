@@ -10,7 +10,5 @@ engines:
       - javascript
   fixme:
     enabled: true
-  markdownlint:
-    enabled: true
 exclude_paths:
 - "parrot-manager/src/main/resources/webapp/app/mocks.js"
