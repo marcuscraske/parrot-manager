@@ -5,8 +5,7 @@ import { RuntimeService } from 'app/service/runtime.service'
     moduleId: module.id,
     selector: 'history',
     templateUrl: 'history.component.html',
-    styleUrls: ['history.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['history.component.css']
 })
 export class HistoryComponent
 {

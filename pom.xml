@@ -6,11 +6,12 @@
 
     <groupId>com.limpygnome</groupId>
     <artifactId>parrot</artifactId>
-    <version>2.0</version>
+    <version>3.0</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>parrot-library</module>
+        <module>parrot-library-json</module>
         <module>parrot-manager</module>
         <module>dist</module>
     </modules>

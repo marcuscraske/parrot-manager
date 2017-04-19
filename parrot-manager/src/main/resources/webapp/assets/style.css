@@ -35,7 +35,7 @@ main h1
 
 a
 {
-    color: #025ff4;
+    color: #ff5733;
 }
 
 /*
@@ -44,14 +44,21 @@ a
 
 .btn-primary
 {
-    background: #000;
+    background: #333;
+    color: #fff;
+    border-color: #333;
 }
 
 .btn-primary:hover,
 .btn-primary:focus
 {
     background: #666;
-    border-color: none;
+    border-color: #666;
+}
+
+.btn-danger
+{
+    background: #ff5733;
 }
 
 /*
@@ -61,4 +68,23 @@ a
 .toast-top-center
 {
     margin-top: 1em;
+}
+
+/*
+    jstree theme overrides
+*/
+
+.jstree-default .jstree-clicked
+{
+    background: #ddd;
+}
+
+.jstree-anchor
+{
+    color: #666 !important;
+}
+
+.jstree-anchor .icon
+{
+    color: #999;
 }

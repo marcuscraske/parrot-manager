@@ -1,19 +1,26 @@
 # TODO / Roadmap
 
 ## Bugs
-(none for now)
+- Remote sync - when prompted for multiple database passwords, the second prompt does not have focus.
 
 ## Features
 ### Upcoming
+- TBC
 
-### Next Release
-- Compress final build's artifacts
-- Move JSON part of library into own module
+### Future
+- prevent external requests entirely
+- parent pom
+- Move from `es5` to `es6`
+- Setting to wipe clipboard within time period, after copying an entry.
+  - Option to be toggled in settings
 - Backups on remote host when syncing
+- Save-as
 - Implement generic key combos
   - ctrl+o for open
-- Save-as
+- Compress final build's artifacts
 - Minification of resources and bundling only compiled assets
+- Add gzip compression to database file
+- Save random generator settings
 
 ### Ideas
 - Import/export

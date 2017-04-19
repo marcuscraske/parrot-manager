@@ -10,10 +10,20 @@ export class BackupService {
         this.backupService = (window as any).backupService;
     }
 
-    create() : string
+    // Creates a backup and returns boolean (true - success/disabled, false - error occurred)
+    create() : boolean
     {
         var result = this.backupService.create();
-        return result;
+
+        // Show notification when error message
+        var success = (result == null);
+
+        if (!success)
+        {
+            toastr.error(result);
+        }
+
+        return success;
     }
 
     fetch() : any

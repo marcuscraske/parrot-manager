@@ -9,8 +9,6 @@ import java.net.URLStreamHandlerFactory;
 /**
  * An implementation of {@link URLStreamHandlerFactory} for using {@link LocalResourceStreamHandler} to serve
  * HTTP requests.
- *
- * TODO: unit test
  */
 class LocalUrlStreamHandlerFactory implements URLStreamHandlerFactory
 {

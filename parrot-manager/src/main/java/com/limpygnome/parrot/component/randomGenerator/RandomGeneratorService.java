@@ -22,7 +22,6 @@ public class RandomGeneratorService
 
     static
     {
-        // TODO: clean this up, move to descriptive constants...
         // Upper-case
         UPPERCASE = new char[90-65+1];
         for (int i = 65; i <= 90; i++)
@@ -42,7 +41,6 @@ public class RandomGeneratorService
 
     public RandomGeneratorService()
     {
-        // TODO: review if seed is needed...
         secureRandom = new SecureRandom();
     }
 

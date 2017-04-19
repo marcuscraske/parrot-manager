@@ -3,6 +3,7 @@ package com.limpygnome.parrot.component.remote;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
+import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
@@ -24,6 +25,8 @@ public class RemoteSshFileService
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
 
+    private static final String SESSION_KEY_OPTIONS = "remoteSshOptions";
+
     // Components
     @Autowired
     private DatabaseReaderWriter databaseReaderWriter;
@@ -37,6 +40,8 @@ public class RemoteSshFileService
     private DatabaseService databaseService;
     @Autowired
     private EncryptedValueService encryptedValueService;
+    @Autowired
+    private SessionService sessionService;
 
     /**
      * Creates options from a set of mandatory values.
@@ -52,7 +57,14 @@ public class RemoteSshFileService
      */
     public SshOptions createOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
     {
-        return new SshOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+        // Create new instance
+        SshOptions options = new SshOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+
+        // Persist to session to avoid gc; it's possible multiple options could be made and this won't work, but it'll
+        // do for now
+        sessionService.put(SESSION_KEY_OPTIONS, options);
+
+        return options;
     }
 
     /**
@@ -162,18 +174,22 @@ public class RemoteSshFileService
     {
         if (database == null)
         {
+            LOG.error("database is null");
             throw new IllegalArgumentException("Database is null");
         }
         else if (options == null)
         {
+            LOG.error("options are null");
             throw new IllegalArgumentException("Options are null");
         }
         else if (remotePassword == null || remotePassword.length() == 0)
         {
+            LOG.warn("remote password not specified");
             return "Remote password is required";
         }
         else if (options.getDestinationPath() == null)
         {
+            LOG.warn("destination path not setup");
             throw new IllegalArgumentException("Internal error - destination path must be setup on options");
         }
 
@@ -245,11 +261,6 @@ public class RemoteSshFileService
                 // Build result
                 result = actionLog.getMessages();
             }
-        }
-        catch (InvalidCipherTextException e)
-        {
-            result = "Incorrect password or corrupted file";
-            LOG.error("Failed to open remote database due to invalid crypto (wrong password / corrupted)", e);
         }
         catch (Exception e)
         {

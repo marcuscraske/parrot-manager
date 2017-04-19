@@ -25,11 +25,17 @@ export class KeyBindsService {
         var key = event.key || event.keyCode;
         var isDatabaseOpen = this.databaseService.isOpen();
 
-        // ctrl+s for when database open
-        if (isDatabaseOpen && ctrlKey && (key == "s" || key == "83"))
+        // ctrl+s for saving database
+        if (isDatabaseOpen && ctrlKey && (key == "s" || key == "115"))
         {
             console.log("key bind for saving database triggered");
             this.databaseService.save();
+        }
+
+        // ctrl+o for opening database
+        if (ctrlKey && (key == "o" || key == "111"))
+        {
+            // TODO: somehow call logic in topbar.component.ts; cannot be moved into runtime service due to webkit bug
         }
     }
 

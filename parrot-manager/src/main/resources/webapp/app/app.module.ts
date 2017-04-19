@@ -1,17 +1,16 @@
 // AngularJS
-import { NgModule }                 from '@angular/core';
+import { NgModule, ErrorHandler }   from '@angular/core';
 import { BrowserModule }            from '@angular/platform-browser';
 import { ReactiveFormsModule }      from '@angular/forms';
 import { RouterModule, Routes }     from '@angular/router';
 
 // Global
+import { ErrorWatcherHandler }      from 'app/error-watcher-handler';
 import { AppComponent }             from 'app/app.component';
 import { TopBarComponent }          from 'app/topbar/topbar.component'
 
 // Pages
 import { ErrorComponent }           from 'app/content/error/error.component'
-// TODO: drop home component? not even used anymore?
-import { HomeComponent }            from 'app/content/home/home.component'
 import { CreateComponent }          from 'app/content/create/create.component'
 import { HelpComponent }            from 'app/content/help/help.component'
 import { OpenComponent }            from 'app/content/open/open.component'
@@ -24,6 +23,7 @@ import { CurrentEntryComponent }    from 'app/content/viewer/current-entry/curre
 import { ViewerEntriesComponent }   from 'app/content/viewer/entries/entries.component'
 import { ToggleValueComponent }     from 'app/content/viewer/toggle-value/toggleValue.component'
 import { CopyClipboardComponent }   from 'app/content/viewer/copy-clipboard/copyClipboard.component'
+import { SendKeysComponent }        from 'app/content/viewer/send-keys/sendKeys.component'
 import { HistoryComponent }         from 'app/content/viewer/history/history.component'
 
 import { RemoteSyncComponent }      from 'app/content/remote-sync/remote-sync.component'
@@ -50,6 +50,9 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
+  providers: [
+    { provide: ErrorHandler, useClass: ErrorWatcherHandler }
+  ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -64,7 +67,7 @@ const appRoutes: Routes = [
     AppComponent, TopBarComponent,
 
     // Pages
-    ErrorComponent, HomeComponent,
+    ErrorComponent,
     CreateComponent, OpenComponent, HelpComponent, SettingsComponent,
     RemoteSyncComponent, RemoteSyncSshComponent,
     BackupsComponent,
@@ -72,7 +75,7 @@ const appRoutes: Routes = [
     // Pages - viewer (and components)
     // TODO: try to put most of this into the viewer component
     ViewerComponent, GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent, HistoryComponent,
-    ToggleValueComponent, CopyClipboardComponent
+    ToggleValueComponent, CopyClipboardComponent, SendKeysComponent
 
   ],
   bootstrap: [

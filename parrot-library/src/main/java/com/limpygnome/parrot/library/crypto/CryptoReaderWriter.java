@@ -1,5 +1,7 @@
 package com.limpygnome.parrot.library.crypto;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -17,6 +19,8 @@ import java.security.SecureRandom;
  */
 public class CryptoReaderWriter
 {
+    private static final Logger LOG = LogManager.getLogger(CryptoReaderWriter.class);
+
     private SecureRandom random;
 
     /**
@@ -84,12 +88,20 @@ public class CryptoReaderWriter
 
         if (iv != null && encryptedBytes != null)
         {
-            CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), aesValue.getIv());
-            PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
-            aes.init(false, cipherParams);
+            try
+            {
+                CipherParameters cipherParams = new ParametersWithIV(new KeyParameter(secretKey.getEncoded()), aesValue.getIv());
+                PaddedBufferedBlockCipher aes = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
+                aes.init(false, cipherParams);
 
-            // Process data
-            result = processCrypto(aes, aesValue.getValue());
+                // Process data
+                result = processCrypto(aes, aesValue.getValue());
+            }
+            catch (Exception e)
+            {
+                LOG.error("fatal - failed to decrypt value", e);
+                result = null;
+            }
         }
         else
         {

@@ -2,6 +2,11 @@ package com.limpygnome.parrot.component.runtime;
 
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
+import com.limpygnome.parrot.component.urlStream.UrlStreamOverrideService;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.io.File;
+import java.io.IOException;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -9,11 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * A archive for runtime state and functionality.
@@ -25,6 +25,8 @@ public class RuntimeService
 
     @Autowired
     private WebStageInitService webStageInitService;
+    @Autowired
+    private UrlStreamOverrideService urlStreamOverrideService;
 
     /**
      * @return indicates if running in development mode
@@ -128,18 +130,19 @@ public class RuntimeService
      */
     public void setClipboard(String value)
     {
-        if (value != null)
+        // Replace null with empty value
+        if (value == null)
         {
-            // TODO: make single use? might not be easily possible...
-            StringSelection selection = new StringSelection(value);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+            value = "";
+        }
 
-            LOG.info("copied value to clipboard - length: {}", value.length());
-        }
-        else
-        {
-            LOG.warn("attempted to set null value as clipboard");
-        }
+        StringSelection selection = new StringSelection(value);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
+
+        // Wipe clipboard within timeout period if enabled
+
+
+        LOG.info("copied value to clipboard - length: {}", value.length());
     }
 
 }

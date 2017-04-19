@@ -75,8 +75,16 @@ export class CurrentEntryComponent
 
     updateName(event)
     {
-        // Update name
         var newName = event.target.value;
+
+        // Prevent naming 'remote-sync'
+        if (newName == "remote-sync")
+        {
+            toastr.error("Cannot name entry 'remote-sync', this is a reserved name.");
+            return;
+        }
+
+        // Update name
         this.currentNode.setName(newName);
         console.log("updateTitle - new name: " + newName);
 

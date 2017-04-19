@@ -14,7 +14,7 @@ export class CreateComponent {
         location: ["", Validators.required],
         password: ["", Validators.required],
         confirmPassword: ["", Validators.required],
-        rounds: ["", Validators.required]
+        rounds: ["65536", Validators.required]
     });
 
     constructor(

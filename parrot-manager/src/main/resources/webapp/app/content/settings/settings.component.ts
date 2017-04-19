@@ -6,6 +6,7 @@ import { SettingsService } from 'app/service/settings.service'
 import { RecentFileService } from 'app/service/recentFile.service'
 import { DatabaseService } from 'app/service/database.service'
 import { DatabaseOptimizerService } from 'app/service/databaseOptimizer.service'
+import { BackupService } from 'app/service/backup.service'
 
 @Component({
     moduleId: module.id,
@@ -31,6 +32,7 @@ export class SettingsComponent {
         private recentFileService: RecentFileService,
         private databaseService: DatabaseService,
         private databaseOptimizerService: DatabaseOptimizerService,
+        private backupService: BackupService,
         public fb: FormBuilder,
         private router: Router
     ) { }
@@ -60,22 +62,26 @@ export class SettingsComponent {
 
         if (form.valid)
         {
-            var isError = false;
+            console.log("saving settings...");
 
             // Check new passwords match (if changed)
             var newPassword = form.value["newPassword"];
             var newPasswordConfirm = form.value["newPasswordConfirm"];
 
-            if (newPassword.length > 0)
+            // Check passwords match (if specified)
+            if (newPassword.length > 0 && newPassword != newPasswordConfirm)
             {
-                if (newPassword != newPasswordConfirm)
+                toastr.error("New database passwords do not match");
+            }
+
+            // Make a backup
+            else if (this.backupService.create())
+            {
+                var errorMessage = null;
+
+                // Change password (if specified)
+                if (newPassword.length > 0)
                 {
-                    toastr.error("New database passwords do not match");
-                    isError = true;
-                }
-                else
-                {
-                    // change it...
                     console.log("changing database password");
 
                     var database = this.databaseService.getDatabase();
@@ -83,14 +89,15 @@ export class SettingsComponent {
 
                     toastr.success("Updated database password");
                 }
-            }
 
-            // Save settings
-            if (!isError)
-            {
-                var newSettings = form.value;
-                var errorMessage = this.settingsService.save(newSettings);
+                // Save settings
+                if (errorMessage == null)
+                {
+                    var newSettings = form.value;
+                    errorMessage = this.settingsService.save(newSettings);
+                }
 
+                // Display notification
                 if (errorMessage == null)
                 {
                     toastr.success("Settings saved");
@@ -100,6 +107,10 @@ export class SettingsComponent {
                     toastr.error(errorMessage);
                 }
             }
+            else
+            {
+                console.log("failed to create backup, aborted save settings");
+            }
         }
         else
         {
@@ -107,7 +118,7 @@ export class SettingsComponent {
         }
     }
 
-    resetToDefault()
+    globalResetToDefault()
     {
         console.log("resetting to default settings");
         var errorMessage = this.settingsService.reset();
@@ -120,30 +131,36 @@ export class SettingsComponent {
         this.populateSettings();
     }
 
-    recentFilesClear()
+    globalRecentFilesClear()
     {
         console.log("clearing recent files");
 
         this.recentFileService.clear();
         this.recentFilesClearEnabled = false;
 
-        toastr.info("Cleared recent files");
+        toastr.success("Cleared recent files");
     }
 
-    optimizeDeletedNodeHistory()
+    databaseOptimizeDeletedNodeHistory()
     {
-        console.log("optimizing delete node history");
-        this.databaseOptimizerService.optimizeDeletedNodeHistory();
+        if (this.backupService.create())
+        {
+            console.log("optimizing delete node history");
+            this.databaseOptimizerService.optimizeDeletedNodeHistory();
 
-        toastr.info("Cleared database node history");
+            toastr.success("Cleared database node history");
+        }
     }
 
-    optimizeValueHistory()
+    databaseOptimizeValueHistory()
     {
-        console.log("optimizing value history");
-        this.databaseOptimizerService.optimizeValueHistory();
+        if (this.backupService.create())
+        {
+            console.log("optimizing value history");
+            this.databaseOptimizerService.optimizeValueHistory();
 
-        toastr.info("Database value history cleared");
+            toastr.success("Database value history cleared");
+        }
     }
 
 }

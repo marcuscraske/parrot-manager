@@ -31,14 +31,13 @@ export class GenerateRandomComponent
         public fb: FormBuilder
     ) {
         // Set default values
-        // TODO: read/save in database eventually
         this.randomOptions = this.fb.group({
              useNumbers: ["true"],
              useUppercase: ["true"],
              useLowercase: ["true"],
              useSpecialChars: ["true"],
-             minLength: ["8"],
-             maxLength: ["12"]
+             minLength: ["10"],
+             maxLength: ["18"]
         });
     }
 

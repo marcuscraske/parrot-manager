@@ -6,6 +6,7 @@ import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
+import { RuntimeService } from 'app/service/runtime.service'
 
 @Component({
     moduleId: module.id,
@@ -22,6 +23,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         private remoteSshFileService: RemoteSshFileService,
         private databaseService: DatabaseService,
         private encryptedValueService: EncryptedValueService,
+        private runtimeService: RuntimeService,
         private router: Router,
         public fb: FormBuilder,
         private remoteSyncChangeLogService: RemoteSyncChangeLogService
@@ -243,6 +245,12 @@ export class RemoteSyncComponent implements AfterViewChecked {
             line = options.getName() + " - " + lines[i];
             this.remoteSyncChangeLogService.add(line);
         }
+    }
+
+    copyToClipboard()
+    {
+        var changeLog = this.remoteSyncChangeLogService.getChangeLog();
+        this.runtimeService.setClipboard(changeLog);
     }
 
 }

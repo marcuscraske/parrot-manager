@@ -20,8 +20,6 @@ import java.io.Serializable;
  *
  * WARNING: this class is serialized using Jackson, hence be careful when adding new getters/setters, ensure
  * jsonignore annotation is set appropriately.
- *
- * TODO: unit test
  */
 public class SshOptions implements Serializable, Cloneable
 {
@@ -288,13 +286,11 @@ public class SshOptions implements Serializable, Cloneable
     /**
      * Persists the current configuration to a database in the standard remote-sync format.
      *
-     * TODO: unit test
      * @param database the current database
      * @throws Exception when cannot persist
      */
     public void persist(EncryptedValueService encryptedValueService, Database database) throws Exception
     {
-        // TODO: need way to ban / reserve names, as multiple nodes can share same name...
         // Should be saved to /remote-sync/<name> - overwrite by default
         DatabaseNode root = database.getRoot();
         DatabaseNode remoteSyncNode = root.getByName("remote-sync");
@@ -314,7 +310,6 @@ public class SshOptions implements Serializable, Cloneable
         String rawJson = mapper.writeValueAsString(clone);
 
         // Parse as JSON for sanity
-        // TODO: we could just use pretty printer and save to node as string, may be a lot less efficient doing this...
         JsonParser parser = new JsonParser();
         JsonObject json = parser.parse(rawJson).getAsJsonObject();
 

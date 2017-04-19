@@ -100,6 +100,17 @@ export class ViewerComponent
         // Set root node as current by default
         var database = this.databaseService.getDatabase();
         var rootNode = database.getRoot();
+
+        if (database == null)
+        {
+            console.error("database is null");
+        }
+
+        if (rootNode == null)
+        {
+            console.error("root node is null");
+        }
+
         this.changeNodeBeingViewed(rootNode.getId());
     }
 
@@ -116,13 +127,28 @@ export class ViewerComponent
         $(() => {
 
             // Setup tree with drag-and-drop enabled
-            var tree = $("#sidebar").jstree({
-                core: {
+            var tree = $("#sidebar").jstree(
+            {
+                core:
+                {
                     check_callback: true,
                     data: {}
                 },
                 dnd : { },
-                plugins: [ "dnd" ]
+                types:
+                {
+                    "#":
+                    {
+                        max_children: 1
+                    }
+                },
+                plugins: [ "types", "dnd", "sort" ]
+            });
+
+            // Always keep nodes open
+            $("#sidebar").on("refresh.jstree load.jstree", () => {
+                // Expand all nodes
+                $("#sidebar").jstree("open_all");
             });
 
             // Hook tree for select event
@@ -147,6 +173,32 @@ export class ViewerComponent
                 this.changeNodeBeingViewed(nodeId);
             });
 
+            // Hook tree for move/dnd event
+            $("#sidebar").on("move_node.jstree", (e, data) => {
+                var nodeId = data.node.id;
+                var newParentId = data.parent;
+
+                var node = this.databaseService.getNode(nodeId);
+                var newParentNode = this.databaseService.getNode(newParentId);
+                var isCurrentNode = (nodeId == node.getId());
+
+                // Move the node to new target node
+                console.log("moving node: " + nodeId);
+                node.moveTo(newParentNode);
+
+                // Update tree data
+                this.updateTree();
+
+                // Re-navigate to moved node if we're currently viewing it
+                if (isCurrentNode)
+                {
+                    console.log("viewing moved node, re-navigating...");
+
+                    var newNodeId = node.getId();
+                    this.changeNodeBeingViewed(newNodeId);
+                }
+            });
+
         });
 
         // Update actual data
@@ -163,9 +215,6 @@ export class ViewerComponent
             var tree = $("#sidebar").jstree(true);
             tree.settings.core.data = data;
             tree.refresh();
-
-            // Expand all nodes
-            $("#sidebar").jstree("open_all");
         });
 
         this.updateTreeSelection();
@@ -185,7 +234,6 @@ export class ViewerComponent
                 // Check the node is not already selected
                 if (currentSelected == null || targetNodeId != currentSelected)
                 {
-                    // TODO: see if this can be improved with single call
                     $("#sidebar").jstree("deselect_all");
                     $("#sidebar").jstree("select_node", "#" + targetNodeId);
                     console.log("updated tree selection - id: " + targetNodeId);
@@ -211,7 +259,10 @@ export class ViewerComponent
             this.updateTreeSelection();
 
             // Reset form
-            //this.updateEntryForm.reset();
+            this.updateEntryForm.reset();
+
+            // Reset edit mode
+            $("#currentValue").data("edit", false);
 
             // Reset sub-view
             this.currentSubView = "entries";

@@ -106,14 +106,14 @@ public class DatabaseMerger
     {
         boolean changed;
 
-        changed  = mergeNodeDetails(actionLog, src, dest);
+        changed  = mergeNodeProperties(actionLog, src, dest);
         changed |= mergeDestNodeChildren(actionLog, destination, src, dest);
         changed |= mergeSrcNodeChildren(actionLog, destination, src, dest);
 
         return changed;
     }
 
-    boolean mergeNodeDetails(ActionLog actionLog, DatabaseNode src, DatabaseNode dest)
+    boolean mergeNodeProperties(ActionLog actionLog, DatabaseNode src, DatabaseNode dest)
     {
         boolean changed = false;
 
@@ -199,13 +199,13 @@ public class DatabaseMerger
             // src deleted this node
             else if (src.getDeletedChildren().contains(child.getUuid()))
             {
-                // Remove from our tree, this node has been deleted
-                iterator.remove();
-                destination.getLookup().remove(child.getUuid());
+                // Remove node from our database as it has been removed remotely
+                child.remove();
 
                 actionLog.add(dest, "removed child - " + child.getPath());
                 changed = true;
             }
+
             // src is missing this node
             else
             {

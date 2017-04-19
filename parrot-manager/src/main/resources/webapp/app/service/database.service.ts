@@ -122,33 +122,42 @@ export class DatabaseService
             var rootJsonNode = { "children" : [] };
             var rootDatabaseNode = database.getRoot();
 
-            this.buildNode(rootJsonNode, rootDatabaseNode);
+            this.buildNode(rootJsonNode, rootDatabaseNode, rootDatabaseNode);
 
             // Put root node children on tree
             json = rootJsonNode.children;
         }
         else
         {
-            json = [ { "id" : "empty-root-node", "text" : "empty" } ];
+            json = [ { "id" : "empty-root-node", "text" : "empty", "icon" : "icon icon-folder" } ];
             console.log("database is not open / null, cannot rebuild tree");
         }
 
         return json;
     }
 
-    private buildNode(currentJsonNode, databaseNode)
+    private buildNode(currentJsonNode, parentNode, databaseNode)
     {
         // Note: this JSON is based upon the expected format for JSTree (module for displaying trees)
 
         // -- Translate from database to JSON
         var name = databaseNode.getName();
 
+        // Ignore if remote-sync node
+        if (name == "remote-sync" && parentNode.isRoot())
+        {
+            return;
+        }
+
+        // Build JSON to represent this node
         var newJsonNode = {
             "id" : databaseNode.getId(),
             "text" : name != null ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
-            "children" : []
+            "children" : [],
+            "icon" : "icon icon-folder"
         };
 
+        // Add to JSON representation of parent
         currentJsonNode.children.push(newJsonNode);
 
         // -- Add children
@@ -158,7 +167,7 @@ export class DatabaseService
         for (var i = 0; i < children.length; i++)
         {
             childDatabaseNode = children[i];
-            this.buildNode(newJsonNode, childDatabaseNode);
+            this.buildNode(newJsonNode, databaseNode, childDatabaseNode);
         }
     }
 

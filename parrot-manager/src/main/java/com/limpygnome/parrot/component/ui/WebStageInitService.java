@@ -9,6 +9,7 @@ import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
 import com.limpygnome.parrot.component.remote.RemoteSshFileService;
 import com.limpygnome.parrot.component.runtime.RuntimeService;
+import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,9 +17,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * The facade for holding instances of common (shared) runtime services.
- *
- * TODO: get rid of accessors, should be no need for it; we'll almost just want an auto-wiring bean/instance for
- * inecting beans into stage
  */
 @Service
 public class WebStageInitService
@@ -44,6 +42,8 @@ public class WebStageInitService
     private BuildInfoService buildInfoService;
     @Autowired
     private DatabaseOptimizerService databaseOptimizerService;
+    @Autowired
+    private SendKeysService sendKeysService;
 
     // Properties
     @Value("${development:false}")
@@ -74,6 +74,7 @@ public class WebStageInitService
         stage.exposeJsObject("encryptedValueService", encryptedValueService);
         stage.exposeJsObject("buildInfoService", buildInfoService);
         stage.exposeJsObject("databaseOptimizerService", databaseOptimizerService);
+        stage.exposeJsObject("sendKeysService", sendKeysService);
     }
 
     /**
@@ -92,20 +93,12 @@ public class WebStageInitService
         return stage;
     }
 
-
+    /**
+     * @return current instance of database service
+     */
     public DatabaseService getDatabaseService()
     {
         return databaseService;
-    }
-
-    public RuntimeService getRuntimeService()
-    {
-        return runtimeService;
-    }
-
-    public EncryptedValueService getEncryptedValueService()
-    {
-        return encryptedValueService;
     }
 
 }

@@ -18,8 +18,6 @@ import java.util.Properties;
 
 /**
  * Common functionality and wrapper around using SSH.
- *
- * TODO: unit test
  */
 @Component
 public class SshComponent
@@ -93,7 +91,6 @@ public class SshComponent
         String remotePath = resolveRemotePath(channelSftp, options.getRandomToken(), options.getRemotePath());
 
         // Upload file
-        // TODO: add monitor in future...
         channelSftp.put(srcPath, remotePath);
     }
 
@@ -129,7 +126,6 @@ public class SshComponent
             String remoteFileName = getFileNameFromRemotePath(remotePath);
             LOG.info("transfer - {} - initiating transfer - fileName: {}", randomToken, remoteFileName);
 
-            // TODO: add monitor in future
             channelSftp.get(remoteFileName, destinationPath);
             result = true;
         }
@@ -195,7 +191,7 @@ public class SshComponent
         }
         else
         {
-            message = null;
+            message = e.getMessage();
         }
 
         return message;

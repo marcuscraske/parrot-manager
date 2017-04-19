@@ -4,14 +4,13 @@ import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.recentFile.RecentFile;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
+import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import com.limpygnome.parrot.component.session.SessionService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +102,6 @@ public class DatabaseService
         String result;
 
         // Ensure path is fully resolved
-        // TODO: unit test resolving?
         path = fileComponent.resolvePath(path);
 
         try
@@ -113,11 +111,6 @@ public class DatabaseService
             updateCurrentFile(currentFile);
             sessionService.reset();
             result = null;
-        }
-        catch (InvalidCipherTextException e)
-        {
-            result = "Incorrect password or corrupted file";
-            LOG.error("Failed to open database due to invalid crypto (wrong password / corrupted)", e);
         }
         catch (Exception e)
         {
@@ -145,14 +138,9 @@ public class DatabaseService
             LOG.info("saving database - path: {}", path);
 
             // Create backup
-            result = backupService.createBackupBeforeSave();
+            result = backupService.create();
 
-            if (result != null)
-            {
-                LOG.error("failed to backup database on save - result: {}", result);
-                result = "Failed to create automatic backup on save - " + result;
-            }
-            else
+            if (result == null)
             {
                 // Save the database
                 databaseReaderWriter.save(database, path);

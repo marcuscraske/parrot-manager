@@ -14,8 +14,6 @@ import java.net.URLStreamHandler;
  * A URL stream handler implementation to serve resources from the class-path.
  *
  * When a URL matches "http://localhost", the path of the request is used against the root of the resources.
- *
- * TODO: unit test
  */
 class LocalResourceStreamHandler extends URLStreamHandler
 {

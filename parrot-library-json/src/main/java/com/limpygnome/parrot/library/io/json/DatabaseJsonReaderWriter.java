@@ -111,6 +111,11 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         // Decrypt it...
         byte[] decryptedData = cryptoReaderWriter.decrypt(fileCryptoParams, new EncryptedAesValue(0, iv, data));
 
+        if (decryptedData == null)
+        {
+            throw new IncorrectPasswordOrCorruptedException();
+        }
+
         // Now open as memory encrypted database
         Database database = openMemoryEncrypted(decryptedData, password, fileCryptoParams);
         return database;
@@ -152,7 +157,6 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         database.setRoot(root);
 
         // Unset dirty flag, as we've just loaded it...
-        // TODO: add test
         database.setDirty(false);
 
         return database;

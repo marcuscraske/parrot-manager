@@ -7,13 +7,14 @@
     <parent>
         <groupId>com.limpygnome.parrot</groupId>
         <artifactId>dist</artifactId>
-        <version>2.0</version>
+        <version>3.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
     <artifactId>windows</artifactId>
     <packaging>pom</packaging>
 
     <build>
+        <finalName>parrot-windows-${project.version}</finalName>
         <plugins>
 
             <!--
@@ -21,10 +22,11 @@
             -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>3.0.0</version>
                 <configuration>
-                    <finalName>parrot-windows-${project.version}</finalName>
-                    <descriptor>src/assembly/windows.xml</descriptor>
+                    <descriptors>
+                        <descriptor>src/assembly/windows.xml</descriptor>
+                    </descriptors>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>

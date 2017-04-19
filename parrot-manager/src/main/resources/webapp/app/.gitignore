@@ -3,3 +3,4 @@
 
 # Files to be allowed
 !mocks.js
+!errorWatcher.js
