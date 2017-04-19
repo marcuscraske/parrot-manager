@@ -44,9 +44,12 @@ class DatabaseNodeHistoryReaderWriter
             JsonArray jsonDeletedHistory = json.get("deleted-history").getAsJsonArray();
 
             UUID id;
-            for (Object rawId : jsonDeletedHistory)
+            String txtId;
+
+            for (JsonElement jsonElement : jsonDeletedHistory)
             {
-                id = UUID.fromString((String) rawId);
+                txtId = jsonElement.getAsString();
+                id = UUID.fromString(txtId);
                 history.addDeleted(id);
             }
         }

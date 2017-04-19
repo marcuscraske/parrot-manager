@@ -111,4 +111,52 @@ export class ViewerEntriesComponent
         return node ? node.getId() : null;
     }
 
+    isChildren()
+    {
+        var count;
+
+        if (this.currentNode.isRoot())
+        {
+            var filtered = this.getFilteredChildren();
+            count = filtered.length;
+        }
+        else
+        {
+            count = this.currentNode.getChildCount();
+        }
+
+        return count > 0;
+    }
+
+    getFilteredChildren()
+    {
+        var result;
+
+        var children = this.currentNode.getChildren();
+
+        if (this.currentNode.isRoot())
+        {
+            var filtered = [];
+            var child;
+
+            for (var i = 0; i < children.length; i++)
+            {
+                child = children[i];
+
+                if (child.getName() != "remote-sync")
+                {
+                    filtered.push(child);
+                }
+            }
+
+            result = filtered;
+        }
+        else
+        {
+            result = children;
+        }
+
+        return result;
+    }
+
 }

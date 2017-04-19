@@ -111,6 +111,11 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         // Decrypt it...
         byte[] decryptedData = cryptoReaderWriter.decrypt(fileCryptoParams, new EncryptedAesValue(0, iv, data));
 
+        if (decryptedData == null)
+        {
+            throw new IncorrectPasswordOrCorruptedException();
+        }
+
         // Now open as memory encrypted database
         Database database = openMemoryEncrypted(decryptedData, password, fileCryptoParams);
         return database;

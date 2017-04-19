@@ -23,13 +23,13 @@
         </th>
     </tr>
 
-    <tr *ngIf="currentNode.getChildCount() == 0">
+    <tr *ngIf="!isChildren()">
         <td colspan="4">
             None
         </td>
     </tr>
 
-    <tr *ngFor="let node of currentNode.getChildren(); trackBy: trackChildren">
+    <tr *ngFor="let node of getFilteredChildren(); trackBy: trackChildren">
         <td>
             <input type="checkbox" attr.data-node-id="{{ node.getId() }}" />
         </td>

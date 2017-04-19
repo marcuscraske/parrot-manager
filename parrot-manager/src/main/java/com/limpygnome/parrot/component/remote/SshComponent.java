@@ -191,7 +191,7 @@ public class SshComponent
         }
         else
         {
-            message = null;
+            message = e.getMessage();
         }
 
         return message;
