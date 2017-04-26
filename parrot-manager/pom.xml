@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>3.0</version>
+        <version>3.1</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-manager</artifactId>
@@ -44,12 +44,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>4.3.7.RELEASE</version>
+            <version>4.3.8.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>4.3.7.RELEASE</version>
+            <version>4.3.8.RELEASE</version>
         </dependency>
 
         <!-- Unit testing -->

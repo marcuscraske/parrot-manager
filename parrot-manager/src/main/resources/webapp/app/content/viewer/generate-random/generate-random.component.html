@@ -1,6 +1,6 @@
 <div class="panel panel-default">
     <div class="panel-body">
-        <form [formGroup]="randomOptions" (ngSubmit)="generate($event)" #form="ngForm">
+        <form [formGroup]="randomOptions" #form="ngForm">
 
             <div class="form-group">
                 <label class="checkbox-inline">
@@ -44,7 +44,7 @@
                 <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer">
                     Close
                 </button>
-                <button class="btn btn-primary" type="submit">
+                <button class="btn btn-primary" type="submit" (click)="generate()">
                     Generate
                 </button>
             </div>
