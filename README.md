@@ -25,25 +25,22 @@ A simple password manager with a modern interface, with ability to synchronize d
 - Send values as keys to other applications
 - Modern UI
 
+## Download
+Binaries are available on the [releases](https://github.com/limpygnome/parrot-manager/releases) page.
+
 ## Screenshots
-<table>
-    <tr>
-        <td>
-            <img src="media/screenshot-list.png" alt="listing of entries" />
-        </td>
-        <td>
-            <img src="media/screenshot-entry.png" alt="viewing an entry and history" />
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img src="media/screenshot-backups.png" alt="database backups" />
-        </td>
-        <td>
-            <img src="media/screenshot-sync.png" alt="database backups" />
-        </td>
-    </tr>
-</table>
+<p align="center">
+    <img width="500px" src="media/screenshot-list.png" alt="listing of entries" />
+</p>
+<p align="center">
+    <img width="500px" src="media/screenshot-entry.png" alt="viewing an entry and history" />
+</p>
+<p align="center">
+    <img width="500px" src="media/screenshot-backups.png" alt="database backups" />
+</p>
+<p align="center">
+    <img width="500px" src="media/screenshot-sync.png" alt="database backups" />
+</p>
 
 ## Prerequisites
 - Requires at least Java Runtime 1.8 - [download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
