@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { RuntimeService } from 'app/service/runtime.service'
 import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
@@ -45,6 +46,7 @@ export class RemoteSyncSshComponent {
     currentNode : string;
 
     constructor(
+        private runtimeService: RuntimeService,
         private remoteSshFileService: RemoteSshFileService,
         private databaseService: DatabaseService,
         private encryptedValueService: EncryptedValueService,
@@ -109,7 +111,7 @@ export class RemoteSyncSshComponent {
         }
     }
 
-    open(event)
+    persist()
     {
         var form = this.openForm;
 
@@ -399,6 +401,15 @@ export class RemoteSyncSshComponent {
         {
             this.router.navigate(["/remote-sync"]);
         }
+    }
+
+    selectPrivateKey()
+    {
+        var form = this.openForm;
+
+        // Open dialogue and read file
+        var path = this.runtimeService.pickFile("Select private key", null, false);
+        form.value["privateKeyPath"] = path;
     }
 
 }

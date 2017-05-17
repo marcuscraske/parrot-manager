@@ -27,7 +27,7 @@
     remote-sync - edit
 </h1>
 
-<form id="openRemoteSsh" [formGroup]="openForm" (ngSubmit)="open($event)" #form="ngForm">
+<form id="openRemoteSsh" [formGroup]="openForm" #form="ngForm">
 
     <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['name'].valid }">
         <label class="form-control-label" for="name">
@@ -166,9 +166,9 @@
                            placeholder="Only required for key file auth..."
                     />
                     <span class="input-group-btn">
-                <button class="btn btn-default form-control" type="button">
-                    Choose
-                </button>
+                    <button class="btn btn-default form-control" type="button" (click)="selectPrivateKey()">
+                        Choose
+                    </button>
             </span>
                 </div>
             </div>
@@ -264,11 +264,11 @@
 
     <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" (click)="persist()">
             {{ currentMode == 'open' ? 'Open' : currentMode == 'edit' ? 'Save' : 'Add' }}
         </button>
 
-        <button type="button" class="btn btn-default" (click)="performTest()">
+        <button type="submit" class="btn btn-default" (click)="performTest()">
             Test
         </button>
 

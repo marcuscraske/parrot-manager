@@ -21,6 +21,7 @@
 - Minification of resources and bundling only compiled assets
 - Add gzip compression to database file
 - Save random generator settings
+- Make remote-sync async, with ability to cancel
 
 ### Ideas
 - Import/export

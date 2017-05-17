@@ -38,13 +38,28 @@ public class SshComponent
         {
             try
             {
-                jsch.addIdentity(options.getPrivateKeyPath(), options.getPrivateKeyPass());
+                String path = fileComponent.resolvePath(options.getPrivateKeyPath());
+                jsch.addIdentity(path, options.getPrivateKeyPass());
             }
             catch (JSchException e)
             {
-                if (e.getCause() instanceof FileNotFoundException)
+                String message = e.getMessage();
+                Throwable cause = e.getCause();
+
+                if (message != null)
                 {
-                    throw new RuntimeException("Private key not found");
+                    if (message.toLowerCase().contains("invalid privatekey"))
+                    {
+                        throw new RuntimeException("Invalid private key - did you select the public key by accident?");
+                    }
+                }
+
+                if (cause != null)
+                {
+                    if (cause instanceof FileNotFoundException)
+                    {
+                        throw new RuntimeException("Private key not found");
+                    }
                 }
 
                 throw e;
