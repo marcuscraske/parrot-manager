@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>3.2</version>
+        <version>3.3</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-library</artifactId>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.56</version>
+            <version>1.57</version>
         </dependency>
 
         <!-- Unit testing -->

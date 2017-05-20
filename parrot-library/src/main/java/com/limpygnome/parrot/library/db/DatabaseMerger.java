@@ -193,7 +193,7 @@ public class DatabaseMerger
             // src not missing node - recursively update src and dest nodes at same level
             if (otherNode != null)
             {
-                mergeNode(actionLog, destination, child, otherNode);
+                changed |= mergeNode(actionLog, destination, child, otherNode);
             }
 
             // src deleted this node
