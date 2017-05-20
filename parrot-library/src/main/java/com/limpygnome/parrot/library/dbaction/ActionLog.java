@@ -53,12 +53,12 @@ public class ActionLog
     /**
      * @return an instance with all messages joined together, using the system's/native line separator
      */
-    public String getMessages()
+    public String getMessages(String hostName)
     {
         String separator = System.lineSeparator();
         StringBuilder buffer = new StringBuilder();
 
-        messages.stream().forEach(action -> buffer.append(action).append(separator));
+        messages.stream().forEach(action -> buffer.append(hostName).append(" : ").append(action).append(separator));
         if (buffer.length() > 0)
         {
             int separatorLen = separator.length();

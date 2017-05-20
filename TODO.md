@@ -5,8 +5,7 @@
 
 ## Features
 ### Upcoming
-- option to (remote) sync hosts automatically when database is opened and at timed intervals
-- remote sync is non-blocking and can be cancelled (useful for poor connections)
+- TBC
 
 ### Future
 - prevent external requests entirely

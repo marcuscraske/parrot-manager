@@ -5,11 +5,19 @@ import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
+import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 
 @Component({
   selector: 'my-app',
   templateUrl: '/app/app.component.html',
-  providers: [KeyBindsService, RuntimeService, DatabaseService, BackupService, EncryptedValueService]
+  providers: [
+        KeyBindsService,
+        RuntimeService,
+        DatabaseService,
+        BackupService,
+        EncryptedValueService,
+        RemoteSyncChangeLogService
+  ]
 })
 export class AppComponent {
 
