@@ -2,6 +2,8 @@ import { Injectable, Renderer } from '@angular/core';
 
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 
+import "app/global-vars"
+
 @Injectable()
 export class RemoteSshFileService {
 
@@ -26,19 +28,44 @@ export class RemoteSshFileService {
 
             // Update host being synchronized
             var options = event.data;
-            this.currentHost = "test";//options.getName();
+            var hostName = options.getName();
+            this.currentHost = hostName;
+
+            // Show notification
+            toastr.info("syncing " + hostName);
         });
 
         // Setup hook for when remote syncing finishes
         this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
             console.log("received remote sync finish event");
 
+            var messages = event.data.getMessages();
+            var isSuccess = event.data.isSuccess();
+            var isChanges = event.data.isChanges();
+            var hostName = event.data.getHostName();
+
             // Switch state to not syncing
             this.syncing = false;
 
             // Send result to logging service
-            var result = event.data;
-            this.remoteSyncChangeLogService.add(result);
+            this.remoteSyncChangeLogService.add(messages);
+
+            // Show notification
+            if (isSuccess)
+            {
+                if (isChanges)
+                {
+                    toastr.success(hostName + " has changes");
+                }
+                else
+                {
+                    toastr.info(hostName + " has no changes");
+                }
+            }
+            else
+            {
+                toastr.error("failed to synchronize " + hostName);
+            }
         });
     }
 

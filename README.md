@@ -41,6 +41,9 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
 <p align="center">
     <img width="500px" src="media/screenshot-sync.png" alt="database backups" />
 </p>
+<p align="center">
+    <img width="500px" src="media/screenshot-sync-2.png" alt="database backups" />
+</p>
 
 ## Prerequisites
 - Requires at least Java Runtime 1.8 - [download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)

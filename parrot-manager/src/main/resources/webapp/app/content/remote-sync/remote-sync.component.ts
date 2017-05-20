@@ -2,8 +2,8 @@ import { Component, AfterViewChecked } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
+import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { RuntimeService } from 'app/service/runtime.service'
@@ -11,8 +11,7 @@ import { RuntimeService } from 'app/service/runtime.service'
 @Component({
     moduleId: module.id,
     templateUrl: 'remote-sync.component.html',
-    styleUrls: ['remote-sync.component.css'],
-    providers: [RemoteSshFileService]
+    styleUrls: ['remote-sync.component.css']
 })
 export class RemoteSyncComponent implements AfterViewChecked {
 

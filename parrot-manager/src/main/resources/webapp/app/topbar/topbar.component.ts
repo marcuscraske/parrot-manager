@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
+import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 
 import "app/global-vars"
 
@@ -20,6 +21,7 @@ export class TopBarComponent
     constructor(
         private runtimeService: RuntimeService,
         private databaseService: DatabaseService,
+        private remoteSshFileService: RemoteSshFileService,
         private router: Router,
         private renderer: Renderer
     )

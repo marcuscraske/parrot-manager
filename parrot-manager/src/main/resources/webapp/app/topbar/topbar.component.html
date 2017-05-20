@@ -18,7 +18,7 @@
                 <span class="icon icon-database"></span>
             </a>
             <a title="Remote Sync" routerLink="/remote-sync">
-                <span class="icon icon-loop2"></span>
+                <span class="icon icon-loop2" [ngClass]="{ 'syncing' : remoteSshFileService.isSyncing() }"></span>
             </a>
         </div>
         <div class="db-open" *ngIf="databaseService.isOpen()">

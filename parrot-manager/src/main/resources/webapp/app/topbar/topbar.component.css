@@ -81,7 +81,24 @@ header div a:focus
     background: #666;
 }
 
-.dirty
+.dirty,
+.syncing
 {
     color: #ff5733 !important;
+}
+
+.syncing
+{
+    display: inline-block;
+
+    /* shared with loading-box.css */
+    animation-name: spin;
+    animation-duration: 2000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 2000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
 }

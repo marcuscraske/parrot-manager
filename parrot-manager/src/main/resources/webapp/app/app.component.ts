@@ -5,6 +5,7 @@ import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
+import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 
 @Component({
@@ -16,6 +17,7 @@ import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.serv
         DatabaseService,
         BackupService,
         EncryptedValueService,
+        RemoteSshFileService,
         RemoteSyncChangeLogService
   ]
 })
@@ -27,7 +29,7 @@ export class AppComponent {
     {
         // Setup global toastr configuration
         toastr.options = {
-          "closeButton": false,
+          "closeButton": true,
           "debug": false,
           "newestOnTop": false,
           "progressBar": false,

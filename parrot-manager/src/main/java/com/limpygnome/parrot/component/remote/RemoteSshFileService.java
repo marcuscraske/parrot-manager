@@ -202,28 +202,30 @@ public class RemoteSshFileService
 
     private void syncBlockingThread(Database database, SshOptions options, String remotePassword)
     {
-        String result;
+        String messages;
+        boolean success = true;
+
         WebViewStage stage = webStageInitService.getStage();
 
         if (database == null)
         {
             LOG.error("database is null");
-            result = "Internal error - database is null?";
+            messages = "Internal error - database is null?";
         }
         else if (options == null)
         {
             LOG.error("options are null");
-            result = "Internal error - options are null?";
+            messages = "Internal error - options are null?";
         }
         else if (options.getDestinationPath() == null)
         {
             LOG.warn("destination path not setup");
-            result = "Internal error - destination path must be setup on options";
+            messages = "Internal error - destination path must be setup on options";
         }
         else if (remotePassword == null || remotePassword.length() == 0)
         {
             LOG.warn("remote password not specified");
-            result = "Remote password is required";
+            messages = "Remote password is required";
         }
         else
         {
@@ -240,9 +242,9 @@ public class RemoteSshFileService
             try
             {
                 // Check destination path
-                result = checkDestinationPath(options);
+                messages = checkDestinationPath(options);
 
-                if (result == null)
+                if (messages == null)
                 {
                     // Connect
                     LOG.info("sync - connecting");
@@ -295,12 +297,13 @@ public class RemoteSshFileService
 
                     // Build result
                     String hostName = options.getName();
-                    result = actionLog.getMessages(hostName);
+                    messages = actionLog.getMessages(hostName);
                 }
             }
             catch (Exception e)
             {
-                result = sshComponent.getExceptionMessage(e);
+                messages = sshComponent.getExceptionMessage(e);
+                success = false;
                 LOG.error("sync - {} - exception", options.getRandomToken(), e);
             }
             finally
@@ -329,7 +332,10 @@ public class RemoteSshFileService
         }
 
         // Raise event with result
-        stage.triggerEvent("document", "remoteSyncFinish", result);
+        SyncResult syncResult = new SyncResult(
+                messages, success, database.isDirty(), options.getName()
+        );
+        stage.triggerEvent("document", "remoteSyncFinish", syncResult);
     }
 
     private String checkDestinationPath(SshOptions options)
