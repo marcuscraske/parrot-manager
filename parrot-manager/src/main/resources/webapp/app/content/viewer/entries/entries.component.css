@@ -12,3 +12,8 @@ table.entries tr td:nth-child(3)
 {
     width: 100%;
 }
+
+.icon-cross
+{
+    font-size: 0.8em;
+}

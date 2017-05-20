@@ -72,7 +72,7 @@ File name may differ and no installation process is required, as the JAR is stan
 - Issues - raise any suggestions or bugs, or help others
 - This project is open to pull requests
 
-This project uses Java, JavaFX WebView and AngularJS 2; as well as many front-end libraries, managed by `npm`. Each
+This project uses Java, JavaFX WebView and AngularJS; as well as many front-end libraries, managed by `npm`. Each
 module should have its own `README.md` file for purpose.
 
 ### Main
@@ -82,7 +82,7 @@ The entire project, including distributions, can be built using:
 mvn clean package
 ````
 
-### Front-end / angularjs2
+### Front-end / AngularJS
 You can launch the node lite server to build the front-end on the fly, although parts are limited / not mocked:
 
 ````

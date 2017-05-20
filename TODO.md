@@ -5,7 +5,8 @@
 
 ## Features
 ### Upcoming
-- TBC
+- option to (remote) sync hosts automatically when database is opened and at timed intervals
+- remote sync is non-blocking and can be cancelled (useful for poor connections)
 
 ### Future
 - prevent external requests entirely
@@ -21,7 +22,6 @@
 - Minification of resources and bundling only compiled assets
 - Add gzip compression to database file
 - Save random generator settings
-- Make remote-sync async, with ability to cancel
 
 ### Ideas
 - Import/export
@@ -29,6 +29,4 @@
   - Should be fairly easy for JSON and will be a gateway to other formats.
 
 ### Technical
-- Upgrade Angular and npm dependencies
 - Fix intl polyfill issues for JavaFx in order to use Angular date formatting
-- Consider switching from JSON simple to Gson.
