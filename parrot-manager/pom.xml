@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.56</version>
+            <version>1.57</version>
         </dependency>
 
         <!-- SSH -->
@@ -177,7 +177,7 @@
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.16</version>
+                <version>1.7.17</version>
                 <executions>
                     <execution>
                         <id>l4j-gui</id>

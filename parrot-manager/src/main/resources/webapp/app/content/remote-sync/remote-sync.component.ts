@@ -93,7 +93,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         return result;
     }
 
-    sync()
+    syncSelected()
     {
         console.log("starting sync...");
 
@@ -102,56 +102,58 @@ export class RemoteSyncComponent implements AfterViewChecked {
 
         var self = this;
         targetHosts.each(function() {
-
-            // Read the node identifier
             var nodeId = $(this).attr("data-node-id");
-            console.log("syncing node - id: " + nodeId);
+            self.sync(nodeId);
+        });
+    }
 
-            // Create SSH options and invoke sync
-            var node = self.databaseService.getNode(nodeId);
+    sync(nodeId)
+    {
+        console.log("syncing node - id: " + nodeId);
 
-            if (node != null)
+        // Create SSH options and invoke sync
+        var node = this.databaseService.getNode(nodeId);
+
+        if (node != null)
+        {
+            console.log("creating initial ssh options for host...");
+            var options = null;
+
+            try
             {
-                console.log("creating initial ssh options for host...");
-                var options = null;
+                // Read existing options
+                options = this.remoteSshFileService.createOptionsFromNode(node);
 
-                try
+                if (options == null)
                 {
-                    // Read existing options
-                    options = self.remoteSshFileService.createOptionsFromNode(node);
-
-                    if (options == null)
-                    {
-                        throw "no options returned";
-                    }
-
-                    // Set destination path to current file open
-                    var currentPath = self.databaseService.getPath();
-                    options.setDestinationPath(currentPath);
-                }
-                catch (e)
-                {
-                    console.log("failed to create options for host");
-                    console.error(e);
-                    options = null;
+                    throw "no options returned";
                 }
 
-                if (options != null)
-                {
-                    console.log("starting sync chain for host...");
-                    self.syncChainPromptUserPass(options);
-                }
-                else
-                {
-                    self.remoteSyncChangeLogService.add(node.getName() + " - failed to read host options; delete and re-create the sync host...");
-                }
+                // Set destination path to current file open
+                var currentPath = this.databaseService.getPath();
+                options.setDestinationPath(currentPath);
+            }
+            catch (e)
+            {
+                console.log("failed to create options for host");
+                console.error(e);
+                options = null;
+            }
+
+            if (options != null)
+            {
+                console.log("starting sync chain for host...");
+                this.syncChainPromptUserPass(options);
             }
             else
             {
-                console.log("node not found for sync - id: " + nodeId);
+                this.remoteSyncChangeLogService.add(node.getName() + " - failed to read host options; delete and re-create the sync host...");
             }
-
-        });
+        }
+        else
+        {
+            console.log("node not found for sync - id: " + nodeId);
+        }
     }
 
     syncChainPromptUserPass(options)

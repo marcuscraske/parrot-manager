@@ -1,6 +1,7 @@
 table.remote-sync tr td
 {
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 table.remote-sync tr td:nth-child(2)
