@@ -52,7 +52,6 @@ public class RemoteSshFileService
     /**
      * Creates options from a set of mandatory values.
      *
-     * @param randomToken a random token for retrieving the download/upload status, equivalent to e.g. a ticket or tx id
      * @param name the name of the options, used later for persistence
      * @param host the remote host
      * @param port the remote port
@@ -61,10 +60,10 @@ public class RemoteSshFileService
      * @param destinationPath the local path of where to save a local copy of the database
      * @return a new instance
      */
-    public SshOptions createOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
+    public SshOptions createOptions(String name, String host, int port, String user, String remotePath, String destinationPath)
     {
         // Create new instance
-        SshOptions options = new SshOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+        SshOptions options = new SshOptions(name, host, port, user, remotePath, destinationPath);
 
         // Persist to session to avoid gc; it's possible multiple options could be made and this won't work, but it'll
         // do for now
@@ -121,7 +120,7 @@ public class RemoteSshFileService
         catch (Exception e)
         {
             result = sshComponent.getExceptionMessage(e);
-            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
+            LOG.error("transfer exception", e);
         }
         finally
         {
@@ -167,7 +166,7 @@ public class RemoteSshFileService
         catch (Exception e)
         {
             result = sshComponent.getExceptionMessage(e);
-            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
+            LOG.error("transfer exception", e);
         }
         finally
         {
@@ -182,15 +181,21 @@ public class RemoteSshFileService
         return result;
     }
 
-    public synchronized void sync(Database database, SshOptions options, String remotePassword)
+    public synchronized void sync(SshOptions options)
     {
         if (thread == null)
         {
+            // fetch database
+            Database database = databaseService.getDatabase();
+
+            // fetch password
+            String password = databaseService.getPassword();
+
+            // start separate thread for sync to prevent blocking
             LOG.info("launching separate thread for sync");
 
-            // Start separate thread for sync to prevent blocking
             thread = new Thread(() -> {
-                syncBlockingThread(database, options, remotePassword);
+                syncBlockingThread(database, options, password);
             });
             thread.start();
         }
@@ -304,7 +309,7 @@ public class RemoteSshFileService
             {
                 messages = sshComponent.getExceptionMessage(e);
                 success = false;
-                LOG.error("sync - {} - exception", options.getRandomToken(), e);
+                LOG.error("sync exception", e);
             }
             finally
             {

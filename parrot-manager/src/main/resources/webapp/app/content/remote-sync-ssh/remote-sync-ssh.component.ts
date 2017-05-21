@@ -27,9 +27,7 @@ export class RemoteSyncSshComponent {
        privateKeyPass : [""],
        proxyHost : [""],
        proxyPort : [0],
-       proxyType : ["None"],
-       promptUserPass : [false],
-       promptKeyPass : [false]
+       proxyType : ["None"]
     });
 
     // Messages displayed to user; hidden when null
@@ -125,7 +123,7 @@ export class RemoteSyncSshComponent {
             if (this.currentMode == "open")
             {
                 // Perform download and save config...
-                this.performOpen(options);
+                this.performDownloadAndOpen(options);
             }
             else if (this.currentMode == "edit" || this.currentMode == "new")
             {
@@ -149,12 +147,6 @@ export class RemoteSyncSshComponent {
         $("#openRemoteSsh :input").prop("disabled", isDisabled);
     }
 
-    performOpen(options)
-    {
-        // Begin async chain to prompt for passwords etc
-        this.chainDisableAndPrompt(options, (options) => { this.performDownloadAndOpen(options) });
-    }
-
     performTest()
     {
         if (this.openForm.valid)
@@ -164,79 +156,12 @@ export class RemoteSyncSshComponent {
             // Create download options
             var options = this.createOptions();
 
-            // Begin async chain to prompt for passwords etc
-            this.chainDisableAndPrompt(options, (options) => { this.performTestWithAuth(options); });
+            // Perform test
+            this.performTestWithAuth(options);
         }
         else
         {
             console.log("not testing, form is invalid");
-        }
-    }
-
-    chainDisableAndPrompt(options, finalCallback)
-    {
-        console.log("disabling form, wiping messages...");
-
-        // Wipe existing messages
-        this.errorMessage = null;
-        this.successMessage = null;
-
-        // Disable form
-        this.setFormDisabled(true);
-
-        // Move onto asking for user pass
-        this.chainPromptUserPass(options, finalCallback);
-    }
-
-    chainPromptUserPass(options, finalCallback)
-    {
-        if (options.isPromptUserPass())
-        {
-            console.log("prompting for user pass...");
-
-            bootbox.prompt({
-                title: "Enter SSH user password:",
-                inputType: "password",
-                callback: (password) => {
-                    // Update options
-                    options.setUserPass(password);
-
-                    // Continue next stage in the chain...
-                    console.log("continuing to key pass chain...");
-                    this.chainPromptKeyPass(options, finalCallback);
-                }
-            });
-        }
-        else
-        {
-            console.log("skipped user pass prompt, moving to key pass...");
-            this.chainPromptKeyPass(options, finalCallback);
-        }
-    }
-
-    chainPromptKeyPass(options, finalCallback)
-    {
-        if (options.isPromptKeyPass())
-        {
-            console.log("prompting for key pass...");
-
-            bootbox.prompt({
-                title: "Enter key password:",
-                inputType: "password",
-                callback: (password) => {
-                    // Update options
-                    options.setPrivateKeyPass(password);
-
-                    // Continue next stage in the chain...
-                    console.log("continuing to perform actual download and open...");
-                    finalCallback(options);
-                }
-            });
-        }
-        else
-        {
-            console.log("skipped prompting user pass, invoking final callback...");
-            finalCallback(options);
         }
     }
 
@@ -332,8 +257,6 @@ export class RemoteSyncSshComponent {
         options.setProxyHost(form.value["proxyHost"]);
         options.setProxyPort(form.value["proxyPort"]);
         options.setProxyType(form.value["proxyType"]);
-        options.setPromptUserPass(form.value["promptUserPass"]);
-        options.setPromptKeyPass(form.value["promptKeyPass"]);
 
         // Non-serialized data used for just test/downloading in edit mode
         if (this.currentMode == "edit" || this.currentMode == "new")

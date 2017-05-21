@@ -11,6 +11,8 @@ public class Settings implements Serializable
 {
     private SettingsValue<Boolean> recentFilesEnabled;
     private SettingsValue<Boolean> recentFilesOpenLastOnStartup;
+    private SettingsValue<Boolean> remoteSyncStartup;
+    private SettingsValue<Long> remoteSyncInterval;
     private SettingsValue<Boolean> automaticBackupsOnSave;
     private SettingsValue<Long> automaticBackupsRetained;
 
@@ -18,8 +20,10 @@ public class Settings implements Serializable
     {
         this.recentFilesEnabled = new SettingsValue<>(true);
         this.recentFilesOpenLastOnStartup = new SettingsValue<>(true);
+        this.remoteSyncStartup = new SettingsValue<>(true);
+        this.remoteSyncInterval = new SettingsValue<>(30L);
         this.automaticBackupsOnSave = new SettingsValue<>(true);
-        this.automaticBackupsRetained = new SettingsValue(10);
+        this.automaticBackupsRetained = new SettingsValue(10L);
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()
@@ -30,6 +34,16 @@ public class Settings implements Serializable
     public SettingsValue<Boolean> getRecentFilesOpenLastOnStartup()
     {
         return recentFilesOpenLastOnStartup;
+    }
+
+    public SettingsValue<Boolean> getRemoteSyncStartup()
+    {
+        return remoteSyncStartup;
+    }
+
+    public SettingsValue<Long> getRemoteSyncInterval()
+    {
+        return remoteSyncInterval;
     }
 
     public SettingsValue<Boolean> getAutomaticBackupsOnSave()
@@ -43,12 +57,15 @@ public class Settings implements Serializable
     }
 
     @JsonIgnore
+
     @Override
     public String toString()
     {
         return "Settings{" +
                 "recentFilesEnabled=" + recentFilesEnabled +
                 ", recentFilesOpenLastOnStartup=" + recentFilesOpenLastOnStartup +
+                ", remoteSyncStartup=" + remoteSyncStartup +
+                ", remoteSyncInterval=" + remoteSyncInterval +
                 ", automaticBackupsOnSave=" + automaticBackupsOnSave +
                 ", automaticBackupsRetained=" + automaticBackupsRetained +
                 '}';

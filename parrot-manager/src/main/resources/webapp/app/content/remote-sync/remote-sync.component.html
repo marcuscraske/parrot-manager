@@ -25,6 +25,9 @@
                 {{ getHostName(node) }}
             </td>
             <td>
+                <a class="btn btn-primary" (click)="sync(node.getId())">
+                    Sync with Different Password
+                </a>
                 <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
                     Edit
                 </a>

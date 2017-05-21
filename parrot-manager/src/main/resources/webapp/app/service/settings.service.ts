@@ -35,6 +35,12 @@ export class SettingsService {
         settings.getRecentFilesOpenLastOnStartup().setValue(
             json.recentFilesOpenLastOnStartup
         );
+        settings.getRemoteSyncStartup().setValue(
+            json.remoteSyncStartup
+        );
+        settings.getRemoteSyncInterval().setValue(
+            json.remoteSyncInterval
+        );
         settings.getAutomaticBackupsOnSave().setValue(
             json.automaticBackupsOnSave
         );

@@ -9,9 +9,12 @@ export class RemoteSshFileService {
 
     remoteSshFileService : any;
 
+    // Functions / refs
     private remoteSyncingFinishedEvent: Function;
-    syncing : boolean;
-    currentHost : string;
+
+    // Syncing state
+    private syncing : boolean;
+    private currentHost : string;
 
     constructor(
         private remoteSyncChangeLogService: RemoteSyncChangeLogService,
@@ -99,10 +102,10 @@ export class RemoteSshFileService {
         return result;
     }
 
-    sync(database, options, remoteDatabasePassword)
+    sync(database, options)
     {
         // Initialize syncing; callback comes from hook
-        this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
+        this.remoteSshFileService.sync(database, options);
     }
 
     isSyncing() : boolean

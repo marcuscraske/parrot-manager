@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.session;
 
+import com.limpygnome.parrot.component.remote.auth.AuthEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -28,24 +29,36 @@ public class SessionService
         store = new HashMap<>();
     }
 
-    public void reset()
+    public synchronized void reset()
     {
+        // Wipe any credentials
+        AuthEntry authEntry;
+        for (Object value : store.values())
+        {
+            if (value instanceof AuthEntry)
+            {
+                authEntry = (AuthEntry) value;
+                authEntry.wipe();
+            }
+        }
+
+        // Clear store
         store.clear();
         LOG.debug("wiped session data");
     }
 
-    public void put(String key, Object value)
+    public synchronized void put(String key, Object value)
     {
         store.put(key, value);
         LOG.debug("added value - key: {}", key);
     }
 
-    public Object get(String key)
+    public synchronized Object get(String key)
     {
         return store.get(key);
     }
 
-    public Object remove(String key)
+    public synchronized Object remove(String key)
     {
         Object object = store.remove(key);
         LOG.debug("removed value - key: {}", key);

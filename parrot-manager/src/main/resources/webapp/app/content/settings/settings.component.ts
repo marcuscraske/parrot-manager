@@ -19,6 +19,8 @@ export class SettingsComponent {
     public settingsForm = this.fb.group({
         recentFilesEnabled: [false],
         recentFilesOpenLastOnStartup: [false],
+        remoteSyncStartup: [true],
+        remoteSyncInterval: [""],
         automaticBackupsOnSave: [false],
         automaticBackupsRetained: [""],
         newPassword: [""],

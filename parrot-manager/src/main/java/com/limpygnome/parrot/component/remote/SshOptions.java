@@ -23,18 +23,11 @@ import java.io.Serializable;
  */
 public class SshOptions implements Serializable, Cloneable
 {
-    @JsonIgnore
-    private String randomToken;
-
     // Mandatory
     private String name;
     private String host;
     private int port;
     private String user;
-    // -- Don't serialize the local/destination path, allow database to be dynamically moved around, as this is
-    //    stored in the database archive during runtime
-    @JsonIgnore
-    private String destinationPath;
     private String remotePath;
 
     // Optional - auth
@@ -48,22 +41,9 @@ public class SshOptions implements Serializable, Cloneable
     private String proxyType;
 
     // Options
-    private boolean promptUserPass;
-    private boolean promptKeyPass;
     private boolean strictHostChecking;
 
     public SshOptions() { }
-
-    public SshOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
-    {
-        this.randomToken = randomToken;
-        this.name = name;
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.remotePath = remotePath;
-        this.destinationPath = destinationPath;
-    }
 
     public String getName()
     {
@@ -185,50 +165,6 @@ public class SshOptions implements Serializable, Cloneable
         this.proxyType = proxyType;
     }
 
-    public boolean isPromptUserPass()
-    {
-        return promptUserPass;
-    }
-
-    public void setPromptUserPass(boolean promptUserPass)
-    {
-        this.promptUserPass = promptUserPass;
-    }
-
-    public boolean isPromptKeyPass()
-    {
-        return promptKeyPass;
-    }
-
-    public void setPromptKeyPass(boolean promptKeyPass)
-    {
-        this.promptKeyPass = promptKeyPass;
-    }
-
-    @JsonIgnore
-    public String getDestinationPath()
-    {
-        return destinationPath;
-    }
-
-    @JsonIgnore
-    public void setDestinationPath(String destinationPath)
-    {
-        this.destinationPath = destinationPath;
-    }
-
-    @JsonIgnore
-    public String getRandomToken()
-    {
-        return randomToken;
-    }
-
-    @JsonIgnore
-    public void setRandomToken(String randomToken)
-    {
-        this.randomToken = randomToken;
-    }
-
     @JsonIgnore
     public boolean isPrivateKey()
     {
@@ -326,12 +262,10 @@ public class SshOptions implements Serializable, Cloneable
     public String toString()
     {
         return "SshOptions{" +
-                "randomToken='" + randomToken + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
                 ", user='" + user + '\'' +
-                ", destinationPath='" + destinationPath + '\'' +
                 ", remotePath='" + remotePath + '\'' +
                 ", userPass='" + userPass + '\'' +
                 ", privateKeyPath='" + privateKeyPath + '\'' +
@@ -339,8 +273,6 @@ public class SshOptions implements Serializable, Cloneable
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 ", proxyType='" + proxyType + '\'' +
-                ", promptUserPass=" + promptUserPass +
-                ", promptKeyPass=" + promptKeyPass +
                 ", strictHostChecking=" + strictHostChecking +
                 '}';
     }

@@ -21,6 +21,7 @@ A simple password manager with a modern interface, with ability to synchronize d
 - Sync databases using SSH
     - Multiple hosts at once
     - Automatic merge to avoid conflicts and losing data
+    - Sync on opening a database and at intervals
 - Copy values to clipboard
 - Send values as keys to other applications
 - Modern UI

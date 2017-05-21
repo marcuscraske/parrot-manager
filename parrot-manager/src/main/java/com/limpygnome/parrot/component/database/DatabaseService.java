@@ -42,6 +42,7 @@ public class DatabaseService
     private CryptoParamsFactory cryptoParamsFactory;
 
     // The current database open...
+    private char[] password;
     private Database database;
     private File currentFile;
 
@@ -78,6 +79,7 @@ public class DatabaseService
             File currentFile = new File(location);
             updateCurrentFile(currentFile);
             sessionService.reset();
+            this.password = password.toCharArray();
 
             LOG.info("created database successfully - location: {}", location);
 
@@ -110,6 +112,7 @@ public class DatabaseService
             File currentFile = new File(path);
             updateCurrentFile(currentFile);
             sessionService.reset();
+            this.password = password.toCharArray();
             result = null;
         }
         catch (Exception e)
@@ -232,6 +235,15 @@ public class DatabaseService
     public synchronized Database getDatabase()
     {
         return database;
+    }
+
+    /**
+     * @return the password of the current database opened
+     */
+    public String getPassword()
+    {
+        String password = new String(this.password);
+        return password;
     }
 
 }
