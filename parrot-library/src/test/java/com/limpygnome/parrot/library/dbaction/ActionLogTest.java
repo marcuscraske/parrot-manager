@@ -38,11 +38,11 @@ public class ActionLogTest
         actionLog.add("test message");
         actionLog.add(databaseNode, "db node message");
 
-        String result = actionLog.getMessages();
+        String result = actionLog.getMessages("host");
 
         // Then
         String separator = System.getProperty("line.separator");
-        String expected = "test message" + separator + "test node path : db node message";
+        String expected = "host : test message" + separator + "host : test node path : db node message";
 
         assertEquals("Not in expected format", expected, result);
     }

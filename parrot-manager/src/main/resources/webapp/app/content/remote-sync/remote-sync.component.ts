@@ -2,8 +2,8 @@ import { Component, AfterViewChecked } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { DatabaseService } from 'app/service/database.service'
+import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { RuntimeService } from 'app/service/runtime.service'
@@ -11,8 +11,7 @@ import { RuntimeService } from 'app/service/runtime.service'
 @Component({
     moduleId: module.id,
     templateUrl: 'remote-sync.component.html',
-    styleUrls: ['remote-sync.component.css'],
-    providers: [RemoteSshFileService, RemoteSyncChangeLogService]
+    styleUrls: ['remote-sync.component.css']
 })
 export class RemoteSyncComponent implements AfterViewChecked {
 
@@ -233,26 +232,32 @@ export class RemoteSyncComponent implements AfterViewChecked {
 
     syncHost(options, remoteDatabasePassword)
     {
-        this.remoteSyncChangeLogService.add(options.getName() + " - syncing host");
-
         var database = this.databaseService.getDatabase();
-        var result = this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
 
-        // Split result message and log each line
-        var lines = result.split("\n");
-        var line;
-
-        for (var i = 0; i < lines.length; i++)
-        {
-            line = options.getName() + " - " + lines[i];
-            this.remoteSyncChangeLogService.add(line);
-        }
+        // Invoke (async/non-blocking) sync...
+        this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
     }
 
     copyToClipboard()
     {
         var changeLog = this.remoteSyncChangeLogService.getChangeLog();
         this.runtimeService.setClipboard(changeLog);
+    }
+
+    isSyncing() : boolean
+    {
+        return this.remoteSshFileService.isSyncing();
+    }
+
+    getCurrentHost() : string
+    {
+        return this.remoteSshFileService.getCurrentHost();
+    }
+
+    abort()
+    {
+        console.log("aborting sync");
+        this.remoteSshFileService.abort();
     }
 
 }

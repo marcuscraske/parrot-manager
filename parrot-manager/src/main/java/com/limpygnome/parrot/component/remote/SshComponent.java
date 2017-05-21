@@ -24,6 +24,8 @@ public class SshComponent
 {
     private static final Logger LOG = LogManager.getLogger(SshComponent.class);
 
+    private static final int CONNECTION_TIMEOUT = 10000;
+
     @Autowired
     private FileComponent fileComponent;
 
@@ -80,11 +82,11 @@ public class SshComponent
         session.setConfig(properties);
         session.setProxy(options.getProxy());
 
-        session.connect();
+        session.connect(CONNECTION_TIMEOUT);
 
         // Start sftp in session
         Channel channel = session.openChannel("sftp");
-        channel.connect();
+        channel.connect(CONNECTION_TIMEOUT);
 
         ChannelSftp channelSftp = (ChannelSftp) channel;
 

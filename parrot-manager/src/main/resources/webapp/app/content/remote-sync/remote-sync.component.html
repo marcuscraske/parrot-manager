@@ -6,40 +6,62 @@
     Sync your database with multiple remote hosts.
 </p>
 
-<table class="table remote-sync" *ngIf="isTargets()" id="remoteSyncTargets">
-    <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
-        <td>
-            <input type="checkbox" attr.data-node-id="{{ node.getId() }}" checked="checked" />
-        </td>
-        <td>
-            <a class="btn btn-primary" (click)="sync(node.getId())">
-                Sync
-            </a>
-        </td>
-        <td>
-            {{ node.getName() }}
-        </td>
-        <td>
-            {{ getHostName(node) }}
-        </td>
-        <td>
-            <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
-                Edit
-            </a>
-            <a class="btn btn-danger" (click)="node.remove();">
-                Delete
-            </a>
-        </td>
-    </tr>
-</table>
+<div *ngIf="!isSyncing()">
 
-<div class="form-group">
-    <button class="btn btn-primary" *ngIf="isTargets()" (click)="syncSelected()">
-        Sync
-    </button>
-    <button class="btn btn-default" routerLink="/remote-sync/ssh/new">
-        Add New
-    </button>
+    <table class="table remote-sync" *ngIf="isTargets()" id="remoteSyncTargets">
+        <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
+            <td>
+                <input type="checkbox" attr.data-node-id="{{ node.getId() }}" checked="checked" />
+            </td>
+            <td>
+                <a class="btn btn-primary" (click)="sync(node.getId())">
+                    Sync
+                </a>
+            </td>
+            <td>
+                {{ node.getName() }}
+            </td>
+            <td>
+                {{ getHostName(node) }}
+            </td>
+            <td>
+                <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
+                    Edit
+                </a>
+                <a class="btn btn-danger" (click)="node.remove();">
+                    Delete
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <div class="form-group">
+        <button class="btn btn-primary" *ngIf="isTargets()" (click)="syncSelected()">
+            Sync
+        </button>
+        <button class="btn btn-default" routerLink="/remote-sync/ssh/new">
+            Add New
+        </button>
+    </div>
+
+</div>
+
+<div *ngIf="isSyncing()">
+
+    <p class="text-center">
+        <span class="icon icon-loop2 icon-connecting"></span>
+    </p>
+
+    <p class="text-center">
+        Synchronizing {{ getCurrentHost() }} ...
+    </p>
+
+    <p class="text-center">
+        <button class="btn btn-danger" (click)="abort()">
+            Abort
+        </button>
+    </p>
+
 </div>
 
 <h2>

@@ -151,26 +151,30 @@ public class WebViewStage extends Stage
      */
     public void triggerEvent(String domElement, String eventName, Object eventData)
     {
-        // Create event
-        JSObject customEventObject = (JSObject) webView.getEngine().executeScript("new CustomEvent(\"" + eventName + "\")");
+        Platform.runLater(() -> {
 
-        if (eventData != null)
-        {
-            customEventObject.setMember("data", eventData);
-        }
+            // Create event
+            JSObject customEventObject = (JSObject) webView.getEngine().executeScript("new CustomEvent(\"" + eventName + "\")");
 
-        // Fetch DOM element
-        JSObject domElementObject = (JSObject) webView.getEngine().executeScript(domElement);
+            if (eventData != null)
+            {
+                customEventObject.setMember("data", eventData);
+            }
 
-        if (domElementObject == null)
-        {
-            throw new RuntimeException("DOM element '" + domElement + "' not found for raising JS event '" + eventName + "'");
-        }
+            // Fetch DOM element
+            JSObject domElementObject = (JSObject) webView.getEngine().executeScript(domElement);
 
-        // Raise event
-        domElementObject.call("dispatchEvent", customEventObject);
+            if (domElementObject == null)
+            {
+                throw new RuntimeException("DOM element '" + domElement + "' not found for raising JS event '" + eventName + "'");
+            }
 
-        LOG.info("triggered event - dom element: {}, event name: {}", domElement, eventName);
+            // Raise event
+            domElementObject.call("dispatchEvent", customEventObject);
+
+            LOG.info("triggered event - dom element: {}, event name: {}", domElement, eventName);
+
+        });
     }
 
     /**

@@ -4,18 +4,18 @@ import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
+import com.limpygnome.parrot.component.ui.WebStageInitService;
+import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.dbaction.ActionLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
 
 /**
  * A archive for downloading and uploading remote files using SSH.
@@ -42,6 +42,12 @@ public class RemoteSshFileService
     private EncryptedValueService encryptedValueService;
     @Autowired
     private SessionService sessionService;
+    @Autowired
+    private WebStageInitService webStageInitService;
+
+    // State
+    private Thread thread;
+    private SshSession sshSession;
 
     /**
      * Creates options from a set of mandatory values.
@@ -78,6 +84,10 @@ public class RemoteSshFileService
     public SshOptions createOptionsFromNode(DatabaseNode node) throws Exception
     {
         SshOptions options = SshOptions.read(encryptedValueService, node);
+
+        // Persist to session to avoid gc
+        sessionService.put(SESSION_KEY_OPTIONS, options);
+
         return options;
     }
 
@@ -89,10 +99,10 @@ public class RemoteSshFileService
      * @param options the config for a download
      * @return error message, otherwise null if successful
      */
-    public String download(SshOptions options)
+    public synchronized String download(SshOptions options)
     {
         String result = null;
-        SshSession session = null;
+        sshSession = null;
 
         try
         {
@@ -102,10 +112,10 @@ public class RemoteSshFileService
             if (result == null)
             {
                 // Connect
-                session = sshComponent.connect(options);
+                sshSession = sshComponent.connect(options);
 
                 // Start download...
-                sshComponent.download(session, options);
+                sshComponent.download(sshSession, options);
             }
         }
         catch (Exception e)
@@ -116,9 +126,10 @@ public class RemoteSshFileService
         finally
         {
             // Disconnect
-            if (session != null)
+            if (sshSession != null)
             {
-                session.dispose();
+                sshSession.dispose();
+                sshSession = null;
             }
         }
 
@@ -131,10 +142,10 @@ public class RemoteSshFileService
      * @param options SSH options to be tested
      * @return error message; or null if successful/no issues encountered
      */
-    public String test(SshOptions options)
+    public synchronized String test(SshOptions options)
     {
         String result = null;
-        SshSession session = null;
+        sshSession = null;
 
         try
         {
@@ -144,10 +155,10 @@ public class RemoteSshFileService
             if (result == null)
             {
                 // Connect
-                session = sshComponent.connect(options);
+                sshSession = sshComponent.connect(options);
 
                 // Check remote connection works and file exists
-                if (!sshComponent.checkRemotePathExists(options, session))
+                if (!sshComponent.checkRemotePathExists(options, sshSession))
                 {
                     result = "Remote file does not exist - ignore if expected";
                 }
@@ -161,130 +172,170 @@ public class RemoteSshFileService
         finally
         {
             // Disconnect
-            if (session != null)
+            if (sshSession != null)
             {
-                session.dispose();
+                sshSession.dispose();
+                sshSession = null;
             }
         }
 
         return result;
     }
 
-    public String sync(Database database, SshOptions options, String remotePassword)
+    public synchronized void sync(Database database, SshOptions options, String remotePassword)
     {
+        if (thread == null)
+        {
+            LOG.info("launching separate thread for sync");
+
+            // Start separate thread for sync to prevent blocking
+            thread = new Thread(() -> {
+                syncBlockingThread(database, options, remotePassword);
+            });
+            thread.start();
+        }
+        else
+        {
+            LOG.error("attempted to sync whilst sync already in progress");
+        }
+    }
+
+    private void syncBlockingThread(Database database, SshOptions options, String remotePassword)
+    {
+        String messages;
+        boolean success = true;
+
+        WebViewStage stage = webStageInitService.getStage();
+
         if (database == null)
         {
             LOG.error("database is null");
-            throw new IllegalArgumentException("Database is null");
+            messages = "Internal error - database is null?";
         }
         else if (options == null)
         {
             LOG.error("options are null");
-            throw new IllegalArgumentException("Options are null");
-        }
-        else if (remotePassword == null || remotePassword.length() == 0)
-        {
-            LOG.warn("remote password not specified");
-            return "Remote password is required";
+            messages = "Internal error - options are null?";
         }
         else if (options.getDestinationPath() == null)
         {
             LOG.warn("destination path not setup");
-            throw new IllegalArgumentException("Internal error - destination path must be setup on options");
+            messages = "Internal error - destination path must be setup on options";
         }
-
-        // Alter destination path for this host
-        int fullHostNameHash = (options.getHost() + options.getPort()).hashCode();
-        String syncPath = options.getDestinationPath();
-        syncPath = syncPath + "." + fullHostNameHash + "." + System.currentTimeMillis() + ".sync";
-
-        // Begin sync process...
-        String result = null;
-        SshSession session = null;
-
-        try
+        else if (remotePassword == null || remotePassword.length() == 0)
         {
-            // Check destination path
-            result = checkDestinationPath(options);
+            LOG.warn("remote password not specified");
+            messages = "Remote password is required";
+        }
+        else
+        {
 
-            if (result == null)
+            // Raise event with stage...
+            stage.triggerEvent("document", "remoteSyncStart", options);
+
+            // Alter destination path for this host
+            int fullHostNameHash = (options.getHost() + options.getPort()).hashCode();
+            String syncPath = options.getDestinationPath();
+            syncPath = syncPath + "." + fullHostNameHash + "." + System.currentTimeMillis() + ".sync";
+
+            // Begin sync process...
+            try
             {
-                // Connect
-                LOG.info("sync - connecting");
-                session = sshComponent.connect(options);
+                // Check destination path
+                messages = checkDestinationPath(options);
 
-                // Start download...
-                LOG.info("sync - downloading");
-                boolean exists = sshComponent.download(session, options, syncPath);
-
-                ActionLog actionLog;
-
-                if (exists)
+                if (messages == null)
                 {
-                    // Load remote database
-                    LOG.info("sync - loading remote database");
-                    Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
+                    // Connect
+                    LOG.info("sync - connecting");
+                    sshSession = sshComponent.connect(options);
 
-                    // Perform merge and check if any change occurred...
-                    LOG.info("sync - performing merge...");
-                    actionLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
+                    // Start download...
+                    LOG.info("sync - downloading");
+                    boolean exists = sshComponent.download(sshSession, options, syncPath);
 
-                    // Check if we need to upload...
-                    if (database.isDirty())
+                    ActionLog actionLog;
+
+                    if (exists)
                     {
-                        // Save current database
-                        LOG.info("sync - database(s) dirty, saving...");
-                        databaseReaderWriter.save(database, options.getDestinationPath());
+                        // Load remote database
+                        LOG.info("sync - loading remote database");
+                        Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
 
-                        // Upload to remote
-                        LOG.info("sync - uploading to remote host...");
-                        sshComponent.upload(session, options, options.getDestinationPath());
+                        // Perform merge and check if any change occurred...
+                        LOG.info("sync - performing merge...");
+                        actionLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
+
+                        // Check if we need to upload...
+                        if (database.isDirty())
+                        {
+                            // Save current database
+                            LOG.info("sync - database(s) dirty, saving...");
+                            databaseReaderWriter.save(database, options.getDestinationPath());
+
+                            // Upload to remote
+                            LOG.info("sync - uploading to remote host...");
+                            sshComponent.upload(sshSession, options, options.getDestinationPath());
+                        }
+                        else
+                        {
+                            LOG.info("sync - neither database is dirty");
+                        }
                     }
                     else
                     {
-                        LOG.info("sync - neither database is dirty");
+                        LOG.info("sync - uploading current database");
+
+                        actionLog = new ActionLog();
+                        actionLog.add("uploading current database, as does not exist remotely");
+
+                        String currentPath = databaseService.getPath();
+                        sshComponent.upload(sshSession, options, currentPath);
+
+                        actionLog.add("uploaded successfully");
                     }
+
+                    // Build result
+                    String hostName = options.getName();
+                    messages = actionLog.getMessages(hostName);
                 }
-                else
+            }
+            catch (Exception e)
+            {
+                messages = sshComponent.getExceptionMessage(e);
+                success = false;
+                LOG.error("sync - {} - exception", options.getRandomToken(), e);
+            }
+            finally
+            {
+                // Cleanup sync file
+                File syncFile = new File(syncPath);
+
+                if (syncFile.exists())
                 {
-                    LOG.info("sync - uploading current database");
-
-                    actionLog = new ActionLog();
-                    actionLog.add("uploading current database, as does not exist remotely");
-
-                    String currentPath = databaseService.getPath();
-                    sshComponent.upload(session, options, currentPath);
-
-                    actionLog.add("uploaded successfully");
+                    syncFile.delete();
                 }
 
-                // Build result
-                result = actionLog.getMessages();
-            }
-        }
-        catch (Exception e)
-        {
-            result = sshComponent.getExceptionMessage(e);
-            LOG.error("sync - {} - exception", options.getRandomToken(), e);
-        }
-        finally
-        {
-            // Cleanup sync file
-            File syncFile = new File(syncPath);
+                // Disconnect
+                synchronized (this)
+                {
+                    if (sshSession != null)
+                    {
+                        sshSession.dispose();
+                        sshSession = null;
+                    }
 
-            if (syncFile.exists())
-            {
-                syncFile.delete();
-            }
-
-            // Disconnect
-            if (session != null)
-            {
-                session.dispose();
+                    // Wipe ref to this thread
+                    thread = null;
+                }
             }
         }
 
-        return result;
+        // Raise event with result
+        SyncResult syncResult = new SyncResult(
+                messages, success, database.isDirty(), options.getName()
+        );
+        stage.triggerEvent("document", "remoteSyncFinish", syncResult);
     }
 
     private String checkDestinationPath(SshOptions options)
@@ -307,6 +358,22 @@ public class RemoteSshFileService
         }
 
         return result;
+    }
+
+    /**
+     * Aborts any SSH connection currently in progress.
+     */
+    public synchronized void abort()
+    {
+        // Wake thread, just in case...
+        thread.interrupt();
+
+        // Dispose session as well
+        if (thread != null && sshSession != null)
+        {
+            sshSession.dispose();
+            sshSession = null;
+        }
     }
 
 }

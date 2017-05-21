@@ -29,15 +29,14 @@ public class SshSession
 
     public void dispose()
     {
-        // Dispose session and sftp channel
+        if (channelSftp != null)
+        {
+            channelSftp.disconnect();
+        }
+
         if (session != null)
         {
             session.disconnect();
-        }
-
-        if (channelSftp != null)
-        {
-            channelSftp.exit();
         }
     }
 
