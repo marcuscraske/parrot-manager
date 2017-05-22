@@ -14,7 +14,7 @@
                 <input type="checkbox" attr.data-node-id="{{ node.getId() }}" checked="checked" />
             </td>
             <td>
-                <a class="btn btn-primary" (click)="sync(node.getId())">
+                <a class="btn btn-primary" (click)="sync(node.getId(), false)">
                     Sync
                 </a>
             </td>
@@ -25,6 +25,9 @@
                 {{ getHostName(node) }}
             </td>
             <td>
+                <a class="btn btn-primary" (click)="sync(node.getId(), true)" title="Asks for any required auth (database password, user pass, key pass)">
+                    Auth Sync
+                </a>
                 <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
                     Edit
                 </a>

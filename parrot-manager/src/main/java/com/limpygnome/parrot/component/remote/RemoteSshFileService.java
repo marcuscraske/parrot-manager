@@ -11,11 +11,12 @@ import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.dbaction.ActionLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 
 /**
  * A archive for downloading and uploading remote files using SSH.
@@ -182,7 +183,18 @@ public class RemoteSshFileService
         return result;
     }
 
-    public synchronized void sync(Database database, SshOptions options, String remotePassword)
+    public synchronized void syncAll()
+    {
+        // TODO...
+    }
+
+    public synchronized void sync(SshOptions options)
+    {
+        String remotePassword = databaseService.getPassword();
+        syncWithAuth(options, remotePassword);
+    }
+
+    public synchronized void syncWithAuth(SshOptions options, String remotePassword)
     {
         if (thread == null)
         {
@@ -190,7 +202,7 @@ public class RemoteSshFileService
 
             // Start separate thread for sync to prevent blocking
             thread = new Thread(() -> {
-                syncBlockingThread(database, options, remotePassword);
+                syncBlockingThread(options, remotePassword);
             });
             thread.start();
         }
@@ -200,12 +212,13 @@ public class RemoteSshFileService
         }
     }
 
-    private void syncBlockingThread(Database database, SshOptions options, String remotePassword)
+    private void syncBlockingThread(SshOptions options, String remotePassword)
     {
         String messages;
         boolean success = true;
 
         WebViewStage stage = webStageInitService.getStage();
+        Database database = databaseService.getDatabase();
 
         if (database == null)
         {

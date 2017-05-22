@@ -99,10 +99,14 @@ export class RemoteSshFileService {
         return result;
     }
 
-    sync(database, options, remoteDatabasePassword)
+    sync(options)
     {
-        // Initialize syncing; callback comes from hook
-        this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
+        this.remoteSshFileService.sync(options);
+    }
+
+    syncWithAuth(options, remoteDatabasePassword)
+    {
+        this.remoteSshFileService.syncWithAuth(options, remoteDatabasePassword);
     }
 
     isSyncing() : boolean

@@ -194,4 +194,9 @@ export class DatabaseService
         return database;
     }
 
+    setPassword(password)
+    {
+        this.databaseService.setPassword(password);
+    }
+
 }

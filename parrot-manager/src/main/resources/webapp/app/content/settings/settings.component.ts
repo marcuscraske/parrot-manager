@@ -84,8 +84,12 @@ export class SettingsComponent {
                 {
                     console.log("changing database password");
 
+                    // Change the database
                     var database = this.databaseService.getDatabase();
                     database.changePassword(newPassword);
+
+                    // Inform database service of change
+                    this.databaseService.setPassword(newPassword);
 
                     toastr.success("Updated database password");
                 }

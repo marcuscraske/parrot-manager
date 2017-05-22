@@ -44,6 +44,7 @@ public class DatabaseService
     // The current database open...
     private Database database;
     private File currentFile;
+    private char[] password;
 
     /**
      * Creates a new database.
@@ -78,6 +79,7 @@ public class DatabaseService
             File currentFile = new File(location);
             updateCurrentFile(currentFile);
             sessionService.reset();
+            this.password = password.toCharArray();
 
             LOG.info("created database successfully - location: {}", location);
 
@@ -111,6 +113,7 @@ public class DatabaseService
             updateCurrentFile(currentFile);
             sessionService.reset();
             result = null;
+            this.password = password.toCharArray();
         }
         catch (Exception e)
         {
@@ -187,6 +190,7 @@ public class DatabaseService
         database = null;
         updateCurrentFile(null);
         sessionService.reset();
+        password = null;
     }
 
     /**
@@ -232,6 +236,22 @@ public class DatabaseService
     public synchronized Database getDatabase()
     {
         return database;
+    }
+
+    /**
+     * @param password updates the current password for the database
+     */
+    public synchronized void setPassword(String password)
+    {
+        this.password = password.toCharArray();
+    }
+
+    /**
+     * @return password for the current database
+     */
+    public synchronized String getPassword()
+    {
+        return new String(password);
     }
 
 }
