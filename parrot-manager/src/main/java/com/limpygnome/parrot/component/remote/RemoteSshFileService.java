@@ -11,12 +11,13 @@ import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.dbaction.ActionLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
 
 /**
  * A archive for downloading and uploading remote files using SSH.
@@ -185,6 +186,55 @@ public class RemoteSshFileService
 
     public synchronized void syncAll()
     {
+        LOG.info("syncing all hosts...");
+
+        List<SshOptions> optionsList = new LinkedList<>();
+
+        // Add all applicable hosts
+        Database database = databaseService.getDatabase();
+        DatabaseNode remoteSync = database.getRoot().getByName("remote-sync");
+
+        if (remoteSync != null)
+        {
+            // Read destination path to be same as current database
+            String destinationPath = databaseService.getPath();
+
+            // Fetch remote password (current DB password)
+            String remotePassword = databaseService.getPassword();
+
+            // Check and convert each node/host
+            SshOptions options;
+            for (DatabaseNode node : remoteSync.getChildren())
+            {
+                try
+                {
+                    options = SshOptions.read(encryptedValueService, node);
+
+                    if (!options.isPromptKeyPass() && !options.isPromptUserPass())
+                    {
+                        options.setDestinationPath(destinationPath);
+                        optionsList.add(options);
+                    }
+                }
+                catch (Exception e)
+                {
+                    LOG.warn("failed to parse remote sync node - id: {}", node.getId(), e);
+                }
+            }
+
+            // Perform sync if we have anything
+            if (!optionsList.isEmpty())
+            {
+                LOG.debug("{} available hosts for sync", optionsList.size());
+
+                SshOptions[] optionsArray = optionsList.toArray(new SshOptions[optionsList.size()]);
+                syncLaunchAsyncThread(remotePassword, optionsArray);
+            }
+            else
+            {
+                LOG.debug("no hosts applicable for sync");
+            }
+        }
     }
 
     public synchronized void sync(SshOptions options)
@@ -195,13 +245,18 @@ public class RemoteSshFileService
 
     public synchronized void syncWithAuth(SshOptions options, String remotePassword)
     {
+        syncLaunchAsyncThread(remotePassword, options);
+    }
+
+    private void syncLaunchAsyncThread(String remotePassword, SshOptions... optionsArray)
+    {
         if (thread == null)
         {
             LOG.info("launching separate thread for sync");
 
             // Start separate thread for sync to prevent blocking
             thread = new Thread(() -> {
-                syncBlockingThread(options, remotePassword);
+                syncAsyncThreadList(remotePassword, optionsArray);
             });
             thread.start();
         }
@@ -211,7 +266,15 @@ public class RemoteSshFileService
         }
     }
 
-    private void syncBlockingThread(SshOptions options, String remotePassword)
+    private void syncAsyncThreadList(String remotePassword, SshOptions... optionsArray)
+    {
+        for (SshOptions options : optionsArray)
+        {
+            syncAsyncThreadSync(options, remotePassword);
+        }
+    }
+
+    private void syncAsyncThreadSync(SshOptions options, String remotePassword)
     {
         String messages;
         boolean success = true;

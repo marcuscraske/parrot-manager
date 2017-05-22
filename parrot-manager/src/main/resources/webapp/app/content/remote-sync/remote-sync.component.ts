@@ -92,18 +92,9 @@ export class RemoteSyncComponent implements AfterViewChecked {
         return result;
     }
 
-    syncSelected()
+    syncAll()
     {
-        console.log("starting sync...");
-
-        // Grab all the selected hosts and convert each one to options
-        var targetHosts = $("#remoteSyncTargets input[type=checkbox]:checked");
-
-        var self = this;
-        targetHosts.each(function() {
-            var nodeId = $(this).attr("data-node-id");
-            self.sync(nodeId, false);
-        });
+        this.remoteSshFileService.syncAll();
     }
 
     sync(nodeId, askForPassword)

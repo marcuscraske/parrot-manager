@@ -99,6 +99,11 @@ export class RemoteSshFileService {
         return result;
     }
 
+    syncAll()
+    {
+        this.remoteSshFileService.syncAll();
+    }
+
     sync(options)
     {
         this.remoteSshFileService.sync(options);
