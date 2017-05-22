@@ -71,7 +71,6 @@ public class Settings implements Serializable
     }
 
     @JsonIgnore
-
     @Override
     public String toString()
     {

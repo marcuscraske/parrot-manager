@@ -24,8 +24,8 @@ export class SettingsComponent {
         newPassword: [""],
         newPasswordConfirm: [""],
         remoteSyncInterval: [""],
-        remoteSyncIntervalEnabled: [false]
-        remoteSyncOnOpeningDatabase: [false]
+        remoteSyncIntervalEnabled: [false],
+        remoteSyncOnOpeningDatabase: [false],
         remoteSyncOnChange: [false]
     });
 

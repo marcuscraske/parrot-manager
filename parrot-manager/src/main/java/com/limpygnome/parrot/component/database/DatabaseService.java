@@ -4,7 +4,7 @@ import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.recentFile.RecentFile;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
-import com.limpygnome.parrot.component.remote.RemoteSyncIntervalService;
+import com.limpygnome.parrot.component.remote.RemoteSyncChangeService;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
@@ -34,7 +34,7 @@ public class DatabaseService
     @Autowired
     private RecentFileService recentFileService;
     @Autowired
-    private RemoteSyncIntervalService remoteSyncIntervalService;
+    private RemoteSyncChangeService remoteSyncChangeService;
 
     // Components
     @Autowired
@@ -85,7 +85,7 @@ public class DatabaseService
             this.password = password.toCharArray();
 
             // Refresh interval syncing
-            remoteSyncIntervalService.refresh();
+            remoteSyncChangeService.refresh();
 
             LOG.info("created database successfully - location: {}", location);
 
@@ -125,7 +125,10 @@ public class DatabaseService
             this.password = password.toCharArray();
 
             // Refresh interval syncing
-            remoteSyncIntervalService.refresh();
+            remoteSyncChangeService.refresh();
+
+            // Invoke event handlers
+            remoteSyncChangeService.eventDatabaseOpened();
         }
         catch (Exception e)
         {
@@ -164,6 +167,9 @@ public class DatabaseService
                 database.setDirty(false);
 
                 LOG.info("successfully saved database");
+
+                // Invoke event handlers
+                remoteSyncChangeService.eventDatabaseSaved();
             }
         }
         catch (Exception e)
@@ -206,7 +212,7 @@ public class DatabaseService
         password = null;
 
         // Refresh interval service
-        remoteSyncIntervalService.refresh();
+        remoteSyncChangeService.refresh();
     }
 
     /**
