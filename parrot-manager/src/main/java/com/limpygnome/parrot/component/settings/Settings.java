@@ -13,13 +13,21 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> recentFilesOpenLastOnStartup;
     private SettingsValue<Boolean> automaticBackupsOnSave;
     private SettingsValue<Long> automaticBackupsRetained;
+    private SettingsValue<Long> remoteSyncInterval;
+    private SettingsValue<Boolean> remoteSyncIntervalEnabled;
+    private SettingsValue<Boolean> remoteSyncOnOpeningDatabase;
+    private SettingsValue<Boolean> remoteSyncOnChange;
 
     public Settings()
     {
         this.recentFilesEnabled = new SettingsValue<>(true);
         this.recentFilesOpenLastOnStartup = new SettingsValue<>(true);
         this.automaticBackupsOnSave = new SettingsValue<>(true);
-        this.automaticBackupsRetained = new SettingsValue(10);
+        this.automaticBackupsRetained = new SettingsValue(10L);
+        this.remoteSyncInterval = new SettingsValue<>(10L * 60L * 1000L);
+        this.remoteSyncIntervalEnabled = new SettingsValue<>(true);
+        this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
+        this.remoteSyncOnChange = new SettingsValue<>(true);
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()
@@ -42,6 +50,26 @@ public class Settings implements Serializable
         return automaticBackupsRetained;
     }
 
+    public SettingsValue<Long> getRemoteSyncInterval()
+    {
+        return remoteSyncInterval;
+    }
+
+    public SettingsValue<Boolean> getRemoteSyncIntervalEnabled()
+    {
+        return remoteSyncIntervalEnabled;
+    }
+
+    public SettingsValue<Boolean> getRemoteSyncOnOpeningDatabase()
+    {
+        return remoteSyncOnOpeningDatabase;
+    }
+
+    public SettingsValue<Boolean> getRemoteSyncOnChange()
+    {
+        return remoteSyncOnChange;
+    }
+
     @JsonIgnore
     @Override
     public String toString()
@@ -51,6 +79,10 @@ public class Settings implements Serializable
                 ", recentFilesOpenLastOnStartup=" + recentFilesOpenLastOnStartup +
                 ", automaticBackupsOnSave=" + automaticBackupsOnSave +
                 ", automaticBackupsRetained=" + automaticBackupsRetained +
+                ", remoteSyncInterval=" + remoteSyncInterval +
+                ", remoteSyncIntervalEnabled=" + remoteSyncIntervalEnabled +
+                ", remoteSyncOnOpeningDatabase=" + remoteSyncOnOpeningDatabase +
+                ", remoteSyncOnChange=" + remoteSyncOnChange +
                 '}';
     }
 

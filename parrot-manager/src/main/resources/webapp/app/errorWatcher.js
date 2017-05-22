@@ -33,7 +33,7 @@ function errorWatcherShow(title, body)
     body += "\n";
     body += "Other Useful Details\n";
     body += "==================>\n";
-    body += "(please insert any stepd to reproduce etc)";
+    body += "(please insert any steps to reproduce etc)";
 
     // Store for later
     errorWatcherTitle = title;

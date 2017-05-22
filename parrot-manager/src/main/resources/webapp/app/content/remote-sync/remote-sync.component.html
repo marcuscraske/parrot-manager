@@ -11,10 +11,7 @@
     <table class="table remote-sync" *ngIf="isTargets()" id="remoteSyncTargets">
         <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
             <td>
-                <input type="checkbox" attr.data-node-id="{{ node.getId() }}" checked="checked" />
-            </td>
-            <td>
-                <a class="btn btn-primary" (click)="sync(node.getId())">
+                <a class="btn btn-primary" (click)="sync(node.getId(), false)">
                     Sync
                 </a>
             </td>
@@ -25,6 +22,9 @@
                 {{ getHostName(node) }}
             </td>
             <td>
+                <a class="btn btn-primary" (click)="sync(node.getId(), true)" title="Asks for any required auth (database password, user pass, key pass)">
+                    Auth Sync
+                </a>
                 <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
                     Edit
                 </a>
@@ -36,11 +36,13 @@
     </table>
 
     <div class="form-group">
-        <button class="btn btn-primary" *ngIf="isTargets()" (click)="syncSelected()">
-            Sync
-        </button>
         <button class="btn btn-default" routerLink="/remote-sync/ssh/new">
+            <span class="icon icon-pencil2"></span>
             Add New
+        </button>
+        <button class="btn btn-default" *ngIf="isTargets()" (click)="syncAll()">
+            <span class="icon icon-stack"></span>
+            Sync All
         </button>
     </div>
 

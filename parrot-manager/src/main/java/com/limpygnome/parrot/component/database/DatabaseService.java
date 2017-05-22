@@ -4,6 +4,7 @@ import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.recentFile.RecentFile;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
+import com.limpygnome.parrot.component.remote.RemoteSyncChangeService;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
@@ -32,6 +33,8 @@ public class DatabaseService
     private BackupService backupService;
     @Autowired
     private RecentFileService recentFileService;
+    @Autowired
+    private RemoteSyncChangeService remoteSyncChangeService;
 
     // Components
     @Autowired
@@ -44,6 +47,7 @@ public class DatabaseService
     // The current database open...
     private Database database;
     private File currentFile;
+    private char[] password;
 
     /**
      * Creates a new database.
@@ -78,6 +82,10 @@ public class DatabaseService
             File currentFile = new File(location);
             updateCurrentFile(currentFile);
             sessionService.reset();
+            this.password = password.toCharArray();
+
+            // Refresh interval syncing
+            remoteSyncChangeService.refresh();
 
             LOG.info("created database successfully - location: {}", location);
 
@@ -106,11 +114,21 @@ public class DatabaseService
 
         try
         {
+            // Open file
             database = databaseReaderWriter.open(path, password.toCharArray());
+
+            // Update internal state
             File currentFile = new File(path);
             updateCurrentFile(currentFile);
             sessionService.reset();
             result = null;
+            this.password = password.toCharArray();
+
+            // Refresh interval syncing
+            remoteSyncChangeService.refresh();
+
+            // Invoke event handlers
+            remoteSyncChangeService.eventDatabaseOpened();
         }
         catch (Exception e)
         {
@@ -149,6 +167,9 @@ public class DatabaseService
                 database.setDirty(false);
 
                 LOG.info("successfully saved database");
+
+                // Invoke event handlers
+                remoteSyncChangeService.eventDatabaseSaved();
             }
         }
         catch (Exception e)
@@ -184,9 +205,14 @@ public class DatabaseService
      */
     public synchronized void close()
     {
+        // Update internal state
         database = null;
         updateCurrentFile(null);
         sessionService.reset();
+        password = null;
+
+        // Refresh interval service
+        remoteSyncChangeService.refresh();
     }
 
     /**
@@ -232,6 +258,22 @@ public class DatabaseService
     public synchronized Database getDatabase()
     {
         return database;
+    }
+
+    /**
+     * @param password updates the current password for the database
+     */
+    public synchronized void setPassword(String password)
+    {
+        this.password = password.toCharArray();
+    }
+
+    /**
+     * @return password for the current database
+     */
+    public synchronized String getPassword()
+    {
+        return new String(password);
     }
 
 }

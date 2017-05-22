@@ -1,3 +1,8 @@
+table tr:nth-child(1) td
+{
+    border-top: none;
+}
+
 table.remote-sync tr td
 {
     white-space: nowrap;

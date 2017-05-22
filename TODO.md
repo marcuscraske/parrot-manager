@@ -1,13 +1,14 @@
 # TODO / Roadmap
 
 ## Bugs
-- Remote sync - when prompted for multiple database passwords, the second prompt does not have focus.
+- none known
 
 ## Features
 ### Upcoming
 - TBC
 
 ### Future
+- prevent flicker of viewer/entries page due to jstree slow rendering, perhaps introduce loading screen
 - prevent external requests entirely
 - parent pom
 - Move from `es5` to `es6`

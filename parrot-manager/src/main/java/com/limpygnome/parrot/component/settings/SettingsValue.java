@@ -26,6 +26,16 @@ public class SettingsValue<T> implements Serializable
         return value;
     }
 
+    public long getSafeLong(long alternative)
+    {
+        return value != null ? (Long) value : alternative;
+    }
+
+    public boolean getSafeBoolean(boolean alternative)
+    {
+        return value != null ? (Boolean) value : alternative;
+    }
+
     public void setValue(T value)
     {
         this.value = value;
