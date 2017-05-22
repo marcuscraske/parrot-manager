@@ -22,7 +22,11 @@ export class SettingsComponent {
         automaticBackupsOnSave: [false],
         automaticBackupsRetained: [""],
         newPassword: [""],
-        newPasswordConfirm: [""]
+        newPasswordConfirm: [""],
+        remoteSyncInterval: [""],
+        remoteSyncIntervalEnabled: [false]
+        remoteSyncOnOpeningDatabase: [false]
+        remoteSyncOnChange: [false]
     });
 
     recentFilesClearEnabled : boolean;

@@ -4,6 +4,7 @@ import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.recentFile.RecentFile;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
+import com.limpygnome.parrot.component.remote.RemoteSyncIntervalService;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
@@ -32,6 +33,8 @@ public class DatabaseService
     private BackupService backupService;
     @Autowired
     private RecentFileService recentFileService;
+    @Autowired
+    private RemoteSyncIntervalService remoteSyncIntervalService;
 
     // Components
     @Autowired
@@ -81,6 +84,9 @@ public class DatabaseService
             sessionService.reset();
             this.password = password.toCharArray();
 
+            // Refresh interval syncing
+            remoteSyncIntervalService.refresh();
+
             LOG.info("created database successfully - location: {}", location);
 
             return true;
@@ -108,12 +114,18 @@ public class DatabaseService
 
         try
         {
+            // Open file
             database = databaseReaderWriter.open(path, password.toCharArray());
+
+            // Update internal state
             File currentFile = new File(path);
             updateCurrentFile(currentFile);
             sessionService.reset();
             result = null;
             this.password = password.toCharArray();
+
+            // Refresh interval syncing
+            remoteSyncIntervalService.refresh();
         }
         catch (Exception e)
         {
@@ -187,10 +199,14 @@ public class DatabaseService
      */
     public synchronized void close()
     {
+        // Update internal state
         database = null;
         updateCurrentFile(null);
         sessionService.reset();
         password = null;
+
+        // Refresh interval service
+        remoteSyncIntervalService.refresh();
     }
 
     /**

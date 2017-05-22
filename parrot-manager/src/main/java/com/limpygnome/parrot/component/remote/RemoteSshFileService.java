@@ -185,7 +185,7 @@ public class RemoteSshFileService
 
     public synchronized void syncAll()
     {
-        // TODO...
+        // TODO... check each host can sync i.e. doesnt need prompt
     }
 
     public synchronized void sync(SshOptions options)
