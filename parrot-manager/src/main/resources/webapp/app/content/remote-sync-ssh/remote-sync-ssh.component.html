@@ -77,17 +77,6 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <label class="checkbox-inline">
-            <input type="checkbox"
-                   id="strictHostChecking"
-                   formControlName="strictHostChecking"
-                   [(ngModel)]="openForm.value['strictHostChecking']"
-            />
-            Strict host key checking
-        </label>
-    </div>
-
     <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['user'].valid }">
         <label class="form-control-label" for="user">
             User
@@ -260,6 +249,21 @@
             />
             Prompt for key password
         </label>
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="strictHostChecking"
+                   formControlName="strictHostChecking"
+                   [(ngModel)]="openForm.value['strictHostChecking']"
+                    />
+            Strict host key checking
+        </label>
+    </div>
+
+    <div class="form-group">
+        <small class="form-text text-muted">
+            Note: when prompt is enabled for user or/and key pass, syncing will only be available for those hosts when
+            using the Sync Auth button.
+        </small>
     </div>
 
     <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">

@@ -92,21 +92,12 @@ export class RemoteSyncComponent implements AfterViewChecked {
         return result;
     }
 
-    syncSelected()
+    syncAll()
     {
-        console.log("starting sync...");
-
-        // Grab all the selected hosts and convert each one to options
-        var targetHosts = $("#remoteSyncTargets input[type=checkbox]:checked");
-
-        var self = this;
-        targetHosts.each(function() {
-            var nodeId = $(this).attr("data-node-id");
-            self.sync(nodeId);
-        });
+        this.remoteSshFileService.syncAll();
     }
 
-    sync(nodeId)
+    sync(nodeId, askForPassword)
     {
         console.log("syncing node - id: " + nodeId);
 
@@ -141,8 +132,16 @@ export class RemoteSyncComponent implements AfterViewChecked {
 
             if (options != null)
             {
-                console.log("starting sync chain for host...");
-                this.syncChainPromptUserPass(options);
+                if (askForPassword)
+                {
+                    console.log("starting sync chain for host...");
+                    this.syncChainPromptDatabasePass(options);
+                }
+                else
+                {
+                    console.log("syncing host...");
+                    this.syncHost(options, null);
+                }
             }
             else
             {
@@ -152,58 +151,6 @@ export class RemoteSyncComponent implements AfterViewChecked {
         else
         {
             console.log("node not found for sync - id: " + nodeId);
-        }
-    }
-
-    syncChainPromptUserPass(options)
-    {
-        if (options.isPromptUserPass())
-        {
-            console.log("prompting for user pass...");
-
-            bootbox.prompt({
-                title: options.getName() + " - enter SSH user password:",
-                inputType: "password",
-                callback: (password) => {
-                    // Update options
-                    options.setUserPass(password);
-
-                    // Continue next stage in the chain...
-                    console.log("continuing to key pass chain...");
-                    this.syncChainPromptKeyPass(options);
-                }
-            });
-        }
-        else
-        {
-            console.log("skipped user pass prompt, moving to key pass...");
-            this.syncChainPromptKeyPass(options);
-        }
-    }
-
-    syncChainPromptKeyPass(options)
-    {
-        if (options.isPromptKeyPass())
-        {
-            console.log("prompting for key pass...");
-
-            bootbox.prompt({
-                title: options.getName() + " - enter key password:",
-                inputType: "password",
-                callback: (password) => {
-                    // Update options
-                    options.setPrivateKeyPass(password);
-
-                    // Continue next stage in the chain...
-                    console.log("continuing to perform actual sync...");
-                    this.syncChainPromptDatabasePass(options);
-                }
-            });
-        }
-        else
-        {
-            console.log("skipped prompting user pass, invoking final callback...");
-            this.syncChainPromptDatabasePass(options);
         }
     }
 
@@ -220,7 +167,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
                 {
                     // Continue next stage in the chain...
                     console.log("continuing to perform actual sync...");
-                    this.syncHost(options, password);
+                    this.syncChainPromptUserPass(options, password);
                 }
                 else
                 {
@@ -230,12 +177,71 @@ export class RemoteSyncComponent implements AfterViewChecked {
         });
     }
 
+    syncChainPromptUserPass(options, remoteDatabasePassword)
+    {
+        if (options.isPromptUserPass())
+        {
+            console.log("prompting for user pass...");
+
+            bootbox.prompt({
+                title: options.getName() + " - enter SSH user password:",
+                inputType: "password",
+                callback: (password) => {
+                    // Update options
+                    options.setUserPass(password);
+
+                    // Continue next stage in the chain...
+                    console.log("continuing to key pass chain...");
+                    this.syncChainPromptKeyPass(options, remoteDatabasePassword);
+                }
+            });
+        }
+        else
+        {
+            console.log("skipped user pass prompt, moving to key pass...");
+            this.syncChainPromptKeyPass(options, remoteDatabasePassword);
+        }
+    }
+
+    syncChainPromptKeyPass(options, remoteDatabasePassword)
+    {
+        if (options.isPromptKeyPass())
+        {
+            console.log("prompting for key pass...");
+
+            bootbox.prompt({
+                title: options.getName() + " - enter key password:",
+                inputType: "password",
+                callback: (password) => {
+                    // Update options
+                    options.setPrivateKeyPass(password);
+
+                    // Continue next stage in the chain...
+                    console.log("continuing to perform actual sync...");
+                    this.syncHost(options, remoteDatabasePassword);
+                }
+            });
+        }
+        else
+        {
+            console.log("skipped prompting user pass, invoking final callback...");
+            this.syncHost(options, remoteDatabasePassword);
+        }
+    }
+
     syncHost(options, remoteDatabasePassword)
     {
-        var database = this.databaseService.getDatabase();
-
         // Invoke (async/non-blocking) sync...
-        this.remoteSshFileService.sync(database, options, remoteDatabasePassword);
+        if (remoteDatabasePassword == null)
+        {
+            console.log("syncing without auth");
+            this.remoteSshFileService.sync(options);
+        }
+        else
+        {
+            console.log("syncing with auth");
+            this.remoteSshFileService.syncWithAuth(options, remoteDatabasePassword);
+        }
     }
 
     copyToClipboard()

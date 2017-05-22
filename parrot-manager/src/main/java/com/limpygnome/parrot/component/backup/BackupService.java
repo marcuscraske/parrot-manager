@@ -42,7 +42,7 @@ public class BackupService
 
         // Check database open and backups are enabled
         Settings settings = settingsService.getSettings();
-        boolean isEnabled = settings.getAutomaticBackupsOnSave().getValue();
+        boolean isEnabled = settings.getAutomaticBackupsOnSave().getSafeBoolean(false);
         File currentFile = databaseService.getFile();
 
         if (currentFile != null && isEnabled)
@@ -139,7 +139,7 @@ public class BackupService
 
     private void checkRetainedDatabases()
     {
-        long maxRetained = settingsService.getSettings().getAutomaticBackupsRetained().getValue();
+        long maxRetained = settingsService.getSettings().getAutomaticBackupsRetained().getSafeLong(0);
 
         if (maxRetained > 0)
         {
