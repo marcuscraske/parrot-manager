@@ -1,4 +1,10 @@
-# parrot
+<h1 align="center">
+    parrot manager
+</h1>
+<p align="center">
+    <i>passwords made simple</i>
+</p>
+
 <p align="center">
     <img src="parrot-manager/src/main/resources/icons/parrot-icon.png" alt="parrot logo" />
 </p>

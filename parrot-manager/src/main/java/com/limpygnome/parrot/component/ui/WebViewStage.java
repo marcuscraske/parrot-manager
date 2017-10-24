@@ -53,7 +53,7 @@ public class WebViewStage extends Stage
         setScene(scene);
         setTitle("parrot");
         setWidth(1100.0);
-        setHeight(200.0);
+        setHeight(350.0);
 
         // Setup icons
         addIcon("/icons/parrot-icon.png");
