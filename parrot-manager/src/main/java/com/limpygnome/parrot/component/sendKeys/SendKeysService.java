@@ -113,13 +113,30 @@ public class SendKeysService
             {
                 LOG.debug("simulating keys...");
 
+                /*
+                    Delay needed for some window managers to switch windows completely / gain focus etc.
+
+                    This should be more than sufficient time, even for slow machines. If this ever becomes an issue,
+                    the delay/time can be moved to a global setting.
+                 */
+
+                try
+                {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException e) { }
+
                 // Simulate key press for each char
                 Robot robot = new Robot();
                 int keyCode;
                 for (char key : pendingData.toCharArray())
                 {
                     keyCode = KeyEvent.getExtendedKeyCodeForChar(key);
+
+                    // press key down
                     robot.keyPress(keyCode);
+
+                    // release key
                     robot.keyRelease(keyCode);
                 }
 
