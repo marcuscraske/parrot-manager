@@ -1,0 +1,68 @@
+html,
+body
+{
+    background: #444;
+    color: #fff;
+}
+
+.jstree-anchor
+{
+    color: #fff !important;
+}
+
+.jstree-anchor .icon
+{
+    color: #999;
+}
+
+.panel
+{
+    background: #333;
+    border: none;
+}
+
+.panel-default > .panel-heading
+{
+    background: #222;
+    color: #fff;
+    border: none;
+}
+
+.btn.btn-default
+{
+    background: #999 !important;
+    color: #333;
+    border: none;
+}
+
+.btn.btn-default:hover,
+.btn.btn-default:focus
+{
+    background: #aaa !important;
+}
+
+input.form-control,
+select.form-control,
+textarea
+{
+    background: #666 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.nav li a
+{
+    background: none !important;
+    color: #fff !important;
+}
+
+.nav li a.active
+{
+    background: #444 !important;
+}
+
+.nav,
+.nav li a
+{
+    border-color: #333 !important;
+}
