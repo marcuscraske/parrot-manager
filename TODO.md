@@ -5,7 +5,7 @@
 
 ## Features
 ### Upcoming
-- TBC
+- remote sync profiles can auto-sync based on host-name
 
 ### Future
 - prevent flicker of viewer/entries page due to jstree slow rendering, perhaps introduce loading screen

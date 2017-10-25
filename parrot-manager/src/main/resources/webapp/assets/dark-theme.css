@@ -5,6 +5,7 @@ body
     color: #fff;
 }
 
+
 .jstree-anchor
 {
     color: #fff !important;
@@ -14,6 +15,30 @@ body
 {
     color: #999;
 }
+
+.jstree-anchor:hover,
+.jstree-anchor:focus
+{
+    background: #999;
+    color: #333 !important;
+}
+
+.jstree-anchor:hover .icon,
+.jstree-anchor:focus .icon
+{
+    color: #666;
+}
+
+.jstree-default .jstree-clicked
+{
+    background: #999;
+    color: #333 !important;
+}
+.jstree-default .jstree-clicked .icon
+{
+    color: #333;
+}
+
 
 .panel
 {
@@ -52,17 +77,30 @@ textarea
 
 .nav li a
 {
-    background: none !important;
+    background: #333 !important;
     color: #fff !important;
+    border-top-left-radius: 0.4em;
+    border-top-right-radius: 0.4em;
 }
 
-.nav li a.active
+.nav li.active a
 {
-    background: #444 !important;
+    background: none !important;
 }
 
 .nav,
 .nav li a
 {
     border-color: #333 !important;
+}
+
+.title-input
+{
+    color: #fff;
+}
+
+
+.modal-content
+{
+    background: #444;
 }
