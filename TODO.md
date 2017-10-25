@@ -3,14 +3,12 @@
 ## Bugs
 - none known
 
-## Features
+## Features / Changes
 ### Upcoming
-- remote sync profiles can auto-sync based on host-name
+- review database format/structure
 
 ### Future
-- prevent flicker of viewer/entries page due to jstree slow rendering, perhaps introduce loading screen
-- prevent external requests entirely
-- parent pom
+- parent pom (cleanup)
 - Move from `es5` to `es6`
 - Setting to wipe clipboard within time period, after copying an entry.
   - Option to be toggled in settings

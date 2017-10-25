@@ -14,7 +14,9 @@ import { BackupService } from 'app/service/backup.service'
     providers: [SettingsService, RecentFileService, DatabaseOptimizerService],
     styleUrls: ["settings.component.css"]
 })
-export class SettingsComponent {
+export class SettingsComponent
+{
+    public currentTab: string = "global";
 
     public settingsForm = this.fb.group({
         recentFilesEnabled: [false],
@@ -26,7 +28,8 @@ export class SettingsComponent {
         remoteSyncInterval: [""],
         remoteSyncIntervalEnabled: [false],
         remoteSyncOnOpeningDatabase: [false],
-        remoteSyncOnChange: [false]
+        remoteSyncOnChange: [false],
+        theme: [""]
     });
 
     recentFilesClearEnabled : boolean;

@@ -7,3 +7,8 @@ table tr td:nth-child(1)
 {
     width: 100%;
 }
+
+.nav.nav-tabs
+{
+    margin-bottom: 1em;
+}

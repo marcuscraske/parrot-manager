@@ -17,6 +17,7 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> remoteSyncIntervalEnabled;
     private SettingsValue<Boolean> remoteSyncOnOpeningDatabase;
     private SettingsValue<Boolean> remoteSyncOnChange;
+    private SettingsValue<String> theme;
 
     public Settings()
     {
@@ -28,6 +29,7 @@ public class Settings implements Serializable
         this.remoteSyncIntervalEnabled = new SettingsValue<>(true);
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
         this.remoteSyncOnChange = new SettingsValue<>(true);
+        this.theme = new SettingsValue<>("dark");
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()
@@ -68,6 +70,10 @@ public class Settings implements Serializable
     public SettingsValue<Boolean> getRemoteSyncOnChange()
     {
         return remoteSyncOnChange;
+    }
+
+    public SettingsValue<String> getTheme() {
+        return theme;
     }
 
     @JsonIgnore

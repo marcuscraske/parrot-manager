@@ -7,6 +7,7 @@ Recommended ways to contribute:
 This project uses Java, JavaFX WebView and AngularJS; as well as many front-end libraries, managed by `npm`. Each
 module should have its own `README.md` file for purpose.
 
+A list of ideas and upcoming features can be found in the [TODO](todo.md).
 
 ## Main Application
 The entire project, including distributions, can be built using:

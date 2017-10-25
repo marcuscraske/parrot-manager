@@ -96,3 +96,12 @@ a
 {
     color: #999;
 }
+
+/*
+    nav tabs
+*/
+
+.nav.nav-tabs a
+{
+    cursor: pointer !important;
+}

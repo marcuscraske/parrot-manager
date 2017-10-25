@@ -25,6 +25,7 @@ export class SettingsService {
             "remoteSyncIntervalEnabled" : settings.getRemoteSyncIntervalEnabled().getValue(),
             "remoteSyncOnOpeningDatabase" : settings.getRemoteSyncOnOpeningDatabase().getValue(),
             "remoteSyncOnChange" : settings.getRemoteSyncOnChange().getValue(),
+            "theme" : settings.getTheme().getValue()
         };
 
         return json;
@@ -58,6 +59,9 @@ export class SettingsService {
         );
         settings.getRemoteSyncOnChange().setValue(
             json.remoteSyncOnChange
+        );
+        settings.getTheme().setValue(
+            json.theme
         );
 
         // Save
