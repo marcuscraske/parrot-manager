@@ -96,7 +96,7 @@ header div a:focus
 .btn.btn-primary
 {
     background: #0f0 !important;
-    color: #000;
+    color: #000 !important;
     border: solid 1px #0f0;
 }
 
@@ -106,7 +106,7 @@ header div a:focus
 .btn.btn-primary:focus
 {
     background: none !important;
-    color: #0f0;
+    color: #0f0 !important;
 }
 
 .btn.btn-danger
@@ -121,14 +121,25 @@ header div a:focus
     color: #f00;
 }
 
-input.form-control,
-select.form-control,
-textarea
+.form-control
+{
+    background: #000 !important;
+    color: #0f0 !important;
+    border: solid 1px #0f0 !important;
+}
+
+.form-control:focus,
+.form-control:hover
 {
     background: #0f0 !important;
     color: #000 !important;
-    border: none !important;
 }
+
+.form-control::-webkit-input-placeholder
+{
+    color: #666 !important;
+}
+
 
 .nav li a
 {
@@ -160,4 +171,10 @@ textarea
 .modal-content
 {
     background: #000;
+}
+
+
+table tr
+{
+    border-color: #0f0;
 }
