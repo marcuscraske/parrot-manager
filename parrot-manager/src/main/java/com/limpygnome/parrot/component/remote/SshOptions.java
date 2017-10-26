@@ -48,6 +48,7 @@ public class SshOptions implements Serializable, Cloneable
     private String proxyType;
 
     // Options
+    private String machineFilter;
     private boolean promptUserPass;
     private boolean promptKeyPass;
     private boolean strictHostChecking;
@@ -263,6 +264,16 @@ public class SshOptions implements Serializable, Cloneable
         return result;
     }
 
+    public String getMachineFilter()
+    {
+        return machineFilter;
+    }
+
+    public void setMachineFilter(String machineFilter)
+    {
+        this.machineFilter = machineFilter;
+    }
+
     /**
      * Deserializes a JSON string into a new instance of this class.
      *
@@ -339,6 +350,7 @@ public class SshOptions implements Serializable, Cloneable
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 ", proxyType='" + proxyType + '\'' +
+                ", machineFilter='" + machineFilter + '\'' +
                 ", promptUserPass=" + promptUserPass +
                 ", promptKeyPass=" + promptKeyPass +
                 ", strictHostChecking=" + strictHostChecking +
