@@ -75,8 +75,10 @@ export class RemoteSyncSshComponent {
                 this.currentMode = "new";
 
                 // populate machine filter with current hostname
-                var currentHostname = this.remoteSshFileService.getCurrentHostName();
-                this.openForm["machineFilter"] = currentHostname;
+                var currentHostname = this.remoteSshFileService.getCurrentHostname();
+                this.openForm.patchValue({
+                    "machineFilter" : currentHostname
+                });
 
                 console.log("changed to new mode");
             }

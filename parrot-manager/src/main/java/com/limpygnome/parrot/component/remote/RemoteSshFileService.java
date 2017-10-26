@@ -283,7 +283,10 @@ public class RemoteSshFileService
         return true;
     }
 
-    private String getCurrentHostName()
+    /**
+     * @return the current hostname of the machine
+     */
+    public String getCurrentHostName()
     {
         String result = null;
 
