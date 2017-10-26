@@ -169,7 +169,10 @@
                             <label class="form-control-label" for="remoteSyncInterval">
                                 Theme
                             </label>
-                            <select id="theme" class="form-control" formControlName="theme"  [(ngModel)]="settingsForm.value['theme']">
+                            <select id="theme" class="form-control"
+                                    (change)="themeService.set($event.target.value)"
+                                    formControlName="theme"  [(ngModel)]="settingsForm.value['theme']">
+
                                 <option value="">light</option>
                                 <option>dark</option>
                                 <option>hacker</option>

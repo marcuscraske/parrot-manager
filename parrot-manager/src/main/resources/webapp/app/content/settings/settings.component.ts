@@ -7,11 +7,12 @@ import { RecentFileService } from 'app/service/recentFile.service'
 import { DatabaseService } from 'app/service/database.service'
 import { DatabaseOptimizerService } from 'app/service/databaseOptimizer.service'
 import { BackupService } from 'app/service/backup.service'
+import { ThemeService } from 'app/service/theme.service'
 
 @Component({
     moduleId: module.id,
     templateUrl: "settings.component.html",
-    providers: [SettingsService, RecentFileService, DatabaseOptimizerService],
+    providers: [RecentFileService, DatabaseOptimizerService],
     styleUrls: ["settings.component.css"]
 })
 export class SettingsComponent
@@ -40,6 +41,7 @@ export class SettingsComponent
         private databaseService: DatabaseService,
         private databaseOptimizerService: DatabaseOptimizerService,
         private backupService: BackupService,
+        private themeService: ThemeService,
         public fb: FormBuilder,
         private router: Router
     ) { }
@@ -49,12 +51,19 @@ export class SettingsComponent
         this.populateSettings();
     }
 
+    ngOnDestroy()
+    {
+        // reset theme (in case unsaved)
+        var theme = this.settingsService.fetch("theme");
+        this.themeService.set(theme);
+    }
+
     populateSettings()
     {
         console.log("populating form with settings...");
 
         // Read existing settings
-        var settings = this.settingsService.fetch();
+        var settings = this.settingsService.fetchAll();
 
         // Apply to form
         this.settingsForm.patchValue(settings);

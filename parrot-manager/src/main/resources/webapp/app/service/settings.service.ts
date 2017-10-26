@@ -10,7 +10,7 @@ export class SettingsService {
         this.settingsService = (window as any).settingsService;
     }
 
-    fetch()
+    fetchAll()
     {
         var settings = this.settingsService.getSettings();
 
@@ -29,6 +29,12 @@ export class SettingsService {
         };
 
         return json;
+    }
+
+    fetch(name: string)
+    {
+        var json = this.fetchAll();
+        return json[name];
     }
 
     save(json)

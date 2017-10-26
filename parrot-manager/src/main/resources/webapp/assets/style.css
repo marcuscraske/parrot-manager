@@ -103,5 +103,6 @@ a
 
 .nav.nav-tabs a
 {
+    color: #333;
     cursor: pointer !important;
 }
