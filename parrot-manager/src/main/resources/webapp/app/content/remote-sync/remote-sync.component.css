@@ -31,12 +31,12 @@ table.remote-sync tr td:nth-child(3)
 
     /* shared with loading-box.css */
     animation-name: spin;
-    animation-duration: 2000ms;
+    animation-duration: 3000ms;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 
     -webkit-animation-name: spin;
-    -webkit-animation-duration: 2000ms;
+    -webkit-animation-duration: 3000ms;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-timing-function: linear;
 }
