@@ -1,0 +1,163 @@
+html,
+body
+{
+    background: #000;
+    color: #0f0;
+}
+
+a,
+a:hover,
+a:focus
+{
+    color: #0f0;
+    text-decoration: underline;
+}
+
+
+header
+{
+    background: #0f0 !important;
+    color: #000 !important;
+}
+
+header .current-file
+{
+    color: #000 !important;
+}
+
+header div a:hover,
+header div a:focus
+{
+    background: #000 !important;
+    color: #0f0 !important;
+}
+
+.dirty,
+.syncing
+{
+    color: #f00;
+}
+
+
+.jstree-anchor
+{
+    color: #0F0 !important;
+}
+
+.jstree-anchor .icon
+{
+    color: #0f0;
+}
+
+.jstree-anchor:hover,
+.jstree-anchor:focus,
+.jstree-default .jstree-clicked
+{
+    background: #0f0 !important;
+    color: #000 !important;
+}
+
+.jstree-anchor:hover .icon,
+.jstree-anchor:focus .icon
+{
+    color: #000;
+}
+
+.jstree-default .jstree-clicked
+{
+    background: #999;
+    color: #333 !important;
+}
+.jstree-default .jstree-clicked .icon
+{
+    color: #000;
+}
+
+
+.panel
+{
+    background: #000;
+    border: solid 1px #0f0;
+}
+
+.panel-default > .panel-heading
+{
+    background: #0f0;
+    color: #000;
+    border: none;
+}
+
+.btn
+{
+    text-decoration: none;
+}
+
+.btn.btn-default,
+.btn.btn-primary
+{
+    background: #0f0 !important;
+    color: #000;
+    border: solid 1px #0f0;
+}
+
+.btn.btn-default:hover,
+.btn.btn-default:focus,
+.btn.btn-primary:hover,
+.btn.btn-primary:focus
+{
+    background: none !important;
+    color: #0f0;
+}
+
+.btn.btn-danger
+{
+    background: none !important;
+    border: solid 1px #0f0;
+    color: #0f0;
+}
+.btn.btn-danger:hover,
+.btn.btn-danger:focus
+{
+    color: #f00;
+}
+
+input.form-control,
+select.form-control,
+textarea
+{
+    background: #0f0 !important;
+    color: #000 !important;
+    border: none !important;
+}
+
+.nav li a
+{
+    background: none !important;
+    color: #0F0 !important;
+    border-top-left-radius: 0.4em;
+    border-top-right-radius: 0.4em;
+    text-decoration: none;
+}
+
+.nav li.active a
+{
+    background: #0f0 !important;
+    color: #000 !important;
+}
+
+.nav,
+.nav li a
+{
+    border-color: #0f0 !important;
+}
+
+.title-input
+{
+    color: #0F0;
+}
+
+
+.modal-content
+{
+    background: #000;
+}
