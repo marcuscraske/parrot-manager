@@ -119,17 +119,38 @@ export class CurrentEntryComponent
     displayValue()
     {
         var currentValue = $("#currentValue");
+        var editMode = currentValue.data("edit");
 
-        // Set the value
-        var decryptedValue = this.encryptedValueService.getString(this.currentNode);
-        currentValue.val(decryptedValue);
-        console.log("populated value field with actual decrypted value");
+        if (!editMode)
+        {
+            // decrypt value for current node
+            var decryptedValue = this.encryptedValueService.getString(this.currentNode);
 
-        // Resize box to fit value
-        this.resizeValueTextAreaToFitContent();
+            // do not replace if values are different i.e. been edited
+            var valueInBox = currentValue.val();
+            if (decryptedValue != valueInBox && !(valueInBox != null && valueInBox.length > 0))
+            {
+                currentValue.val(decryptedValue);
+                console.log("populated value field with actual decrypted value");
+            }
+            else
+            {
+                console.log("aborted populating value, as different value is present");
+            }
 
-        // Set param for edit mode
-        currentValue.data("edit", true);
+            // Resize box to fit value
+            this.resizeValueTextAreaToFitContent();
+
+            // Set param for edit mode
+            currentValue.data("edit", true);
+        }
+    }
+
+    // Resets edit mode when leaving text box of current value
+    resetValueMode()
+    {
+        var currentValue = $("#currentValue");
+        currentValue.data("edit", false);
     }
 
     // Hides the decrypted value / switches out of edit mode

@@ -309,26 +309,18 @@ export class ViewerComponent
     // Saves the current (decrypted) value
     saveValue()
     {
-        // Only allow save if in edit mode
+        console.log("saving current value");
+
+        // Fetch value and update current node
         var currentValue = $("#currentValue");
-        var isEditMode = currentValue.data("edit");
+        var value = currentValue.val();
+        this.encryptedValueService.setString(this.currentNode, value);
 
-        console.error("EDIT MODE : " + isEditMode);
+        // Reset form as untouched
+        this.updateEntryForm.reset();
 
-        if (isEditMode == true)
-        {
-            console.log("saving current value");
-
-            // Fetch value and update current node
-            var value = currentValue.val();
-            this.encryptedValueService.setString(this.currentNode, value);
-
-            // Reset form as untouched
-            this.updateEntryForm.reset();
-
-            // Switch out of edit mode
-            currentValue.data("edit", false);
-        }
+        // Switch out of edit mode
+        currentValue.data("edit", false);
     }
 
 }
