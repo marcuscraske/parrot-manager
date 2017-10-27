@@ -413,6 +413,9 @@ public class RemoteSshFileService
                             LOG.info("sync - database(s) dirty, saving...");
                             databaseReaderWriter.save(database, options.getDestinationPath());
 
+                            // Reset dirty flag
+                            database.setDirty(false);
+
                             // Upload to remote
                             LOG.info("sync - uploading to remote host...");
                             sshComponent.upload(sshSession, options, options.getDestinationPath());
