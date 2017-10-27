@@ -3,6 +3,11 @@ engines:
     enabled: true
   csslint:
     enabled: true
+    checks:
+      compatible-vendor-prefixes:
+        enabled: false
+      important:
+        enabled: false
   duplication:
     enabled: true
     config:

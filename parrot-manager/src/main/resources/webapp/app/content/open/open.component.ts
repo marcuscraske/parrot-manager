@@ -32,8 +32,7 @@ export class OpenComponent {
         // Open database on startup if there's recent files and enabled...
         if (OpenComponent.isStartup && this.recentFiles.length > 0)
         {
-            var settings = this.settingsService.fetch();
-            var isEnabled = settings.recentFilesOpenLastOnStartup;
+            var isEnabled = this.settingsService.fetch("recentFilesOpenLastOnStartup");
 
             if (isEnabled)
             {

@@ -29,7 +29,8 @@ export class RemoteSyncSshComponent {
        proxyPort : [0],
        proxyType : ["None"],
        promptUserPass : [false],
-       promptKeyPass : [false]
+       promptKeyPass : [false],
+       machineFilter: [""]
     });
 
     // Messages displayed to user; hidden when null
@@ -72,6 +73,13 @@ export class RemoteSyncSshComponent {
             {
                 this.currentNode = null;
                 this.currentMode = "new";
+
+                // populate machine filter with current hostname
+                var currentHostname = this.remoteSshFileService.getCurrentHostname();
+                this.openForm.patchValue({
+                    "machineFilter" : currentHostname
+                });
+
                 console.log("changed to new mode");
             }
             else
@@ -334,6 +342,7 @@ export class RemoteSyncSshComponent {
         options.setProxyType(form.value["proxyType"]);
         options.setPromptUserPass(form.value["promptUserPass"]);
         options.setPromptKeyPass(form.value["promptKeyPass"]);
+        options.setMachineFilter(form.value["machineFilter"]);
 
         // Non-serialized data used for just test/downloading in edit mode
         if (this.currentMode == "edit" || this.currentMode == "new")

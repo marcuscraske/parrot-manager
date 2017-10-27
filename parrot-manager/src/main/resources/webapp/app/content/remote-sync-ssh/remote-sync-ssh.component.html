@@ -233,6 +233,23 @@
     </div>
 
     <div class="form-group">
+        <label class="form-control-label">
+            Machine Filter
+        </label>
+        <input id="machineFilter"
+               formControlName="machineFilter"
+               [(ngModel)]="openForm.value['machineFilter']"
+               type="text"
+               class="form-control"
+               placeholder="Leave empty to disable filter"
+        />
+        <small class="form-text text-muted">
+            Restrict the machines able to automatically sync using this profile. Enter a list of hostnames, comma or space
+            separated.
+        </small>
+    </div>
+
+    <div class="form-group">
         <label class="checkbox-inline">
             <input type="checkbox"
                    id="promptUserPass"

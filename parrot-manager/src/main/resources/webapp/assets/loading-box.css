@@ -1,42 +1,40 @@
 .loading-box
 {
+    display: table;
     text-align: center;
     font-size: 2em;
     padding: 0.5em;
-    height: 100%;
-
+    width: 100vw;
+    height: 100vh;
     color: #666;
+    overflow: hidden;
+    background: #333;
+}
+
+.loading-box .content
+{
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .loading-box .logo
 {
     display: block;
-    margin: 0 auto;
-    width: 3em;
-    height: 3em;
+    margin: 0.2em auto;
+    width: 3.5em;
+    height: 3.5em;
+
+    position: relative;
+    left: 0.25em;
 }
 
-.loading-box span.icon
+.loading-box .text
 {
-    display: inline-block;
-
-    animation-name: spin;
-    animation-duration: 4000ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-
-    -webkit-animation-name: spin;
-    -webkit-animation-duration: 4000ms;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
+    color: #ccc;
 }
 
-@keyframes spin {
-    from {transform:rotate(0deg);}
-    to {transform:rotate(360deg);}
-}
-
-@-webkit-keyframes spin {
-    from { -webkit-transform: rotate(0deg); }
-    to { -webkit-transform: rotate(360deg); }
+.loading-box .info
+{
+    font-size: 0.8em;
+    color: #666;
 }

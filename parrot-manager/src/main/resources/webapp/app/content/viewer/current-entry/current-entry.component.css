@@ -34,6 +34,7 @@
     border: none;
     padding: 0.1em 0.2em;
     width: 100%;
+    background: none;
 }
 
 .title-input:hover,

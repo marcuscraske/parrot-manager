@@ -12,6 +12,8 @@ import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.dbaction.ActionLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -203,6 +205,8 @@ public class RemoteSshFileService
             String remotePassword = databaseService.getPassword();
 
             // Check and convert each node/host
+            String currentHostName = getCurrentHostName();
+
             SshOptions options;
             for (DatabaseNode node : remoteSync.getChildren())
             {
@@ -210,7 +214,7 @@ public class RemoteSshFileService
                 {
                     options = SshOptions.read(encryptedValueService, node);
 
-                    if (!options.isPromptKeyPass() && !options.isPromptUserPass())
+                    if (canAutoSync(options, currentHostName))
                     {
                         options.setDestinationPath(destinationPath);
                         optionsList.add(options);
@@ -235,6 +239,67 @@ public class RemoteSshFileService
                 LOG.debug("no hosts applicable for sync");
             }
         }
+    }
+
+    private boolean canAutoSync(SshOptions options, String currentHostName)
+    {
+        // check if auth is needed
+        if (options.isPromptKeyPass() || options.isPromptUserPass())
+        {
+            LOG.info("excluded from sync as auth is needed - profile: {}", options.getName());
+            return false;
+        }
+
+        // check machine filter
+        String machineFilter = options.getMachineFilter();
+
+        if (machineFilter != null && currentHostName != null)
+        {
+            machineFilter = machineFilter.trim();
+
+            if (machineFilter.length() > 0)
+            {
+                String[] hosts = machineFilter.replace(" ", ",").replace("\n", ",").split(",");
+
+                // check current host name is in list of hosts
+                boolean found = false;
+
+                for (int i = 0; !found && i < hosts.length; i++)
+                {
+                    if (hosts[i].equals(currentHostName))
+                    {
+                        found = true;
+                    }
+                }
+
+                if (!found)
+                {
+                    LOG.info("excluded from sync current host not matched in machine filter - profile: {}, hostName: {}", options.getName(), currentHostName);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return the current hostname of the machine
+     */
+    public String getCurrentHostName()
+    {
+        String result = null;
+
+        try
+        {
+            result = InetAddress.getLocalHost().getHostName();
+        }
+        catch (UnknownHostException e)
+        {
+            LOG.warn("unable to determine hostname of current machine", e);
+        }
+
+        return result;
     }
 
     public synchronized void sync(SshOptions options)
@@ -347,6 +412,9 @@ public class RemoteSshFileService
                             // Save current database
                             LOG.info("sync - database(s) dirty, saving...");
                             databaseReaderWriter.save(database, options.getDestinationPath());
+
+                            // Reset dirty flag
+                            database.setDirty(false);
 
                             // Upload to remote
                             LOG.info("sync - uploading to remote host...");

@@ -7,6 +7,7 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.security.Key;
 import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,14 +114,24 @@ public class SendKeysService
             {
                 LOG.debug("simulating keys...");
 
+                /*
+                    Delay needed for some window managers to switch windows completely / gain focus etc.
+
+                    This should be more than sufficient time, even for slow machines. If this ever becomes an issue,
+                    the delay/time can be moved to a global setting.
+                 */
+
+                try
+                {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException e) { }
+
                 // Simulate key press for each char
                 Robot robot = new Robot();
-                int keyCode;
                 for (char key : pendingData.toCharArray())
                 {
-                    keyCode = KeyEvent.getExtendedKeyCodeForChar(key);
-                    robot.keyPress(keyCode);
-                    robot.keyRelease(keyCode);
+                    type(robot, key);
                 }
 
                 // Wipe stored data
@@ -146,6 +157,77 @@ public class SendKeysService
     public synchronized boolean isQueued(EncryptedValue value)
     {
         return pendingEncryptedValueId != null && value != null && pendingEncryptedValueId.equals(value.getId());
+    }
+
+    // TODO does this work with different keyboard layouts besides en-GB?
+    private synchronized void type(Robot robot, char key)
+    {
+        switch (key)
+        {
+            case '`': type(robot, KeyEvent.VK_BACK_QUOTE);  break;
+            case '-': type(robot, KeyEvent.VK_MINUS);       break;
+            case '=': type(robot, KeyEvent.VK_EQUALS);      break;
+            case '~': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_NUMBER_SIGN); break;
+            case '!': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_1); break;
+            case '@': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_QUOTE); break;
+            case '#': type(robot, KeyEvent.VK_NUMBER_SIGN); break;
+            case '$': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_4); break;
+            case '%': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_5); break;
+            case '^': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_6); break;
+            case '&': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_7); break;
+            case '*': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_8); break;
+            case '(': type(robot, KeyEvent.VK_LEFT_PARENTHESIS); break;
+            case ')': type(robot, KeyEvent.VK_RIGHT_PARENTHESIS); break;
+            case '_': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_MINUS);  break;
+            case '+': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_EQUALS); break;
+            case '\t': type(robot, KeyEvent.VK_TAB);        break;
+            case '\n': type(robot, KeyEvent.VK_ENTER);      break;
+            case '[': type(robot, KeyEvent.VK_OPEN_BRACKET); break;
+            case ']': type(robot, KeyEvent.VK_CLOSE_BRACKET); break;
+            case '\\': type(robot, KeyEvent.VK_BACK_SLASH); break;
+            case '{': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_OPEN_BRACKET); break;
+            case '}': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_CLOSE_BRACKET); break;
+            case '|': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_BACK_SLASH); break;
+            case ';': type(robot, KeyEvent.VK_SEMICOLON);   break;
+            case ':': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_SEMICOLON);       break;
+            case '\'': type(robot, KeyEvent.VK_QUOTE);      break;
+            case '"': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_2);    break;
+            case ',': type(robot, KeyEvent.VK_COMMA);       break;
+            case '<': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_COMMA); break;
+            case '>': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_PERIOD); break;
+            case '.': type(robot, KeyEvent.VK_PERIOD);      break;
+            case '/': type(robot, KeyEvent.VK_SLASH);       break;
+            case '?': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_SLASH); break;
+            case ' ': type(robot, KeyEvent.VK_SPACE);       break;
+
+            default:
+                // A-Z
+                if (key >= 65 && key <= 90)
+                {
+                    type(robot, KeyEvent.VK_SHIFT, KeyEvent.getExtendedKeyCodeForChar(key));
+                }
+                else
+                {
+                    // last ditch attempt...
+                    type(robot, KeyEvent.getExtendedKeyCodeForChar(key));
+                }
+                break;
+        }
+    }
+
+    private synchronized void type(Robot robot, int... keyCodes)
+    {
+        // press all the keys down
+        for (int keyCode : keyCodes)
+        {
+            robot.keyPress(keyCode);
+        }
+
+        // release them all
+        for (int keyCode : keyCodes)
+        {
+            robot.keyRelease(keyCode);
+        }
     }
 
 }

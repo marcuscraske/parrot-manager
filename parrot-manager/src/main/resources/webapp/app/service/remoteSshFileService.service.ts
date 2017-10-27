@@ -119,6 +119,7 @@ export class RemoteSshFileService {
         return this.syncing;
     }
 
+    // TODO rename this at some point
     getCurrentHost() : string
     {
         return this.currentHost;
@@ -127,6 +128,12 @@ export class RemoteSshFileService {
     abort()
     {
         this.remoteSshFileService.abort();
+    }
+
+    // This is the actual host-name of the current box / machine / physical host
+    getCurrentHostname() : string
+    {
+        return this.remoteSshFileService.getCurrentHostName();
     }
 
 }

@@ -7,6 +7,8 @@ import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
+import { SettingsService } from 'app/service/settings.service'
+import { ThemeService } from 'app/service/theme.service'
 
 @Component({
   selector: 'my-app',
@@ -18,16 +20,21 @@ import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.serv
         BackupService,
         EncryptedValueService,
         RemoteSshFileService,
-        RemoteSyncChangeLogService
+        RemoteSyncChangeLogService,
+        SettingsService,
+        ThemeService
   ]
 })
-export class AppComponent {
+export class AppComponent
+{
 
     constructor(
-        keyBindsService: KeyBindsService
+        keyBindsService: KeyBindsService,
+        private themeService: ThemeService,
+        private settingsService: SettingsService
     )
     {
-        // Setup global toastr configuration
+        // setup global toastr configuration
         toastr.options = {
           "closeButton": true,
           "debug": false,
@@ -46,5 +53,13 @@ export class AppComponent {
           "hideMethod": "fadeOut"
         }
     }
+
+    ngOnInit()
+    {
+        // apply theme
+        var theme = this.settingsService.fetch("theme");
+        this.themeService.set(theme);
+    }
+
 
 }

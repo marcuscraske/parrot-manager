@@ -51,6 +51,7 @@
                   placeholder="Click to reveal value"
                   formControlName="currentValue"
                   (click)="displayValue($event)"
+                  (blur)="resetValueMode()"
         ></textarea>
     </div>
 

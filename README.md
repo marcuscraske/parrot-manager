@@ -1,4 +1,10 @@
-# parrot
+<h1 align="center">
+    parrot manager
+</h1>
+<p align="center">
+    <i>passwords made simple</i>
+</p>
+
 <p align="center">
     <img src="parrot-manager/src/main/resources/icons/parrot-icon.png" alt="parrot logo" />
 </p>
@@ -14,6 +20,8 @@
 
 A simple password manager with a modern interface, with ability to synchronize databases using SSH.
 
+Supports Linux, Windows and Mac.
+
 ## Features
 - File encryption
 - In-memory encryption (until revealed/copied/etc)
@@ -25,8 +33,10 @@ A simple password manager with a modern interface, with ability to synchronize d
 - Send values as keys to other applications
 - Modern UI
 
+
 ## Download
 Binaries are available on the [releases](https://github.com/limpygnome/parrot-manager/releases) page.
+
 
 ## Screenshots
 <p align="center">
@@ -45,10 +55,11 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
     <img width="500px" src="media/screenshot-sync-2.png" alt="database backups" />
 </p>
 
-## Prerequisites
-- Requires at least Java Runtime 1.8 - [download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 
 ## Installation
+### Prerequisites
+- Requires at least Java Runtime 1.8 - [download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+
 ### Ubuntu / Debian
 Download the latest deb file, to anywhere, and run the following command in the same directory; the file name
 may differ:
@@ -72,34 +83,4 @@ File name may differ and no installation process is required, as the JAR is stan
 
 
 ## Contribute
-- Issues - raise any suggestions or bugs, or help others
-- This project is open to pull requests
-
-This project uses Java, JavaFX WebView and AngularJS; as well as many front-end libraries, managed by `npm`. Each
-module should have its own `README.md` file for purpose.
-
-### Main
-The entire project, including distributions, can be built using:
-
-````
-mvn clean package
-````
-
-### Front-end / AngularJS
-You can launch the node lite server to build the front-end on the fly, although parts are limited / not mocked:
-
-````
-./run-angular.sh
-````
-
-This will require `npm` v3 to be installed.
-
-### Development Mode
-If you need the ability to refresh files from the `target` directory from your IDE, launch `parrot-manager` using the
-following arg:
-
-````
---development=true
-````
-
-**Note**: Make sure the working directory is set to `parrot-manager` sub-directory.
+This project is open to [contributions](contribute.md).
