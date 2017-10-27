@@ -173,8 +173,8 @@ header div a:focus
     background: #000;
 }
 
-
-table tr
+.table th,
+.table td
 {
-    border-color: #0f0;
+    border-color: #0f0 !important;
 }
