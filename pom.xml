@@ -6,7 +6,7 @@
 
     <groupId>com.limpygnome</groupId>
     <artifactId>parrot</artifactId>
-    <version>3.5</version>
+    <version>4.0</version>
     <packaging>pom</packaging>
 
     <modules>
