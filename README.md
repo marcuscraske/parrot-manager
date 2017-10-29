@@ -39,21 +39,48 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
 
 
 ## Screenshots
-<p align="center">
-    <img width="500px" src="media/screenshot-list.png" alt="listing of entries" />
-</p>
-<p align="center">
-    <img width="500px" src="media/screenshot-entry.png" alt="viewing an entry and history" />
-</p>
-<p align="center">
-    <img width="500px" src="media/screenshot-backups.png" alt="database backups" />
-</p>
-<p align="center">
-    <img width="500px" src="media/screenshot-sync.png" alt="database backups" />
-</p>
-<p align="center">
-    <img width="500px" src="media/screenshot-sync-2.png" alt="database backups" />
-</p>
+<table>
+    <tr>
+        <td>
+            <img src="media/screenshot-list.png" alt="listing of entries" />
+        </td>
+        <td>
+            <img src="media/screenshot-entry.png" alt="viewing an entry and history" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="media/screenshot-backups.png" alt="database backups" />
+        </td>
+        <td>
+            <img src="media/screenshot-sync.png" alt="database backups" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="media/screenshot-sync-2.png" alt="database backups" />
+        </td>
+        <td>
+            <img src="media/screenshot-password.png" alt="entering password with hacker theme" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="media/screenshot-hacker.png" alt="hacker theme" />
+        </td>
+        <td>
+            <img src="media/screenshot-dark.png" alt="dark theme" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="media/screenshot-settings.png" alt="settings with dark theme" />
+        </td>
+        <td>
+            &nbsp;
+        </td>
+    </tr>
+</table>
 
 
 ## Installation
