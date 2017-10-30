@@ -25,6 +25,10 @@ import java.util.UUID;
 /**
  * Used for reading and writing instances of {@link Database}.
  *
+ * This instance does two levels of encryption:
+ * - File: the entire database is encrypted, intended to be written to disk.
+ * - Memory: the structure of the database can be read, but items are encrypted and must be decrypted upon access.
+ *
  * File (Encrypted) JSON Structure
  * -----------------------------------
  * The database is initially stored as followed, which is referred to as "encrypted":
