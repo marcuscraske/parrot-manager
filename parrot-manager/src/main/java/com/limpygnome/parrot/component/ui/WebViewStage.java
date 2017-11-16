@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.ui;
 
+import com.limpygnome.parrot.lib.WebViewDebug;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -39,7 +40,7 @@ public class WebViewStage extends Stage
         // Setup webview
         webView = new WebView();
 
-        setupDebugging();
+        setupDebugging(webStageInitService);
         setupContextMenu();
         setupClientsideHooks();
 
@@ -54,6 +55,7 @@ public class WebViewStage extends Stage
         setTitle("parrot manager");
         setWidth(1200.0);
         setHeight(350.0);
+        setMaximized(true);
 
         // Setup icons
         addIcon("/icons/parrot-icon.png");
@@ -68,6 +70,9 @@ public class WebViewStage extends Stage
 
             // Trigger event for JS to handle action
             triggerEvent("document", "nativeExit", null);
+
+            // dispose debugging
+            disposeDebugging();
         });
     }
 
@@ -85,19 +90,30 @@ public class WebViewStage extends Stage
         LOG.debug("added icon - path: {}", path);
     }
 
-    private void setupDebugging()
+    private void setupDebugging(WebStageInitService webStageInitService)
     {
         WebEngine engine = webView.getEngine();
 
+        // hook to print console messages
         WebConsoleListener.setDefaultListener((webView1, message, lineNumber, sourceId) -> {
             LOG.info("web console message - src: {}, line num: {}, message: {}", sourceId, lineNumber, message);
         });
+
+        // monitor navigation
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             LOG.info("WebView state has changed - old: {}, new: {}", oldValue, newValue);
         });
+
+        // log errors
         engine.setOnError(event -> {
             LOG.error("wehview error - message: {}", event.getMessage(), event.getException());
         });
+
+        if (webStageInitService.isDevelopmentMode())
+        {
+            WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
+            webViewDebug.start(webView);
+        }
     }
 
     private void setupContextMenu()
@@ -200,6 +216,15 @@ public class WebViewStage extends Stage
     public WebStageInitService getServiceFacade()
     {
         return webStageInitService;
+    }
+
+    private void disposeDebugging()
+    {
+        if (webStageInitService.isDevelopmentMode())
+        {
+            WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
+            webViewDebug.stop();
+        }
     }
 
 }

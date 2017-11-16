@@ -36,5 +36,13 @@ You can launch the node lite server to build the front-end on the fly, although 
 
 This will require `npm` (at least v3) to be installed.
 
+### Dev Tools
+If you need to use dev tools, enable the Maven `dev` profile when building. If you're using an IDE such as Intellij,
+use the `Maven Projects` (under `View` > `Tool Windows`) dialogue to enable the profile.
+
+Then navigate to the following in Chrome:
+<chrome-devtools://devtools/bundled/inspector.html?ws=localhost:51742/>
+
+
 ## Docs
 More documentation can be found within each module.

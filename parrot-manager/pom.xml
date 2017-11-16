@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>4.0</version>
+        <version>5.0</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-manager</artifactId>
@@ -23,6 +23,11 @@
         <dependency>
             <groupId>com.limpygnome.parrot</groupId>
             <artifactId>parrot-library-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.limpygnome.parrot</groupId>
+            <artifactId>parrot-manager-lib</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -233,5 +238,18 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.limpygnome.parrot</groupId>
+                    <artifactId>parrot-manager-dev</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

@@ -2,10 +2,13 @@ package com.limpygnome.parrot.component.urlStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.net.www.protocol.file.FileURLConnection;
+import sun.net.www.protocol.http.HttpURLConnection;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -95,7 +98,7 @@ class LocalResourceStreamHandler extends URLStreamHandler
 
                 if (resourceUrl != null)
                 {
-                    connection = resourceUrl.openConnection();
+                    connection = new CustomUrlConnection(resourceUrl);
                     LOG.info("served resource - url: {}, class path url: {}", requestedUrl, resourceUrl.getPath());
                 }
                 else

@@ -11,6 +11,7 @@ import com.limpygnome.parrot.component.remote.RemoteSshFileService;
 import com.limpygnome.parrot.component.runtime.RuntimeService;
 import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
+import com.limpygnome.parrot.lib.WebViewDebug;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ public class WebStageInitService
     private DatabaseOptimizerService databaseOptimizerService;
     @Autowired
     private SendKeysService sendKeysService;
+    @Autowired(required = false)
+    private WebViewDebug webViewDebug;
 
     // Properties
     @Value("${development:false}")
@@ -101,4 +104,11 @@ public class WebStageInitService
         return databaseService;
     }
 
+    /**
+     * @return instance for debugging web view
+     */
+    public WebViewDebug getWebViewDebug()
+    {
+        return webViewDebug;
+    }
 }

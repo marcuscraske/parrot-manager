@@ -10,32 +10,45 @@
         <version>5.0</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
-    <artifactId>parrot-library</artifactId>
+    <artifactId>parrot-manager-dev</artifactId>
+
+    <!-- repository for webview debugger -->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
 
-        <!-- Cryptography -->
+        <!-- local -->
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.58</version>
+            <groupId>com.limpygnome.parrot</groupId>
+            <artifactId>parrot-manager-lib</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
-        <!-- Unit testing -->
+        <!-- spring -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.0.0.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>2.11.0</version>
-            <scope>test</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>5.0.0.RELEASE</version>
         </dependency>
 
-        <!-- Logging -->
+        <!-- webview debugging -->
+        <dependency>
+            <groupId>com.github.mohamnag</groupId>
+            <artifactId>javafx_webview_debugger</artifactId>
+            <version>-SNAPSHOT</version>
+        </dependency>
+
+        <!-- logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -47,19 +60,10 @@
             <version>2.9.1</version>
         </dependency>
 
-        <!-- Joda -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.9.9</version>
-        </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
-
-            <!-- Define JDK version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -69,7 +73,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
