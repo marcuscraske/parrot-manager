@@ -3,30 +3,30 @@
 </h1>
 
 <!--
+    Error message
+-->
+<div class="alert alert-danger" *ngIf="errorMessage != null">{{ errorMessage }}</div>
+
+
+<!--
     Open from file
 -->
 <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null }">
-
     <button class="btn btn-default form-control" type="button" (click)="chooseDatabaseFile()">
         Local File
     </button>
-
-    <span class="help-block">{{ errorMessage }}</span>
-
 </div>
 
 
 <!--
     Open from SSH
 -->
-
 <div class="form-group">
-
     <button routerLink="/remote-sync/ssh" class="btn btn-default form-control" type="button">
         Remote File - SSH
     </button>
-
 </div>
+
 
 <!--
     A list of recently opened files
@@ -44,7 +44,7 @@
 
     <div class="form-group">
         <span class="help-block">
-            You can enable loading the last recent file, on startup, in <a href="/settings" routerLink="/settings">settings</a>.
+            You can configure automatically opening the last recent file in <a href="/settings" routerLink="/settings">settings</a>.
         </span>
     </div>
 
