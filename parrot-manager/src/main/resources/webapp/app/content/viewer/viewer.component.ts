@@ -127,7 +127,7 @@ export class ViewerComponent
         $(() => {
 
             // Setup tree with drag-and-drop enabled
-            var tree = $("#sidebar").jstree(
+            var tree = $("#tree").jstree(
             {
                 core:
                 {
@@ -146,13 +146,13 @@ export class ViewerComponent
             });
 
             // Always keep nodes open
-            $("#sidebar").on("refresh.jstree load.jstree", () => {
+            $("#tree").on("refresh.jstree load.jstree", () => {
                 // Expand all nodes
-                $("#sidebar").jstree("open_all");
+                $("#tree").jstree("open_all");
             });
 
             // Hook tree for select event
-            $("#sidebar").on("select_node.jstree", (e, data) => {
+            $("#tree").on("select_node.jstree", (e, data) => {
                 // Check button was definitely left click
                 // -- Disabling ctxmenu does not work, as JavaFX seems to change the event to left-click when selecting
                 //    native item
@@ -174,7 +174,7 @@ export class ViewerComponent
             });
 
             // Hook tree for move/dnd event
-            $("#sidebar").on("move_node.jstree", (e, data) => {
+            $("#tree").on("move_node.jstree", (e, data) => {
                 var nodeId = data.node.id;
                 var newParentId = data.parent;
 
@@ -212,7 +212,7 @@ export class ViewerComponent
 
         $(function(){
             // Update tree
-            var tree = $("#sidebar").jstree(true);
+            var tree = $("#tree").jstree(true);
             tree.settings.core.data = data;
             tree.refresh();
         });
@@ -224,7 +224,7 @@ export class ViewerComponent
     updateTreeSelection()
     {
         $(() => {
-            var currentSelected = $("#sidebar").jstree("get_selected");
+            var currentSelected = $("#tree").jstree("get_selected");
 
             // Update selected item to match current node being viewed
             if (this.currentNode != null)
@@ -234,15 +234,15 @@ export class ViewerComponent
                 // Check the node is not already selected
                 if (currentSelected == null || targetNodeId != currentSelected)
                 {
-                    $("#sidebar").jstree("deselect_all");
-                    $("#sidebar").jstree("select_node", "#" + targetNodeId);
+                    $("#tree").jstree("deselect_all");
+                    $("#tree").jstree("select_node", "#" + targetNodeId);
                     console.log("updated tree selection - id: " + targetNodeId);
                 }
             }
             else
             {
                 // Reset selected node
-                $("#sidebar").jstree("deselect_all");
+                $("#tree").jstree("deselect_all");
             }
         });
     }
