@@ -12,7 +12,9 @@ import com.limpygnome.parrot.component.runtime.RuntimeService;
 import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.lib.WebViewDebug;
+import com.limpygnome.parrot.lib.init.WebViewInit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -48,9 +50,12 @@ public class WebStageInitService
     @Autowired(required = false)
     private WebViewDebug webViewDebug;
 
-    // Properties
-    @Value("${development:false}")
-    private Boolean developmentMode;
+    @Qualifier("dev")
+    @Autowired(required = false)
+    private WebViewInit webViewInitDev;
+    @Qualifier("default")
+    @Autowired
+    private WebViewInit webViewInitDefault;
 
     // Stage
     private WebViewStage stage;
@@ -81,14 +86,6 @@ public class WebStageInitService
     }
 
     /**
-     * @return indicates if running in development mode
-     */
-    public boolean isDevelopmentMode()
-    {
-        return developmentMode;
-    }
-
-    /**
      * @return the stage associated with this Spring context
      */
     public WebViewStage getStage()
@@ -110,5 +107,13 @@ public class WebStageInitService
     public WebViewDebug getWebViewDebug()
     {
         return webViewDebug;
+    }
+
+    /**
+     * @return instance for initializing web view
+     */
+    public WebViewInit getWebViewInit()
+    {
+        return webViewInitDev != null ? webViewInitDev : webViewInitDefault;
     }
 }

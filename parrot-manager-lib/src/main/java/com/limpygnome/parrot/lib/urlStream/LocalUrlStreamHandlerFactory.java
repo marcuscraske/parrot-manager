@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.urlStream;
+package com.limpygnome.parrot.lib.urlStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,31 +14,28 @@ class LocalUrlStreamHandlerFactory implements URLStreamHandlerFactory
 {
     private static final Logger LOG = LogManager.getLogger(LocalUrlStreamHandlerFactory.class);
 
-    /*
-        Enables/disables development mode for LocalResourceStreamHandler
-     */
-    private final boolean developmentMode;
+    private DetermineResourceHandler handler;
 
-    LocalUrlStreamHandlerFactory(boolean developmentMode)
+    LocalUrlStreamHandlerFactory(DetermineResourceHandler handler)
     {
-        this.developmentMode = developmentMode;
+        this.handler = handler;
     }
 
     @Override
     public URLStreamHandler createURLStreamHandler(String protocol)
     {
-        URLStreamHandler handler = null;
+        URLStreamHandler streamHandler = null;
 
         if ("http".equals(protocol))
         {
-            handler = new LocalResourceStreamHandler(developmentMode);
+            streamHandler = new LocalResourceStreamHandler(handler);
         }
         else
         {
             LOG.error("request for unhandled protocol - proto: {}", protocol);
         }
 
-        return handler;
+        return streamHandler;
     }
 
 }

@@ -2,7 +2,7 @@ package com.limpygnome.parrot.component.runtime;
 
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
-import com.limpygnome.parrot.component.urlStream.UrlStreamOverrideService;
+import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
@@ -33,7 +33,7 @@ public class RuntimeService
      */
     public boolean isDevelopmentMode()
     {
-        return webStageInitService.isDevelopmentMode();
+        return webStageInitService.getWebViewDebug() != null;
     }
 
     /**

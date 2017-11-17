@@ -1,5 +1,4 @@
 # Contribute
-
 Recommended ways to contribute:
 - Issues - raise any suggestions or bugs, or help others
 - This project is open to pull requests, new ideas and fixes welcome!
@@ -16,16 +15,28 @@ The entire project, including distributions, can be built using:
 mvn clean package
 ````
 
-### Development Mode
-If you need the ability to refresh files from the `target` directory from your IDE, launch `parrot-manager` using the
-following arg:
+### Development
+Enable the `dev` Maven profile for development features.
+
+Example when building from command-line:
 
 ````
---development=true
+mvn clean package -Pdev
 ````
 
-**Note**: Make sure the working directory is set to `parrot-manager` sub-directory.
+Or if you're using an IDE such as Intellij, use the `Maven Projects` (under `View` > `Tool Windows`) dialogue to
+enable the profile.
 
+If you need to perform debugging of the front-end, visit the following from Chrome:
+<chrome-devtools://devtools/bundled/inspector.html?ws=localhost:51742/>
+
+The front-end is loaded from `http://localhost:3000` by default when using `dev` profile, which is the default port
+when using the `run-angular.sh` script. If you need to load files off the class-path, start parrot with the following
+argument:
+
+````
+--classpath=true
+````
 
 ## Front-end / AngularJS
 You can launch the node lite server to build the front-end on the fly, although parts are limited / not mocked:
@@ -35,13 +46,6 @@ You can launch the node lite server to build the front-end on the fly, although 
 ````
 
 This will require `npm` (at least v3) to be installed.
-
-### Dev Tools
-If you need to use dev tools, enable the Maven `dev` profile when building. If you're using an IDE such as Intellij,
-use the `Maven Projects` (under `View` > `Tool Windows`) dialogue to enable the profile.
-
-Then navigate to the following in Chrome:
-<chrome-devtools://devtools/bundled/inspector.html?ws=localhost:51742/>
 
 
 ## Docs

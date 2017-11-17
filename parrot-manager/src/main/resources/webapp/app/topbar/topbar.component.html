@@ -38,9 +38,6 @@
             <a *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="runtimeService.refreshPage(router.url)">
                 <span class="icon icon-loop2"></span>
             </a>
-            <a *ngIf="runtimeService.isDevelopmentMode()" title="Trigger exception" (click)="doesNotExist()">
-                <span class="icon icon-warning"></span>
-            </a>
         </div>
 
     </div>

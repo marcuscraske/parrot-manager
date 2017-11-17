@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.urlStream;
+package com.limpygnome.parrot.lib.urlStream;
 
 import java.io.IOException;
 import java.io.InputStream;

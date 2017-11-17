@@ -3,7 +3,7 @@ package com.limpygnome.parrot;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.config.AppConfig;
 import com.limpygnome.parrot.component.ui.WebViewStage;
-import com.limpygnome.parrot.component.urlStream.UrlStreamOverrideService;
+import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -40,9 +40,6 @@ public class Program extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        // Sandbox class-path to serve only local files; prevents external requests as well
-        urlStreamOverrideService.enable();
-
         // Create and show stage
         WebViewStage stage = new WebViewStage(webStageInitService);
         stage.show();

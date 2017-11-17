@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.lib.WebViewDebug;
+import com.limpygnome.parrot.lib.init.WebViewInit;
 import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -44,8 +45,9 @@ public class WebViewStage extends Stage
         setupContextMenu();
         setupClientsideHooks();
 
-        // Load initial page
-        webView.getEngine().load("http://localhost/index.html");
+        // Initialize webview (load page)
+        WebViewInit webViewInit = webStageInitService.getWebViewInit();
+        webViewInit.init(webView);
 
         // Build scene for web view
         scene = new Scene(webView);
@@ -109,9 +111,11 @@ public class WebViewStage extends Stage
             LOG.error("wehview error - message: {}", event.getMessage(), event.getException());
         });
 
-        if (webStageInitService.isDevelopmentMode())
+        // hook debugging component (if available)
+        WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
+
+        if (webViewDebug != null)
         {
-            WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
             webViewDebug.start(webView);
         }
     }
@@ -220,9 +224,10 @@ public class WebViewStage extends Stage
 
     private void disposeDebugging()
     {
-        if (webStageInitService.isDevelopmentMode())
+        WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
+
+        if (webViewDebug != null)
         {
-            WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
             webViewDebug.stop();
         }
     }
