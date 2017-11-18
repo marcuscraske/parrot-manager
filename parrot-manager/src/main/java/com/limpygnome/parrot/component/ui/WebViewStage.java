@@ -3,18 +3,18 @@ package com.limpygnome.parrot.component.ui;
 import com.limpygnome.parrot.lib.WebViewDebug;
 import com.limpygnome.parrot.lib.init.WebViewInit;
 import com.sun.javafx.webkit.WebConsoleListener;
+import java.io.InputStream;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.InputStream;
 
 /**
  * A JavaFX web view stage.
@@ -38,44 +38,39 @@ public class WebViewStage extends Stage
     {
         this.webStageInitService = webStageInitService;
 
-        // Setup webview
+        // setup webview
         webView = new WebView();
 
         setupDebugging(webStageInitService);
         setupContextMenu();
         setupClientsideHooks();
 
-        // Initialize webview (load page)
+        // set initial background
+        WebEngine engine = webView.getEngine();
+        engine.loadContent("<html><head><style>body{ background: #333; }</style></head></html>");
+
+        // initialize webview (load page)
         WebViewInit webViewInit = webStageInitService.getWebViewInit();
         webViewInit.init(webView);
 
-        // Build scene for web view
-        scene = new Scene(webView);
+        // build scene for web view
+        scene = new Scene(webView, Color.valueOf("#333333"));
 
-        // General window config
+        // general window config
         setScene(scene);
         setTitle("parrot manager");
         setWidth(1200.0);
         setHeight(350.0);
         setMaximized(true);
 
-        // Setup icons
+        // setup icons
         addIcon("/icons/parrot-icon.png");
         addIcon("/icons/parrot-icon-64.png");
         addIcon("/icons/parrot-icon-512.png");
         addIcon("/icons/parrot.svg");
 
-        // Prevent window from closing to prevent data loss for dirty databases
-        setOnCloseRequest(event -> {
-            // Prevent exit by consuming event...
-            event.consume();
-
-            // Trigger event for JS to handle action
-            triggerEvent("document", "nativeExit", null);
-
-            // dispose debugging
-            disposeDebugging();
-        });
+        // prevent window from closing to prevent data loss for dirty databases
+        setOnCloseRequest(new CloseHandler(this));
     }
 
     private void addIcon(String path)
@@ -220,16 +215,6 @@ public class WebViewStage extends Stage
     public WebStageInitService getServiceFacade()
     {
         return webStageInitService;
-    }
-
-    private void disposeDebugging()
-    {
-        WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
-
-        if (webViewDebug != null)
-        {
-            webViewDebug.stop();
-        }
     }
 
 }
