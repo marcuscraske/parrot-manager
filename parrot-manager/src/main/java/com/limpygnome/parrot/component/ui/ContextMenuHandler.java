@@ -107,6 +107,17 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
     {
         ContextMenu contextMenu = new ContextMenu();
 
+        if (!databaseNode.isRoot())
+        {
+            MenuItem itemCopyClipboard = new MenuItem("Copy to clipboard");
+            itemCopyClipboard.setOnAction(e ->
+            {
+                webViewStage.triggerEvent("document", "databaseClipboardEvent", databaseNode);
+            });
+
+            contextMenu.getItems().addAll(itemCopyClipboard);
+        }
+
         MenuItem itemAddEntry = new MenuItem("Add Entry");
         itemAddEntry.setOnAction(e -> {
             webViewStage.triggerEvent("document", "databaseEntryAdd", databaseNode);
@@ -122,13 +133,7 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
                 webViewStage.triggerEvent("document", "databaseEntryDelete", databaseNode);
             });
 
-            MenuItem itemCopyClipboard = new MenuItem("Copy to clipboard");
-            itemCopyClipboard.setOnAction(e ->
-            {
-                webViewStage.triggerEvent("document", "databaseClipboardEvent", databaseNode);
-            });
-
-            contextMenu.getItems().addAll(itemDeleteEntry, itemCopyClipboard);
+            contextMenu.getItems().addAll(itemDeleteEntry);
         }
 
         return contextMenu;
