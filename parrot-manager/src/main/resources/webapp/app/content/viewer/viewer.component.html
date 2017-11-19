@@ -2,9 +2,7 @@
 
     <div class="sidebar" id="sidebar">
 
-        <div class="search form-group">
-            <input type="text" class="form-control" placeholder="Search..." />
-        </div>
+        <search-box (filter)="updateSearchFilter($event)"></search-box>
 
         <div id="tree">
             <!--

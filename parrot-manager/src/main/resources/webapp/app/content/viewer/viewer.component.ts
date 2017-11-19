@@ -4,12 +4,14 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { DatabaseService } from 'app/service/database.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
+import { SearchFilterService } from 'app/service/searchFilter.service'
 
 @Component({
     moduleId: module.id,
     selector: 'viewer',
     templateUrl: 'viewer.component.html',
-    styleUrls: ['viewer.component.css']
+    styleUrls: ['viewer.component.css'],
+    providers: [SearchFilterService]
 })
 export class ViewerComponent
 {
@@ -30,10 +32,14 @@ export class ViewerComponent
         currentValue: [""]
     });
 
+    // Current search filter
+    public searchFilter: string = "";
+
     constructor(
         private databaseService: DatabaseService,
         private runtimeService: RuntimeService,
         private encryptedValueService: EncryptedValueService,
+        private searchFilterService: SearchFilterService,
         private renderer: Renderer,
         public fb: FormBuilder)
     {
@@ -207,9 +213,17 @@ export class ViewerComponent
 
     updateTree()
     {
-        // Fetch JSON data
+        // fetch json data
         var data = this.databaseService.getJson();
 
+        // apply search filter
+        var searchFilter = this.searchFilter;
+        if (searchFilter != null && searchFilter.length > 0)
+        {
+            data = this.searchFilterService.filterByName(data, searchFilter);
+        }
+
+        // update tree
         $(function(){
             // Update tree
             var tree = $("#tree").jstree(true);
@@ -321,6 +335,13 @@ export class ViewerComponent
 
         // Switch out of edit mode
         currentValue.data("edit", false);
+    }
+
+    updateSearchFilter(searchFilter)
+    {
+        console.log("search filter changed: " + searchFilter);
+        this.searchFilter = searchFilter;
+        this.updateTree();
     }
 
 }
