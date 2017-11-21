@@ -1,4 +1,14 @@
-#search
+.search-container
 {
+    position: relative;
     width: 20em;
+}
+
+.icon
+{
+    position: absolute;
+    cursor: pointer;
+    top: 1em;
+    right: 1em;
+    font-size: 0.7em;
 }

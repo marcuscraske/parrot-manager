@@ -185,3 +185,8 @@ header div a:focus
 {
     border-color: #0f0 !important;
 }
+
+.search-reset
+{
+    color: #000;
+}

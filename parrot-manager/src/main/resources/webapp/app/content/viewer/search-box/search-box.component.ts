@@ -39,4 +39,15 @@ export class SearchBoxComponent
         this.filter.emit(value);
     }
 
+    reset()
+    {
+        $("#search").val("");
+    }
+
+    isResetVisible()
+    {
+        var value = $("#search").val();
+        return value != null && value.length > 0;
+    }
+
 }
