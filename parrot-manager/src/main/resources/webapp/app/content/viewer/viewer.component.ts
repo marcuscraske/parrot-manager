@@ -151,12 +151,6 @@ export class ViewerComponent
                 plugins: [ "types", "dnd", "sort" ]
             });
 
-            // Always keep nodes open
-            $("#tree").on("refresh.jstree load.jstree", () => {
-                // Expand all nodes
-                $("#tree").jstree("open_all");
-            });
-
             // Hook tree for select event
             $("#tree").on("select_node.jstree", (e, data) => {
                 // Check button was definitely left click
@@ -177,6 +171,21 @@ export class ViewerComponent
 
                 // Update current node being edited
                 this.changeNodeBeingViewed(nodeId);
+            });
+
+            // Hook tree for collapse/expand events
+            $("#tree").on("open_node.jstree", (e, data) => {
+                var nodeId = data.node.id;
+                var node = this.databaseService.getNode(nodeId);
+                node.setLocalProperty("collapsed", "false");
+                console.log("node expanded - id: " + nodeId);
+            });
+
+            $("#tree").on("close_node.jstree", (e, data) => {
+                var nodeId = data.node.id;
+                var node = this.databaseService.getNode(nodeId);
+                node.setLocalProperty("collapsed", "true");
+                console.log("node collapsed - id: " + nodeId);
             });
 
             // Hook tree for move/dnd event

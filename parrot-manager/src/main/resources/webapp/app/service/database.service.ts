@@ -150,11 +150,16 @@ export class DatabaseService
         }
 
         // Build JSON to represent this node
+        var collapsed = ("true" == databaseNode.getLocalProperty("collapsed", "false"));
+
         var newJsonNode = {
             "id" : databaseNode.getId(),
             "text" : name != null ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
             "children" : [],
-            "icon" : "icon icon-folder"
+            "icon" : "icon icon-folder",
+            "state" : {
+                "opened" : !collapsed
+            }
         };
 
         // Add to JSON representation of parent

@@ -77,6 +77,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     private CryptoParamsJsonReaderWriter cryptoParamsJsonReaderWriter;
     private EncryptedValueJsonReaderWriter encryptedValueJsonReaderWriter;
     private DatabaseNodeHistoryReaderWriter databaseNodeHistoryReaderWriter;
+    private DatabaseNodePropertiesReaderWriter nodePropertiesReaderWriter;
 
     /**
      * Creates an instance.
@@ -88,6 +89,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         this.cryptoParamsJsonReaderWriter = new CryptoParamsJsonReaderWriter(cryptoParamsFactory);
         this.encryptedValueJsonReaderWriter = new EncryptedValueJsonReaderWriter();
         this.databaseNodeHistoryReaderWriter = new DatabaseNodeHistoryReaderWriter(encryptedValueJsonReaderWriter);
+        this.nodePropertiesReaderWriter = new DatabaseNodePropertiesReaderWriter();
     }
 
     @Override
@@ -211,6 +213,9 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             // -- History
             databaseNodeHistoryReaderWriter.read(jsonNode, child.getHistory());
 
+            // -- properties
+            nodePropertiesReaderWriter.read(jsonNode, child);
+
             // Append to current parent
             nodeParent.add(child);
         }
@@ -263,6 +268,9 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 
             // -- history
             databaseNodeHistoryReaderWriter.write(jsonChild, node.getHistory());
+
+            // -- properties
+            nodePropertiesReaderWriter.write(jsonChild, node);
 
             // Add to parent
             JsonArray rootChildren;

@@ -10,6 +10,8 @@ import java.util.UUID;
 
 /**
  * Provides ability to merge databases.
+ *
+ * Node properties are local only.
  */
 public class DatabaseMerger
 {
