@@ -177,11 +177,14 @@ public class DatabaseNodeTest
     @Test
     public void setValue_isReflected()
     {
+        // Given
+        given(encryptedValue2.clone()).willReturn(encryptedValue);
+
         // When
         node.setValue(encryptedValue2);
 
         // Then
-        assertEquals("Value has not changed", encryptedValue2, node.getValue());
+        assertEquals("Value has not changed", encryptedValue, node.getValue());
     }
 
     @Test

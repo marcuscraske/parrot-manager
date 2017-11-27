@@ -174,10 +174,13 @@ public class DatabaseNode
     /**
      * Updates value and marks database as dirty.
      *
-     * @param value encrypted value
+     * @param value encrypted value, nullable; this will be cloned
      */
     public void setValue(EncryptedValue value)
     {
+        // Create clone
+        EncryptedValue clone = (value != null ? value.clone() : null);
+
         // Add existing value to history
         if (this.value != null)
         {
@@ -185,7 +188,7 @@ public class DatabaseNode
         }
 
         // Update current value
-        this.value = value;
+        this.value = clone;
         setDirty();
     }
 

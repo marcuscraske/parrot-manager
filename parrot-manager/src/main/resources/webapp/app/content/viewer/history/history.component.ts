@@ -33,4 +33,9 @@ export class HistoryComponent
         this.currentNode.getHistory().remove(encryptedValue);
     }
 
+    restore(encryptedValue)
+    {
+        this.currentNode.setValue(encryptedValue);
+    }
+
 }

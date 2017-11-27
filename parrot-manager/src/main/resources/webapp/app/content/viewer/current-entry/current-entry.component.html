@@ -21,7 +21,7 @@
 <!-- Value Options -->
 <div class="form-group options">
     <button class="btn btn-primary" (click)="saveValue.emit()">
-        <span class="icon icon-disk"></span>
+        <span class="icon icon-floppy-disk"></span>
         Save Value
     </button>
     <button class="btn btn-default" (click)="hideValue()">
@@ -36,6 +36,7 @@
     </button>
     <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteCurrentEntry(currentNode.getId())" title="Delete current entry">
         <span class="icon icon-cross"></span>
+        Delete
     </button>
 </div>
 

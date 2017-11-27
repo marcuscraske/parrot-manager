@@ -134,7 +134,7 @@ public class DatabaseMerger
             if (isDifferent(dest.getValue(), src.getValue()))
             {
                 EncryptedValue srcValue = src.getValue();
-                dest.setValue(srcValue != null ? srcValue.clone() : null);
+                dest.setValue(srcValue.clone());
                 actionLog.add(dest, "value updated");
             }
 
