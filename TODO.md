@@ -5,6 +5,7 @@
 
 ## Features / Changes
 ### Upcoming
+- When viewing backup, have toolbar or large button to restore permanently.
 - parent pom (cleanup)
 - Implement generic key combos
   - ctrl+o for open

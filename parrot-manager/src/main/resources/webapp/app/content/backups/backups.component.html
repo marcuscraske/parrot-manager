@@ -7,7 +7,8 @@
 </p>
 
 <p class="text-center">
-    <button class="btn btn-default btn-lg" (click)="create()">
+    <button class="btn btn-primary btn-lg" (click)="create()">
+        <span class="icon icon-floppy-disk"></span>
         Backup Now
     </button>
 </p>
@@ -22,10 +23,10 @@
         <table class="table">
             <tr>
                 <th class="text-center">
-                    created
+                    Created
                 </th>
                 <th>
-                    options
+                    Options
                 </th>
             </tr>
             <tr *ngFor="let file of (backupFiles | orderBy: ['-getName()']); trackBy: trackChildren">
@@ -35,6 +36,9 @@
                 <td>
                     <button class="btn btn-default" (click)="open(file)">
                         Open
+                    </button>
+                    <button class="btn btn-default" (click)="restore(file)">
+                        Restore
                     </button>
                     <button class="btn btn-danger" (click)="delete(file)">
                         Delete

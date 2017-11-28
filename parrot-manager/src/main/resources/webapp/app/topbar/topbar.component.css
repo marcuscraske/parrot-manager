@@ -9,6 +9,7 @@ header
     background: #333;
     color: #ccc;
     overflow: hidden;
+    z-index: 99999;
 }
 
 /* Used to create space between top of page and content; this is due to using fixed positioning on actual header */

@@ -1,8 +1,10 @@
 <div class="form-group">
     <button class="btn btn-default" (click)="addNewEntry()">
+        <span class="icon icon-plus"></span>
         Add New Entry
     </button>
     <button class="btn btn-danger" (click)="deleteSelected()">
+        <span class="icon icon-cross"></span>
         Delete Selected
     </button>
 </div>
@@ -43,6 +45,7 @@
         </td>
         <td>
             <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())" title="View entry">
+                <span class="icon icon-folder"></span>
                 View
             </button>
             <copy-clipboard [encryptedValue]="node.getValue()"></copy-clipboard>

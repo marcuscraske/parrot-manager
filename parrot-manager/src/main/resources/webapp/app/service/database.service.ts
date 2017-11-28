@@ -64,7 +64,10 @@ export class DatabaseService
         }
 
         // Invoking callback with message
-        successCallback(message);
+        if (successCallback != null)
+        {
+            successCallback(message);
+        }
     }
 
     save() : string
