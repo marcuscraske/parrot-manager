@@ -287,6 +287,12 @@ export class ViewerComponent
         $(function(){
             // Update tree
             var tree = $("#tree").jstree(true);
+
+            // wipe tree; seems to be a bug with jstree where state is lost
+            tree.settings.core.data = { };
+            tree.refresh();
+
+            // restore data
             tree.settings.core.data = data;
             tree.refresh();
         });
