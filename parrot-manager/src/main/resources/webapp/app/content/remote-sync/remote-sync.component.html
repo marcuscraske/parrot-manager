@@ -12,6 +12,7 @@
         <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
             <td>
                 <a class="btn btn-primary" (click)="sync(node.getId(), false)">
+                    <span class="icon icon-download"></span>
                     Sync
                 </a>
             </td>
@@ -23,12 +24,15 @@
             </td>
             <td>
                 <a class="btn btn-primary" (click)="sync(node.getId(), true)" title="Asks for any required auth (database password, user pass, key pass)">
+                    <span class="icon icon-lock"></span>
                     Auth Sync
                 </a>
                 <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
+                    <span class="icon icon-pencil"></span>
                     Edit
                 </a>
                 <a class="btn btn-danger" (click)="node.remove();">
+                    <span class="icon icon-cross"></span>
                     Delete
                 </a>
             </td>
@@ -80,9 +84,11 @@
 
 <div class="form-group">
     <button class="btn btn-default" (click)="copyToClipboard()">
+        <span class="icon icon-clipboard"></span>
         Copy to Clipboard
     </button>
     <button class="btn btn-default" (click)="remoteSyncChangeLogService.clear()">
+        <span class="icon icon-bin"></span>
         Clear
     </button>
 </div>
