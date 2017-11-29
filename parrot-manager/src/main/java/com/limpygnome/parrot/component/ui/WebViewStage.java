@@ -60,7 +60,7 @@ public class WebViewStage extends Stage
         setScene(scene);
         setTitle("parrot manager");
         setWidth(1200.0);
-        setHeight(350.0);
+        setHeight(550.0);
         setMaximized(true);
 
         // setup icons

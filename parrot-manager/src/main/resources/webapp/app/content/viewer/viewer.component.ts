@@ -20,6 +20,10 @@ export class ViewerComponent
     private databaseEntryDeleteEvent: Function;
     private databaseEntryAddEvent: Function;
     private databaseClipboardEvent: Function;
+    private databaseEntryExpandEvent: Function;
+    private databaseEntryExpandAllEvent: Function;
+    private databaseEntryCollapseEvent: Function;
+    private databaseEntryCollapseAllEvent: Function;
 
     // The current node being edited
     public currentNode: any;
@@ -99,6 +103,49 @@ export class ViewerComponent
             // Set on clipboard
             this.runtimeService.setClipboard(decryptedValue);
         });
+
+        this.databaseEntryExpandEvent = renderer.listenGlobal("document", "databaseEntryExpand", (event) => {
+            console.log("databaseEntryExpand event raised");
+
+            var targetNode = event.data;
+            targetNode.setLocalProperty("collapsed", "false");
+            this.updateTree();
+        });
+
+        this.databaseEntryExpandAllEvent = renderer.listenGlobal("document", "databaseEntryExpandAll", (event) => {
+            console.log("databaseEntryExpandAll event raised");
+
+            var targetNode = event.data;
+            this.setLocalPropertyRecurse(targetNode, "collapsed", "false");
+            this.updateTree();
+        });
+
+        this.databaseEntryCollapseEvent = renderer.listenGlobal("document", "databaseEntryCollapse", (event) => {
+            console.log("databaseEntryCollapse event raised");
+
+            var targetNode = event.data;
+            targetNode.setLocalProperty("collapsed", "true");
+            this.updateTree();
+        });
+
+        this.databaseEntryCollapseAllEvent = renderer.listenGlobal("document", "databaseEntryCollapseAll", (event) => {
+            console.log("databaseEntryCollapseAll event raised");
+
+            var targetNode = event.data;
+            this.setLocalPropertyRecurse(targetNode, "collapsed", "true");
+            this.updateTree();
+        });
+    }
+
+    setLocalPropertyRecurse(parentNode, key, value)
+    {
+        parentNode.setLocalProperty(key, value);
+
+        var childNodes = parentNode.getChildren();
+        for (var i = 0; i < childNodes.length; i++)
+        {
+            this.setLocalPropertyRecurse(childNodes[i], key, value);
+        }
     }
 
     ngOnInit()
@@ -126,6 +173,10 @@ export class ViewerComponent
         this.databaseEntryDeleteEvent();
         this.databaseEntryAddEvent();
         this.databaseClipboardEvent();
+        this.databaseEntryExpandEvent();
+        this.databaseEntryExpandAllEvent();
+        this.databaseEntryCollapseEvent();
+        this.databaseEntryCollapseAllEvent();
     }
 
     initTree()

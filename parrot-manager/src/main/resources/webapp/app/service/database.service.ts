@@ -153,7 +153,8 @@ export class DatabaseService
         }
 
         // Build JSON to represent this node
-        var collapsed = ("true" == databaseNode.getLocalProperty("collapsed", "false"));
+        var collapsed = databaseNode.getLocalProperty("collapsed", "false");
+        var opened = ("false" == collapsed);
 
         var newJsonNode = {
             "id" : databaseNode.getId(),
@@ -161,7 +162,7 @@ export class DatabaseService
             "children" : [],
             "icon" : "icon icon-folder",
             "state" : {
-                "opened" : !collapsed
+                "opened" : opened
             }
         };
 
