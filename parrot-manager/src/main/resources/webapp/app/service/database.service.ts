@@ -32,13 +32,29 @@ export class DatabaseService
             // Prompt for database password...
             console.log("prompting for database password... - path: " + path);
 
-            bootbox.prompt({
+            var box = bootbox.prompt({
                 title: "Enter database password:",
                 inputType: "password",
                 callback: (password) => {
                     console.log("password entered, opening database file...");
                     this.openWithPassword(path, password, successCallback);
+                },
+                buttons: {
+                    cancel: {
+                        label: "<span class='icon icon-cross'></span> Cancel"
+                    },
+                    confirm: {
+                        label: "<span class='icon icon-unlocked'></span> Open"
+                    }
                 }
+            });
+
+            // center dialogue
+            box.css({
+              'top': '50%',
+              'margin-top': function () {
+                return -(box.height() / 2);
+              }
             });
         }
         else

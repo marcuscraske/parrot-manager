@@ -123,8 +123,6 @@ export class RemoteSyncSshComponent {
     {
         var form = this.openForm;
 
-        console.log("#### " + form.controls["port"].valid + " ### " + form.value["proxyPort"]);
-
         if (form.valid)
         {
             // Create download options

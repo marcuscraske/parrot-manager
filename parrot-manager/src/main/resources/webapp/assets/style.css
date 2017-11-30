@@ -106,3 +106,8 @@ a
     color: #333;
     cursor: pointer !important;
 }
+
+.modal-dialog
+{
+    box-shadow: 0 0 2em #444;
+}

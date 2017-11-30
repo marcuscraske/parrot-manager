@@ -1,7 +1,7 @@
 # TODO / Roadmap
 
 ## Bugs
-- Saving SSH config causes page to reload
+- no known bugs
 
 ## Features / Changes
 ### Upcoming
