@@ -1,5 +1,5 @@
 {
-  "name": "angular-quickstart",
+  "name": "parrot",
   "version": "1.0.0",
   "scripts": {
     "start": "tsc && concurrently \"tsc -w\" \"lite-server\" ",
@@ -14,15 +14,15 @@
     }
   ],
   "dependencies": {
-    "@angular/common": "5.0.0",
-    "@angular/compiler": "5.0.0",
-    "@angular/core": "5.0.0",
-    "@angular/forms": "5.0.0",
-    "@angular/http": "5.0.0",
-    "@angular/platform-browser": "5.0.0",
-    "@angular/platform-browser-dynamic": "5.0.0",
-    "@angular/router": "5.0.0",
-    "@angular/upgrade": "5.0.0",
+    "@angular/common": "5.0.3",
+    "@angular/compiler": "5.0.3",
+    "@angular/core": "5.0.3",
+    "@angular/forms": "5.0.3",
+    "@angular/http": "5.0.3",
+    "@angular/platform-browser": "5.0.3",
+    "@angular/platform-browser-dynamic": "5.0.3",
+    "@angular/router": "5.0.3",
+    "@angular/upgrade": "5.0.3",
     "angular-in-memory-web-api": "0.5.1",
     "bootbox": "4.4.0",
     "bootstrap": "3.3.7",
@@ -37,9 +37,9 @@
   },
   "devDependencies": {
     "@types/core-js": "0.9.43",
-    "@types/node": "8.0.47",
-    "concurrently": "3.5.0",
+    "@types/node": "8.0.53",
+    "concurrently": "3.5.1",
     "lite-server": "2.3.0",
-    "typescript": "2.5.3"
+    "typescript": "2.6.2"
   }
 }

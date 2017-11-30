@@ -29,7 +29,7 @@ export class AppComponent
 {
 
     constructor(
-        keyBindsService: KeyBindsService,
+        private keyBindsService: KeyBindsService,
         private themeService: ThemeService,
         private settingsService: SettingsService
     )
