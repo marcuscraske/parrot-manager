@@ -15,17 +15,19 @@ export class SettingsService {
         var settings = this.settingsService.getSettings();
 
         var remoteSyncInterval = settings.getRemoteSyncInterval().getValue();
+        var inactivityTimeout = settings.getInactivityTimeout().getValue();
 
         var json = {
             "recentFilesEnabled" : settings.getRecentFilesEnabled().getValue(),
             "recentFilesOpenLastOnStartup" : settings.getRecentFilesOpenLastOnStartup().getValue(),
             "automaticBackupsOnSave" : settings.getAutomaticBackupsOnSave().getValue(),
             "automaticBackupsRetained" : settings.getAutomaticBackupsRetained().getValue(),
-            "remoteSyncInterval" : remoteSyncInterval != null ? remoteSyncInterval / 60 / 1000 : null,
+            "remoteSyncInterval" : (remoteSyncInterval != null ? remoteSyncInterval / 60 / 1000 : null),
             "remoteSyncIntervalEnabled" : settings.getRemoteSyncIntervalEnabled().getValue(),
             "remoteSyncOnOpeningDatabase" : settings.getRemoteSyncOnOpeningDatabase().getValue(),
             "remoteSyncOnChange" : settings.getRemoteSyncOnChange().getValue(),
-            "theme" : settings.getTheme().getValue()
+            "theme" : settings.getTheme().getValue(),
+            "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null)
         };
 
         return json;
@@ -68,6 +70,9 @@ export class SettingsService {
         );
         settings.getTheme().setValue(
             json.theme
+        );
+        settings.getInactivityTimeout().setValueLong(
+            (json.inactivityTimeout != null ? json.inactivityTimeout * 60 * 1000 : null)
         );
 
         // Save

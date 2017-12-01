@@ -18,6 +18,7 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> remoteSyncOnOpeningDatabase;
     private SettingsValue<Boolean> remoteSyncOnChange;
     private SettingsValue<String> theme;
+    private SettingsValue<Long> inactivityTimeout;
 
     public Settings()
     {
@@ -30,6 +31,7 @@ public class Settings implements Serializable
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
         this.remoteSyncOnChange = new SettingsValue<>(true);
         this.theme = new SettingsValue<>("dark");
+        this.inactivityTimeout = new SettingsValue<>(0L);
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()
@@ -76,6 +78,11 @@ public class Settings implements Serializable
         return theme;
     }
 
+    public SettingsValue<Long> getInactivityTimeout()
+    {
+        return inactivityTimeout;
+    }
+
     @JsonIgnore
     @Override
     public String toString()
@@ -89,6 +96,8 @@ public class Settings implements Serializable
                 ", remoteSyncIntervalEnabled=" + remoteSyncIntervalEnabled +
                 ", remoteSyncOnOpeningDatabase=" + remoteSyncOnOpeningDatabase +
                 ", remoteSyncOnChange=" + remoteSyncOnChange +
+                ", theme=" + theme +
+                ", inactivityTimeout=" + inactivityTimeout +
                 '}';
     }
 

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { KeyBindsService } from 'app/service/global/keyBinds.service'
+import { InactivityWatcherService } from 'app/service/global/inactivityWatcher.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
@@ -15,6 +16,7 @@ import { ThemeService } from 'app/service/theme.service'
   templateUrl: '/app/app.component.html',
   providers: [
         KeyBindsService,
+        InactivityWatcherService,
         RuntimeService,
         DatabaseService,
         BackupService,
@@ -30,6 +32,7 @@ export class AppComponent
 
     constructor(
         private keyBindsService: KeyBindsService,
+        private inactivityWatcherService: InactivityWatcherService,
         private themeService: ThemeService,
         private settingsService: SettingsService
     )

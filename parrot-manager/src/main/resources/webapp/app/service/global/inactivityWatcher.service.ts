@@ -2,7 +2,7 @@ import { Injectable, Renderer } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DatabaseService } from 'app/service/database.service'
-import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
+import { SettingsService } from 'app/service/settings.service'
 
 @Injectable()
 export class InactivityWatcherService
@@ -10,13 +10,13 @@ export class InactivityWatcherService
     private mouseMoveEvent: any = null;
     private keyDownEvent: any = null;
 
-    private timeout: int = 0;
-
     private inactivityTimeoutHandle: any = null;
 
     constructor(
         private databaseService: DatabaseService,
-        private renderer: Renderer
+        private settingsService: SettingsService,
+        private renderer: Renderer,
+        private router: Router
     ) {
         // setup listeners
         this.mouseMoveEvent = renderer.listenGlobal("window", "mouseover", (event) => {
@@ -25,10 +25,6 @@ export class InactivityWatcherService
         this.keyDownEvent = renderer.listenGlobal("window", "keydown", (event) => {
             this.reset();
         });
-
-        // read timeout setting
-        // TODO timeout setting
-        this.timeout = 5000;
     }
 
     reset()
@@ -37,23 +33,35 @@ export class InactivityWatcherService
         if (this.inactivityTimeoutHandle != null)
         {
             clearTimeout(this.inactivityTimeoutHandle);
+            console.debug("inactivity timer reset");
         }
 
         // setup new timeout
-        if (this.timeout > 0)
+        var timeout = this.settingsService.fetch("inactivityTimeout");
+
+        if (timeout != null && timeout > 0)
         {
+            // convert back to milliseconds
+            timeout = timeout * 60 * 1000;
+
+            // setup timeout
             this.inactivityTimeoutHandle = setTimeout(() => {
                 this.trigger();
-            }, this.timeout);
+            }, timeout);
         }
     }
 
     trigger()
     {
+        console.debug("inactivity timer triggered");
+
         if (this.databaseService.isOpen())
         {
             console.log("inactivity timeout occurred, closing database");
             this.databaseService.close();
+
+            // navigate to open page
+            this.router.navigate(["/open"]);
         }
     }
 

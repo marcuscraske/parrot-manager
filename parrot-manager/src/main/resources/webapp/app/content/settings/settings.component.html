@@ -19,7 +19,7 @@
 
     <div *ngIf="currentTab == 'global'">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -59,7 +59,7 @@
                 </div>
 
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -96,10 +96,38 @@
                 </div>
 
             </div>
+            <div class="col-md-4">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            Security
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="form-control-label" for="inactivityTimeout">
+                                Minutes of inactivity to trigger database close
+                            </label>
+                            <input id="inactivityTimeout"
+                                   type="number"
+                                   class="form-control"
+                                   placeholder="Number of minutes"
+                                   formControlName="inactivityTimeout"
+                                   [(ngModel)]="settingsForm.value['inactivityTimeout']"
+                            />
+                            <small class="form-text text-muted">
+                                Leave as zero to disable.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -116,10 +144,13 @@
                             <input id="remoteSyncInterval"
                                    type="number"
                                    class="form-control"
-                                   placeholder="Leave empty to disable"
+                                   placeholder="Number of minutes"
                                    formControlName="remoteSyncInterval"
                                    [(ngModel)]="settingsForm.value['remoteSyncInterval']"
                             />
+                            <small class="form-text text-muted">
+                                Leave as zero to disable.
+                            </small>
                         </div>
                         <div class="form-group">
                             <label class="checkbox-inline">
@@ -156,7 +187,7 @@
                 </div>
 
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
