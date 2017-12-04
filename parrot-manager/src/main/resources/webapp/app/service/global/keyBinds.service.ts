@@ -45,17 +45,7 @@ export class KeyBindsService
                 console.log("redirecting to open page...");
                 this.router.navigate(["/open"]);
             }
-
-            // ctrl+n for new child node
-
-            // ctrl+u to navigate up a level
-
-            // ctrl+e to edit current node
-
-            // ctrl+c to copy current node
         }
-
-        console.log("KEY DOWN - " + ctrlKey + " - " + key);
     }
 
 }
