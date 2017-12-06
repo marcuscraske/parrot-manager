@@ -39,12 +39,14 @@
         </tr>
     </table>
 
-    <div class="form-group">
+    <div class="form-group text-center">
         <button class="btn btn-default" routerLink="/remote-sync/ssh/new">
             <span class="icon icon-pencil2"></span>
             Add New
         </button>
-        <button class="btn btn-default" *ngIf="isTargets()" (click)="syncAll()">
+    </div>
+    <div class="form-group text-center">
+        <button class="btn btn-lg btn-primary" *ngIf="isTargets()" (click)="syncAll()">
             <span class="icon icon-stack"></span>
             Sync All
         </button>
