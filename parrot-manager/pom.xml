@@ -178,49 +178,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Build exe wrapper for Windows -->
-            <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.21</version>
-                <executions>
-                    <execution>
-                        <id>l4j-gui</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>target/parrot.exe</outfile>
-                            <jar>target/parrot.jar</jar>
-                            <dontWrapJar>false</dontWrapJar>
-                            <errTitle>Error in launch4j plugin</errTitle>
-                            <classPath>
-                                <mainClass>com.limpygnome.parrot.Program</mainClass>
-                            </classPath>
-                            <jre>
-                                <minVersion>1.8.0</minVersion>
-                                <initialHeapSize>512</initialHeapSize>
-                                <maxHeapSize>1024</maxHeapSize>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>1.0.0.0</txtFileVersion>
-                                <fileDescription>des</fileDescription>
-                                <copyright>MIT License</copyright>
-                                <companyName>comp</companyName>
-                                <productVersion>3.0.0.0</productVersion>
-                                <txtProductVersion>${project.version}</txtProductVersion>
-                                <productName>Parrot</productName>
-                                <internalName>Parrot</internalName>
-                                <originalFilename>parrot.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- Ensures MANIFEST.MF entries present when creating JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -249,6 +206,38 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+
+                    <!-- create dmg for mac; plugin only works from artifact module its self, replace in future -->
+                    <plugin>
+                        <groupId>sh.tak.appbundler</groupId>
+                        <artifactId>appbundle-maven-plugin</artifactId>
+                        <version>1.2.0</version>
+                        <configuration>
+                            <mainClass>com.limpygnome.parrot.Program</mainClass>
+                            <generateDiskImageFile>true</generateDiskImageFile>
+                            <!--<iconFile>${project.basedir}/src/main/resources/icons/parrot.icns</iconFile>-->
+                            <bundleName>parrot</bundleName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>bundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

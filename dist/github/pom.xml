@@ -43,6 +43,7 @@
                                 <checksum file="../jar/target/parrot-jar-${project.version}.tar.gz" property="dist.jar.tar.md5" />
                                 <checksum file="../jar/target/parrot-jar-${project.version}.zip" property="dist.jar.zip.md5" />
                                 <checksum file="../windows/target/parrot-windows-${project.version}.zip" property="dist.windows.md5" />
+                                <checksum file="../../parrot-manager/target/parrot-mac-${project.version}.dmg" property="dist.mac.md5" />
                             </target>
                         </configuration>
                     </execution>
@@ -71,6 +72,7 @@ MD5 checksums:
 * parrot-jar-${project.version}.tar.gz   : ${dist.jar.tar.md5}
 * parrot-jar-${project.version}.zip      : ${dist.jar.zip.md5}
 * parrot-windows-${project.version}.zip  : ${dist.windows.md5}
+* parrot-mac-${project.version}.dmg      : ${dist.mac.md5}
 </description>
                     <releaseName>${project.version}</releaseName>
                     <tag>${project.version}</tag>
@@ -82,6 +84,7 @@ MD5 checksums:
                                 <include>jar/target/parrot-jar-${project.version}.tar.gz</include>
                                 <include>jar/target/parrot-jar-${project.version}.zip</include>
                                 <include>windows/target/parrot-windows-${project.version}.zip</include>
+                                <include>../parrot-manager/target/parrot-mac-${project.version}.dmg</include>
                             </includes>
                         </fileSet>
                     </fileSets>
