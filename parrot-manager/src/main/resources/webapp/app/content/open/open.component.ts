@@ -8,7 +8,8 @@ import { Router } from '@angular/router';
 @Component({
     moduleId: module.id,
     templateUrl: 'open.component.html',
-    providers: [RecentFileService, SettingsService]
+    providers: [RecentFileService, SettingsService],
+    styleUrls: ['open.component.css']
 })
 export class OpenComponent {
 
@@ -27,7 +28,7 @@ export class OpenComponent {
     ngOnInit()
     {
         // Fetch recently opened files
-        this.recentFiles = this.recentFileService.fetch();
+        this.refreshRecentFiles();
 
         // Open database on startup if there's recent files and enabled...
         if (OpenComponent.isStartup && this.recentFiles.length > 0)
@@ -42,6 +43,11 @@ export class OpenComponent {
 
         // Set startup flag, hence the above will only occur on startup
         OpenComponent.isStartup = false;
+    }
+
+    refreshRecentFiles()
+    {
+        this.recentFiles = this.recentFileService.fetch();
     }
 
     chooseDatabaseFile() : void
@@ -69,6 +75,15 @@ export class OpenComponent {
             }
 
         });
+    }
+
+    deleteRecentFile(recentFile)
+    {
+        // delete it...
+        this.recentFileService.delete(recentFile);
+
+        // refresh list
+        this.refreshRecentFiles();
     }
 
     trackChildren(index, recentFile)

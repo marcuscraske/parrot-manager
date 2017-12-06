@@ -1,0 +1,9 @@
+.btn-group
+{
+    display: flex;
+}
+
+.btn-file
+{
+    flex: 1;
+}

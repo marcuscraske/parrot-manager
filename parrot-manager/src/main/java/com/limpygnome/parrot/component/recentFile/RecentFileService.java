@@ -109,6 +109,23 @@ public class RecentFileService
         }
     }
 
+    public synchronized void delete(RecentFile recentFile) throws IOException
+    {
+        if (recentFile != null)
+        {
+            // drop item
+            recentFiles.remove(recentFile);
+            LOG.debug("deleted recent file - {}", recentFile);
+
+            // persist collection
+            saveToFile();
+        }
+        else
+        {
+            LOG.warn("attempted to delete null recent file");
+        }
+    }
+
     /**
      * clears recent files and persists empty state to preferences file.
      */

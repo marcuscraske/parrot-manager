@@ -22,6 +22,11 @@ export class RecentFileService {
         return recentFiles.length > 0;
     }
 
+    delete(recentFile)
+    {
+        this.recentFileService.delete(recentFile);
+    }
+
     clear()
     {
         this.recentFileService.clear();

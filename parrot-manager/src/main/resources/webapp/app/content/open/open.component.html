@@ -36,16 +36,21 @@
         recent files
     </h2>
 
-    <div class="form-group" *ngFor="let recentFile of recentFiles; trackBy: trackChildren">
-        <button class="form-control btn btn-default" (click)="openFile(recentFile.getFullPath())">
-            {{ recentFile.getFileName() }}
-        </button>
-    </div>
-
     <div class="form-group">
         <span class="help-block">
             You can configure automatically opening the last recent file in <a href="/settings" routerLink="/settings">settings</a>.
         </span>
+    </div>
+
+    <div *ngFor="let recentFile of recentFiles; trackBy: trackChildren">
+        <p class="btn-group form-group">
+            <button class="btn btn-default btn-file" (click)="openFile(recentFile.getFullPath())">
+                {{ recentFile.getFileName() }}
+            </button>
+            <button class="btn btn-danger" title="Remove item from history" (click)="deleteRecentFile(recentFile)">
+                <span class="icon icon-cross"></span>
+            </button>
+        </p>
     </div>
 
 </div>
