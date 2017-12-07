@@ -56,7 +56,39 @@ public class FileComponent
     {
         // TODO: need to consider windows
         String homeDir = System.getProperty("user.home");
-        File result = new File(homeDir + "/.config/parrot-manager");
+        String os = System.getProperty("os.name");
+
+        // determine location based on operating system
+        File result = null;
+
+        if (os != null)
+        {
+            os = os.toLowerCase();
+
+            if (os.contains("win"))
+            {
+                String appData = System.getProperty("APPDATA");
+
+                if (appData != null && appData.length() > 0)
+                {
+                    result = new File(appData + "\\parrot-manager");
+                }
+                else
+                {
+                    result = new File(homeDir + "\\Local Settings\\Application Data\\parrot-manager");
+                }
+            }
+            else if (os.contains("mac"))
+            {
+                result = new File(homeDir + "/Preferences/parrot-manager");
+            }
+        }
+
+        // default to linux dir when unknown
+        if (result == null)
+        {
+            result = new File(homeDir + "/.config/parrot-manager");
+        }
 
         // Check the root exists, otherwise make it
         if (!result.exists())

@@ -14,7 +14,6 @@
         <module>parrot-library-json</module>
         <module>parrot-manager-lib</module>
         <module>parrot-manager</module>
-        <module>dist</module>
     </modules>
 
     <profiles>
@@ -22,6 +21,15 @@
             <id>dev</id>
             <modules>
                 <module>parrot-manager-dev</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>dist</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>dist</module>
             </modules>
         </profile>
     </profiles>
