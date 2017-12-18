@@ -2,10 +2,15 @@ package com.limpygnome.parrot.dev;
 
 import com.limpygnome.parrot.lib.WebViewDebug;
 import com.mohamnag.fxwebview_debugger.DevToolsDebuggerServer;
+import com.sun.javafx.scene.web.Debugger;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Sets up debugging for a {@link WebView} instance.
@@ -25,7 +30,14 @@ public class ChromeWebViewDebug implements WebViewDebug
     {
         try
         {
-            DevToolsDebuggerServer.startDebugServer(webView.getEngine().impl_getDebugger(), WEBVIEW_DEBUG_PORT);
+            Class webEngineClazz = WebEngine.class;
+
+            Field debuggerField = webEngineClazz.getDeclaredField("debugger");
+            debuggerField.setAccessible(true);
+
+            Debugger debugger = (Debugger) debuggerField.get(webView.getEngine());
+            DevToolsDebuggerServer.startDebugServer(debugger, WEBVIEW_DEBUG_PORT);
+
             LOG.debug("Debugging available: chrome-devtools://devtools/bundled/inspector.html?ws=localhost:51742/");
         }
         catch (Exception e)

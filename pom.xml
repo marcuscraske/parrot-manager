@@ -19,6 +19,9 @@
     <profiles>
         <profile>
             <id>dev</id>
+            <properties>
+                <java.compiler.version>1.9</java.compiler.version>
+            </properties>
             <modules>
                 <module>parrot-manager-dev</module>
             </modules>
@@ -28,10 +31,29 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <java.compiler.version>1.8</java.compiler.version>
+            </properties>
             <modules>
                 <module>dist</module>
             </modules>
         </profile>
     </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                    <configuration>
+                        <source>${java.compiler.version}</source>
+                        <target>${java.compiler.version}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>

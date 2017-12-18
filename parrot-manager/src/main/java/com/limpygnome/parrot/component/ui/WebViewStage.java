@@ -2,8 +2,9 @@ package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.lib.WebViewDebug;
 import com.limpygnome.parrot.lib.init.WebViewInit;
-import com.sun.javafx.webkit.WebConsoleListener;
 import java.io.InputStream;
+
+//import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
@@ -29,6 +30,7 @@ public class WebViewStage extends Stage
 
     private WebStageInitService webStageInitService;
     private ContextMenuHandler contextMenuHandler;
+    private WebViewConsole console;
 
     // JavaFX controls
     private Scene scene;
@@ -91,10 +93,9 @@ public class WebViewStage extends Stage
     {
         WebEngine engine = webView.getEngine();
 
-        // hook to print console messages
-        WebConsoleListener.setDefaultListener((webView1, message, lineNumber, sourceId) -> {
-            LOG.info("web console message - src: {}, line num: {}, message: {}", sourceId, lineNumber, message);
-        });
+        // override to provide basic logging of console messages
+        console = new WebViewConsole();
+        console.setup(this);
 
         // monitor navigation
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
