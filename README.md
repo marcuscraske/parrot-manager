@@ -32,6 +32,8 @@ Supports Linux, Windows and Mac.
 - Send values as keys to other applications
 - Modern UI
 
+Upcoming features can be seen on the [roadmap](roadmap.md).
+
 
 ## Download
 Binaries are available on the [releases](https://github.com/limpygnome/parrot-manager/releases) page.

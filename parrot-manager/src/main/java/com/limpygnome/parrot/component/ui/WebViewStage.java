@@ -2,11 +2,14 @@ package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.lib.WebViewDebug;
 import com.limpygnome.parrot.lib.init.WebViewInit;
+
+import java.awt.*;
 import java.io.InputStream;
 
 //import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -64,6 +67,16 @@ public class WebViewStage extends Stage
         setWidth(1200.0);
         setHeight(550.0);
         setMaximized(true);
+
+        // fix for "maximizing" on osx
+        String os = System.getProperty("os.name");
+
+        if (os != null && os.toLowerCase().contains("mac"))
+        {
+            Dimension displayBounds = Toolkit.getDefaultToolkit().getScreenSize();
+            setWidth(displayBounds.width);
+            setHeight(displayBounds.height);
+        }
 
         // setup icons
         addIcon("/icons/parrot-icon.png");
