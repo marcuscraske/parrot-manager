@@ -27,7 +27,7 @@
                             <tasks>
 
                                 <!-- Copy pre-made DEBIAN dir -->
-                                <copy todir="${project.build.directory}/parrot-manager-${project.version}">
+                                <copy todir="${project.build.directory}/parrot-manager-linux-${project.version}">
                                     <fileset dir="${project.basedir}/src/main/resources/parrot-manager" />
                                     <filterset>
                                         <filter token="VERSION" value="${project.version}" />
@@ -35,14 +35,14 @@
                                 </copy>
 
                                 <!-- Copy executable -->
-                                <mkdir dir="${project.build.directory}/parrot-manager-${project.version}/usr/bin" />
+                                <mkdir dir="${project.build.directory}/parrot-manager-linux-${project.version}/usr/bin" />
                                 <copy file="${project.basedir}/../../parrot-manager/target/parrot.jar"
-                                      tofile="${project.build.directory}/parrot-manager-${project.version}/usr/bin/parrot.jar" />
+                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}/usr/bin/parrot.jar" />
 
                                 <!-- Copy icon -->
-                                <mkdir dir="${project.build.directory}/parrot-manager-${project.version}/usr/share/parrot-manager" />
+                                <mkdir dir="${project.build.directory}/parrot-manager-linux-${project.version}/usr/share/parrot-manager" />
                                 <copy file="${project.basedir}/../../parrot-manager/src/main/resources/icons/parrot-icon-512.png"
-                                      tofile="${project.build.directory}/parrot-manager-${project.version}/usr/share/parrot-manager/parrot-icon.png"
+                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}/usr/share/parrot-manager/parrot-icon.png"
                                 />
 
                             </tasks>
@@ -117,8 +117,8 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-manager-${project.version}.deb.md5.txt</include>
-                                <include>parrot-manager-${project.version}.deb</include>
+                                <include>parrot-manager-linux-${project.version}.deb.md5.txt</include>
+                                <include>parrot-manager-linux-${project.version}.deb</include>
                             </includes>
                         </fileSet>
                     </fileSets>
