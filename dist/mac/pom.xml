@@ -63,7 +63,6 @@
                 </configuration>
                 <executions>
 
-                    <!-- force target directory to be created -->
                     <execution>
                         <id>copy-icons</id>
                         <phase>generate-sources</phase>

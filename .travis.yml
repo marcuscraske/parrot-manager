@@ -14,5 +14,5 @@ os:
   - linux
   - osx
 script:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then     mvn clean package -Pjar,windows,mac     fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then   mvn clean package -Pjar,windows,linux   fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then     mvn clean package -Pjar,windows-standalone,mac     fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then   mvn clean package -Pjar,windows-standalone,linux   fi
