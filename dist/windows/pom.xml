@@ -14,37 +14,15 @@
     <packaging>pom</packaging>
 
     <build>
-        <finalName>parrot-windows-${project.version}</finalName>
+        <finalName>parrot-manager-windows-${project.version}</finalName>
         <plugins>
-
-            <!-- force target directory to be created -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <tasks>
-                                <mkdir dir="target"/>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- build exe wrapper for Windows -->
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.21</version>
                 <executions>
                     <execution>
-                        <id>l4j-gui</id>
                         <phase>package</phase>
                         <goals>
                             <goal>launch4j</goal>
@@ -73,7 +51,7 @@
                                 <txtProductVersion>${project.version}</txtProductVersion>
                                 <productName>parrot manager</productName>
                                 <internalName>parrot manager</internalName>
-                                <originalFilename>parrot.exe</originalFilename>
+                                <originalFilename>parrot-manager.exe</originalFilename>
                             </versionInfo>
                         </configuration>
                     </execution>
@@ -83,7 +61,6 @@
             <!-- add exe to zip file -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/assembly/windows.xml</descriptor>
@@ -92,13 +69,75 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>create-archive</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+
+                    <!-- force target directory to be created -->
+                    <execution>
+                        <id>create-target-dir</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="target"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- generate md5 checksums -->
+                    <execution>
+                        <id>generate-md5</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <checksum file="${project.build.directory}/parrot-manager-windows-${project.version}.zip" property="dist.windows.md5" />
+                                <echo file="${project.build.directory}/parrot-manager-windows-${project.version}.zip.md5.txt" message="${dist.windows.md5}" />
+                            </target>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+            <!-- push to github -->
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>release</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <releaseName>${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}</directory>
+                            <includes>
+                                <include>parrot-windows-${project.version}.zip.md5.txt</include>
+                                <include>parrot-windows-${project.version}.zip</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
             </plugin>
 
         </plugins>

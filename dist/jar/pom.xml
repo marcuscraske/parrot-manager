@@ -17,9 +17,7 @@
         <finalName>parrot-jar-${project.version}</finalName>
         <plugins>
 
-            <!--
-                Build various archives with JAR
-            -->
+            <!-- build archives containing jar file -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.0</version>
@@ -27,6 +25,7 @@
                     <descriptors>
                         <descriptor>src/assembly/jar.xml</descriptor>
                     </descriptors>
+                    <finalName>parrot-manager-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
@@ -36,6 +35,35 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- generate MD5 checksum files -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <configuration>
+                    <exportAntProperties>true</exportAntProperties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+
+                                <!-- zip -->
+                                <checksum file="${project.build.directory}/parrot-manager-${project.version}.zip" property="dist.zip.md5" />
+                                <echo file="${project.build.directory}/parrot-manager-${project.version}.zip.md5.txt" message="${dist.zip.md5}" />
+
+                                <!-- tar.gz -->
+                                <checksum file="${project.build.directory}/parrot-manager-${project.version}.tar.gz" property="dist.targz.md5" />
+                                <echo file="${project.build.directory}/parrot-manager-${project.version}.tar.gz.md5.txt" message="${dist.targz.md5}" />
+
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

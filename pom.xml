@@ -156,6 +156,28 @@
                     <version>3.0.2</version>
                 </plugin>
 
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>de.jutzig</groupId>
+                    <artifactId>github-release-plugin</artifactId>
+                    <version>1.2.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                    <artifactId>launch4j-maven-plugin</artifactId>
+                    <version>1.7.21</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>

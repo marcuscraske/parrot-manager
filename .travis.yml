@@ -2,6 +2,7 @@ language: java
 dist: trusty
 jdk:
   - oraclejdk8
+  - oraclejdk9
 node_js:
   - "4"
   - "5"
@@ -9,7 +10,9 @@ node_js:
   - "node"
 before_install:
   - npm i npm@^4 -g
-install:
-  - npm install
 os:
   - linux
+  - osx
+script:
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then     mvn clean package -Pjar,windows,mac     fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then   mvn clean package -Pjar,windows,linux   fi

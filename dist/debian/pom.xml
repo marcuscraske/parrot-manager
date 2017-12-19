@@ -16,12 +16,9 @@
     <build>
         <plugins>
 
-            <!--
-                Build structure of deb package
-            -->
+            <!-- build structure for deb package -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
                 <executions>
                     <execution>
                         <id>create-archive</id>
@@ -57,13 +54,10 @@
                 </executions>
             </plugin>
 
-            <!--
-                Build deb package
-            -->
+            <!-- build deb package -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -77,8 +71,57 @@
                     <workingDirectory>${project.build.directory}</workingDirectory>
                     <arguments>
                         <argument>--build</argument>
-                        <argument>parrot-manager-${project.version}</argument>
+                        <argument>parrot-manager-linux-${project.version}</argument>
                     </arguments>
+                </configuration>
+            </plugin>
+
+            <!-- generate MD5 checksum files -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <configuration>
+                    <exportAntProperties>true</exportAntProperties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <checksum file="${project.build.directory}/parrot-manager-linux-${project.version}.deb" property="dist.debian.md5" />
+                                <echo file="${project.build.directory}/parrot-manager-linux-${project.version}.deb.md5.txt" message="${dist.mac.md5}" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- push to github -->
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>release</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <releaseName>${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}</directory>
+                            <includes>
+                                <include>parrot-manager-${project.version}.deb.md5.txt</include>
+                                <include>parrot-manager-${project.version}.deb</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
                 </configuration>
             </plugin>
 
