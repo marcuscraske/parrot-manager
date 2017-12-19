@@ -10,9 +10,10 @@ node_js:
   - "node"
 before_install:
   - npm i npm@^4 -g
+install: true
 os:
   - linux
   - osx
 script:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then     mvn clean package -Pjar,windows-standalone,mac     fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then   mvn clean package -Pjar,windows-standalone,linux   fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then     mvn clean package -Pjar,windows-standalone,mac;     fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then   mvn clean package -Pjar,windows-standalone,linux;   fi
