@@ -13,6 +13,13 @@
     <artifactId>mac</artifactId>
     <packaging>pom</packaging>
 
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.connection}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
 
@@ -39,7 +46,7 @@
                         <argument>-native</argument>
                         <argument>msi</argument>
                         <argument>-srcdir</argument>
-                        <argument>${project.build.directory}\..\..\..\parrot-manager/target</argument>
+                        <argument>${project.build.directory}\..\..\..\parrot-manager\target</argument>
                         <argument>-srcfiles</argument>
                         <argument>parrot.jar</argument>
                         <argument>-outdir</argument>
@@ -90,9 +97,9 @@
                                 <move file="${project.build.directory}\parrot-manager-${project.version}.exe"
                                       tofile="${project.build.directory}\parrot-manager-windows-${project.version}.exe" />
 
-                                <!-- generate md5 checksum file -->
+                                <!-- generate md5 checksum -->
                                 <checksum file="${project.build.directory}\parrot-manager-windows-${project.version}.exe" property="dist.windows.md5" />
-                                <echo file="${project.build.directory}\parrot-manager-windows-${project.version}.exe.md5.txt" message="${dist.windows.md5}" />
+                                <echo message="parrot-manager-windows-${project.version}.exe checksum: ${dist.windows.md5}" />
 
                             </target>
                         </configuration>
@@ -120,8 +127,7 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-windows-${project.version}.msi.md5.txt</include>
-                                <include>parrot-windows-${project.version}.msi</include>
+                                <include>parrot-manager-windows-${project.version}.exe</include>
                             </includes>
                         </fileSet>
                     </fileSets>

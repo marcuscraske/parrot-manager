@@ -9,6 +9,20 @@
     <version>5.0</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <github.draft>true</github.draft>
+        <github.failOnExistingRelease>false</github.failOnExistingRelease>
+        <scm.url>https://github.com/limpygnome/parrot-manager</scm.url>
+        <scm.connection>scm:git:https://github.com/limpygnome/parrot-manager.git</scm.connection>
+    </properties>
+
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.connection}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <modules>
         <module>parrot-library</module>
         <module>parrot-library-json</module>

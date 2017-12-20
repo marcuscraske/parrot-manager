@@ -8,3 +8,24 @@ using the project's version as the release tag.
 - `mac` - creates a pkg file to install parrot manager.
 - `jar` - creates a zip and tar archive with a JAR executable, for alternative platforms such as Mac.
 - `github` - deploys all previously mentioned distributions to Github as apart of a release.
+
+
+## Release
+
+Linux:
+
+````
+mvn clean install -Pgithub,jar,linux,windows-standalone
+````
+
+Mac:
+
+````
+mvn clean install -Pmac
+````
+
+Windows:
+
+````
+mvn clean install -Pwindows
+````

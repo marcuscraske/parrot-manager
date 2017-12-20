@@ -13,6 +13,13 @@
     <artifactId>mac</artifactId>
     <packaging>pom</packaging>
 
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.connection}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
 
@@ -43,7 +50,9 @@
                         <argument>-srcfiles</argument>
                         <argument>parrot.jar</argument>
                         <argument>-outdir</argument>
-                        <argument>.</argument>
+                        <argument>${project.build.directory}</argument>
+                        <argument>-outfile</argument>
+                        <argument>parrot-manager-${project.version}</argument>
                         <argument>-appclass</argument>
                         <argument>com.limpygnome.parrot.Program</argument>
                         <argument>-name</argument>
@@ -67,10 +76,10 @@
                         <id>copy-icons</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <tasks>
-                                <mkdir dir="target/package/macosx"/>
+                            <target>
+                                <mkdir dir="${project.build.directory}/package/macosx"/>
                                 <copy file="${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot-icon-512.png" tofile="target/package/macosx/parrot-manager-background.png" />
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -78,7 +87,7 @@
                     </execution>
 
                     <execution>
-                        <id>generate-checksum</id>
+                        <id>md5-checksum</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>
@@ -86,13 +95,20 @@
                         <configuration>
                             <target>
 
+                                <!-- bug with some runtime's / JDKs where pkg is actually in target/bundles sub-dir -->
+                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.pkg"
+                                      tofile="${project.build.directory}/parrot-manager-${project.version}.pkg"
+                                      failonerror="false"
+                                />
+
                                 <!-- rename pkg -->
                                 <move file="${project.build.directory}/parrot-manager-${project.version}.pkg"
-                                      tofile="${project.build.directory}/parrot-manager-mac-${project.version}.pkg" />
+                                      tofile="${project.build.directory}/parrot-manager-mac-${project.version}.pkg"
+                                />
 
-                                <!-- generate md5 checksum file -->
+                                <!-- generate md5 checksum -->
                                 <checksum file="${project.build.directory}/parrot-manager-mac-${project.version}.pkg" property="dist.mac.md5" />
-                                <echo file="${project.build.directory}/parrot-manager-mac-${project.version}.pkg.md5.txt" message="${dist.mac.md5}" />
+                                <echo message="parrot-manager-mac-${project.version}.pkg checksum: ${dist.mac.md5}" />
 
                             </target>
                         </configuration>
@@ -120,8 +136,7 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-mac-${project.version}.pkg.md5.txt</include>
-                                <include>parrot-mac-${project.version}.pkg</include>
+                                <include>parrot-manager-mac-${project.version}.pkg</include>
                             </includes>
                         </fileSet>
                     </fileSets>

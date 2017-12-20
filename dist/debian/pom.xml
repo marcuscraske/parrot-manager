@@ -13,46 +13,15 @@
     <artifactId>debian</artifactId>
     <packaging>pom</packaging>
 
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.connection}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
-
-            <!-- build structure for deb package -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>create-archive</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <tasks>
-
-                                <!-- Copy pre-made DEBIAN dir -->
-                                <copy todir="${project.build.directory}/parrot-manager-linux-${project.version}">
-                                    <fileset dir="${project.basedir}/src/main/resources/parrot-manager" />
-                                    <filterset>
-                                        <filter token="VERSION" value="${project.version}" />
-                                    </filterset>
-                                </copy>
-
-                                <!-- Copy executable -->
-                                <mkdir dir="${project.build.directory}/parrot-manager-linux-${project.version}/usr/bin" />
-                                <copy file="${project.basedir}/../../parrot-manager/target/parrot.jar"
-                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}/usr/bin/parrot.jar" />
-
-                                <!-- Copy icon -->
-                                <mkdir dir="${project.build.directory}/parrot-manager-linux-${project.version}/usr/share/parrot-manager" />
-                                <copy file="${project.basedir}/../../parrot-manager/src/main/resources/icons/parrot-icon-512.png"
-                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}/usr/share/parrot-manager/parrot-icon.png"
-                                />
-
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- build deb package -->
             <plugin>
@@ -76,14 +45,48 @@
                 </configuration>
             </plugin>
 
-            <!-- generate MD5 checksum files -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <configuration>
                     <exportAntProperties>true</exportAntProperties>
                 </configuration>
                 <executions>
+
                     <execution>
+                        <id>prepare-archive</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+
+                                <!-- copy pre-made DEBIAN dir -->
+                                <copy todir="${project.build.directory}/parrot-manager-linux-${project.version}">
+                                    <fileset dir="${project.basedir}/src/main/resources/parrot-manager" />
+                                    <filterset>
+                                        <filter token="VERSION" value="${project.version}" />
+                                    </filterset>
+                                </copy>
+
+                                <!-- copy executable -->
+                                <mkdir dir="${project.build.directory}/parrot-manager-linux-${project.version}/usr/bin" />
+                                <copy file="${project.basedir}/../../parrot-manager/target/parrot.jar"
+                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}/usr/bin/parrot.jar" />
+
+                                <!-- copy icon -->
+                                <mkdir dir="${project.build.directory}/parrot-manager-linux-${project.version}/usr/share/parrot-manager" />
+                                <copy file="${project.basedir}/../../parrot-manager/src/main/resources/icons/parrot-icon-512.png"
+                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}/usr/share/parrot-manager/parrot-icon.png"
+                                />
+
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- generate MD5 checksum -->
+                    <execution>
+                        <id>md5-checksum</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>
@@ -91,10 +94,11 @@
                         <configuration>
                             <target>
                                 <checksum file="${project.build.directory}/parrot-manager-linux-${project.version}.deb" property="dist.debian.md5" />
-                                <echo file="${project.build.directory}/parrot-manager-linux-${project.version}.deb.md5.txt" message="${dist.mac.md5}" />
+                                <echo message="parrot-manager-linux-${project.version}.deb checksum: ${dist.debian.md5}" />
                             </target>
                         </configuration>
                     </execution>
+
                 </executions>
             </plugin>
 
@@ -117,7 +121,6 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-manager-linux-${project.version}.deb.md5.txt</include>
                                 <include>parrot-manager-linux-${project.version}.deb</include>
                             </includes>
                         </fileSet>

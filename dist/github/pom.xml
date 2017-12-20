@@ -14,9 +14,9 @@
     <packaging>pom</packaging>
 
     <scm>
-        <url>https://github.com/limpygnome/parrot-manager</url>
-        <connection>scm:git:https://github.com/limpygnome/parrot-manager.git</connection>
-        <developerConnection>scm:git:https://github.com/limpygnome/parrot-manager.git</developerConnection>
+        <url>${scm.url}</url>
+        <connection>${scm.connection}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -62,18 +62,7 @@ ${dist.changelog}
 </description>
                     <releaseName>${project.version}</releaseName>
                     <tag>${project.version}</tag>
-                    <fileSets>
-                        <fileSet>
-                            <directory>${project.basedir}/..</directory>
-                            <includes>
-                                <include>debian/target/parrot-manager-${project.version}.deb</include>
-                                <include>jar/target/parrot-jar-${project.version}.tar.gz</include>
-                                <include>jar/target/parrot-jar-${project.version}.zip</include>
-                                <include>windows/target/parrot-windows-${project.version}.zip</include>
-                                <include>../parrot-manager/target/parrot-mac-${project.version}.dmg</include>
-                            </includes>
-                        </fileSet>
-                    </fileSets>
+                    <fileSets />
                 </configuration>
             </plugin>
 

@@ -13,6 +13,13 @@
     <artifactId>jar</artifactId>
     <packaging>pom</packaging>
 
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.connection}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <finalName>parrot-jar-${project.version}</finalName>
         <plugins>
@@ -20,7 +27,6 @@
             <!-- build archives containing jar file -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/assembly/jar.xml</descriptor>
@@ -39,7 +45,7 @@
                 </executions>
             </plugin>
 
-            <!-- generate MD5 checksum files -->
+            <!-- generate MD5 checksum -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <configuration>
@@ -47,6 +53,7 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>md5-checksum</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>
@@ -56,16 +63,43 @@
 
                                 <!-- zip -->
                                 <checksum file="${project.build.directory}/parrot-manager-${project.version}.zip" property="dist.zip.md5" />
-                                <echo file="${project.build.directory}/parrot-manager-${project.version}.zip.md5.txt" message="${dist.zip.md5}" />
+                                <echo message="parrot-manager-${project.version}.zip checksum: ${dist.zip.md5}" />
 
                                 <!-- tar.gz -->
                                 <checksum file="${project.build.directory}/parrot-manager-${project.version}.tar.gz" property="dist.targz.md5" />
-                                <echo file="${project.build.directory}/parrot-manager-${project.version}.tar.gz.md5.txt" message="${dist.targz.md5}" />
+                                <echo message="parrot-manager-${project.version}.tar.gz checksum: ${dist.targz.md5}" />
 
                             </target>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- push to github -->
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>release</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <releaseName>${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}</directory>
+                            <includes>
+                                <include>parrot-manager-${project.version}.zip</include>
+                                <include>parrot-manager-${project.version}.tar.gz</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
             </plugin>
 
         </plugins>
