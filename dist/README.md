@@ -15,7 +15,7 @@ using the project's version as the release tag.
 Linux:
 
 ````
-mvn clean install -Pgithub,jar,linux,windows-standalone
+mvn clean install -Pgithub,jar,linux
 ````
 
 Mac:
@@ -27,5 +27,5 @@ mvn clean install -Pmac
 Windows:
 
 ````
-mvn clean install -Pwindows
+mvn clean install -Pwindows,windows-standalone
 ````

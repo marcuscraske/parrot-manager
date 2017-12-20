@@ -42,7 +42,7 @@
                         <argument>-deploy</argument>
                         <argument>-Bicon=${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot.icns</argument>
                         <argument>-BappVersion=${project.version}</argument>
-                        <argument>-Bruntime=${JAVA_HOME}</argument>
+                        <argument>-Bruntime=${JAVA_HOME}/jre</argument>
                         <argument>-native</argument>
                         <argument>pkg</argument>
                         <argument>-srcdir</argument>
@@ -95,7 +95,7 @@
                         <configuration>
                             <target>
 
-                                <!-- bug with some runtime's / JDKs where pkg is actually in target/bundles sub-dir -->
+                                <!-- some runtime's / JDKs where pkg is actually in target/bundles sub-dir -->
                                 <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.pkg"
                                       tofile="${project.build.directory}/parrot-manager-${project.version}.pkg"
                                       failonerror="false"

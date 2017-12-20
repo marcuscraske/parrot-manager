@@ -18,7 +18,9 @@ public class RandomGeneratorService
 
     private static final char[] UPPERCASE;
     private static final char[] LOWERCASE;
-    private static final char[] SPECIAL_CHARS = {'£', '$', '^', '&', '*', '#', '@', '?' };
+
+    // 163 = pound symbol, causes compilation issues on Windows
+    private static final char[] SPECIAL_CHARS = {(char) 163, '$', '^', '&', '*', '#', '@', '?' };
 
     static
     {

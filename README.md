@@ -85,7 +85,7 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
             <img src="media/screenshot-settings.png" alt="settings with dark theme" />
         </td>
         <td>
-            &nbsp;
+            <img src="media/screenshot-windows-installer.png" alt="windows installer" />
         </td>
     </tr>
 </table>

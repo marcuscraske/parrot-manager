@@ -10,7 +10,7 @@
         <version>5.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
-    <artifactId>mac</artifactId>
+    <artifactId>windows</artifactId>
     <packaging>pom</packaging>
 
     <scm>
@@ -42,15 +42,17 @@
                         <argument>-deploy</argument>
                         <argument>-Bicon=${project.build.directory}\..\..\..\parrot-manager\src\main\resources\icons\parrot.ico</argument>
                         <argument>-BappVersion=${project.version}</argument>
-                        <argument>-Bruntime=${JAVA_HOME}</argument>
+                        <argument>-Bruntime=${JAVA_HOME}/jre</argument>
                         <argument>-native</argument>
-                        <argument>msi</argument>
+                        <argument>exe</argument>
                         <argument>-srcdir</argument>
                         <argument>${project.build.directory}\..\..\..\parrot-manager\target</argument>
                         <argument>-srcfiles</argument>
                         <argument>parrot.jar</argument>
                         <argument>-outdir</argument>
                         <argument>.</argument>
+                        <argument>-outfile</argument>
+                        <argument>parrot-manager-${project.version}</argument>
                         <argument>-appclass</argument>
                         <argument>com.limpygnome.parrot.Program</argument>
                         <argument>-name</argument>
@@ -77,6 +79,7 @@
                             <tasks>
                                 <mkdir dir="target\package\windows"/>
                                 <copy file="${project.build.directory}\..\..\..\parrot-manager\src\main\resources\icons\parrot-icon-512.png" tofile="target\package\windows\parrot-manager-background.png" />
+                                <copy file="${project.build.directory}\..\..\..\parrot-manager\src\main\resources\icons\parrot.bmp" tofile="target\package\windows\parrot-manager-setup-icon.bmp" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -92,6 +95,12 @@
                         </goals>
                         <configuration>
                             <target>
+
+                                <!-- some runtime's / JDKs where exe is actually in target/bundles sub-dir -->
+                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.exe"
+                                      tofile="${project.build.directory}/parrot-manager-${project.version}.exe"
+                                      failonerror="false"
+                                />
 
                                 <!-- rename exe -->
                                 <move file="${project.build.directory}\parrot-manager-${project.version}.exe"
