@@ -23,7 +23,7 @@ export class RemoteSyncSshComponent {
        userPass : [""],
        remotePath : ["", Validators.required],
        destinationPath : [""],                      // Validator is dynamic based on mode (required only for open)
-       privateKeyPath : [""],
+       privateKeyPath : ["~/.ssh/id_rsa"],
        privateKeyPass : [""],
        proxyHost : [""],
        proxyPort : [0],
@@ -61,24 +61,22 @@ export class RemoteSyncSshComponent {
         this.subParams = this.route.params.subscribe(params => {
 
             var passedNode = params['currentNode'];
+            var populateMachineName = false;
 
-            // Determine appropriate mode and if we need to populate form with existing data
+            // determine appropriate mode and if we need to populate form with existing data
             if (passedNode == null)
             {
                 this.currentNode = null;
                 this.currentMode = "open";
+                populateMachineName = true;
+
                 this.openForm.controls["destinationPath"].setValidators(Validators.required);
             }
             else if (passedNode == "new")
             {
                 this.currentNode = null;
                 this.currentMode = "new";
-
-                // populate machine filter with current hostname
-                var currentHostname = this.remoteSshFileService.getCurrentHostname();
-                this.openForm.patchValue({
-                    "machineFilter" : currentHostname
-                });
+                populateMachineName = true;
 
                 console.log("changed to new mode");
             }
@@ -89,6 +87,17 @@ export class RemoteSyncSshComponent {
                 this.populate(passedNode);
 
                 console.log("changed to edit mode - node id: " + this.currentNode);
+            }
+
+            // populate machine name
+            if (populateMachineName)
+            {
+                // populate machine filter with current hostname
+                var currentHostname = this.remoteSshFileService.getCurrentHostname();
+                this.openForm.patchValue({
+                    "name" : currentHostname,
+                    "machineFilter" : currentHostname
+                });
             }
         });
     }

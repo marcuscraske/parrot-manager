@@ -65,7 +65,7 @@ public class WebViewStage extends Stage
         setScene(scene);
         setTitle("parrot manager");
         setWidth(1200.0);
-        setHeight(550.0);
+        setHeight(700.0);
         setMaximized(true);
 
         // fix for "maximizing" on osx

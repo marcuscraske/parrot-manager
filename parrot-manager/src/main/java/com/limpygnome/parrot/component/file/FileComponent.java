@@ -26,11 +26,18 @@ public class FileComponent
     {
         if (path.startsWith("~/") && path.length() > 2)
         {
-            // TODO: test on windows, could be flawed...
             String homeDirectory = System.getProperty("user.home");
             String pathSeparator = System.getProperty("file.separator");
 
             path = homeDirectory + pathSeparator + path.substring(2);
+
+            // normalize for windows
+            String os = System.getProperty("os.name");
+
+            if (os != null && os.toLowerCase().contains("win"))
+            {
+                path = path.replace("/", "\\");
+            }
         }
 
         return path;
