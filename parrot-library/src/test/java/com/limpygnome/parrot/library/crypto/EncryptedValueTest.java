@@ -40,16 +40,6 @@ public class EncryptedValueTest
     }
 
     @Test
-    public void getFormattedLastModified_isCorrect()
-    {
-        // When
-        String text = encryptedValue.getFormattedLastModified();
-
-        // Then
-        assertEquals("Text should be formatted the same", "21-03-2017 20:24:03", text);
-    }
-
-    @Test
     public void getId_isReflected()
     {
         // when

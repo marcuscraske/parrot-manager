@@ -163,15 +163,6 @@ public class DatabaseNode
     }
 
     /**
-     * @return formatted date time
-     */
-    public String getFormattedLastModified()
-    {
-        DateTime dateTime = new DateTime(lastModified);
-        return dateTime.toString("dd-MM-yyyy HH:mm:ss");
-    }
-
-    /**
      * Updates value and marks database as dirty.
      *
      * @param value encrypted value, nullable; this will be cloned

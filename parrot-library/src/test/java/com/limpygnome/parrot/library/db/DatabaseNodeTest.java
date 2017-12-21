@@ -162,19 +162,6 @@ public class DatabaseNodeTest
     }
 
     @Test
-    public void getFormattedLastModified_isCorrect()
-    {
-        // Given
-        long lastModified = 1489772047L * 1000L;
-
-        // When
-        node = new DatabaseNode(database, uuid, null, lastModified, null);
-
-        // Then
-        assertEquals("Incorrect date format", "17-03-2017 17:34:07", node.getFormattedLastModified());
-    }
-
-    @Test
     public void setValue_isReflected()
     {
         // Given

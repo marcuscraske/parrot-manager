@@ -17,18 +17,21 @@
             <a tabindex="2" title="Backups" routerLink="/backups">
                 <span class="icon icon-database"></span>
             </a>
-            <a tabindex="3" title="Remote Sync" routerLink="/remote-sync">
-                <span class="icon icon-loop2" [ngClass]="{ 'syncing' : remoteSshFileService.isSyncing() }"></span>
+            <a tabindex="3" title="Sync Settings" routerLink="/remote-sync">
+                <span class="icon icon-earth"></span>
             </a>
         </div>
+
         <div class="db-open" *ngIf="databaseService.isOpen()">
             <a tabindex="4" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
+            <a tabindex="3" title="Sync Now" (click)="remoteSshFileService.syncAll()">
+                <span class="icon" [ngClass]="{ 'icon-download3' : !remoteSshFileService.isSyncing(), 'icon-loop2 syncing' : remoteSshFileService.isSyncing() }"></span>
+            </a>
             <a tabindex="5" title="Change Database" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>
             </a>
-
         </div>
 
         <div>
@@ -40,10 +43,6 @@
             </a>
         </div>
 
-    </div>
-
-    <div class="current-file" [innerText]="databaseService.getFileName()">
-        undefined file
     </div>
 
     <div class="options">

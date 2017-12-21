@@ -46,15 +46,6 @@ public abstract class EncryptedValue
     }
 
     /**
-     * @return formatted date time
-     */
-    public String getFormattedLastModified()
-    {
-        DateTime dateTime = new DateTime(lastModified);
-        return dateTime.toString("dd-MM-yyyy HH:mm:ss");
-    }
-
-    /**
      * Creates a cloned instance, whereby identifier is also inherited.
      *
      * @return cloned instance

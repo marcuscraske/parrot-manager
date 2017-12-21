@@ -136,4 +136,9 @@ export class RemoteSshFileService {
         return this.remoteSshFileService.getCurrentHostName();
     }
 
+    getLastSync()
+    {
+        return this.remoteSshFileService.getLastSync();
+    }
+
 }

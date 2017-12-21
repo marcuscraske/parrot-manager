@@ -15,18 +15,16 @@
     <div class="editor">
 
         <!--
-            Main view for child node
+            main view for child node
         -->
-        <div *ngIf="!this.currentNode.isRoot()">
-            <current-entry [currentNode]="currentNode"
-                           [updateEntryForm]="updateEntryForm"
-                           (updateTree)="updateTree()"
-                           (updateTreeSelection)="updateTreeSelection()"
-                           (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
-                           (continueActionWithPromptForDirtyValue)="continueActionWithPromptForDirtyValue($event)"
-                           (saveValue)="saveValue()"
-            ></current-entry>
-        </div>
+        <current-entry [currentNode]="currentNode"
+                       [updateEntryForm]="updateEntryForm"
+                       (updateTree)="updateTree()"
+                       (updateTreeSelection)="updateTreeSelection()"
+                       (changeNodeBeingViewed)="changeNodeBeingViewed($event)"
+                       (continueActionWithPromptForDirtyValue)="continueActionWithPromptForDirtyValue($event)"
+                       (saveValue)="saveValue()"
+        ></current-entry>
 
         <ul class="nav nav-tabs">
             <li (click)="currentSubView = 'entries'" [ngClass]="{ 'active' : currentSubView == 'entries' }">

@@ -25,7 +25,7 @@
 
     <tr *ngFor="let historicValue of (currentNode.getHistory().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
         <td>
-            {{ historicValue.getFormattedLastModified() }}
+            {{ historicValue.getLastModified() | friendlyTime }}
         </td>
         <td>
             <toggle-value [encryptedValue]="historicValue"></toggle-value>

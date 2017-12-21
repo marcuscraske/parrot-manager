@@ -33,6 +33,8 @@ import { BackupsComponent }         from 'app/content/backups/backups.component'
 
 // Pipes
 import { OrderBy } from 'app/orderBy'
+import { FriendlyTime } from 'app/friendlyTime'
+import { FormattedDate } from 'app/formattedDate'
 
 const appRoutes: Routes = [
   { path: '',                                       component: OpenComponent },
@@ -63,6 +65,8 @@ const appRoutes: Routes = [
 
     // Pipes
     OrderBy,
+    FriendlyTime,
+    FormattedDate,
 
     // Global
     AppComponent, TopBarComponent,

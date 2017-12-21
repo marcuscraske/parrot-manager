@@ -48,14 +48,6 @@ header .actions
     text-align: left;
 }
 
-header .current-file
-{
-    text-align: center;
-    color: #ccc;
-    white-space: normal;
-    width: 100%;
-}
-
 header .options
 {
     text-align: right;

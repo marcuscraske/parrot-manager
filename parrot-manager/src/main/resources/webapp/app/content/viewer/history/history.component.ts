@@ -20,7 +20,7 @@ export class HistoryComponent
 
     trackChildren(index, historicValue)
     {
-        return historicValue ? historicValue.getFormattedLastModified() : null;
+        return historicValue ? historicValue.getLastModified() : null;
     }
 
     clearAll()

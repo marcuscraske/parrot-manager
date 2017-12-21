@@ -9,7 +9,7 @@ import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.dbaction.ActionLog;
+import com.limpygnome.parrot.library.db.MergeLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import java.io.File;
 import java.net.InetAddress;
@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * A archive for downloading and uploading remote files using SSH.
+ *
+ * TODO rename to be generic SyncService
  */
 @Service
 public class RemoteSshFileService
@@ -52,6 +54,7 @@ public class RemoteSshFileService
     // State
     private Thread thread;
     private SshSession sshSession;
+    private long lastSync;
 
     /**
      * Creates options from a set of mandatory values.
@@ -239,6 +242,9 @@ public class RemoteSshFileService
                 LOG.debug("no hosts applicable for sync");
             }
         }
+
+        // update last sync time
+        lastSync = System.currentTimeMillis();
     }
 
     private boolean canAutoSync(SshOptions options, String currentHostName)
@@ -394,29 +400,32 @@ public class RemoteSshFileService
                     LOG.info("sync - downloading");
                     boolean exists = sshComponent.download(sshSession, options, syncPath);
 
-                    ActionLog actionLog;
+                    MergeLog mergeLog;
 
                     if (exists)
                     {
-                        // Load remote database
+                        // load remote database
                         LOG.info("sync - loading remote database");
                         Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
 
-                        // Perform merge and check if any change occurred...
+                        // perform merge and check if any change occurred...
                         LOG.info("sync - performing merge...");
-                        actionLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
+                        mergeLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
 
-                        // Check if we need to upload...
+                        // save current database if dirty
                         if (database.isDirty())
                         {
-                            // Save current database
                             LOG.info("sync - database(s) dirty, saving...");
                             databaseReaderWriter.save(database, options.getDestinationPath());
 
-                            // Reset dirty flag
+                            // reset dirty flag
                             database.setDirty(false);
+                        }
 
-                            // Upload to remote
+                        // upload to remote source if database is out of date
+                        // TODO database lock at start of sync?
+                        if (mergeLog.isRemoteOutOfDate())
+                        {
                             LOG.info("sync - uploading to remote host...");
                             sshComponent.upload(sshSession, options, options.getDestinationPath());
                         }
@@ -429,25 +438,25 @@ public class RemoteSshFileService
                     {
                         LOG.info("sync - uploading current database");
 
-                        actionLog = new ActionLog();
-                        actionLog.add("uploading current database, as does not exist remotely");
+                        mergeLog = new MergeLog();
+                        mergeLog.add("uploading current database, as does not exist remotely");
 
                         String currentPath = databaseService.getPath();
                         sshComponent.upload(sshSession, options, currentPath);
 
-                        actionLog.add("uploaded successfully");
+                        mergeLog.add("uploaded successfully");
                     }
 
                     // Build result
                     String hostName = options.getName();
-                    messages = actionLog.getMessages(hostName);
+                    messages = mergeLog.getMessages(hostName);
                 }
             }
             catch (Exception e)
             {
                 messages = sshComponent.getExceptionMessage(e);
                 success = false;
-                LOG.error("sync - {} - exception", options.getRandomToken(), e);
+                LOG.error("sync - exception", e);
             }
             finally
             {
@@ -517,6 +526,14 @@ public class RemoteSshFileService
             sshSession.dispose();
             sshSession = null;
         }
+    }
+
+    /**
+     * @return epoch ms timestamp of last sync all
+     */
+    public long getLastSync()
+    {
+        return lastSync;
     }
 
 }
