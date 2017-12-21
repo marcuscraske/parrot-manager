@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { DatabaseService } from 'app/service/database.service'
-import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
+import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { RuntimeService } from 'app/service/runtime.service'
@@ -19,7 +19,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
     oldChangeLog : string;
 
     constructor(
-        private remoteSshFileService: RemoteSshFileService,
+        private remoteSyncService: RemoteSyncService,
         private databaseService: DatabaseService,
         private encryptedValueService: EncryptedValueService,
         private runtimeService: RuntimeService,
@@ -94,7 +94,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
 
     syncAll()
     {
-        this.remoteSshFileService.syncAll();
+        this.remoteSyncService.syncAll();
     }
 
     sync(nodeId, askForPassword)
@@ -112,7 +112,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
             try
             {
                 // Read existing options
-                options = this.remoteSshFileService.createOptionsFromNode(node);
+                options = this.remoteSyncService.createOptionsFromNode(node);
 
                 if (options == null)
                 {
@@ -235,12 +235,12 @@ export class RemoteSyncComponent implements AfterViewChecked {
         if (remoteDatabasePassword == null)
         {
             console.log("syncing without auth");
-            this.remoteSshFileService.sync(options);
+            this.remoteSyncService.sync(options);
         }
         else
         {
             console.log("syncing with auth");
-            this.remoteSshFileService.syncWithAuth(options, remoteDatabasePassword);
+            this.remoteSyncService.syncWithAuth(options, remoteDatabasePassword);
         }
     }
 
@@ -252,18 +252,18 @@ export class RemoteSyncComponent implements AfterViewChecked {
 
     isSyncing() : boolean
     {
-        return this.remoteSshFileService.isSyncing();
+        return this.remoteSyncService.isSyncing();
     }
 
     getCurrentHost() : string
     {
-        return this.remoteSshFileService.getCurrentHost();
+        return this.remoteSyncService.getCurrentHost();
     }
 
     abort()
     {
         console.log("aborting sync");
-        this.remoteSshFileService.abort();
+        this.remoteSyncService.abort();
     }
 
 }

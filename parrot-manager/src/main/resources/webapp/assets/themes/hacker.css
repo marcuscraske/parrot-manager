@@ -5,6 +5,13 @@ body
     color: #0f0;
 }
 
+.alert.alert-danger
+{
+    background: #000;
+    color: #0f0;
+    border: solid 1px #0f0;
+}
+
 a,
 a:hover,
 a:focus
@@ -177,4 +184,9 @@ header div a:focus
 .table td
 {
     border-color: #0f0 !important;
+}
+
+.search-reset
+{
+    color: #000;
 }

@@ -10,8 +10,6 @@
 </p>
 
 [![Build Status](https://travis-ci.org/limpygnome/parrot-manager.svg)](https://travis-ci.org/limpygnome/parrot-manager)
-[![Code Climate](https://codeclimate.com/github/limpygnome/parrot-manager/badges/gpa.svg)](https://codeclimate.com/github/limpygnome/parrot-manager)
-[![Issue Count](https://codeclimate.com/github/limpygnome/parrot-manager/badges/issue_count.svg)](https://codeclimate.com/github/limpygnome/parrot-manager)
 [![Dependency Status](https://gemnasium.com/badges/github.com/limpygnome/parrot-manager.svg)](https://gemnasium.com/github.com/limpygnome/parrot-manager)
 [![Dependency Status](https://www.versioneye.com/user/projects/58f5b1d4307d03003e9de24e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58f5b1d4307d03003e9de24e)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
@@ -33,6 +31,8 @@ Supports Linux, Windows and Mac.
 - Send values as keys to other applications
 - Modern UI
 
+Upcoming features can be seen on the [roadmap](roadmap.md).
+
 
 ## Download
 Binaries are available on the [releases](https://github.com/limpygnome/parrot-manager/releases) page.
@@ -40,6 +40,14 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
 
 ## Screenshots
 <table>
+    <tr>
+        <td>
+            <img src="media/screenshot-mac-menu.png" alt="open menu on mac" />
+        </td>
+        <td>
+            <img src="media/screenshot-mac-installer.png" alt="installer for mac" />
+        </td>
+    </tr>
     <tr>
         <td>
             <img src="media/screenshot-list.png" alt="listing of entries" />
@@ -77,7 +85,7 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
             <img src="media/screenshot-settings.png" alt="settings with dark theme" />
         </td>
         <td>
-            &nbsp;
+            <img src="media/screenshot-windows-installer.png" alt="windows installer" />
         </td>
     </tr>
 </table>
@@ -96,11 +104,16 @@ sudo dpkg -i parrot-manager.deb
 ````
 
 ### Windows
-Download the latest Windows zip file and extract the executable where needed. No installation process is required,
-as the application is standalone.
+Both an installer and stand-alone version are available.
 
-### JAR
-Download the latest zip or tar archive, extract the jar file and run:
+For the stand-alone, just extract the executable to anywhere you desire, no installation process is required. Settings
+are saved to `%APPATA%\parrot-manager`.
+
+### Mac
+Download the latest pkg file, to anywhere, and
+
+### Other Platforms
+Download the latest jar zip or tar archive, extract the jar file and run:
 
 ````
 java -jar parrot-manager.jar
@@ -111,3 +124,7 @@ File name may differ and no installation process is required, as the JAR is stan
 
 ## Contribute
 This project is open to [contributions](contribute.md).
+
+Donations can be sent to:
+* PayPal: limpygnome@gmail.com
+* Bitcoin: 1CwSZwBT5qVbuKABUj2ruz5VyHhY23E6bY

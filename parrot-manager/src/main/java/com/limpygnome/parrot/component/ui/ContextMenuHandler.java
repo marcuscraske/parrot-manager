@@ -5,6 +5,7 @@ import com.limpygnome.parrot.library.db.DatabaseNode;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
@@ -107,6 +108,17 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
     {
         ContextMenu contextMenu = new ContextMenu();
 
+        if (!databaseNode.isRoot())
+        {
+            MenuItem itemCopyClipboard = new MenuItem("Copy to clipboard");
+            itemCopyClipboard.setOnAction(e ->
+            {
+                webViewStage.triggerEvent("document", "databaseClipboardEvent", databaseNode);
+            });
+
+            contextMenu.getItems().addAll(itemCopyClipboard);
+        }
+
         MenuItem itemAddEntry = new MenuItem("Add Entry");
         itemAddEntry.setOnAction(e -> {
             webViewStage.triggerEvent("document", "databaseEntryAdd", databaseNode);
@@ -122,14 +134,37 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
                 webViewStage.triggerEvent("document", "databaseEntryDelete", databaseNode);
             });
 
-            MenuItem itemCopyClipboard = new MenuItem("Copy to clipboard");
-            itemCopyClipboard.setOnAction(e ->
-            {
-                webViewStage.triggerEvent("document", "databaseClipboardEvent", databaseNode);
-            });
-
-            contextMenu.getItems().addAll(itemDeleteEntry, itemCopyClipboard);
+            contextMenu.getItems().addAll(itemDeleteEntry);
         }
+
+        // collapse/expand items
+        SeparatorMenuItem collapseExpandSeparator = new SeparatorMenuItem();
+
+        MenuItem itemExpand = new MenuItem("Expand");
+        itemExpand.setOnAction(e ->
+        {
+            webViewStage.triggerEvent("document", "databaseEntryExpand", databaseNode);
+        });
+
+        MenuItem itemExpandAll = new MenuItem("Expand All");
+        itemExpandAll.setOnAction(e ->
+        {
+            webViewStage.triggerEvent("document", "databaseEntryExpandAll", databaseNode);
+        });
+
+        MenuItem itemCollapse = new MenuItem("Collapse");
+        itemCollapse.setOnAction(e ->
+        {
+            webViewStage.triggerEvent("document", "databaseEntryCollapse", databaseNode);
+        });
+
+        MenuItem itemCollapseAll = new MenuItem("Collapse All");
+        itemCollapseAll.setOnAction(e ->
+        {
+            webViewStage.triggerEvent("document", "databaseEntryCollapseAll", databaseNode);
+        });
+
+        contextMenu.getItems().addAll(collapseExpandSeparator, itemExpand, itemExpandAll, itemCollapse, itemCollapseAll);
 
         return contextMenu;
     }

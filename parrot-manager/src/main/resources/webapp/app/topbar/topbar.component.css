@@ -9,6 +9,7 @@ header
     background: #333;
     color: #ccc;
     overflow: hidden;
+    z-index: 99999;
 }
 
 /* Used to create space between top of page and content; this is due to using fixed positioning on actual header */
@@ -45,14 +46,6 @@ header > div > div:last-child:after
 header .actions
 {
     text-align: left;
-}
-
-header .current-file
-{
-    text-align: center;
-    color: #ccc;
-    white-space: normal;
-    width: 100%;
 }
 
 header .options

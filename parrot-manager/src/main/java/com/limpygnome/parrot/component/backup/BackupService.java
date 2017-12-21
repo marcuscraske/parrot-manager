@@ -12,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 /**
@@ -38,6 +43,12 @@ public class BackupService
      */
     public String create()
     {
+        String errorMessage = createBackup(true);
+        return errorMessage;
+    }
+
+    private String createBackup(boolean deleteOldFiles)
+    {
         String errorMessage = null;
 
         // Check database open and backups are enabled
@@ -55,7 +66,10 @@ public class BackupService
                 Database database = databaseService.getDatabase();
 
                 // Check if max retained databases has been met
-                checkRetainedDatabases();
+                if(deleteOldFiles)
+                {
+                    checkRetainedDatabases();
+                }
 
                 // Build path
                 File currentParentFile = currentFile.getParentFile();
@@ -94,6 +108,50 @@ public class BackupService
         sessionService.put("backups", backupFiles);
 
         return backupFiles;
+    }
+
+    /**
+     * Restores a backup.
+     *
+     * @param backupFile the instance to be restored
+     * @return error message; null if successful
+     */
+    public String restore(BackupFile backupFile)
+    {
+        // create backup of current database first
+        String errorMessage = createBackup(false);
+
+        if (errorMessage == null)
+        {
+            String pathSrc = backupFile.getPath();
+            File fileSrc = new File(pathSrc);
+
+            String pathDest = databaseService.getPath();
+            File fileDest = new File(pathDest);
+
+            if (!fileSrc.exists())
+            {
+                errorMessage = "Backup no longer exists?";
+            }
+            else if (!fileDest.exists())
+            {
+                errorMessage = "Current database no longer exists?";
+            }
+            else
+            {
+                // overwrite file
+                try
+                {
+                    Files.copy(fileSrc.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+                catch (Exception e)
+                {
+                    errorMessage = e.getMessage();
+                }
+            }
+        }
+
+        return errorMessage;
     }
 
     /**

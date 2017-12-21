@@ -25,16 +25,27 @@
 
     <tr *ngFor="let historicValue of (currentNode.getHistory().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
         <td>
-            {{ historicValue.getFormattedLastModified() }}
+            {{ historicValue.getLastModified() | friendlyTime }}
         </td>
         <td>
             <toggle-value [encryptedValue]="historicValue"></toggle-value>
         </td>
         <td>
+
+            <!-- copy to clipboard button -->
+            <copy-clipboard [encryptedValue]="historicValue"></copy-clipboard>
+
+            <!-- restore button -->
+            <button class="btn btn-default" (click)="restore(historicValue)">
+                Restore
+            </button>
+
+            <!-- delete button -->
             <button class="btn btn-danger" (click)="delete(historicValue)">
+                <span class="icon icon-cross"></span>
                 Delete
             </button>
-            <copy-clipboard [encryptedValue]="historicValue"></copy-clipboard>
+
         </td>
     </tr>
 

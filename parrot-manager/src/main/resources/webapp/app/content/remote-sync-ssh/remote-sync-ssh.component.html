@@ -2,7 +2,7 @@
     Heading for when opening new host
 -->
 <h1 *ngIf="currentMode == 'open'">
-    open - remote (ssh)
+    Open Remote Database (SSH)
 </h1>
 <p *ngIf="currentMode == 'open'">
     This will copy a remote database to your local filesystem and add the host as a remote-sync target. This means
@@ -13,8 +13,11 @@
     Heading for when creating new host for an open database
 -->
 <h1 *ngIf="currentMode == 'new'">
-    remote-sync - new
+    Sync
 </h1>
+<h2 *ngIf="currentMode == 'new'">
+    New Host
+</h2>
 <p *ngIf="currentMode == 'new'">
     This will add a new host to which your current database will be synchronized. If a different database exists,
     the two will be merged. If no database exists, the current one is uploaded.
@@ -24,14 +27,17 @@
     Heading for when editing an already existing host
 -->
 <h1 *ngIf="currentMode == 'edit'">
-    remote-sync - edit
+    Sync
 </h1>
+<h2 *ngIf="currentMode == 'edit'">
+    Edit Host
+</h2>
 
 <form id="openRemoteSsh" [formGroup]="openForm" #form="ngForm">
 
     <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['name'].valid }">
         <label class="form-control-label" for="name">
-            Name
+            Profile Name
         </label>
 
         <input id="name"
@@ -102,7 +108,7 @@
                [(ngModel)]="openForm.value['userPass']"
                type="password"
                class="form-control"
-               placeholder="Only required for pass authentication"
+               placeholder="Only required for password authentication"
                minlength="1" maxlength="128"
         />
     </div>
@@ -283,18 +289,21 @@
         </small>
     </div>
 
-    <div class="form-group" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
-
-        <button type="submit" class="btn btn-primary" (click)="persist()">
+    <div class="form-group text-center">
+        <button type="button" class="btn btn-lg btn-primary" (click)="persist()">
+            <span class="icon icon-floppy-disk"></span>
             {{ currentMode == 'open' ? 'Open' : currentMode == 'edit' ? 'Save' : 'Add' }}
         </button>
+    </div>
 
-        <button type="submit" class="btn btn-default" (click)="performTest()">
-            Test
+    <div class="form-group text-center" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
+
+        <button type="button" class="btn btn-lg btn-default" (click)="actionCancel()">
+            Cancel
         </button>
 
-        <button type="button" class="btn btn-default" (click)="actionCancel()">
-            Cancel
+        <button type="button" class="btn btn-lg btn-default" (click)="performTest()">
+            Test
         </button>
 
         <span class="help-block">{{ errorMessage }}</span>

@@ -1,58 +1,70 @@
-<div class="header">
-    <div class="button">
-        <button class="btn btn-default" (click)="navigateToParent()">
-            <span class="icon icon-arrow-up2"></span>
+<!-- root node content -->
+<div *ngIf="currentNode.isRoot()">
+    <div class="header">
+        {{ databaseService.getFileName() }}
+    </div>
+    <p>
+        <span class="icon icon-folder"></span>
+        {{ databaseService.getPath() }}
+    </p>
+    <p>
+        <span class="icon icon-earth"></span>
+        Last sync was {{ remoteSyncService.getLastSync() | friendlyTime }}
+    </p>
+</div>
+
+<!-- child node content -->
+<div *ngIf="!currentNode.isRoot()">
+
+    <div class="header" *ngIf="!currentNode.isRoot()" title="node id: {{ currentNode.getId() }}">
+        <div class="button">
+            <button class="btn btn-default" (click)="navigateToParent()">
+                <span class="icon icon-arrow-up2"></span>
+            </button>
+        </div>
+        <div class="title">
+            <input type="text" class="title-input"
+                   (change)="updateName($event)"
+                   (click)="preUpdateName($event)"
+                   (blur)="postUpdateName($event)"
+                   value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}"
+            />
+        </div>
+    </div>
+
+    <p title="{{ currentNode.getLastModified() | formattedDate }}">
+        Last modified {{ currentNode.getLastModified() | friendlyTime }}
+    </p>
+
+    <!-- Value Options -->
+    <div class="form-group options">
+        <copy-clipboard [encryptedValue]="currentNode.getValue()"></copy-clipboard>
+        <send-keys [encryptedValue]="currentNode.getValue()"></send-keys>
+        <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer" title="Generate random value">
+            <span class="icon icon-equalizer"></span>
+            Generate Random
+        </button>
+        <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteCurrentEntry(currentNode.getId())" title="Delete current entry">
+            <span class="icon icon-cross"></span>
+            Delete
         </button>
     </div>
-    <div class="title">
-        <input type="text" class="title-input"
-               (change)="updateName($event)"
-               (click)="preUpdateName($event)"
-               (blur)="postUpdateName($event)"
-               value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}"
-        />
-    </div>
+
+    <!-- Generate Random Value Options -->
+    <generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode"></generate-random>
+
+    <form [formGroup]="updateEntryForm" #form="ngForm">
+        <!-- Current value -->
+        <div class="form-group">
+            <textarea id="currentValue"
+                      class="form-control"
+                      rows="1"
+                      placeholder="Click to reveal value"
+                      formControlName="currentValue"
+                      (click)="displayValue()"
+                      (blur)="hideValue()"
+            ></textarea>
+        </div>
+    </form>
+
 </div>
-
-<p title="{{ currentNode.getFormattedLastModified() }}">
-    Last modified: {{ currentNode.getFormattedLastModified() }}
-</p>
-
-<!-- Value Options -->
-<div class="form-group options">
-    <button class="btn btn-primary" (click)="saveValue.emit()">
-        <span class="icon icon-disk"></span>
-        Save Value
-    </button>
-    <button class="btn btn-default" (click)="hideValue()">
-        <span class="icon icon-undo2"></span>
-        Hide Value
-    </button>
-    <copy-clipboard [encryptedValue]="currentNode.getValue()"></copy-clipboard>
-    <send-keys [encryptedValue]="currentNode.getValue()"></send-keys>
-    <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer" title="Generate random value">
-        <span class="icon icon-equalizer"></span>
-        Generate Random
-    </button>
-    <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteCurrentEntry(currentNode.getId())" title="Delete current entry">
-        <span class="icon icon-cross"></span>
-    </button>
-</div>
-
-<!-- Generate Random Value Options -->
-<generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode" (refreshValue)="refreshValue()"></generate-random>
-
-<form [formGroup]="updateEntryForm" #form="ngForm">
-    <!-- Current value -->
-    <div class="form-group">
-        <textarea id="currentValue"
-                  class="form-control"
-                  rows="1"
-                  placeholder="Click to reveal value"
-                  formControlName="currentValue"
-                  (click)="displayValue($event)"
-                  (blur)="resetValueMode()"
-        ></textarea>
-    </div>
-
-</form>

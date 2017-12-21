@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
+
 import "app/global-vars"
 
 @Injectable()
@@ -9,8 +11,9 @@ export class DatabaseService
     // Underlying injected POJO
     databaseService: any;
 
-    constructor()
-    {
+    constructor(
+        private remoteSyncChangeLogService: RemoteSyncChangeLogService
+    ) {
         this.databaseService = (window as any).databaseService;
     }
 
@@ -32,13 +35,29 @@ export class DatabaseService
             // Prompt for database password...
             console.log("prompting for database password... - path: " + path);
 
-            bootbox.prompt({
+            var box = bootbox.prompt({
                 title: "Enter database password:",
                 inputType: "password",
                 callback: (password) => {
                     console.log("password entered, opening database file...");
                     this.openWithPassword(path, password, successCallback);
+                },
+                buttons: {
+                    cancel: {
+                        label: "<span class='icon icon-cross'></span> Cancel"
+                    },
+                    confirm: {
+                        label: "<span class='icon icon-unlocked'></span> Open"
+                    }
                 }
+            });
+
+            // center dialogue
+            box.css({
+              'top': '50%',
+              'margin-top': function () {
+                return -(box.height() / 2);
+              }
             });
         }
         else
@@ -64,7 +83,10 @@ export class DatabaseService
         }
 
         // Invoking callback with message
-        successCallback(message);
+        if (successCallback != null)
+        {
+            successCallback(message);
+        }
     }
 
     save() : string
@@ -85,6 +107,10 @@ export class DatabaseService
 
     close()
     {
+        // clear sync log
+        this.remoteSyncChangeLogService.clear();
+
+        // close actual db
         this.databaseService.close();
     }
 
@@ -150,11 +176,17 @@ export class DatabaseService
         }
 
         // Build JSON to represent this node
+        var collapsed = databaseNode.getLocalProperty("collapsed", "false");
+        var opened = ("false" == collapsed);
+
         var newJsonNode = {
             "id" : databaseNode.getId(),
             "text" : name != null ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
             "children" : [],
-            "icon" : "icon icon-folder"
+            "icon" : "icon icon-folder",
+            "state" : {
+                "opened" : opened
+            }
         };
 
         // Add to JSON representation of parent

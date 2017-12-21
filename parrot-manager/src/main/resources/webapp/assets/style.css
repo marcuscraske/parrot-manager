@@ -38,7 +38,21 @@ main
 
 main h1
 {
-    margin-top: 0.3em;
+    margin: 0.3em 0 0.5em 0;
+    font-size: 2em;
+}
+
+main h1 .icon
+{
+    position: relative;
+    top: -0.1em;
+    opacity: 0.4;
+    font-size: 0.6em !important;
+}
+
+main h2
+{
+    font-size: 1.5em;
 }
 
 a
@@ -49,6 +63,11 @@ a
 /*
     Bootstrap theme overrides
 */
+
+.btn .icon
+{
+    margin-right: 0.2em;
+}
 
 .btn-primary
 {
@@ -105,4 +124,9 @@ a
 {
     color: #333;
     cursor: pointer !important;
+}
+
+.modal-dialog
+{
+    box-shadow: 0 0 2em #444;
 }

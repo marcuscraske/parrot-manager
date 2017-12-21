@@ -12,7 +12,8 @@ export class RuntimeService {
         private encryptedValueService: EncryptedValueService,
     )
     {
-        setInterval( () => { this.updateHeight(); }, 50);
+        // TODO decide whether we're keeping automatic height updating or remove it entirely
+        //setInterval( () => { this.updateHeight(); }, 50);
         this.runtimeService = (window as any).runtimeService;
     }
 

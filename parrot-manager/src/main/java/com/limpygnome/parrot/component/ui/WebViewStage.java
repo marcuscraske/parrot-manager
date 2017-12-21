@@ -1,18 +1,24 @@
 package com.limpygnome.parrot.component.ui;
 
-import com.sun.javafx.webkit.WebConsoleListener;
+import com.limpygnome.parrot.lib.WebViewDebug;
+import com.limpygnome.parrot.lib.init.WebViewInit;
+
+import java.awt.*;
+import java.io.InputStream;
+
+//import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.InputStream;
 
 /**
  * A JavaFX web view stage.
@@ -27,6 +33,7 @@ public class WebViewStage extends Stage
 
     private WebStageInitService webStageInitService;
     private ContextMenuHandler contextMenuHandler;
+    private WebViewConsole console;
 
     // JavaFX controls
     private Scene scene;
@@ -36,39 +43,49 @@ public class WebViewStage extends Stage
     {
         this.webStageInitService = webStageInitService;
 
-        // Setup webview
+        // setup webview
         webView = new WebView();
 
-        setupDebugging();
+        setupDebugging(webStageInitService);
         setupContextMenu();
         setupClientsideHooks();
 
-        // Load initial page
-        webView.getEngine().load("http://localhost/index.html");
+        // set initial background
+        WebEngine engine = webView.getEngine();
+        engine.loadContent("<html><head><style>body{ background: #333; }</style></head></html>");
 
-        // Build scene for web view
-        scene = new Scene(webView);
+        // initialize webview (load page)
+        WebViewInit webViewInit = webStageInitService.getWebViewInit();
+        webViewInit.init(webView);
 
-        // General window config
+        // build scene for web view
+        scene = new Scene(webView, Color.valueOf("#333333"));
+
+        // general window config
         setScene(scene);
         setTitle("parrot manager");
         setWidth(1200.0);
-        setHeight(350.0);
+        setHeight(700.0);
+        setMaximized(true);
 
-        // Setup icons
+        // fix for "maximizing" on osx
+        String os = System.getProperty("os.name");
+
+        if (os != null && os.toLowerCase().contains("mac"))
+        {
+            Dimension displayBounds = Toolkit.getDefaultToolkit().getScreenSize();
+            setWidth(displayBounds.width);
+            setHeight(displayBounds.height);
+        }
+
+        // setup icons
         addIcon("/icons/parrot-icon.png");
         addIcon("/icons/parrot-icon-64.png");
         addIcon("/icons/parrot-icon-512.png");
         addIcon("/icons/parrot.svg");
 
-        // Prevent window from closing to prevent data loss for dirty databases
-        setOnCloseRequest(event -> {
-            // Prevent exit by consuming event...
-            event.consume();
-
-            // Trigger event for JS to handle action
-            triggerEvent("document", "nativeExit", null);
-        });
+        // prevent window from closing to prevent data loss for dirty databases
+        setOnCloseRequest(new CloseHandler(this));
     }
 
     private void addIcon(String path)
@@ -85,19 +102,31 @@ public class WebViewStage extends Stage
         LOG.debug("added icon - path: {}", path);
     }
 
-    private void setupDebugging()
+    private void setupDebugging(WebStageInitService webStageInitService)
     {
         WebEngine engine = webView.getEngine();
 
-        WebConsoleListener.setDefaultListener((webView1, message, lineNumber, sourceId) -> {
-            LOG.info("web console message - src: {}, line num: {}, message: {}", sourceId, lineNumber, message);
-        });
+        // override to provide basic logging of console messages
+        console = new WebViewConsole();
+        console.setup(this);
+
+        // monitor navigation
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             LOG.info("WebView state has changed - old: {}, new: {}", oldValue, newValue);
         });
+
+        // log errors
         engine.setOnError(event -> {
             LOG.error("wehview error - message: {}", event.getMessage(), event.getException());
         });
+
+        // hook debugging component (if available)
+        WebViewDebug webViewDebug = webStageInitService.getWebViewDebug();
+
+        if (webViewDebug != null)
+        {
+            webViewDebug.start(webView);
+        }
     }
 
     private void setupContextMenu()

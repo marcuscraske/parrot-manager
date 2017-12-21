@@ -38,4 +38,10 @@ export class BackupService {
         return result;
     }
 
+    restore(file) : string
+    {
+        var result = this.backupService.restore(file);
+        return result;
+    }
+
 }

@@ -17,9 +17,6 @@ export class GenerateRandomComponent
     // The current node being changed; passed from parent
     @Input() currentNode : any;
 
-    // Triggers value to be refreshed (if being actively viewed)
-    @Output() refreshValue = new EventEmitter();
-
     // Form of options for random value generator
     public randomOptions : any;
 
@@ -64,9 +61,6 @@ export class GenerateRandomComponent
             // Update value of current node
             this.encryptedValueService.setString(this.currentNode, randomPassword);
             console.log("current password updated with random string - node id: " + this.currentNode.getId());
-
-            // Refresh value
-            this.refreshValue.emit();
 
             // Show notification
             toastr.info("Updated with random value");

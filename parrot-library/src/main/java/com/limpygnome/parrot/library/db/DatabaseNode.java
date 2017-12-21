@@ -5,6 +5,7 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import org.joda.time.DateTime;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,17 +39,21 @@ public class DatabaseNode
     // The value stored at this node
     private EncryptedValue value;
 
+    // Non-secure local properties - these will not be remotely synchronized
+    private Map<String, String> localProperties;
+
     // Any sub-nodes which belong to this node
     private Map<UUID, DatabaseNode> children;
-
-    // Cached array of children retrieved; this is because to provide an array, we need to keep a permanent reference
-    // to avoid garbage collection
-    DatabaseNode[] childrenCached;
 
     // A list of previously deleted children; used for merging
     private Set<UUID> deletedChildren;
 
+    // History of this node for remote-sync; tracks deleted elements
     private DatabaseNodeHistory history;
+
+    // Cached array of children retrieved; this is because to provide an array, we need to keep a permanent reference
+    // to avoid garbage collection
+    DatabaseNode[] childrenCached;
 
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
@@ -61,6 +66,7 @@ public class DatabaseNode
         this.children = new HashMap<>(0);
         this.deletedChildren = new HashSet<>();
         this.history = new DatabaseNodeHistory(this);
+        this.localProperties = new HashMap<>();
     }
 
     /**
@@ -106,6 +112,8 @@ public class DatabaseNode
     }
 
     /**
+     * This does not update last modified.
+     *
      * @param id the unique identifier to be assigned to this node
      */
     public synchronized void setId(UUID id)
@@ -139,10 +147,13 @@ public class DatabaseNode
     public synchronized void setName(String name)
     {
         this.name = name;
-        database.setDirty(true);
+        setDirty();
     }
 
     /**
+     * This will set the last modified to the provided value, but the underlying database dirty flag will be set.
+     * Usually the last modified would be the current time, thus use this with caution!
+     *
      * @return the last modified date
      */
     public long getLastModified()
@@ -157,21 +168,15 @@ public class DatabaseNode
     }
 
     /**
-     * @return formatted date time
-     */
-    public String getFormattedLastModified()
-    {
-        DateTime dateTime = new DateTime(lastModified);
-        return dateTime.toString("dd-MM-yyyy HH:mm:ss");
-    }
-
-    /**
      * Updates value and marks database as dirty.
      *
-     * @param value encrypted value
+     * @param value encrypted value, nullable; this will be cloned
      */
     public void setValue(EncryptedValue value)
     {
+        // Create clone
+        EncryptedValue clone = (value != null ? value.clone() : null);
+
         // Add existing value to history
         if (this.value != null)
         {
@@ -179,7 +184,7 @@ public class DatabaseNode
         }
 
         // Update current value
-        this.value = value;
+        this.value = clone;
         setDirty();
     }
 
@@ -189,6 +194,44 @@ public class DatabaseNode
     public EncryptedValue getValue()
     {
         return value;
+    }
+
+    /**
+     * Sets a non-secure local field/property.
+     *
+     * TODO unit test
+     *
+     * @param key the key/name of the local property
+     * @param value the value
+     */
+    public void setLocalProperty(String key, String value)
+    {
+        localProperties.put(key, value);
+    }
+
+    /**
+     * TODO unit test
+     *
+     * @param name the key/name of the local property
+     * @param defaultValue the value returned when the local property is not found; can be null, which returns empty string
+     * @return either the value or default value
+     */
+    public String getLocalProperty(String name, String defaultValue)
+    {
+        String result = localProperties.get(name);
+        if (result == null)
+        {
+            result = defaultValue != null ? defaultValue : "";
+        }
+        return result;
+    }
+
+    /**
+     * @return read-only copy of properties
+     */
+    public Map<String, String> getLocalProperties()
+    {
+        return Collections.unmodifiableMap(localProperties);
     }
 
     /**
@@ -477,7 +520,6 @@ public class DatabaseNode
         if (deletedChildren != null ? !deletedChildren.equals(that.deletedChildren) : that.deletedChildren != null)
             return false;
         return history != null ? history.equals(that.history) : that.history == null;
-
     }
 
     @Override

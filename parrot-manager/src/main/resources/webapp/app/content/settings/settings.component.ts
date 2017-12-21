@@ -30,7 +30,8 @@ export class SettingsComponent
         remoteSyncIntervalEnabled: [false],
         remoteSyncOnOpeningDatabase: [false],
         remoteSyncOnChange: [false],
-        theme: [""]
+        theme: [""],
+        inactivityTimeout: [""]
     });
 
     recentFilesClearEnabled : boolean;

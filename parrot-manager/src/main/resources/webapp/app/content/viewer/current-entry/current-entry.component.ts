@@ -3,6 +3,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
 import { RuntimeService } from 'app/service/runtime.service'
+import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
@@ -30,6 +31,7 @@ export class CurrentEntryComponent
     constructor(
         private databaseService: DatabaseService,
         private runtimeService: RuntimeService,
+        private remoteSyncService: RemoteSyncService,
         private encryptedValueService: EncryptedValueService,
         private renderer: Renderer,
         public fb: FormBuilder
@@ -103,47 +105,22 @@ export class CurrentEntryComponent
         }
     }
 
-    // Refreshes the decrypted value, if in edit mode (used for when generating random number)
-    refreshValue()
-    {
-        var field = $("#currentValue");
-        var isEditMode = field.data("edit");
-
-        if (isEditMode == true)
-        {
-            this.displayValue();
-        }
-    }
-
     // Displays decrypted value / switches to edit mode
     displayValue()
     {
         var currentValue = $("#currentValue");
-        var editMode = currentValue.data("edit");
 
-        if (!editMode)
-        {
-            // decrypt value for current node
-            var decryptedValue = this.encryptedValueService.getString(this.currentNode);
+        // decrypt value for current node
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode);
+        currentValue.val(decryptedValue);
 
-            // do not replace if values are different i.e. been edited
-            var valueInBox = currentValue.val();
-            if (decryptedValue != valueInBox && !(valueInBox != null && valueInBox.length > 0))
-            {
-                currentValue.val(decryptedValue);
-                console.log("populated value field with actual decrypted value");
-            }
-            else
-            {
-                console.log("aborted populating value, as different value is present");
-            }
+        // resize box to fit value
+        this.resizeValueTextAreaToFitContent();
+    }
 
-            // Resize box to fit value
-            this.resizeValueTextAreaToFitContent();
-
-            // Set param for edit mode
-            currentValue.data("edit", true);
-        }
+    hideValue()
+    {
+        this.saveValue.emit();
     }
 
     // Resets edit mode when leaving text box of current value
@@ -151,21 +128,6 @@ export class CurrentEntryComponent
     {
         var currentValue = $("#currentValue");
         currentValue.data("edit", false);
-    }
-
-    // Hides the decrypted value / switches out of edit mode
-    hideValue()
-    {
-        var field = $("#currentValue");
-
-        this.continueActionWithPromptForDirtyValue.emit(() => {
-            // Reset to empty and resize
-            field.val("");
-            this.resizeValueTextAreaToFitContent();
-
-            // Switch out of edit mode
-            field.data("edit", false);
-        });
     }
 
     // Resize field to fit value/content

@@ -12,34 +12,40 @@ export class RemoteSyncChangeLogService {
 
     add(messages)
     {
-        // Split result message and log each line
-        var lines = messages.split("\n");
-        var line;
-
-        for (var i = 0; i < lines.length; i++)
+        if (messages != null)
         {
-            line = lines[i];
-            this.addLine(line);
+            // Split result message and log each line
+            var lines = messages.split("\n");
+            var line;
+
+            for (var i = 0; i < lines.length; i++)
+            {
+                line = lines[i];
+                this.addLine(line);
+            }
         }
     }
 
     addLine(message)
     {
-        // Append date to message
-        var date = new Date();
-        message = date.toLocaleTimeString() + " - " + message;
-
-        // Log message
-        console.log(message);
-
-        // Append to changelog
-        if (RemoteSyncChangeLogService.changeLog.length > 0)
+        if (message != null && message.length > 0)
         {
-            RemoteSyncChangeLogService.changeLog += "\n" + message;
-        }
-        else
-        {
-            RemoteSyncChangeLogService.changeLog = message;
+            // Append date to message
+            var date = new Date();
+            message = date.toLocaleTimeString() + " - " + message;
+
+            // Log message
+            console.log(message);
+
+            // Append to changelog
+            if (RemoteSyncChangeLogService.changeLog.length > 0)
+            {
+                RemoteSyncChangeLogService.changeLog += "\n" + message;
+            }
+            else
+            {
+                RemoteSyncChangeLogService.changeLog = message;
+            }
         }
     }
 

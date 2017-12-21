@@ -25,6 +25,10 @@ import java.util.UUID;
 /**
  * Used for reading and writing instances of {@link Database}.
  *
+ * This instance does two levels of encryption:
+ * - File: the entire database is encrypted, intended to be written to disk.
+ * - Memory: the structure of the database can be read, but items are encrypted and must be decrypted upon access.
+ *
  * File (Encrypted) JSON Structure
  * -----------------------------------
  * The database is initially stored as followed, which is referred to as "encrypted":
@@ -73,6 +77,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     private CryptoParamsJsonReaderWriter cryptoParamsJsonReaderWriter;
     private EncryptedValueJsonReaderWriter encryptedValueJsonReaderWriter;
     private DatabaseNodeHistoryReaderWriter databaseNodeHistoryReaderWriter;
+    private DatabaseNodePropertiesReaderWriter nodePropertiesReaderWriter;
 
     /**
      * Creates an instance.
@@ -84,6 +89,7 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         this.cryptoParamsJsonReaderWriter = new CryptoParamsJsonReaderWriter(cryptoParamsFactory);
         this.encryptedValueJsonReaderWriter = new EncryptedValueJsonReaderWriter();
         this.databaseNodeHistoryReaderWriter = new DatabaseNodeHistoryReaderWriter(encryptedValueJsonReaderWriter);
+        this.nodePropertiesReaderWriter = new DatabaseNodePropertiesReaderWriter();
     }
 
     @Override
@@ -207,6 +213,9 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
             // -- History
             databaseNodeHistoryReaderWriter.read(jsonNode, child.getHistory());
 
+            // -- properties
+            nodePropertiesReaderWriter.read(jsonNode, child);
+
             // Append to current parent
             nodeParent.add(child);
         }
@@ -259,6 +268,9 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 
             // -- history
             databaseNodeHistoryReaderWriter.write(jsonChild, node.getHistory());
+
+            // -- properties
+            nodePropertiesReaderWriter.write(jsonChild, node);
 
             // Add to parent
             JsonArray rootChildren;

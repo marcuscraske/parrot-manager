@@ -14,3 +14,5 @@ target/
 *.parrot
 *.parrot.*
 *.sync
+
+.DS_Store

@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.library.dbaction;
 
 import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.db.MergeLog;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,11 +12,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ActionLogTest
+public class MergeLogTest
 {
 
     // SUT
-    private ActionLog actionLog;
+    private MergeLog mergeLog;
 
     // Mock values
     @Mock
@@ -24,7 +25,7 @@ public class ActionLogTest
     @Before
     public void setup()
     {
-        actionLog = new ActionLog();
+        mergeLog = new MergeLog();
     }
 
     @Test
@@ -35,10 +36,10 @@ public class ActionLogTest
 
 
         // When
-        actionLog.add("test message");
-        actionLog.add(databaseNode, "db node message");
+        mergeLog.add("test message");
+        mergeLog.add(databaseNode, "db node message");
 
-        String result = actionLog.getMessages("host");
+        String result = mergeLog.getMessages("host");
 
         // Then
         String separator = System.getProperty("line.separator");

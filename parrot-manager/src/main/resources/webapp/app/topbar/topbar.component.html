@@ -2,55 +2,51 @@
     <div class="actions">
 
         <div class="general-file" *ngIf="!databaseService.isOpen()">
-            <a routerLink="/open" title="Open">
+            <a tabindex="1" routerLink="/open" title="Open">
                 <span class="icon icon-folder"></span>
             </a>
-            <a routerLink="/create" title="Create">
+            <a tabindex="2" routerLink="/create" title="Create">
                 <span class="icon icon-file-text2"></span>
             </a>
         </div>
 
         <div class="db-open" *ngIf="databaseService.isOpen()">
-            <a title="View Entries" routerLink="/viewer">
+            <a tabindex="1" title="View Entries" routerLink="/viewer">
                 <span class="icon icon-search"></span>
             </a>
-            <a title="Backups" routerLink="/backups">
+            <a tabindex="2" title="Backups" routerLink="/backups">
                 <span class="icon icon-database"></span>
             </a>
-            <a title="Remote Sync" routerLink="/remote-sync">
-                <span class="icon icon-loop2" [ngClass]="{ 'syncing' : remoteSshFileService.isSyncing() }"></span>
+            <a tabindex="3" title="Sync Settings" routerLink="/remote-sync">
+                <span class="icon icon-earth"></span>
             </a>
         </div>
+
         <div class="db-open" *ngIf="databaseService.isOpen()">
-            <a title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
+            <a tabindex="4" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
-            <a title="Change Database" (click)="attemptToCloseDatabase(false)">
+            <a tabindex="3" title="Sync Now" (click)="remoteSyncService.syncAll()">
+                <span class="icon" [ngClass]="{ 'icon-download3' : !remoteSyncService.isSyncing(), 'icon-loop2 syncing' : remoteSyncService.isSyncing() }"></span>
+            </a>
+            <a tabindex="5" title="Change Database" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>
             </a>
-
         </div>
 
         <div>
-            <a routerLink="/settings" title="Settings">
+            <a tabindex="6" routerLink="/settings" title="Settings">
                 <span class="icon icon-cog"></span>
             </a>
-            <a *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="runtimeService.refreshPage(router.url)">
+            <a tabindex="7" *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="runtimeService.refreshPage(router.url)">
                 <span class="icon icon-loop2"></span>
-            </a>
-            <a *ngIf="runtimeService.isDevelopmentMode()" title="Trigger exception" (click)="doesNotExist()">
-                <span class="icon icon-warning"></span>
             </a>
         </div>
 
     </div>
 
-    <div class="current-file" [innerText]="databaseService.getFileName()">
-        undefined file
-    </div>
-
     <div class="options">
-        <a routerLink="help">
+        <a tabindex="8" routerLink="help">
             <span class="icon icon-question"></span>
         </a>
     </div>

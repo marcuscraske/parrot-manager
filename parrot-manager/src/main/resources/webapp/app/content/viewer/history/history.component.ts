@@ -20,7 +20,7 @@ export class HistoryComponent
 
     trackChildren(index, historicValue)
     {
-        return historicValue ? historicValue.getFormattedLastModified() : null;
+        return historicValue ? historicValue.getLastModified() : null;
     }
 
     clearAll()
@@ -31,6 +31,11 @@ export class HistoryComponent
     delete(encryptedValue)
     {
         this.currentNode.getHistory().remove(encryptedValue);
+    }
+
+    restore(encryptedValue)
+    {
+        this.currentNode.setValue(encryptedValue);
     }
 
 }

@@ -18,6 +18,7 @@ import { SettingsComponent }        from 'app/content/settings/settings.componen
 
 // Pages - opened database
 import { ViewerComponent }          from 'app/content/viewer/viewer.component'
+import { SearchBoxComponent }       from 'app/content/viewer/search-box/search-box.component'
 import { GenerateRandomComponent }  from 'app/content/viewer/generate-random/generate-random.component'
 import { CurrentEntryComponent }    from 'app/content/viewer/current-entry/current-entry.component'
 import { ViewerEntriesComponent }   from 'app/content/viewer/entries/entries.component'
@@ -32,6 +33,8 @@ import { BackupsComponent }         from 'app/content/backups/backups.component'
 
 // Pipes
 import { OrderBy } from 'app/orderBy'
+import { FriendlyTime } from 'app/friendlyTime'
+import { FormattedDate } from 'app/formattedDate'
 
 const appRoutes: Routes = [
   { path: '',                                       component: OpenComponent },
@@ -62,6 +65,8 @@ const appRoutes: Routes = [
 
     // Pipes
     OrderBy,
+    FriendlyTime,
+    FormattedDate,
 
     // Global
     AppComponent, TopBarComponent,
@@ -74,7 +79,8 @@ const appRoutes: Routes = [
 
     // Pages - viewer (and components)
     // TODO: try to put most of this into the viewer component
-    ViewerComponent, GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent, HistoryComponent,
+    ViewerComponent, SearchBoxComponent,
+    GenerateRandomComponent, CurrentEntryComponent, ViewerEntriesComponent, HistoryComponent,
     ToggleValueComponent, CopyClipboardComponent, SendKeysComponent
 
   ],

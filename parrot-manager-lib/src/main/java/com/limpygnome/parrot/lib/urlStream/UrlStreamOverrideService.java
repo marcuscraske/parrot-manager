@@ -1,12 +1,13 @@
-package com.limpygnome.parrot.component.urlStream;
+package com.limpygnome.parrot.lib.urlStream;
 
-import com.limpygnome.parrot.component.ui.WebStageInitService;
-import java.net.URL;
-import java.net.URLStreamHandlerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.net.URL;
+import java.net.URLStreamHandlerFactory;
 
 /**
  * Used to redirect requests within the application to be served from the class-path.
@@ -16,8 +17,13 @@ public class UrlStreamOverrideService
 {
     private static final Logger LOG = LogManager.getLogger(UrlStreamOverrideService.class);
 
+    @Qualifier("default")
     @Autowired
-    private WebStageInitService webStageInitService;
+    private DetermineResourceHandler handlerDefault;
+
+    @Qualifier("dev")
+    @Autowired(required = false)
+    private DetermineResourceHandler handlerDev;
 
     /**
      * Enables local resources to be served by class path.
@@ -26,12 +32,12 @@ public class UrlStreamOverrideService
      */
     public synchronized void enable()
     {
-        boolean developmentMode = webStageInitService.isDevelopmentMode();
-
-        URLStreamHandlerFactory factory = new LocalUrlStreamHandlerFactory(developmentMode);
+        // TODO ugly, improve later
+        DetermineResourceHandler handler = handlerDev != null ? handlerDev : handlerDefault;
+        URLStreamHandlerFactory factory = new LocalUrlStreamHandlerFactory(handler);
         URL.setURLStreamHandlerFactory(factory);
 
-        LOG.info("resource URL configuration enabled - development mode: {}", developmentMode);
+        LOG.info("URL stream overriding enabled");
     }
 
 }

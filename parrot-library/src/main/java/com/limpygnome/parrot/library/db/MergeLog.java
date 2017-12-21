@@ -1,6 +1,4 @@
-package com.limpygnome.parrot.library.dbaction;
-
-import com.limpygnome.parrot.library.db.DatabaseNode;
+package com.limpygnome.parrot.library.db;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,16 +8,18 @@ import java.util.List;
  *
  * THis is currently used for merging, and not intended to be general.
  */
-public class ActionLog
+public class MergeLog
 {
+    private boolean remoteOutOfDate;
     private List<String> messages;
 
     /**
      * Creates a new instance.
      */
-    public ActionLog()
+    public MergeLog()
     {
         this.messages = new LinkedList<>();
+        this.remoteOutOfDate = false;
     }
 
     /**
@@ -68,6 +68,26 @@ public class ActionLog
 
         String result = buffer.toString();
         return result;
+    }
+
+    public boolean isRemoteOutOfDate()
+    {
+        return remoteOutOfDate;
+    }
+
+    public void setRemoteOutOfDate(boolean remoteOutOfDate)
+    {
+        this.remoteOutOfDate = remoteOutOfDate;
+    }
+
+    public List<String> getMessages()
+    {
+        return messages;
+    }
+
+    public void setMessages(List<String> messages)
+    {
+        this.messages = messages;
     }
 
 }

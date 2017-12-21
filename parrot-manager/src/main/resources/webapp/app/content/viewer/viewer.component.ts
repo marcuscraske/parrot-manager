@@ -4,12 +4,14 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { DatabaseService } from 'app/service/database.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
+import { SearchFilterService } from 'app/service/searchFilter.service'
 
 @Component({
     moduleId: module.id,
     selector: 'viewer',
     templateUrl: 'viewer.component.html',
-    styleUrls: ['viewer.component.css']
+    styleUrls: ['viewer.component.css'],
+    providers: [SearchFilterService]
 })
 export class ViewerComponent
 {
@@ -18,6 +20,11 @@ export class ViewerComponent
     private databaseEntryDeleteEvent: Function;
     private databaseEntryAddEvent: Function;
     private databaseClipboardEvent: Function;
+    private databaseEntryExpandEvent: Function;
+    private databaseEntryExpandAllEvent: Function;
+    private databaseEntryCollapseEvent: Function;
+    private databaseEntryCollapseAllEvent: Function;
+    private remoteSyncingFinishedEvent: Function;
 
     // The current node being edited
     public currentNode: any;
@@ -30,10 +37,14 @@ export class ViewerComponent
         currentValue: [""]
     });
 
+    // Current search filter
+    public searchFilter: string = "";
+
     constructor(
         private databaseService: DatabaseService,
         private runtimeService: RuntimeService,
         private encryptedValueService: EncryptedValueService,
+        private searchFilterService: SearchFilterService,
         private renderer: Renderer,
         public fb: FormBuilder)
     {
@@ -93,6 +104,53 @@ export class ViewerComponent
             // Set on clipboard
             this.runtimeService.setClipboard(decryptedValue);
         });
+
+        this.databaseEntryExpandEvent = renderer.listenGlobal("document", "databaseEntryExpand", (event) => {
+            console.log("databaseEntryExpand event raised");
+
+            var targetNode = event.data;
+            targetNode.setLocalProperty("collapsed", "false");
+            this.updateTree();
+        });
+
+        this.databaseEntryExpandAllEvent = renderer.listenGlobal("document", "databaseEntryExpandAll", (event) => {
+            console.log("databaseEntryExpandAll event raised");
+
+            var targetNode = event.data;
+            this.setLocalPropertyRecurse(targetNode, "collapsed", "false");
+            this.updateTree();
+        });
+
+        this.databaseEntryCollapseEvent = renderer.listenGlobal("document", "databaseEntryCollapse", (event) => {
+            console.log("databaseEntryCollapse event raised");
+
+            var targetNode = event.data;
+            targetNode.setLocalProperty("collapsed", "true");
+            this.updateTree();
+        });
+
+        this.databaseEntryCollapseAllEvent = renderer.listenGlobal("document", "databaseEntryCollapseAll", (event) => {
+            console.log("databaseEntryCollapseAll event raised");
+
+            var targetNode = event.data;
+            this.setLocalPropertyRecurse(targetNode, "collapsed", "true");
+            this.updateTree();
+        });
+
+        this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
+            this.updateTree();
+        });
+    }
+
+    setLocalPropertyRecurse(parentNode, key, value)
+    {
+        parentNode.setLocalProperty(key, value);
+
+        var childNodes = parentNode.getChildren();
+        for (var i = 0; i < childNodes.length; i++)
+        {
+            this.setLocalPropertyRecurse(childNodes[i], key, value);
+        }
     }
 
     ngOnInit()
@@ -120,6 +178,11 @@ export class ViewerComponent
         this.databaseEntryDeleteEvent();
         this.databaseEntryAddEvent();
         this.databaseClipboardEvent();
+        this.databaseEntryExpandEvent();
+        this.databaseEntryExpandAllEvent();
+        this.databaseEntryCollapseEvent();
+        this.databaseEntryCollapseAllEvent();
+        this.remoteSyncingFinishedEvent();
     }
 
     initTree()
@@ -127,7 +190,7 @@ export class ViewerComponent
         $(() => {
 
             // Setup tree with drag-and-drop enabled
-            var tree = $("#sidebar").jstree(
+            var tree = $("#tree").jstree(
             {
                 core:
                 {
@@ -145,14 +208,8 @@ export class ViewerComponent
                 plugins: [ "types", "dnd", "sort" ]
             });
 
-            // Always keep nodes open
-            $("#sidebar").on("refresh.jstree load.jstree", () => {
-                // Expand all nodes
-                $("#sidebar").jstree("open_all");
-            });
-
             // Hook tree for select event
-            $("#sidebar").on("select_node.jstree", (e, data) => {
+            $("#tree").on("select_node.jstree", (e, data) => {
                 // Check button was definitely left click
                 // -- Disabling ctxmenu does not work, as JavaFX seems to change the event to left-click when selecting
                 //    native item
@@ -173,8 +230,23 @@ export class ViewerComponent
                 this.changeNodeBeingViewed(nodeId);
             });
 
+            // Hook tree for collapse/expand events
+            $("#tree").on("open_node.jstree", (e, data) => {
+                var nodeId = data.node.id;
+                var node = this.databaseService.getNode(nodeId);
+                node.setLocalProperty("collapsed", "false");
+                console.log("node expanded - id: " + nodeId);
+            });
+
+            $("#tree").on("close_node.jstree", (e, data) => {
+                var nodeId = data.node.id;
+                var node = this.databaseService.getNode(nodeId);
+                node.setLocalProperty("collapsed", "true");
+                console.log("node collapsed - id: " + nodeId);
+            });
+
             // Hook tree for move/dnd event
-            $("#sidebar").on("move_node.jstree", (e, data) => {
+            $("#tree").on("move_node.jstree", (e, data) => {
                 var nodeId = data.node.id;
                 var newParentId = data.parent;
 
@@ -207,12 +279,26 @@ export class ViewerComponent
 
     updateTree()
     {
-        // Fetch JSON data
+        // fetch json data
         var data = this.databaseService.getJson();
 
+        // apply search filter
+        var searchFilter = this.searchFilter;
+        if (searchFilter != null && searchFilter.length > 0)
+        {
+            data = this.searchFilterService.filterByName(data, searchFilter);
+        }
+
+        // update tree
         $(function(){
             // Update tree
-            var tree = $("#sidebar").jstree(true);
+            var tree = $("#tree").jstree(true);
+
+            // wipe tree; seems to be a bug with jstree where state is lost
+            tree.settings.core.data = { };
+            tree.refresh();
+
+            // restore data
             tree.settings.core.data = data;
             tree.refresh();
         });
@@ -224,7 +310,7 @@ export class ViewerComponent
     updateTreeSelection()
     {
         $(() => {
-            var currentSelected = $("#sidebar").jstree("get_selected");
+            var currentSelected = $("#tree").jstree("get_selected");
 
             // Update selected item to match current node being viewed
             if (this.currentNode != null)
@@ -234,15 +320,15 @@ export class ViewerComponent
                 // Check the node is not already selected
                 if (currentSelected == null || targetNodeId != currentSelected)
                 {
-                    $("#sidebar").jstree("deselect_all");
-                    $("#sidebar").jstree("select_node", "#" + targetNodeId);
+                    $("#tree").jstree("deselect_all");
+                    $("#tree").jstree("select_node", "#" + targetNodeId);
                     console.log("updated tree selection - id: " + targetNodeId);
                 }
             }
             else
             {
                 // Reset selected node
-                $("#sidebar").jstree("deselect_all");
+                $("#tree").jstree("deselect_all");
             }
         });
     }
@@ -251,59 +337,22 @@ export class ViewerComponent
     {
         console.log("request to change node - id: " + nodeId);
 
-        this.continueActionWithPromptForDirtyValue(() => {
-            // Update node being viewed
-            this.currentNode = this.databaseService.getNode(nodeId);
+        // Update node being viewed
+        this.currentNode = this.databaseService.getNode(nodeId);
 
-            // Update node selected in tree
-            this.updateTreeSelection();
+        // Update node selected in tree
+        this.updateTreeSelection();
 
-            // Reset form
-            this.updateEntryForm.reset();
+        // Reset form
+        this.updateEntryForm.reset();
 
-            // Reset edit mode
-            $("#currentValue").data("edit", false);
+        // Reset edit mode
+        $("#currentValue").data("edit", false);
 
-            // Reset sub-view
-            this.currentSubView = "entries";
+        // Reset sub-view
+        this.currentSubView = "entries";
 
-            console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
-        });
-    }
-
-    // TODO: doesnt work for global exit of application, need to think of good way to approach this...
-    continueActionWithPromptForDirtyValue(callbackContinue)
-    {
-        if (this.updateEntryForm.dirty)
-        {
-            bootbox.dialog({
-                message: "Unsaved changes to value, these will be lost!",
-                buttons: {
-                    cancel: {
-                        label: "Cancel",
-                        className: "btn-default",
-                        callback: () => { }
-                    },
-                    ignore: {
-                        label: "Ignore",
-                        className: "btn-default",
-                        callback: () => { callbackContinue(); }
-                    },
-                    saveAndContinue: {
-                        label: "Save and Continue",
-                        className: "btn-primary",
-                        callback: () => {
-                            this.saveValue();
-                            callbackContinue();
-                        }
-                    }
-                }
-            });
-        }
-        else
-        {
-            callbackContinue();
-        }
+        console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
     }
 
     // Saves the current (decrypted) value
@@ -311,16 +360,27 @@ export class ViewerComponent
     {
         console.log("saving current value");
 
-        // Fetch value and update current node
+        // fetch value and update current node if changed
         var currentValue = $("#currentValue");
         var value = currentValue.val();
-        this.encryptedValueService.setString(this.currentNode, value);
 
-        // Reset form as untouched
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode);
+        var isChanged = value != decryptedValue;
+
+        if (isChanged)
+        {
+            this.encryptedValueService.setString(this.currentNode, value);
+        }
+
+        // reset form as untouched
         this.updateEntryForm.reset();
+    }
 
-        // Switch out of edit mode
-        currentValue.data("edit", false);
+    updateSearchFilter(searchFilter)
+    {
+        console.log("search filter changed: " + searchFilter);
+        this.searchFilter = searchFilter;
+        this.updateTree();
     }
 
 }

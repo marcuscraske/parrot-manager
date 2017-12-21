@@ -7,14 +7,14 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>4.0</version>
+        <version>5.0</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-manager</artifactId>
 
     <dependencies>
 
-        <!-- Local -->
+        <!-- local -->
         <dependency>
             <groupId>com.limpygnome.parrot</groupId>
             <artifactId>parrot-library</artifactId>
@@ -25,64 +25,66 @@
             <artifactId>parrot-library-json</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.limpygnome.parrot</groupId>
+            <artifactId>parrot-manager-lib</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-        <!-- Cryptography -->
+        <!-- cryptography -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.58</version>
         </dependency>
 
-        <!-- SSH -->
+        <!-- ssh -->
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.54</version>
         </dependency>
 
-        <!-- Spring -->
+        <!-- spring -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>5.0.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>5.0.0.RELEASE</version>
         </dependency>
 
-        <!-- Unit testing -->
+        <!-- javax annotations -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+
+        <!-- joda -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <!-- logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+
+        <!-- unit testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.11.0</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.9.1</version>
-        </dependency>
-
-        <!-- Joda -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.9.9</version>
         </dependency>
 
     </dependencies>
@@ -90,18 +92,7 @@
     <build>
         <plugins>
 
-            <!-- Define JDK version -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <!-- Build front-end using npm -->
+            <!-- compile angular app by invoking npm -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -138,11 +129,10 @@
                 </executions>
             </plugin>
 
-            <!-- Build JAR distribution -->
+            <!-- create executable fat (all dependencies included) jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -173,54 +163,10 @@
                 </configuration>
             </plugin>
 
-            <!-- Build exe wrapper for Windows -->
-            <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.21</version>
-                <executions>
-                    <execution>
-                        <id>l4j-gui</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>target/parrot.exe</outfile>
-                            <jar>target/parrot.jar</jar>
-                            <dontWrapJar>false</dontWrapJar>
-                            <errTitle>Error in launch4j plugin</errTitle>
-                            <classPath>
-                                <mainClass>com.limpygnome.parrot.Program</mainClass>
-                            </classPath>
-                            <jre>
-                                <minVersion>1.8.0</minVersion>
-                                <initialHeapSize>512</initialHeapSize>
-                                <maxHeapSize>1024</maxHeapSize>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>1.0.0.0</txtFileVersion>
-                                <fileDescription>des</fileDescription>
-                                <copyright>MIT License</copyright>
-                                <companyName>comp</companyName>
-                                <productVersion>3.0.0.0</productVersion>
-                                <txtProductVersion>${project.version}</txtProductVersion>
-                                <productName>Parrot</productName>
-                                <internalName>Parrot</internalName>
-                                <originalFilename>parrot.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Ensures MANIFEST.MF entries present when creating JAR -->
+            <!-- ensures MANIFEST.MF entries present when creating JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -233,5 +179,18 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.limpygnome.parrot</groupId>
+                    <artifactId>parrot-manager-dev</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

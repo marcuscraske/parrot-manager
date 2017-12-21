@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.limpygnome.parrot</groupId>
+        <artifactId>dist</artifactId>
+        <version>5.0</version>
+    </parent>
+    <groupId>com.limpygnome.parrot.dist</groupId>
+    <artifactId>mac</artifactId>
+    <packaging>pom</packaging>
+
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.connection}</connection>
+        <developerConnection>${scm.connection}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <build>
+        <plugins>
+
+            <!-- use javapackager to create pkg; dmg is broken at present (JDK-8188763) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>javapackager</executable>
+                    <workingDirectory>${project.build.directory}</workingDirectory>
+                    <arguments>
+                        <argument>-deploy</argument>
+                        <argument>-Bicon=${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot.icns</argument>
+                        <argument>-BappVersion=${project.version}</argument>
+                        <argument>-Bruntime=${JAVA_HOME}/jre</argument>
+                        <argument>-native</argument>
+                        <argument>pkg</argument>
+                        <argument>-srcdir</argument>
+                        <argument>${project.build.directory}/../../../parrot-manager/target</argument>
+                        <argument>-srcfiles</argument>
+                        <argument>parrot.jar</argument>
+                        <argument>-outdir</argument>
+                        <argument>${project.build.directory}</argument>
+                        <argument>-outfile</argument>
+                        <argument>parrot-manager-${project.version}</argument>
+                        <argument>-appclass</argument>
+                        <argument>com.limpygnome.parrot.Program</argument>
+                        <argument>-name</argument>
+                        <argument>parrot-manager</argument>
+                        <argument>-title</argument>
+                        <argument>parrot-manager</argument>
+                        <argument>-nosign</argument>
+                        <argument>-v</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <configuration>
+                    <exportAntProperties>true</exportAntProperties>
+                </configuration>
+                <executions>
+
+                    <execution>
+                        <id>copy-icons</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/package/macosx"/>
+                                <copy file="${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot-icon-512.png" tofile="target/package/macosx/parrot-manager-background.png" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>md5-checksum</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+
+                                <!-- some runtime's / JDKs where pkg is actually in target/bundles sub-dir -->
+                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.pkg"
+                                      tofile="${project.build.directory}/parrot-manager-${project.version}.pkg"
+                                      failonerror="false"
+                                />
+
+                                <!-- rename pkg -->
+                                <move file="${project.build.directory}/parrot-manager-${project.version}.pkg"
+                                      tofile="${project.build.directory}/parrot-manager-mac-${project.version}.pkg"
+                                />
+
+                                <!-- generate md5 checksum -->
+                                <checksum file="${project.build.directory}/parrot-manager-mac-${project.version}.pkg" property="dist.mac.md5" />
+                                <echo message="parrot-manager-mac-${project.version}.pkg checksum: ${dist.mac.md5}" />
+
+                            </target>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+            <!-- push to github -->
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>release</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <releaseName>${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}</directory>
+                            <includes>
+                                <include>parrot-manager-mac-${project.version}.pkg</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

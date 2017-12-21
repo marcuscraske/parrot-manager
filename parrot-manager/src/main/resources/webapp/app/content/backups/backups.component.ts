@@ -73,6 +73,26 @@ export class BackupsComponent {
         });
     }
 
+    restore(file)
+    {
+        this.errorMessage = this.backupService.restore(file);
+
+        // re-open database if no errors occurred
+        if (this.errorMessage == null)
+        {
+            var path = this.databaseService.getPath();
+
+            // close current database
+            this.databaseService.close();
+
+            // navigate to default page
+            this.router.navigate(["/"]);
+
+            // prompt for database
+            this.databaseService.openWithPrompt(path, null);
+        }
+    }
+
     delete(file)
     {
         this.errorMessage = this.backupService.delete(file);

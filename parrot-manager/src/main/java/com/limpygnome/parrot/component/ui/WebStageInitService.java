@@ -7,12 +7,14 @@ import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
-import com.limpygnome.parrot.component.remote.RemoteSshFileService;
+import com.limpygnome.parrot.component.remote.RemoteSyncService;
 import com.limpygnome.parrot.component.runtime.RuntimeService;
 import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
+import com.limpygnome.parrot.lib.WebViewDebug;
+import com.limpygnome.parrot.lib.init.WebViewInit;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,7 +31,7 @@ public class WebStageInitService
     @Autowired
     private RandomGeneratorService randomGeneratorService;
     @Autowired
-    private RemoteSshFileService remoteSshFileService;
+    private RemoteSyncService remoteSyncService;
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
@@ -44,10 +46,15 @@ public class WebStageInitService
     private DatabaseOptimizerService databaseOptimizerService;
     @Autowired
     private SendKeysService sendKeysService;
+    @Autowired(required = false)
+    private WebViewDebug webViewDebug;
 
-    // Properties
-    @Value("${development:false}")
-    private Boolean developmentMode;
+    @Qualifier("dev")
+    @Autowired(required = false)
+    private WebViewInit webViewInitDev;
+    @Qualifier("default")
+    @Autowired
+    private WebViewInit webViewInitDefault;
 
     // Stage
     private WebViewStage stage;
@@ -68,21 +75,13 @@ public class WebStageInitService
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);
         stage.exposeJsObject("randomGeneratorService", randomGeneratorService);
-        stage.exposeJsObject("remoteSshFileService", remoteSshFileService);
+        stage.exposeJsObject("remoteSyncService", remoteSyncService);
         stage.exposeJsObject("backupService", backupService);
         stage.exposeJsObject("recentFileService", recentFileService);
         stage.exposeJsObject("encryptedValueService", encryptedValueService);
         stage.exposeJsObject("buildInfoService", buildInfoService);
         stage.exposeJsObject("databaseOptimizerService", databaseOptimizerService);
         stage.exposeJsObject("sendKeysService", sendKeysService);
-    }
-
-    /**
-     * @return indicates if running in development mode
-     */
-    public boolean isDevelopmentMode()
-    {
-        return developmentMode;
     }
 
     /**
@@ -101,4 +100,19 @@ public class WebStageInitService
         return databaseService;
     }
 
+    /**
+     * @return instance for debugging web view
+     */
+    public WebViewDebug getWebViewDebug()
+    {
+        return webViewDebug;
+    }
+
+    /**
+     * @return instance for initializing web view
+     */
+    public WebViewInit getWebViewInit()
+    {
+        return webViewInitDev != null ? webViewInitDev : webViewInitDefault;
+    }
 }
