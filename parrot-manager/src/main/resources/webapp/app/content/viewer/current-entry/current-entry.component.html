@@ -38,14 +38,6 @@
 
     <!-- Value Options -->
     <div class="form-group options">
-        <button class="btn btn-primary" (click)="saveValue.emit()">
-            <span class="icon icon-floppy-disk"></span>
-            Save Value
-        </button>
-        <button class="btn btn-default" (click)="hideValue()">
-            <span class="icon icon-undo2"></span>
-            Hide Value
-        </button>
         <copy-clipboard [encryptedValue]="currentNode.getValue()"></copy-clipboard>
         <send-keys [encryptedValue]="currentNode.getValue()"></send-keys>
         <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer" title="Generate random value">
@@ -59,7 +51,7 @@
     </div>
 
     <!-- Generate Random Value Options -->
-    <generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode" (refreshValue)="refreshValue()"></generate-random>
+    <generate-random id="generateRandomContainer" class="collapse" [currentNode]="currentNode"></generate-random>
 
     <form [formGroup]="updateEntryForm" #form="ngForm">
         <!-- Current value -->
@@ -69,8 +61,8 @@
                       rows="1"
                       placeholder="Click to reveal value"
                       formControlName="currentValue"
-                      (click)="displayValue($event)"
-                      (blur)="resetValueMode()"
+                      (click)="displayValue()"
+                      (blur)="hideValue()"
             ></textarea>
         </div>
     </form>

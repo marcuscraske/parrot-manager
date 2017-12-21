@@ -337,59 +337,22 @@ export class ViewerComponent
     {
         console.log("request to change node - id: " + nodeId);
 
-        this.continueActionWithPromptForDirtyValue(() => {
-            // Update node being viewed
-            this.currentNode = this.databaseService.getNode(nodeId);
+        // Update node being viewed
+        this.currentNode = this.databaseService.getNode(nodeId);
 
-            // Update node selected in tree
-            this.updateTreeSelection();
+        // Update node selected in tree
+        this.updateTreeSelection();
 
-            // Reset form
-            this.updateEntryForm.reset();
+        // Reset form
+        this.updateEntryForm.reset();
 
-            // Reset edit mode
-            $("#currentValue").data("edit", false);
+        // Reset edit mode
+        $("#currentValue").data("edit", false);
 
-            // Reset sub-view
-            this.currentSubView = "entries";
+        // Reset sub-view
+        this.currentSubView = "entries";
 
-            console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
-        });
-    }
-
-    // TODO: doesnt work for global exit of application, need to think of good way to approach this...
-    continueActionWithPromptForDirtyValue(callbackContinue)
-    {
-        if (this.updateEntryForm.dirty)
-        {
-            bootbox.dialog({
-                message: "Unsaved changes to value, these will be lost!",
-                buttons: {
-                    cancel: {
-                        label: "Cancel",
-                        className: "btn-default",
-                        callback: () => { }
-                    },
-                    ignore: {
-                        label: "Ignore",
-                        className: "btn-default",
-                        callback: () => { callbackContinue(); }
-                    },
-                    saveAndContinue: {
-                        label: "Save and Continue",
-                        className: "btn-primary",
-                        callback: () => {
-                            this.saveValue();
-                            callbackContinue();
-                        }
-                    }
-                }
-            });
-        }
-        else
-        {
-            callbackContinue();
-        }
+        console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
     }
 
     // Saves the current (decrypted) value
@@ -397,16 +360,20 @@ export class ViewerComponent
     {
         console.log("saving current value");
 
-        // Fetch value and update current node
+        // fetch value and update current node if changed
         var currentValue = $("#currentValue");
         var value = currentValue.val();
-        this.encryptedValueService.setString(this.currentNode, value);
 
-        // Reset form as untouched
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode);
+        var isChanged = value != decryptedValue;
+
+        if (isChanged)
+        {
+            this.encryptedValueService.setString(this.currentNode, value);
+        }
+
+        // reset form as untouched
         this.updateEntryForm.reset();
-
-        // Switch out of edit mode
-        currentValue.data("edit", false);
     }
 
     updateSearchFilter(searchFilter)

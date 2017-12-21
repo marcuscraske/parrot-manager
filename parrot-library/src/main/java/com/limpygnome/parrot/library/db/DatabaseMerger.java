@@ -221,7 +221,7 @@ public class DatabaseMerger
             // remote database is missing this local node
             else
             {
-                mergeLog.add(localNode, "remote node missing our child - " + remoteChild.getPath());
+                mergeLog.add(localNode, "remote node missing our child - " + localChild.getPath());
                 changed = true;
             }
         }

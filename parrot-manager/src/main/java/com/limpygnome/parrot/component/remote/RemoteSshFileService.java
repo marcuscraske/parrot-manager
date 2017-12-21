@@ -349,6 +349,7 @@ public class RemoteSshFileService
     {
         String messages;
         boolean success = true;
+        boolean dirty = false;
 
         WebViewStage stage = webStageInitService.getStage();
         Database database = databaseService.getDatabase();
@@ -420,6 +421,9 @@ public class RemoteSshFileService
 
                             // reset dirty flag
                             database.setDirty(false);
+
+                            // store dirty for event
+                            dirty = true;
                         }
 
                         // upload to remote source if database is out of date
@@ -485,7 +489,7 @@ public class RemoteSshFileService
 
         // Raise event with result
         SyncResult syncResult = new SyncResult(
-                messages, success, database.isDirty(), options.getName()
+                messages, success, dirty, options.getName()
         );
         stage.triggerEvent("document", "remoteSyncFinish", syncResult);
     }
