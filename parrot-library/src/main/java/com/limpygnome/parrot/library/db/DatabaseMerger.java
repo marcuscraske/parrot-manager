@@ -214,7 +214,7 @@ public class DatabaseMerger
                 // Remove node from our database as it has been removed remotely
                 localChild.remove();
 
-                mergeLog.add(localNode, "removed child - " + remoteChild.getPath());
+                mergeLog.add(localNode, "removed child - " + localChild.getPath());
                 changed = true;
             }
 

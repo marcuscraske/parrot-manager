@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>5.0</version>
+        <version>5.1</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-library-json</artifactId>
