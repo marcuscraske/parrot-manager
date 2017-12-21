@@ -22,26 +22,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * A archive for downloading and uploading remote files using SSH.
- *
- * TODO rename to be generic SyncService
+ * Service for synchronizing database files remotely.
  */
 @Service
-public class RemoteSshFileService
+public class RemoteSyncService
 {
-    private static final Logger LOG = LogManager.getLogger(RemoteSshFileService.class);
+    private static final Logger LOG = LogManager.getLogger(RemoteSyncService.class);
 
     private static final String SESSION_KEY_OPTIONS = "remoteSshOptions";
 
     // Components
     @Autowired
-    private DatabaseReaderWriter databaseReaderWriter;
-    @Autowired
     private FileComponent fileComponent;
-    @Autowired
-    private SshComponent sshComponent;
-    @Autowired
-    private DatabaseMerger databaseMerger;
     @Autowired
     private DatabaseService databaseService;
     @Autowired
@@ -50,10 +42,11 @@ public class RemoteSshFileService
     private SessionService sessionService;
     @Autowired
     private WebStageInitService webStageInitService;
+    @Autowired
+    private SshSyncService sshSyncService;
 
     // State
     private Thread thread;
-    private SshSession sshSession;
     private long lastSync;
 
     /**
@@ -99,96 +92,44 @@ public class RemoteSshFileService
     }
 
     /**
-     * Begins downloading a file from an SSH host.
-     *
-     * Invocation is synchronous.
+     * Begins downloading a file from host.
      *
      * @param options the config for a download
      * @return error message, otherwise null if successful
      */
     public synchronized String download(SshOptions options)
     {
-        String result;
-        sshSession = null;
+        String result = checkDestinationPath(options);
 
-        try
+        if (result == null)
         {
-            // Check destination path
-            result = checkDestinationPath(options);
-
-            if (result == null)
-            {
-                // Connect
-                sshSession = sshComponent.connect(options);
-
-                // Start download...
-                sshComponent.download(sshSession, options);
-            }
-        }
-        catch (Exception e)
-        {
-            result = sshComponent.getExceptionMessage(e);
-            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
-        }
-        finally
-        {
-            // Disconnect
-            if (sshSession != null)
-            {
-                sshSession.dispose();
-                sshSession = null;
-            }
+            result = sshSyncService.download(options);
         }
 
         return result;
     }
 
     /**
-     * Tests the given SSH options without downloading/uploading any files.
+     * Tests the given host options.
      *
      * @param options SSH options to be tested
      * @return error message; or null if successful/no issues encountered
      */
     public synchronized String test(SshOptions options)
     {
-        String result;
-        sshSession = null;
+        String result = checkDestinationPath(options);
 
-        try
+        if (result == null)
         {
-            // Check destination file first, fail fast...
-            result = checkDestinationPath(options);
-
-            if (result == null)
-            {
-                // Connect
-                sshSession = sshComponent.connect(options);
-
-                // Check remote connection works and file exists
-                if (!sshComponent.checkRemotePathExists(options, sshSession))
-                {
-                    result = "Remote file does not exist - ignore if expected";
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            result = sshComponent.getExceptionMessage(e);
-            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
-        }
-        finally
-        {
-            // Disconnect
-            if (sshSession != null)
-            {
-                sshSession.dispose();
-                sshSession = null;
-            }
+            result = sshSyncService.test(options);
         }
 
         return result;
     }
 
+    /**
+     * Synchronizes all the hosts.
+     */
     public synchronized void syncAll()
     {
         LOG.info("syncing all hosts...");
@@ -347,151 +288,29 @@ public class RemoteSshFileService
 
     private void syncAsyncThreadSync(SshOptions options, String remotePassword)
     {
-        String messages;
-        boolean success = true;
-        boolean dirty = false;
-
         WebViewStage stage = webStageInitService.getStage();
-        Database database = databaseService.getDatabase();
 
-        if (database == null)
+        // trigger sync is starting...
+        stage.triggerEvent("document", "remoteSyncStart", options);
+
+        // validate destination path
+        SyncResult syncResult;
+
+        String messages = checkDestinationPath(options);
+        if (messages != null)
         {
-            LOG.error("database is null");
-            messages = "Internal error - database is null?";
-        }
-        else if (options == null)
-        {
-            LOG.error("options are null");
-            messages = "Internal error - options are null?";
-        }
-        else if (options.getDestinationPath() == null)
-        {
-            LOG.warn("destination path not setup");
-            messages = "Internal error - destination path must be setup on options";
-        }
-        else if (remotePassword == null || remotePassword.length() == 0)
-        {
-            LOG.warn("remote password not specified");
-            messages = "Remote password is required";
+            syncResult = new SyncResult(messages, false, false, options.getName());
         }
         else
         {
-
-            // Raise event with stage...
-            stage.triggerEvent("document", "remoteSyncStart", options);
-
-            // Alter destination path for this host
-            int fullHostNameHash = (options.getHost() + options.getPort()).hashCode();
-            String syncPath = options.getDestinationPath();
-            syncPath = syncPath + "." + fullHostNameHash + "." + System.currentTimeMillis() + ".sync";
-
-            // Begin sync process...
-            try
-            {
-                // Check destination path
-                messages = checkDestinationPath(options);
-
-                if (messages == null)
-                {
-                    // Connect
-                    LOG.info("sync - connecting");
-                    sshSession = sshComponent.connect(options);
-
-                    // Start download...
-                    LOG.info("sync - downloading");
-                    boolean exists = sshComponent.download(sshSession, options, syncPath);
-
-                    MergeLog mergeLog;
-
-                    if (exists)
-                    {
-                        // load remote database
-                        LOG.info("sync - loading remote database");
-                        Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
-
-                        // perform merge and check if any change occurred...
-                        LOG.info("sync - performing merge...");
-                        mergeLog = databaseMerger.merge(remoteDatabase, database, remotePassword.toCharArray());
-
-                        // save current database if dirty
-                        if (database.isDirty())
-                        {
-                            LOG.info("sync - database(s) dirty, saving...");
-                            databaseReaderWriter.save(database, options.getDestinationPath());
-
-                            // reset dirty flag
-                            database.setDirty(false);
-
-                            // store dirty for event
-                            dirty = true;
-                        }
-
-                        // upload to remote source if database is out of date
-                        // TODO database lock at start of sync?
-                        if (mergeLog.isRemoteOutOfDate())
-                        {
-                            LOG.info("sync - uploading to remote host...");
-                            sshComponent.upload(sshSession, options, options.getDestinationPath());
-                        }
-                        else
-                        {
-                            LOG.info("sync - neither database is dirty");
-                        }
-                    }
-                    else
-                    {
-                        LOG.info("sync - uploading current database");
-
-                        mergeLog = new MergeLog();
-                        mergeLog.add("uploading current database, as does not exist remotely");
-
-                        String currentPath = databaseService.getPath();
-                        sshComponent.upload(sshSession, options, currentPath);
-
-                        mergeLog.add("uploaded successfully");
-                    }
-
-                    // Build result
-                    String hostName = options.getName();
-                    messages = mergeLog.getMessages(hostName);
-                }
-            }
-            catch (Exception e)
-            {
-                messages = sshComponent.getExceptionMessage(e);
-                success = false;
-                LOG.error("sync - exception", e);
-            }
-            finally
-            {
-                // Cleanup sync file
-                File syncFile = new File(syncPath);
-
-                if (syncFile.exists())
-                {
-                    syncFile.delete();
-                }
-
-                // Disconnect
-                synchronized (this)
-                {
-                    if (sshSession != null)
-                    {
-                        sshSession.dispose();
-                        sshSession = null;
-                    }
-
-                    // Wipe ref to this thread
-                    thread = null;
-                }
-            }
+            // sync...
+            syncResult = sshSyncService.sync(options, remotePassword);
         }
 
-        // Raise event with result
-        SyncResult syncResult = new SyncResult(
-                messages, success, dirty, options.getName()
-        );
+        // trigger end event...
         stage.triggerEvent("document", "remoteSyncFinish", syncResult);
+
+        thread = null;
     }
 
     private String checkDestinationPath(SshOptions options)
@@ -525,10 +344,10 @@ public class RemoteSshFileService
         thread.interrupt();
 
         // Dispose session as well
-        if (thread != null && sshSession != null)
+        if (thread != null)
         {
-            sshSession.dispose();
-            sshSession = null;
+            sshSyncService.cleanup();
+            thread = null;
         }
     }
 

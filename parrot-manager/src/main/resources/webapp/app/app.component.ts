@@ -6,7 +6,7 @@ import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
-import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
+import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { SettingsService } from 'app/service/settings.service'
 import { ThemeService } from 'app/service/theme.service'
@@ -21,7 +21,7 @@ import { ThemeService } from 'app/service/theme.service'
         DatabaseService,
         BackupService,
         EncryptedValueService,
-        RemoteSshFileService,
+        RemoteSyncService,
         RemoteSyncChangeLogService,
         SettingsService,
         ThemeService

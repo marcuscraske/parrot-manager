@@ -26,8 +26,8 @@
             <a tabindex="4" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
-            <a tabindex="3" title="Sync Now" (click)="remoteSshFileService.syncAll()">
-                <span class="icon" [ngClass]="{ 'icon-download3' : !remoteSshFileService.isSyncing(), 'icon-loop2 syncing' : remoteSshFileService.isSyncing() }"></span>
+            <a tabindex="3" title="Sync Now" (click)="remoteSyncService.syncAll()">
+                <span class="icon" [ngClass]="{ 'icon-download3' : !remoteSyncService.isSyncing(), 'icon-loop2 syncing' : remoteSyncService.isSyncing() }"></span>
             </a>
             <a tabindex="5" title="Change Database" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>

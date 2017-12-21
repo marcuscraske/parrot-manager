@@ -20,7 +20,7 @@ public class RemoteSyncChangeService
     @Autowired
     private DatabaseService databaseService;
     @Autowired
-    private RemoteSshFileService remoteSshFileService;
+    private RemoteSyncService remoteSyncService;
 
     // Thread data
     private boolean continueToExecute;
@@ -149,7 +149,7 @@ public class RemoteSyncChangeService
             {
                 // Sync all the hosts...
                 LOG.info("invoking sync all");
-                remoteSshFileService.syncAll();
+                remoteSyncService.syncAll();
                 LOG.info("finished sync");
             }
             else

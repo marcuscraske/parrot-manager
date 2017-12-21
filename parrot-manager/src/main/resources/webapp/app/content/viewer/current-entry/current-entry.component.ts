@@ -3,7 +3,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
 import { RuntimeService } from 'app/service/runtime.service'
-import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
+import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
@@ -31,7 +31,7 @@ export class CurrentEntryComponent
     constructor(
         private databaseService: DatabaseService,
         private runtimeService: RuntimeService,
-        private remoteSshFileService: RemoteSshFileService,
+        private remoteSyncService: RemoteSyncService,
         private encryptedValueService: EncryptedValueService,
         private renderer: Renderer,
         public fb: FormBuilder

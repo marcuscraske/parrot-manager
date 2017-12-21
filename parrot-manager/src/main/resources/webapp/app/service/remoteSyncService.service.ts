@@ -5,9 +5,9 @@ import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.serv
 import "app/global-vars"
 
 @Injectable()
-export class RemoteSshFileService {
+export class RemoteSyncService {
 
-    remoteSshFileService : any;
+    remoteSyncService : any;
 
     private remoteSyncingFinishedEvent: Function;
     syncing : boolean;
@@ -17,7 +17,7 @@ export class RemoteSshFileService {
         private remoteSyncChangeLogService: RemoteSyncChangeLogService,
         private renderer: Renderer
     ) {
-        this.remoteSshFileService = (window as any).remoteSshFileService;
+        this.remoteSyncService = (window as any).remoteSyncService;
 
         // Setup hook for when remote syncing starts
         this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "remoteSyncStart", (event) => {
@@ -71,47 +71,47 @@ export class RemoteSshFileService {
 
     createOptions(randomToken, name, host, port, user, remotePath, destinationPath)
     {
-        var options = this.remoteSshFileService.createOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+        var options = this.remoteSyncService.createOptions(randomToken, name, host, port, user, remotePath, destinationPath);
         return options;
     }
 
     createOptionsFromNode(node)
     {
-        var options = this.remoteSshFileService.createOptionsFromNode(node);
+        var options = this.remoteSyncService.createOptionsFromNode(node);
         return options;
     }
 
     getStatus(randomToken)
     {
-        var result = this.remoteSshFileService.getStatus(randomToken);
+        var result = this.remoteSyncService.getStatus(randomToken);
         return result;
     }
 
     download(options)
     {
-        var result = this.remoteSshFileService.download(options);
+        var result = this.remoteSyncService.download(options);
         return result;
     }
 
     test(options)
     {
-        var result = this.remoteSshFileService.test(options);
+        var result = this.remoteSyncService.test(options);
         return result;
     }
 
     syncAll()
     {
-        this.remoteSshFileService.syncAll();
+        this.remoteSyncService.syncAll();
     }
 
     sync(options)
     {
-        this.remoteSshFileService.sync(options);
+        this.remoteSyncService.sync(options);
     }
 
     syncWithAuth(options, remoteDatabasePassword)
     {
-        this.remoteSshFileService.syncWithAuth(options, remoteDatabasePassword);
+        this.remoteSyncService.syncWithAuth(options, remoteDatabasePassword);
     }
 
     isSyncing() : boolean
@@ -127,18 +127,18 @@ export class RemoteSshFileService {
 
     abort()
     {
-        this.remoteSshFileService.abort();
+        this.remoteSyncService.abort();
     }
 
     // This is the actual host-name of the current box / machine / physical host
     getCurrentHostname() : string
     {
-        return this.remoteSshFileService.getCurrentHostName();
+        return this.remoteSyncService.getCurrentHostName();
     }
 
     getLastSync()
     {
-        return this.remoteSshFileService.getLastSync();
+        return this.remoteSyncService.getLastSync();
     }
 
 }

@@ -7,7 +7,7 @@ import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
-import com.limpygnome.parrot.component.remote.RemoteSshFileService;
+import com.limpygnome.parrot.component.remote.RemoteSyncService;
 import com.limpygnome.parrot.component.runtime.RuntimeService;
 import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
@@ -15,7 +15,6 @@ import com.limpygnome.parrot.lib.WebViewDebug;
 import com.limpygnome.parrot.lib.init.WebViewInit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,7 +31,7 @@ public class WebStageInitService
     @Autowired
     private RandomGeneratorService randomGeneratorService;
     @Autowired
-    private RemoteSshFileService remoteSshFileService;
+    private RemoteSyncService remoteSyncService;
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
@@ -76,7 +75,7 @@ public class WebStageInitService
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);
         stage.exposeJsObject("randomGeneratorService", randomGeneratorService);
-        stage.exposeJsObject("remoteSshFileService", remoteSshFileService);
+        stage.exposeJsObject("remoteSyncService", remoteSyncService);
         stage.exposeJsObject("backupService", backupService);
         stage.exposeJsObject("recentFileService", recentFileService);
         stage.exposeJsObject("encryptedValueService", encryptedValueService);

@@ -3,14 +3,14 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
-import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
+import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { DatabaseService } from 'app/service/database.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
     moduleId: module.id,
     templateUrl: 'remote-sync-ssh.component.html',
-    providers: [RemoteSshFileService]
+    providers: [RemoteSyncService]
 })
 export class RemoteSyncSshComponent {
 
@@ -48,7 +48,7 @@ export class RemoteSyncSshComponent {
 
     constructor(
         private runtimeService: RuntimeService,
-        private remoteSshFileService: RemoteSshFileService,
+        private remoteSyncService: RemoteSyncService,
         private databaseService: DatabaseService,
         private encryptedValueService: EncryptedValueService,
         private router: Router,
@@ -93,7 +93,7 @@ export class RemoteSyncSshComponent {
             if (populateMachineName)
             {
                 // populate machine filter with current hostname
-                var currentHostname = this.remoteSshFileService.getCurrentHostname();
+                var currentHostname = this.remoteSyncService.getCurrentHostname();
                 this.openForm.patchValue({
                     "name" : currentHostname,
                     "machineFilter" : currentHostname
@@ -260,7 +260,7 @@ export class RemoteSyncSshComponent {
         console.log("going to start download of remote database...");
 
         // Request download...
-        this.errorMessage = this.remoteSshFileService.download(options);
+        this.errorMessage = this.remoteSyncService.download(options);
 
         // Check if download failed...
         if (this.errorMessage != null)
@@ -300,7 +300,7 @@ export class RemoteSyncSshComponent {
         console.log("going to test options...");
 
         // Invoke and assign error message (successful if null)
-        this.errorMessage = this.remoteSshFileService.test(options);
+        this.errorMessage = this.remoteSyncService.test(options);
 
         if (this.errorMessage == null)
         {
@@ -330,7 +330,7 @@ export class RemoteSyncSshComponent {
         var randomToken = "not so random";
 
         // Create actual instance
-        var options = this.remoteSshFileService.createOptions(
+        var options = this.remoteSyncService.createOptions(
             randomToken,
             form.value["name"],
             form.value["host"],

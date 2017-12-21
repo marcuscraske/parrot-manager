@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
-import { RemoteSshFileService } from 'app/service/remoteSshFileService.service'
+import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 
 import "app/global-vars"
@@ -22,12 +22,11 @@ export class TopBarComponent
     constructor(
         private runtimeService: RuntimeService,
         private databaseService: DatabaseService,
-        private remoteSshFileService: RemoteSshFileService,
+        private remoteSyncService: RemoteSyncService,
         private remoteSyncChangeLogService: RemoteSyncChangeLogService,
         private router: Router,
         private renderer: Renderer
-    )
-    {
+    ) {
         // Hook for exit event on document (for when user triggers close on native window)
         this.nativeExitListener = renderer.listenGlobal("document", "nativeExit", (event) => {
             console.log("native exit event raised, attempting to close database...");
