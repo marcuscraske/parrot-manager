@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Upcoming
+- Lock file when syncing to prevent multiple machines overwriting each other.
+- Prevent sync when unsaved changes.
+- Automatically save when database is dirty.
 - Persist window size to local user file
 - Multiple windows
 - Recent files drop-down on topbar

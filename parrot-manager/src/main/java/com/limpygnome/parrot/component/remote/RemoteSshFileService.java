@@ -108,7 +108,7 @@ public class RemoteSshFileService
      */
     public synchronized String download(SshOptions options)
     {
-        String result = null;
+        String result;
         sshSession = null;
 
         try
@@ -151,7 +151,7 @@ public class RemoteSshFileService
      */
     public synchronized String test(SshOptions options)
     {
-        String result = null;
+        String result;
         sshSession = null;
 
         try

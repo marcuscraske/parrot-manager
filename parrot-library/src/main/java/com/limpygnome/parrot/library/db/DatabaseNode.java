@@ -112,6 +112,8 @@ public class DatabaseNode
     }
 
     /**
+     * This does not update last modified.
+     *
      * @param id the unique identifier to be assigned to this node
      */
     public synchronized void setId(UUID id)
@@ -145,10 +147,13 @@ public class DatabaseNode
     public synchronized void setName(String name)
     {
         this.name = name;
-        database.setDirty(true);
+        setDirty();
     }
 
     /**
+     * This will set the last modified to the provided value, but the underlying database dirty flag will be set.
+     * Usually the last modified would be the current time, thus use this with caution!
+     *
      * @return the last modified date
      */
     public long getLastModified()

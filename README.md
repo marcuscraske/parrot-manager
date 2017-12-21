@@ -124,3 +124,7 @@ File name may differ and no installation process is required, as the JAR is stan
 
 ## Contribute
 This project is open to [contributions](contribute.md).
+
+Donations can be sent to:
+* PayPal: limpygnome@gmail.com
+* Bitcoin: 1CwSZwBT5qVbuKABUj2ruz5VyHhY23E6bY

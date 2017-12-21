@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import java.util.UUID;
 
@@ -19,11 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseNodeTest
@@ -74,34 +71,16 @@ public class DatabaseNodeTest
     }
 
     @Test
-    public void constructor_twoParams_passedIsReflected()
-    {
-        //fail("TBC");
-    }
-
-    @Test
-    public void constructor_twoParams_currentTime()
-    {
-        //fail("TBC");
-    }
-
-    @Test
-    public void constructor_twoParams_randomUuid()
-    {
-        //fail("TBC");
-    }
-
-    @Test
     public void setId_isReflected()
     {
         // Given
-        UUID uuid = UUID.randomUUID();
+        UUID newUuid = UUID.randomUUID();
 
         // When
-        node.setId(uuid);
+        node.setId(newUuid);
 
         // Then
-        assertEquals("UUID is different", uuid.toString(), node.getId());
+        assertEquals("UUID is different", newUuid.toString(), node.getId());
     }
 
     @Test
@@ -129,13 +108,25 @@ public class DatabaseNodeTest
     }
 
     @Test
-    public void setId_addsNewToLookup()
+    public void setId_readdsToLookup()
     {
         // Given
+        UUID newUuid = UUID.randomUUID();
+
+        doAnswer(invocationOnMock -> {
+            assertEquals("id should be unchanged when removing self from lookup", uuid.toString(), node.getId());
+            return null;
+        }).when(databaseLookup).remove(node);
 
         // When
+        node.setId(newUuid);
 
         // Then
+        verify(databaseLookup).remove(node);
+        verify(databaseLookup).add(node);
+        verifyNoMoreInteractions(databaseLookup);
+
+        assertEquals("id should have changed", newUuid.toString(), node.getId());
     }
 
     @Test
@@ -162,6 +153,20 @@ public class DatabaseNodeTest
     }
 
     @Test
+    public void setName_updatesLastModified()
+    {
+        // given
+        node.setLastModified(1L);
+        assertEquals("last modified should be test value of 1L", 1L, node.getLastModified());
+
+        // when
+        node.setName("blah");
+
+        // then
+        assertNotEquals("last modified should have changed", 1L, node.getLastModified());
+    }
+
+    @Test
     public void setValue_isReflected()
     {
         // Given
@@ -182,6 +187,20 @@ public class DatabaseNodeTest
 
         // Then
         verify(database, times(2)).setDirty(true);
+    }
+
+    @Test
+    public void setValue_updatesLastModified()
+    {
+        // given
+        node.setLastModified(1L);
+        assertEquals("last modified should be test value of 1L", 1L, node.getLastModified());
+
+        // when
+        node.setValue(encryptedValue2);
+
+        // then
+        assertNotEquals("last modified should have changed", 1L, node.getLastModified());
     }
 
     @Test
@@ -206,6 +225,20 @@ public class DatabaseNodeTest
         // Then
         DatabaseNodeHistory retrieved = node.getHistory();
         assertEquals("Should be same as set instance", history, retrieved);
+    }
+
+    @Test
+    public void setHistory_updatesLastModified()
+    {
+        // given
+        node.setLastModified(1L);
+        assertEquals("last modified should be test value of 1L", 1L, node.getLastModified());
+
+        // when
+        node.setHistory(null);
+
+        // then
+        assertNotEquals("last modified should have changed", 1L, node.getLastModified());
     }
 
     @Test

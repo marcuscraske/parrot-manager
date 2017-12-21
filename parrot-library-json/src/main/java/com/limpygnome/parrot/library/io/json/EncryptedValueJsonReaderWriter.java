@@ -25,12 +25,27 @@ class EncryptedValueJsonReaderWriter
     {
         EncryptedValue value;
 
+        // legacy database has elements on node's json
+        // TODO drop legacy approach in version 6.0 onwards, add to release notes as warning
+        // WARNING: this was buggy, as updating a value would replace the id on a node, thus ended up with phantom nodes
         if (jsonNode.has("iv") && jsonNode.has("data"))
         {
             UUID id = jsonNode.has ("id") ? UUID.fromString(jsonNode.get("id").getAsString()) : null;
             byte[] iv = Base64.decode(jsonNode.get("iv").getAsString());
             byte[] data = Base64.decode(jsonNode.get("data").getAsString());
             long modified = jsonNode.has("modified") ? jsonNode.get("modified").getAsLong() : 0;
+
+            value = new EncryptedAesValue(id, modified, iv, data);
+        }
+        // current approach is to have data serialized under "value" property
+        else if (jsonNode.has("value"))
+        {
+            JsonObject jsonEncryptedValue = jsonNode.getAsJsonObject("value");
+
+            UUID id = UUID.fromString(jsonEncryptedValue.get("id").getAsString());
+            byte[] iv = Base64.decode(jsonEncryptedValue.get("iv").getAsString());
+            byte[] data = Base64.decode(jsonEncryptedValue.get("data").getAsString());
+            long modified = jsonEncryptedValue.get("modified").getAsLong();
 
             value = new EncryptedAesValue(id, modified, iv, data);
         }
@@ -52,15 +67,21 @@ class EncryptedValueJsonReaderWriter
     {
         if (value != null)
         {
+            // fetch encrypted payload
             EncryptedAesValue aesValue = (EncryptedAesValue) value;
 
             String ivStr = Base64.toBase64String(aesValue.getIv());
             String dataStr = Base64.toBase64String(aesValue.getValue());
 
-            jsonNode.addProperty("id", aesValue.getId().toString());
-            jsonNode.addProperty("iv", ivStr);
-            jsonNode.addProperty("data", dataStr);
-            jsonNode.addProperty("modified", aesValue.getLastModified());
+            // build child data
+            JsonObject jsonEncryptedValue = new JsonObject();
+            jsonEncryptedValue.addProperty("id", aesValue.getId().toString());
+            jsonEncryptedValue.addProperty("iv", ivStr);
+            jsonEncryptedValue.addProperty("data", dataStr);
+            jsonEncryptedValue.addProperty("modified", aesValue.getLastModified());
+
+            // add to node's json
+            jsonNode.add("value", jsonEncryptedValue);
         }
     }
 

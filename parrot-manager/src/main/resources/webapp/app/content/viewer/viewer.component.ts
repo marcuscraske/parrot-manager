@@ -24,6 +24,7 @@ export class ViewerComponent
     private databaseEntryExpandAllEvent: Function;
     private databaseEntryCollapseEvent: Function;
     private databaseEntryCollapseAllEvent: Function;
+    private remoteSyncingFinishedEvent: Function;
 
     // The current node being edited
     public currentNode: any;
@@ -135,6 +136,10 @@ export class ViewerComponent
             this.setLocalPropertyRecurse(targetNode, "collapsed", "true");
             this.updateTree();
         });
+
+        this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
+            this.updateTree();
+        });
     }
 
     setLocalPropertyRecurse(parentNode, key, value)
@@ -177,6 +182,7 @@ export class ViewerComponent
         this.databaseEntryExpandAllEvent();
         this.databaseEntryCollapseEvent();
         this.databaseEntryCollapseAllEvent();
+        this.remoteSyncingFinishedEvent();
     }
 
     initTree()
