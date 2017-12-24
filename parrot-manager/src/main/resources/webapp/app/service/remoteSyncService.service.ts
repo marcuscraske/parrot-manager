@@ -1,6 +1,4 @@
-import { Injectable, Renderer } from '@angular/core';
-
-import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
+import { Injectable } from '@angular/core';
 
 import "app/global-vars"
 
@@ -10,63 +8,14 @@ export class RemoteSyncService {
     remoteSyncService : any;
 
     private remoteSyncingFinishedEvent: Function;
-    syncing : boolean;
-    currentHost : string;
+    private syncing : boolean;
+    private currentHost : string;
 
-    constructor(
-        private remoteSyncChangeLogService: RemoteSyncChangeLogService,
-        private renderer: Renderer
-    ) {
+    // TODO deprecated; only temporary, should be multi-threaded in background and UI shows status per each host
+    private lastHostSynchronizing: string;
+
+    constructor() {
         this.remoteSyncService = (window as any).remoteSyncService;
-
-        // Setup hook for when remote syncing starts
-        this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "remoteSyncStart", (event) => {
-            console.log("received remote sync start event");
-
-            // Update state
-            this.syncing = true;
-
-            // Update host being synchronized
-            var options = event.data;
-            var hostName = options.getName();
-            this.currentHost = hostName;
-
-            // Show notification
-            toastr.info("syncing " + hostName);
-        });
-
-        // Setup hook for when remote syncing finishes
-        this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
-            console.log("received remote sync finish event");
-
-            var messages = event.data.getMessages();
-            var isSuccess = event.data.isSuccess();
-            var isChanges = event.data.isChanges();
-            var hostName = event.data.getHostName();
-
-            // Switch state to not syncing
-            this.syncing = false;
-
-            // Send result to logging service
-            this.remoteSyncChangeLogService.add(messages);
-
-            // Show notification
-            if (isSuccess)
-            {
-                if (isChanges)
-                {
-                    toastr.success(hostName + " has changes");
-                }
-                else
-                {
-                    toastr.info(hostName + " has no changes");
-                }
-            }
-            else
-            {
-                toastr.error("failed to synchronize " + hostName);
-            }
-        });
     }
 
     createOptions(randomToken, name, host, port, user, remotePath, destinationPath)
@@ -114,15 +63,26 @@ export class RemoteSyncService {
         this.remoteSyncService.syncWithAuth(options, remoteDatabasePassword);
     }
 
+    setSyncing(syncing)
+    {
+        this.syncing = syncing;
+    }
+
     isSyncing() : boolean
     {
         return this.syncing;
     }
 
-    // TODO rename this at some point
-    getCurrentHost() : string
+    // TODO deprecated
+    setLastHostSynchronizing(lastHostSynchronizing)
     {
-        return this.currentHost;
+        this.lastHostSynchronizing = lastHostSynchronizing;
+    }
+
+    // TODO deprecated
+    getLastHostSynchronizing() : string
+    {
+        return this.lastHostSynchronizing;
     }
 
     abort()

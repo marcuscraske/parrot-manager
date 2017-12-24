@@ -20,6 +20,9 @@
             <a tabindex="3" title="Sync Settings" routerLink="/remote-sync">
                 <span class="icon icon-earth"></span>
             </a>
+            <a tabindex="3" title="Import/export entries" routerLink="/import-export">
+                <span class="icon icon-copy"></span>
+            </a>
         </div>
 
         <div class="db-open" *ngIf="databaseService.isOpen()">
@@ -38,7 +41,7 @@
             <a tabindex="6" routerLink="/settings" title="Settings">
                 <span class="icon icon-cog"></span>
             </a>
-            <a tabindex="7" *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="runtimeService.refreshPage(router.url)">
+            <a tabindex="7" *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="devReload()">
                 <span class="icon icon-loop2"></span>
             </a>
         </div>

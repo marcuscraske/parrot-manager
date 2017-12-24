@@ -8,6 +8,7 @@ import { RouterModule, Routes }     from '@angular/router';
 import { ErrorWatcherHandler }      from 'app/error-watcher-handler';
 import { AppComponent }             from 'app/app.component';
 import { TopBarComponent }          from 'app/topbar/topbar.component'
+import { NotificationsComponent }   from 'app/notifications.component'
 
 // Pages
 import { ErrorComponent }           from 'app/content/error/error.component'
@@ -69,7 +70,7 @@ const appRoutes: Routes = [
     FormattedDate,
 
     // Global
-    AppComponent, TopBarComponent,
+    AppComponent, TopBarComponent, NotificationsComponent,
 
     // Pages
     ErrorComponent,

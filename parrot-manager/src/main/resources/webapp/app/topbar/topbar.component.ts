@@ -227,4 +227,10 @@ export class TopBarComponent
         return isSuccess;
     }
 
+    /* Used in dev mode to reload page. */
+    devReload()
+    {
+        window.location.reload();
+    }
+
 }

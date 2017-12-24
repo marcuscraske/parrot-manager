@@ -6,7 +6,6 @@
 - Persist window size to local user file
 - Multiple windows
 - Recent files drop-down on topbar
-- Logout after period of inactivity
 - When viewing backup, have toolbar or large button to restore permanently.
 - Setting to wipe clipboard within time period, after copying an entry.
   - Option to be toggled in settings

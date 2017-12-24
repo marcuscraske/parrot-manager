@@ -15,8 +15,8 @@ import { RuntimeService } from 'app/service/runtime.service'
 })
 export class RemoteSyncComponent implements AfterViewChecked {
 
-    remoteSyncNode : any;
-    oldChangeLog : string;
+    private remoteSyncNode : any;
+    private oldChangeLog : string;
 
     constructor(
         private remoteSyncService: RemoteSyncService,
