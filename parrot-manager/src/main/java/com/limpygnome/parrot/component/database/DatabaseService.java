@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * A archive for maintaining the current (primary) database open.
+ * A service for maintaining the current (primary) database open.
  */
 @Service
 public class DatabaseService
@@ -199,6 +199,24 @@ public class DatabaseService
     }
 
     /**
+     * Changes the password of the database currently open.
+     *
+     * @param password the new password
+     * @throws Exception if password change fails
+     */
+    public synchronized void changePassword(String password) throws Exception
+    {
+        if (database != null)
+        {
+            // change password
+            database.changePassword(password);
+
+            // update internally stored copy of password
+            this.password = password.toCharArray();
+        }
+    }
+
+    /**
      * Unloads the current database, closing it.
      *
      * WARNING: this does not save the database.
@@ -258,14 +276,6 @@ public class DatabaseService
     public synchronized Database getDatabase()
     {
         return database;
-    }
-
-    /**
-     * @param password updates the current password for the database
-     */
-    public synchronized void setPassword(String password)
-    {
-        this.password = password.toCharArray();
     }
 
     /**

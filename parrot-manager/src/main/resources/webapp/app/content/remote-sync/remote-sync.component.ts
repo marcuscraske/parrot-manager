@@ -255,11 +255,6 @@ export class RemoteSyncComponent implements AfterViewChecked {
         return this.remoteSyncService.isSyncing();
     }
 
-    getCurrentHost() : string
-    {
-        return this.remoteSyncService.getCurrentHost();
-    }
-
     abort()
     {
         console.log("aborting sync");

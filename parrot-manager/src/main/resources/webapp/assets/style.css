@@ -2,9 +2,7 @@
 {
     font-family: "OpenSans-Regular";
     src:    local("OpenSans-Regular"),
-            url("fonts/open-sans/font.woff2"),
-            url("fonts/open-sans/font.woff"),
-            url("fonts/open-sans/font.ttf");
+            url("fonts/open-sans/OpenSans-Regular.ttf");
 }
 
 html,

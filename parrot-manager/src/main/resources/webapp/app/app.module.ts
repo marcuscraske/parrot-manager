@@ -10,12 +10,15 @@ import { AppComponent }             from 'app/app.component';
 import { TopBarComponent }          from 'app/topbar/topbar.component'
 import { NotificationsComponent }   from 'app/notifications.component'
 
+// Modules
+import { PipesModule }              from 'app/component/pipes/pipes.module'
+import { SettingsModule }           from 'app/component/pages/settings/settings.module'
+
 // Pages
 import { ErrorComponent }           from 'app/content/error/error.component'
 import { CreateComponent }          from 'app/content/create/create.component'
 import { HelpComponent }            from 'app/content/help/help.component'
 import { OpenComponent }            from 'app/content/open/open.component'
-import { SettingsComponent }        from 'app/content/settings/settings.component'
 
 // Pages - opened database
 import { ViewerComponent }          from 'app/content/viewer/viewer.component'
@@ -32,16 +35,10 @@ import { RemoteSyncComponent }      from 'app/content/remote-sync/remote-sync.co
 import { RemoteSyncSshComponent }   from 'app/content/remote-sync-ssh/remote-sync-ssh.component'
 import { BackupsComponent }         from 'app/content/backups/backups.component'
 
-// Pipes
-import { OrderBy } from 'app/orderBy'
-import { FriendlyTime } from 'app/friendlyTime'
-import { FormattedDate } from 'app/formattedDate'
-
 const appRoutes: Routes = [
   { path: '',                                       component: OpenComponent },
   { path: 'open',                                   component: OpenComponent },
   { path: 'create',                                 component: CreateComponent },
-  { path: 'settings',                               component: SettingsComponent },
 
   { path: 'viewer',                                 component: ViewerComponent },
   { path: 'remote-sync',                            component: RemoteSyncComponent },
@@ -60,21 +57,18 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    SettingsModule,
+    PipesModule
   ],
   declarations: [
-
-    // Pipes
-    OrderBy,
-    FriendlyTime,
-    FormattedDate,
 
     // Global
     AppComponent, TopBarComponent, NotificationsComponent,
 
     // Pages
     ErrorComponent,
-    CreateComponent, OpenComponent, HelpComponent, SettingsComponent,
+    CreateComponent, OpenComponent, HelpComponent,
     RemoteSyncComponent, RemoteSyncSshComponent,
     BackupsComponent,
 

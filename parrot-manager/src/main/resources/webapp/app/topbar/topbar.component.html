@@ -20,28 +20,28 @@
             <a tabindex="3" title="Sync Settings" routerLink="/remote-sync">
                 <span class="icon icon-earth"></span>
             </a>
-            <a tabindex="3" title="Import/export entries" routerLink="/import-export">
+            <a tabindex="4" title="Import/export entries" routerLink="/import-export">
                 <span class="icon icon-copy"></span>
             </a>
         </div>
 
         <div class="db-open" *ngIf="databaseService.isOpen()">
-            <a tabindex="4" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
+            <a tabindex="5" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
-            <a tabindex="3" title="Sync Now" (click)="remoteSyncService.syncAll()">
+            <a tabindex="6" title="Sync Now" (click)="remoteSyncService.syncAll()">
                 <span class="icon" [ngClass]="{ 'icon-download3' : !remoteSyncService.isSyncing(), 'icon-loop2 syncing' : remoteSyncService.isSyncing() }"></span>
             </a>
-            <a tabindex="5" title="Change Database" (click)="attemptToCloseDatabase(false)">
+            <a tabindex="7" title="Change Database" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>
             </a>
         </div>
 
         <div>
-            <a tabindex="6" routerLink="/settings" title="Settings">
+            <a tabindex="8" routerLink="/settings" title="Settings">
                 <span class="icon icon-cog"></span>
             </a>
-            <a tabindex="7" *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="devReload()">
+            <a tabindex="9" *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="devReload()">
                 <span class="icon icon-loop2"></span>
             </a>
         </div>
@@ -49,7 +49,7 @@
     </div>
 
     <div class="options">
-        <a tabindex="8" routerLink="help">
+        <a tabindex="10" routerLink="help">
             <span class="icon icon-question"></span>
         </a>
     </div>
