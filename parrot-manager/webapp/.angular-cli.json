@@ -1,0 +1,49 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "project": {
+        "name": "redeemr-merchant"
+    },
+    "apps": [
+        {
+            "root": "src",
+            "outDir": "dist",
+            "assets": [
+                "assets",
+                "favicon.ico"
+            ],
+            "index": "index.html",
+            "main": "main.ts",
+            "polyfills": "polyfills.ts",
+            "test": "test.ts",
+            "tsconfig": "tsconfig.app.json",
+            "prefix": "app",
+            "styles": [
+                "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+                "../node_modules/jstree/dist/themes/default/style.css",
+                "../node_modules/toastr/build/toastr.min.css",
+                "assets/style.css",
+                "assets/animations.css",
+                "assets/loading-box.css",
+                "assets/fonts/icomoon/style.css"
+            ],
+            "scripts": [
+                "app/errorWatcher.js",
+                "app/mocks.js",
+                "../node_modules/jquery/dist/jquery.min.js",
+                "../node_modules/bootstrap/dist/js/bootstrap.min.js",
+                "../node_modules/bootbox/bootbox.min.js",
+                "../node_modules/jstree/dist/jstree.min.js",
+                "../node_modules/toastr/build/toastr.min.js"
+            ],
+            "environmentSource": "environments/environment.ts",
+            "environments": {
+                "dev": "environments/environment.ts",
+                "prod": "environments/environment.prod.ts"
+            }
+        }
+    ],
+    "defaults": {
+        "styleExt": "css",
+        "component": {}
+    }
+}

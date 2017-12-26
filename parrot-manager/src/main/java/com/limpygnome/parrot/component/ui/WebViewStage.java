@@ -106,13 +106,16 @@ public class WebViewStage extends Stage
     {
         WebEngine engine = webView.getEngine();
 
-        // override to provide basic logging of console messages
-        console = new WebViewConsole();
-        console.setup(this);
-
         // monitor navigation
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             LOG.info("WebView state has changed - old: {}, new: {}", oldValue, newValue);
+
+            if (newValue == Worker.State.SUCCEEDED)
+            {
+                // override to provide basic logging of console messages
+                console = new WebViewConsole();
+                console.setup(this);
+            }
         });
 
         // log errors

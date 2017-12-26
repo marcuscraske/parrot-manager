@@ -24,6 +24,20 @@ The entire project, including distributions, can be built using:
 mvn clean package
 ````
 
+You will need Angular CLI to build the front-end (next section).
+
+
+## Front-end / AngularJS
+You can launch the node lite server to build the front-end on the fly, although parts are limited / not mocked:
+
+````
+./run-angular.sh
+````
+
+This will require `npm` (at least v3) to be installed. You will need to install the Angular CLI; navigate to
+`parrot-manager/webapp` and run `sudo npm run pre-install` or refer to Angular documentation.
+
+
 ## Dev Profile
 Enable the `dev` Maven profile for development features.
 
@@ -46,15 +60,6 @@ with the following argument:
 ````
 --classpath=true
 ````
-
-## Front-end / AngularJS
-You can launch the node lite server to build the front-end on the fly, although parts are limited / not mocked:
-
-````
-./run-angular.sh
-````
-
-This will require `npm` (at least v3) to be installed.
 
 
 ## Docs

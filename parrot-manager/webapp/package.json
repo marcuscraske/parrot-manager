@@ -1,0 +1,50 @@
+{
+  "name": "parrot-manager",
+  "version": "1.0.0",
+  "scripts": {
+    "pre-install": "npm i -g @angular/cli",
+    "start": "ng serve --sourcemaps=false",
+    "start-prod" : "ng serve --prod --aot --sourcemaps=false",
+    "build" : "ng build --sourcemaps=false",
+    "build-prod": "ng build --prod --aot --sourcemaps=false",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/limpygnome/parrot-manager/blob/master/LICENSE"
+    }
+  ],
+  "dependencies": {
+    "@angular/common": "5.0.3",
+    "@angular/compiler": "5.0.3",
+    "@angular/core": "5.0.3",
+    "@angular/forms": "5.0.3",
+    "@angular/http": "5.0.3",
+    "@angular/platform-browser": "5.0.3",
+    "@angular/platform-browser-dynamic": "5.0.3",
+    "@angular/router": "5.0.3",
+    "@angular/upgrade": "5.0.3",
+    "angular-in-memory-web-api": "0.5.2",
+    "bootbox": "4.4.0",
+    "bootstrap": "3.3.7",
+    "core-js": "2.5.3",
+    "jquery": "3.2.1",
+    "jstree": "3.3.4",
+    "reflect-metadata": "0.1.10",
+    "rxjs": "5.5.5",
+    "systemjs": "0.20.19",
+    "toastr": "2.1.4",
+    "zone.js": "0.8.18"
+  },
+  "devDependencies": {
+    "@angular/cli": "1.6.2",
+    "@angular/compiler-cli": "5.1.2",
+    "@types/core-js": "0.9.43",
+    "@types/node": "8.0.53",
+    "concurrently": "3.5.1",
+    "lite-server": "2.3.0",
+    "typescript": "2.6.2"
+  }
+}

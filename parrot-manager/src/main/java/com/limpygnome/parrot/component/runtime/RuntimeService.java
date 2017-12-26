@@ -28,6 +28,9 @@ public class RuntimeService
     @Autowired
     private UrlStreamOverrideService urlStreamOverrideService;
 
+    /* Flag to indicate whether webapp is ready to run. */
+    private boolean ready;
+
     /**
      * @return indicates if running in development mode
      */
@@ -143,6 +146,22 @@ public class RuntimeService
 
 
         LOG.info("copied value to clipboard - length: {}", value.length());
+    }
+
+    /**
+     * @return indicates whether runtime is ready
+     */
+    public boolean isReady()
+    {
+        return ready;
+    }
+
+    /**
+     * @param ready sets whether runtime is ready
+     */
+    public void setReady(boolean ready)
+    {
+        this.ready = ready;
     }
 
 }

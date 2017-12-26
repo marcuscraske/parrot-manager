@@ -82,6 +82,9 @@ public class WebStageInitService
         stage.exposeJsObject("buildInfoService", buildInfoService);
         stage.exposeJsObject("databaseOptimizerService", databaseOptimizerService);
         stage.exposeJsObject("sendKeysService", sendKeysService);
+
+        // runtime is now ready
+        runtimeService.setReady(true);
     }
 
     /**
