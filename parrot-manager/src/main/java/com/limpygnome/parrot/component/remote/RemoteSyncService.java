@@ -6,11 +6,10 @@ import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
+import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.MergeLog;
-import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -25,7 +24,7 @@ import org.springframework.stereotype.Service;
  * Service for synchronizing database files remotely.
  */
 @Service
-public class RemoteSyncService
+public class RemoteSyncService implements DatabaseChangingEvent
 {
     private static final Logger LOG = LogManager.getLogger(RemoteSyncService.class);
 
@@ -336,19 +335,27 @@ public class RemoteSyncService
     }
 
     /**
-     * Aborts any SSH connection currently in progress.
+     * Aborts sync in progress.
+     *
+     * This can be safely invoked with uncertainty.
      */
     public synchronized void abort()
     {
-        // Wake thread, just in case...
-        thread.interrupt();
-
-        // Dispose session as well
         if (thread != null)
         {
+            // wake thread, just in case...
+            thread.interrupt();
+
+            // cleanup session
             sshSyncService.cleanup();
             thread = null;
         }
+    }
+
+    @Override
+    public synchronized void eventDatabaseChanged(boolean open)
+    {
+        abort();
     }
 
     /**

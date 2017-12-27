@@ -91,7 +91,7 @@ public class SettingsService
             mapper.writeValue(settingsFile, settings);
 
             // Refresh interval syncing
-            remoteSyncChangeService.refresh();
+            remoteSyncChangeService.refreshContext();
         }
         catch (IOException e)
         {

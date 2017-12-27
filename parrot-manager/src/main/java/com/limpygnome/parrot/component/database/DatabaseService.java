@@ -1,11 +1,10 @@
 package com.limpygnome.parrot.component.database;
 
-import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.recentFile.RecentFile;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
-import com.limpygnome.parrot.component.remote.RemoteSyncChangeService;
-import com.limpygnome.parrot.component.session.SessionService;
+import com.limpygnome.parrot.event.DatabaseChangingEvent;
+import com.limpygnome.parrot.event.DatabaseSavedEvent;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.db.Database;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A service for maintaining the current (primary) database open.
@@ -28,13 +28,7 @@ public class DatabaseService
 
     // Services
     @Autowired
-    private SessionService sessionService;
-    @Autowired
-    private BackupService backupService;
-    @Autowired
     private RecentFileService recentFileService;
-    @Autowired
-    private RemoteSyncChangeService remoteSyncChangeService;
 
     // Components
     @Autowired
@@ -43,6 +37,12 @@ public class DatabaseService
     private FileComponent fileComponent;
     @Autowired
     private CryptoParamsFactory cryptoParamsFactory;
+
+    // Events
+    @Autowired
+    private List<DatabaseChangingEvent> databaseChangingEventList;
+    @Autowired
+    private List<DatabaseSavedEvent> databaseSavedEventList;
 
     // The current database open...
     private Database database;
@@ -61,6 +61,9 @@ public class DatabaseService
     {
         try
         {
+            // ensure database is closed
+            enforceDatabaseOpen(false);
+
             // Ensure path is resolved
             location = fileComponent.resolvePath(location);
             LOG.info("creating new database - location: {}, rounds: {}", location, rounds);
@@ -81,11 +84,10 @@ public class DatabaseService
             // Update internal state
             File currentFile = new File(location);
             updateCurrentFile(currentFile);
-            sessionService.reset();
             this.password = password.toCharArray();
 
-            // Refresh interval syncing
-            remoteSyncChangeService.refresh();
+            // raise event
+            raiseChangeEvent(true);
 
             LOG.info("created database successfully - location: {}", location);
 
@@ -109,6 +111,9 @@ public class DatabaseService
     {
         String result;
 
+        // ensure database is closed
+        enforceDatabaseOpen(false);
+
         // Ensure path is fully resolved
         path = fileComponent.resolvePath(path);
 
@@ -120,15 +125,11 @@ public class DatabaseService
             // Update internal state
             File currentFile = new File(path);
             updateCurrentFile(currentFile);
-            sessionService.reset();
             result = null;
             this.password = password.toCharArray();
 
-            // Refresh interval syncing
-            remoteSyncChangeService.refresh();
-
-            // Invoke event handlers
-            remoteSyncChangeService.eventDatabaseOpened();
+            // raise event
+            raiseChangeEvent(true);
         }
         catch (Exception e)
         {
@@ -150,27 +151,26 @@ public class DatabaseService
     {
         String result;
 
+        // ensure database is open
+        enforceDatabaseOpen(true);
+
         try
         {
             String path = currentFile.getCanonicalPath();
             LOG.info("saving database - path: {}", path);
 
-            // Create backup
-            result = backupService.create();
+            // Save the database
+            databaseReaderWriter.save(database, path);
 
-            if (result == null)
-            {
-                // Save the database
-                databaseReaderWriter.save(database, path);
+            // Reset dirty flag
+            database.setDirty(false);
 
-                // Reset dirty flag
-                database.setDirty(false);
+            LOG.info("successfully saved database");
 
-                LOG.info("successfully saved database");
+            // raise event
+            raiseSavedEvent();
 
-                // Invoke event handlers
-                remoteSyncChangeService.eventDatabaseSaved();
-            }
+            result = null;
         }
         catch (Exception e)
         {
@@ -206,14 +206,13 @@ public class DatabaseService
      */
     public synchronized void changePassword(String password) throws Exception
     {
-        if (database != null)
-        {
-            // change password
-            database.changePassword(password);
+        enforceDatabaseOpen(true);
 
-            // update internally stored copy of password
-            this.password = password.toCharArray();
-        }
+        // change password
+        database.changePassword(password);
+
+        // update internally stored copy of password
+        this.password = password.toCharArray();
     }
 
     /**
@@ -223,14 +222,15 @@ public class DatabaseService
      */
     public synchronized void close()
     {
+        enforceDatabaseOpen(true);
+
         // Update internal state
         database = null;
         updateCurrentFile(null);
-        sessionService.reset();
         password = null;
 
-        // Refresh interval service
-        remoteSyncChangeService.refresh();
+        // Raise event with other components
+        raiseChangeEvent(false);
     }
 
     /**
@@ -284,6 +284,40 @@ public class DatabaseService
     public synchronized String getPassword()
     {
         return new String(password);
+    }
+
+    private void enforceDatabaseOpen(boolean shouldBeOpen)
+    {
+        boolean open = isOpen();
+        boolean result = (open == shouldBeOpen);
+
+        if (!result)
+        {
+            if (open)
+            {
+                throw new IllegalStateException("database should be closed");
+            }
+            else
+            {
+                throw new IllegalStateException("database should be open");
+            }
+        }
+    }
+
+    private void raiseChangeEvent(boolean open)
+    {
+        for (DatabaseChangingEvent component : databaseChangingEventList)
+        {
+            component.eventDatabaseChanged(open);
+        }
+    }
+
+    private void raiseSavedEvent()
+    {
+        for (DatabaseSavedEvent component : databaseSavedEventList)
+        {
+            component.eventDatabaseSaved();
+        }
     }
 
 }

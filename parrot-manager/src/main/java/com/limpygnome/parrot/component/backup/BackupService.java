@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.backup;
 
+import com.limpygnome.parrot.event.DatabaseSavedEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import com.limpygnome.parrot.component.settings.Settings;
@@ -23,7 +24,7 @@ import java.util.Arrays;
  * Used to create backups of a database.
  */
 @Service
-public class BackupService
+public class BackupService implements DatabaseSavedEvent
 {
     private static final Logger LOG = LogManager.getLogger(BackupService.class);
 
@@ -171,6 +172,17 @@ public class BackupService
         }
 
         return result;
+    }
+
+    @Override
+    public void eventDatabaseSaved()
+    {
+        String result = create();
+
+        if (result != null)
+        {
+            throw new RuntimeException(result);
+        }
     }
 
     private File[] fetchFiles()
