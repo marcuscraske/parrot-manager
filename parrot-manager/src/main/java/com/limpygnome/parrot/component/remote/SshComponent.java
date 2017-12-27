@@ -94,7 +94,21 @@ public class SshComponent
         session.setConfig(properties);
         session.setProxy(options.getProxy());
 
-        session.connect(CONNECTION_TIMEOUT);
+        try
+        {
+            session.connect(CONNECTION_TIMEOUT);
+        }
+        catch (JSchException e)
+        {
+            String message = e.getMessage();
+
+            if (message.toLowerCase().contains("socket is not established"))
+            {
+                throw new RuntimeException("Unable to connect to specified host");
+            }
+
+            throw e;
+        }
 
         // Start sftp in session
         Channel channel = session.openChannel("sftp");
