@@ -181,6 +181,11 @@
                 </plugin>
 
                 <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+
+                <plugin>
                     <groupId>de.jutzig</groupId>
                     <artifactId>github-release-plugin</artifactId>
                     <version>1.2.0</version>
