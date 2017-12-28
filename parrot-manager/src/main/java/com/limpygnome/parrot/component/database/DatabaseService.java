@@ -37,6 +37,8 @@ public class DatabaseService
     private FileComponent fileComponent;
     @Autowired
     private CryptoParamsFactory cryptoParamsFactory;
+    @Autowired
+    private DatabaseAutoSaveHandler autoSaveHandler;
 
     // Events
     @Autowired
@@ -52,23 +54,23 @@ public class DatabaseService
     /**
      * Creates a new database.
      *
-     * @param location the file path of the new DB
+     * @param path the file path of the new DB
      * @param password the desired password
      * @param rounds rounds for AES cryptography
      * @return true = success (new DB created and opened), false = failed/error...
      */
-    public synchronized boolean create(String location, String password, int rounds)
+    public synchronized boolean create(String path, String password, int rounds)
     {
         try
         {
             // ensure database is closed
             enforceDatabaseOpen(false);
 
-            // Ensure path is resolved
-            location = fileComponent.resolvePath(location);
-            LOG.info("creating new database - location: {}, rounds: {}", location, rounds);
+            // ensure path is resolved
+            path = fileComponent.resolvePath(path);
+            LOG.info("creating new database - file path: {}, rounds: {}", path, rounds);
 
-            // Create DB
+            // create database
             CryptoParams memoryCryptoParams = cryptoParamsFactory.create(
                     password.toCharArray(), rounds, System.currentTimeMillis()
             );
@@ -76,32 +78,29 @@ public class DatabaseService
                     password.toCharArray(), rounds, System.currentTimeMillis()
             );
 
-            this.database = new Database(memoryCryptoParams, fileCryptoParams);
+            Database database = new Database(memoryCryptoParams, fileCryptoParams);
 
-            // Attempt to save...
-            databaseReaderWriter.save(database, location);
+            // write to disk
+            databaseReaderWriter.save(database, path);
 
-            // Update internal state
-            File currentFile = new File(location);
-            updateCurrentFile(currentFile);
-            this.password = password.toCharArray();
+            // change internal state
+            setDatabase(database, password, path);
 
-            // raise event
-            raiseChangeEvent(true);
-
-            LOG.info("created database successfully - location: {}", location);
+            LOG.info("created database successfully");
 
             return true;
         }
         catch (Exception e)
         {
-            LOG.error("failed to create database - location: {}, rounds: {}, pass len: {}", location, rounds, (password != null ? password.length() : "null"), e);
+            LOG.error("failed to create database - path: {}, rounds: {}, pass len: {}", path, rounds, (password != null ? password.length() : "null"), e);
             return false;
         }
     }
 
     /**
      * Opens a database from the file system.
+     *
+     * If an existing database is already open, it's closed.
      *
      * @param path the path of the database
      * @param password the password to open the database
@@ -111,25 +110,15 @@ public class DatabaseService
     {
         String result;
 
-        // ensure database is closed
-        enforceDatabaseOpen(false);
-
         // Ensure path is fully resolved
         path = fileComponent.resolvePath(path);
 
         try
         {
-            // Open file
-            database = databaseReaderWriter.open(path, password.toCharArray());
+            Database database = databaseReaderWriter.open(path, password.toCharArray());
+            setDatabase(database, password, path);
 
-            // Update internal state
-            File currentFile = new File(path);
-            updateCurrentFile(currentFile);
             result = null;
-            this.password = password.toCharArray();
-
-            // raise event
-            raiseChangeEvent(true);
         }
         catch (Exception e)
         {
@@ -178,24 +167,6 @@ public class DatabaseService
         }
 
         return result;
-    }
-
-    private void updateCurrentFile(File currentFile)
-    {
-        if (currentFile != null)
-        {
-            try
-            {
-                RecentFile recentFile = new RecentFile(currentFile);
-                recentFileService.add(recentFile);
-            }
-            catch (IOException e)
-            {
-                LOG.error("failed to update recent files", e);
-            }
-        }
-
-        this.currentFile = currentFile;
     }
 
     /**
@@ -284,6 +255,52 @@ public class DatabaseService
     public synchronized String getPassword()
     {
         return new String(password);
+    }
+
+    private void setDatabase(Database database, String password, String path)
+    {
+        // close existing database
+        if (isOpen())
+        {
+            LOG.debug("closing existing database");
+            close();
+        }
+
+        // ensure database is closed
+        enforceDatabaseOpen(false);
+
+        // update internal state
+        this.database = database;
+
+        File currentFile = new File(path);
+        updateCurrentFile(currentFile);
+        this.password = password.toCharArray();
+
+        // hook database to auto-save changes
+        database.getDirtyEventHandlers().add(autoSaveHandler);
+
+        // raise event
+        raiseChangeEvent(true);
+
+        LOG.info("updated database - path: {}", path);
+    }
+
+    private void updateCurrentFile(File currentFile)
+    {
+        if (currentFile != null)
+        {
+            try
+            {
+                RecentFile recentFile = new RecentFile(currentFile);
+                recentFileService.add(recentFile);
+            }
+            catch (IOException e)
+            {
+                LOG.error("failed to update recent files", e);
+            }
+        }
+
+        this.currentFile = currentFile;
     }
 
     private void enforceDatabaseOpen(boolean shouldBeOpen)

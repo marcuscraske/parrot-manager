@@ -9,6 +9,7 @@
 <ul class="nav nav-tabs">
     <li (click)="currentTab = 'globalSettings'" [ngClass]="{ 'active' : currentTab == 'globalSettings' }">
         <a>
+            <span class="icon icon-cogs"></span>
             Global
         </a>
     </li>
@@ -21,7 +22,7 @@
     <li (click)="currentTab = 'databaseOptimisation'" *ngIf="databaseService.isOpen()" [ngClass]="{ 'active' : currentTab == 'databaseOptimisation' }">
         <a>
             <span class="icon icon-power"></span>
-            Database Optimisation
+            Optimisation
         </a>
     </li>
 </ul>

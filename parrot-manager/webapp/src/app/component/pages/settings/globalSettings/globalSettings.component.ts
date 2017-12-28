@@ -25,7 +25,8 @@ export class GlobalSettingsComponent
         remoteSyncOnOpeningDatabase: [false],
         remoteSyncOnChange: [false],
         theme: [""],
-        inactivityTimeout: [""]
+        inactivityTimeout: [""],
+        autoSave: [true]
     });
 
     recentFilesClearEnabled : boolean;

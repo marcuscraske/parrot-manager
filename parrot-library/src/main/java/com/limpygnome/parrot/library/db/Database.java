@@ -5,9 +5,12 @@ import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
 import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import com.limpygnome.parrot.library.event.DatabaseDirtyEventHandler;
+import com.limpygnome.parrot.library.event.EventHandlerCollection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -42,8 +45,22 @@ public class Database
     // Quick ref map of UUID (String) to node; this must be updated in places where nodes are added/removed etc
     private DatabaseLookup lookup;
 
+    // Event handlers
+    private EventHandlerCollection<DatabaseDirtyEventHandler> dirtyEventHandlers;
+
+
     private Database()
     {
+        // Setup handler collections
+        dirtyEventHandlers = new EventHandlerCollection<DatabaseDirtyEventHandler>()
+        {
+            @Override
+            protected void invoke(DatabaseDirtyEventHandler instance, Object... args)
+            {
+                instance.eventDatabaseDirtyEventHandler((Database) args[0], (Boolean) args[1]);
+            }
+        };
+
         // Setup an initial blank root node
         lookup = new DatabaseLookup();
 
@@ -280,6 +297,7 @@ public class Database
     public synchronized void setDirty(boolean dirty)
     {
         isDirty = dirty;
+        dirtyEventHandlers.trigger(this, dirty);
     }
 
     /**
@@ -288,6 +306,14 @@ public class Database
     public synchronized boolean isDirty()
     {
         return isDirty;
+    }
+
+    /**
+     * @return collection of event handlers for when the database dirty flag changes
+     */
+    public EventHandlerCollection<DatabaseDirtyEventHandler> getDirtyEventHandlers()
+    {
+        return dirtyEventHandlers;
     }
 
     @Override

@@ -27,7 +27,8 @@ export class SettingsService {
             "remoteSyncOnOpeningDatabase" : settings.getRemoteSyncOnOpeningDatabase().getValue(),
             "remoteSyncOnChange" : settings.getRemoteSyncOnChange().getValue(),
             "theme" : settings.getTheme().getValue(),
-            "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null)
+            "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null),
+            "autoSave" : settings.getAutoSave().getValue()
         };
 
         return json;
@@ -73,6 +74,9 @@ export class SettingsService {
         );
         settings.getInactivityTimeout().setValueLong(
             (json.inactivityTimeout != null ? json.inactivityTimeout * 60 * 1000 : null)
+        );
+        settings.getAutoSave().setValue(
+            json.autoSave
         );
 
         // Save
