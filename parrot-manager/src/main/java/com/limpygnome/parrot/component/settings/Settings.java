@@ -20,6 +20,7 @@ public class Settings implements Serializable
     private SettingsValue<String> theme;
     private SettingsValue<Long> inactivityTimeout;
     private SettingsValue<Boolean> autoSave;
+    private SettingsValue<String> keyboardLayout;
 
     public Settings()
     {
@@ -34,6 +35,7 @@ public class Settings implements Serializable
         this.theme = new SettingsValue<>("dark");
         this.inactivityTimeout = new SettingsValue<>(0L);
         this.autoSave = new SettingsValue<>(true);
+        this.keyboardLayout = new SettingsValue<>(null);
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()
@@ -90,6 +92,11 @@ public class Settings implements Serializable
         return autoSave;
     }
 
+    public SettingsValue<String> getKeyboardLayout()
+    {
+        return keyboardLayout;
+    }
+
     @JsonIgnore
     @Override
     public String toString()
@@ -106,6 +113,7 @@ public class Settings implements Serializable
                 ", theme=" + theme +
                 ", inactivityTimeout=" + inactivityTimeout +
                 ", autoSave=" + autoSave +
+                ", keyboardLayout=" + keyboardLayout +
                 '}';
     }
 

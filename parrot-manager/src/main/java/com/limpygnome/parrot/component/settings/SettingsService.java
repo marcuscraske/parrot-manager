@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +21,7 @@ public class SettingsService
 {
     private static final Logger LOG = LogManager.getLogger(SettingsService.class);
 
+    @Lazy
     @Autowired
     private RemoteSyncChangeService remoteSyncChangeService;
     @Autowired

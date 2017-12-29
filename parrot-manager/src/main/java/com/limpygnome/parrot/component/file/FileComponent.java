@@ -44,7 +44,7 @@ public class FileComponent
     }
 
     /**
-     * Builds the full path to a preference file.
+     * Builds the full path to a preference file (or directory).
      *
      * @param fileName file name
      * @return the full path

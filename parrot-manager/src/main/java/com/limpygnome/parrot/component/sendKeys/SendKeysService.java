@@ -7,12 +7,16 @@ import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.awt.im.InputContext;
 import java.security.Key;
+import java.util.Locale;
 import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  * A service for sending keys to another application.
@@ -27,14 +31,28 @@ public class SendKeysService
     private WebStageInitService initService;
     @Autowired
     private EncryptedValueService encryptedValueService;
+    @Autowired
+    private KeyboardLayoutRepository keyboardLayoutRepository;
 
     // State
+    // -- Current keyboard layout to be used
+    private KeyboardLayout keyboardLayout;
     // -- Indicates if a listener has been added for when the application is minimized
     private boolean isMinimizeHooked = false;
     // -- Data to be sent when the app is next minimized
     private String pendingData = null;
     // -- The encrypted value pending being sent
     private UUID pendingEncryptedValueId = null;
+
+    /**
+     * Triggers service to refresh the current keyboard layout to be used for sending keys.
+     */
+    @PostConstruct
+    public void refreshKeyboardLayout()
+    {
+        keyboardLayout = keyboardLayoutRepository.determineBest();
+        LOG.info("keyboard layout: {}", keyboardLayout.getName());
+    }
 
     /**
      * Sends keys once the application is minimized.
@@ -159,60 +177,15 @@ public class SendKeysService
         return pendingEncryptedValueId != null && value != null && pendingEncryptedValueId.equals(value.getId());
     }
 
-    // TODO does this work with different keyboard layouts besides en-GB?
     private synchronized void type(Robot robot, char key)
     {
-        switch (key)
+        if (keyboardLayout == null)
         {
-            case '`': type(robot, KeyEvent.VK_BACK_QUOTE);  break;
-            case '-': type(robot, KeyEvent.VK_MINUS);       break;
-            case '=': type(robot, KeyEvent.VK_EQUALS);      break;
-            case '~': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_NUMBER_SIGN); break;
-            case '!': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_1); break;
-            case '@': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_QUOTE); break;
-            case '#': type(robot, KeyEvent.VK_NUMBER_SIGN); break;
-            case '$': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_4); break;
-            case '%': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_5); break;
-            case '^': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_6); break;
-            case '&': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_7); break;
-            case '*': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_8); break;
-            case '(': type(robot, KeyEvent.VK_LEFT_PARENTHESIS); break;
-            case ')': type(robot, KeyEvent.VK_RIGHT_PARENTHESIS); break;
-            case '_': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_MINUS);  break;
-            case '+': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_EQUALS); break;
-            case '\t': type(robot, KeyEvent.VK_TAB);        break;
-            case '\n': type(robot, KeyEvent.VK_ENTER);      break;
-            case '[': type(robot, KeyEvent.VK_OPEN_BRACKET); break;
-            case ']': type(robot, KeyEvent.VK_CLOSE_BRACKET); break;
-            case '\\': type(robot, KeyEvent.VK_BACK_SLASH); break;
-            case '{': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_OPEN_BRACKET); break;
-            case '}': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_CLOSE_BRACKET); break;
-            case '|': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_BACK_SLASH); break;
-            case ';': type(robot, KeyEvent.VK_SEMICOLON);   break;
-            case ':': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_SEMICOLON);       break;
-            case '\'': type(robot, KeyEvent.VK_QUOTE);      break;
-            case '"': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_2);    break;
-            case ',': type(robot, KeyEvent.VK_COMMA);       break;
-            case '<': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_COMMA); break;
-            case '>': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_PERIOD); break;
-            case '.': type(robot, KeyEvent.VK_PERIOD);      break;
-            case '/': type(robot, KeyEvent.VK_SLASH);       break;
-            case '?': type(robot, KeyEvent.VK_SHIFT, KeyEvent.VK_SLASH); break;
-            case ' ': type(robot, KeyEvent.VK_SPACE);       break;
-
-            default:
-                // A-Z
-                if (key >= 65 && key <= 90)
-                {
-                    type(robot, KeyEvent.VK_SHIFT, KeyEvent.getExtendedKeyCodeForChar(key));
-                }
-                else
-                {
-                    // last ditch attempt...
-                    type(robot, KeyEvent.getExtendedKeyCodeForChar(key));
-                }
-                break;
+            throw new IllegalStateException("no keyboard layout available");
         }
+
+        int[] keyCodes = keyboardLayout.convert(key);
+        type(robot, keyCodes);
     }
 
     private synchronized void type(Robot robot, int... keyCodes)
