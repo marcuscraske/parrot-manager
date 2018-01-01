@@ -13,18 +13,17 @@ export class KeyboardLayoutsComponent
     testerKeyCodes: string;
 
     constructor(
-        private sendKeysService: SendKeysService,
-        private runtimeService: RuntimeService
+        public sendKeysService: SendKeysService,
+        public runtimeService: RuntimeService
     ) { }
-
-    clearTester()
-    {
-        var input = $("#keyboardLayoutTestInput");
-        input.val("");
-    }
 
     storeKeyCodePressedTester(event)
     {
+        // clear tester
+        var input = $("#keyboardLayoutTestInput");
+        input.val("");
+
+        // build key codes for mapping
         var keyCodes = event.keyCode;
 
         if (event.ctrlKey)
@@ -47,7 +46,7 @@ export class KeyboardLayoutsComponent
            keyCodes = "VK_META " + keyCodes;
         }
 
-        // update keys pressed
+        // store key codes
         this.testerKeyCodes = keyCodes;
     }
 

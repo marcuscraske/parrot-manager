@@ -45,7 +45,7 @@
     <div class="panel-body">
 
 
-        <div class="form-group" (keydown)="clearTester($event); storeKeyCodePressedTester($event);" (keyup)="generateMappingTester()">
+        <div class="form-group">
             <label class="form-control-label">
                 Type character
             </label>
@@ -53,6 +53,8 @@
                    type="text"
                    class="form-control"
                    placeholder="Type character here"
+                   (keydown)="storeKeyCodePressedTester($event)"
+                   (keyup)="generateMappingTester()"
             />
             <small class="form-text text-muted">
                 Hold a key down and the mapping will be generated below.

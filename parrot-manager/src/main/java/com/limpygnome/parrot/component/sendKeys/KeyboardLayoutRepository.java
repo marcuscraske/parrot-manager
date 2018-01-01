@@ -160,16 +160,21 @@ public class KeyboardLayoutRepository
 
             for (Resource resource : resources)
             {
-                try
+                String fileName = resource.getFilename();
+
+                if (fileName != null && fileName.length() > 0)
                 {
-                    InputStream inputStream = resource.getInputStream();
-                    load(inputStream, messages, resource.getFilename());
-                }
-                catch (IOException e)
-                {
-                    String path = resource.getFile().getAbsolutePath();
-                    messages.add("failed to load keyboard layout - path: " + path);
-                    LOG.error("failed to load keyboard layout from class-path - path: {}", path, e);
+                    try
+                    {
+                        InputStream inputStream = resource.getInputStream();
+                        load(inputStream, messages, resource.getFilename());
+                    }
+                    catch (IOException e)
+                    {
+                        String path = resource.getFile().getAbsolutePath();
+                        messages.add("failed to load keyboard layout - path: " + path);
+                        LOG.error("failed to load keyboard layout from class-path - path: {}", path, e);
+                    }
                 }
             }
         }
@@ -255,9 +260,15 @@ public class KeyboardLayoutRepository
         String config = new String(raw, "UTF-8");
 
         // parse config and add to collection
-        KeyboardLayout keyboardLayout = KeyboardLayout.parse(config, messages, nameForLogging);
-        layoutMap.put(keyboardLayout.getName(), keyboardLayout);
+        try
+        {
+            KeyboardLayout keyboardLayout = KeyboardLayout.parse(config, messages, nameForLogging);
+            layoutMap.put(keyboardLayout.getName(), keyboardLayout);
+        }
+        catch (IllegalStateException e)
+        {
+            LOG.error("unexpected parsing issue for keyboard layout - layout: {}", nameForLogging, e);
+        }
     }
-
 
 }

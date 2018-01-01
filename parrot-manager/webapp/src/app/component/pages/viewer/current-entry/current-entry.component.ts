@@ -27,14 +27,13 @@ export class CurrentEntryComponent
     @Output() saveValue = new EventEmitter();
 
     constructor(
-        private databaseService: DatabaseService,
-        private runtimeService: RuntimeService,
-        private remoteSyncService: RemoteSyncService,
-        private encryptedValueService: EncryptedValueService,
-        private renderer: Renderer,
+        public databaseService: DatabaseService,
+        public runtimeService: RuntimeService,
+        public remoteSyncService: RemoteSyncService,
+        public encryptedValueService: EncryptedValueService,
+        public renderer: Renderer,
         public fb: FormBuilder
-    ) {
-    }
+    ) { }
 
     navigateToParent()
     {
@@ -112,6 +111,8 @@ export class CurrentEntryComponent
         var decryptedValue = this.encryptedValueService.getString(this.currentNode);
         currentValue.val(decryptedValue);
 
+        console.log("current value displayed");
+
         // resize box to fit value
         this.resizeValueTextAreaToFitContent();
     }
@@ -119,6 +120,7 @@ export class CurrentEntryComponent
     hideValue()
     {
         this.saveValue.emit();
+        console.log("current value hidden");
     }
 
     // Resets edit mode when leaving text box of current value

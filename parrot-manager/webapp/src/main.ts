@@ -10,6 +10,7 @@ console.log("loading app...");
 if (environment.production)
 {
     console.log("running in production");
+
     enableProdMode();
 }
 else

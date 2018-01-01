@@ -4,9 +4,9 @@
   "scripts": {
     "pre-install": "npm i -g @angular/cli",
     "start": "ng serve --sourcemaps=false",
-    "start-prod": "ng serve --prod --aot --sourcemaps=false",
+    "start-prod": "ng serve --aot --sourcemaps=false",
     "build": "ng build --sourcemaps=false",
-    "build-prod": "ng build --prod --aot --sourcemaps=false",
+    "build-prod": "ng build --aot --sourcemaps=false",
     "tsc": "tsc",
     "tsc:w": "tsc -w"
   },

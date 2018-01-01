@@ -135,12 +135,12 @@ public class KeyboardLayout
         if (layout.name == null)
         {
             messages.add("mandatory meta-data 'name' missing");
-            throw new IllegalStateException("layout name must be defined");
+            throw new IllegalStateException("name must be defined - keyboard layout: " + nameForLogging);
         }
         else if (layout.locale == null)
         {
             messages.add("mandatory meta-data 'locale' missing");
-            throw new IllegalStateException("layout locale must be defined");
+            throw new IllegalStateException("locale must be defined - keyboard layout: " + nameForLogging);
         }
 
         return layout;

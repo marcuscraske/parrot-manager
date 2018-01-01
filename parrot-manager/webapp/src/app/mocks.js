@@ -21,7 +21,9 @@
                         getRemoteSyncOnOpeningDatabase : function() { return { getValue : function() { return "true" } } },
                         getRemoteSyncOnChange : function() { return { getValue : function() { return "true" } } },
                         getTheme : function() { return { getValue : function() { return "" } } },
-                        getInactivityTimeout : function() { return { getValue : function() { return "0" } } }
+                        getInactivityTimeout : function() { return { getValue : function() { return "0" } } },
+                        getAutoSave : function() { return { getValue : function() { return "false" } } },
+                        getKeyboardLayout : function() { return { getValue : function() { return "" } } }
                     }
                 }
             }
@@ -192,6 +194,27 @@
                 isDevelopmentMode: function() { return true; },
                 refreshPage: function() { location.reload(); },
                 isReady: function() { return "false" }
+            }
+        })();
+    }
+
+    if (window.sendKeysService == null)
+    {
+        window.sendKeysService = (function(){
+            return {
+                getKeyboardLayout: function() {
+                    return {
+                        getName: function() { return "test l"}
+                    }
+                },
+                getKeyboardLayouts: function()
+                {
+                    return [
+                        {
+                            getName: function(){ return "test keyboard" }
+                        }
+                    ];
+                }
             }
         })();
     }
