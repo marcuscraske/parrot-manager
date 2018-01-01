@@ -6,6 +6,7 @@ import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -207,8 +208,18 @@ public class SendKeysService
                 }
                 catch (InterruptedException e) { }
 
-                // Simulate key press for each char
+
+                /*
+                    Create robot instance for key emulation
+
+                    Auto-delay not great, but Mac High Sierra does not work consistently without a delay. Likely
+                    JRE bug.
+                 */
+
                 Robot robot = new Robot();
+                robot.setAutoDelay(10);
+
+                // Simulate key press for each char
                 for (char key : pendingData.toCharArray())
                 {
                     type(robot, key);
@@ -263,6 +274,8 @@ public class SendKeysService
         for (int keyCode : keyCodes)
         {
             robot.keyRelease(keyCode);
+
+            LOG.info("SIMULATED " + keyCode);
         }
     }
 

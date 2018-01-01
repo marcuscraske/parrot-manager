@@ -260,6 +260,7 @@ public class KeyboardLayout
     private static int[] parseNativeKeys(String[] parts)
     {
         return Arrays.stream(parts)
+                .skip(1)
                 .map(KeyboardLayout::parseNativeKey)
                 .filter(integer -> integer > 0)
                 .mapToInt(i -> i)

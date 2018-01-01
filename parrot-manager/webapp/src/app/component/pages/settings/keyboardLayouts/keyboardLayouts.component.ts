@@ -56,11 +56,24 @@ export class KeyboardLayoutsComponent
         var input = $("#keyboardLayoutTestInput");
         var output = $("#keyboardLayoutTestOutput");
 
+        // build mapping
         var character = input.val();
-        var text = character + "    " + this.testerKeyCodes;
-        output.val(text);
+        var mapping = character + "    " + this.testerKeyCodes;
 
-        console.log("updated keyboard layout tester - " + text);
+        // append to end as new line
+        var newText = output.val();
+        if (newText.length > 0)
+        {
+            newText += "\n";
+        }
+        newText += mapping;
+
+        output.val(newText);
+
+        // scroll to bottom
+        output.scrollTop(output[0].scrollHeight - output.height());
+
+        console.log("updated keyboard layout tester, added: " + mapping);
     }
 
     reloadKeyboardLayouts()
@@ -93,12 +106,19 @@ export class KeyboardLayoutsComponent
         this.runtimeService.setClipboard(keyCodes);
     }
 
+    clearKeyCodes()
+    {
+        var output = $("#keyboardLayoutTestOutput");
+        output.val("");
+    }
+
     sendKeysTest()
     {
         var input = $("#keyboardLayoutSendKeysInput");
         var output = $("#keyboardLayoutSendKeysOutput");
 
         // focus output
+        output.val("");
         output.focus();
 
         // emulate keys

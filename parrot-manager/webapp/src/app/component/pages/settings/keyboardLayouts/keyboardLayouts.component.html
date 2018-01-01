@@ -25,7 +25,7 @@
     <label class="form-control-label">
         Error messages
     </label>
-    <textarea rows="4" class="form-control" id="keyboardLayoutMessages" disabled="disabled" scroll-glue>{{ reloadErrorMessages }}</textarea>
+    <textarea rows="4" class="form-control" id="keyboardLayoutMessages" disabled="disabled">{{ reloadErrorMessages }}</textarea>
 </div>
 
 <div class="form-group">
@@ -63,23 +63,26 @@
             <label class="form-control-label">
                 Mapping Output
             </label>
-            <div class="input-group">
-                <input id="keyboardLayoutTestOutput"
-                       type="text"
-                       class="form-control"
-                       placeholder="Mapping line will be outputted here"
-                       readonly
-                />
-                <span class="input-group-btn">
-                    <button class="btn btn-default" (click)="copyKeyCodes()">
-                        <span class="icon icon-copy"></span>
-                        Copy
-                    </button>
-                </span>
-            </div>
+            <textarea id="keyboardLayoutTestOutput"
+                   rows="8"
+                   class="form-control"
+                   placeholder="Mapping line will be outputted here"
+                   readonly
+            ></textarea>
             <small class="form-text text-muted">
                 Copy the above mapping into a keyboard layout file.
             </small>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-default" (click)="copyKeyCodes()">
+                <span class="icon icon-copy"></span>
+                Copy
+            </button>
+            <button class="btn btn-default" (click)="clearKeyCodes()">
+                <span class="icon icon-bin"></span>
+                Clear
+            </button>
         </div>
 
 
