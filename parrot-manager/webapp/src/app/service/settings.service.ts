@@ -28,7 +28,8 @@ export class SettingsService {
             "remoteSyncOnChange" : settings.getRemoteSyncOnChange().getValue(),
             "theme" : settings.getTheme().getValue(),
             "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null),
-            "autoSave" : settings.getAutoSave().getValue()
+            "autoSave" : settings.getAutoSave().getValue(),
+            "keyboardLayout" : settings.getKeyboardLayout().getValue()
         };
 
         return json;
@@ -77,6 +78,9 @@ export class SettingsService {
         );
         settings.getAutoSave().setValue(
             json.autoSave
+        );
+        settings.getKeyboardLayout().setValue(
+            json.keyboardLayout
         );
 
         // Save

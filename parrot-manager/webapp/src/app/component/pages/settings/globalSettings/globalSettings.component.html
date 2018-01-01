@@ -195,9 +195,6 @@
                 </div>
             </div>
 
-        </div>
-
-        <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="panel-title">
@@ -219,6 +216,38 @@
 
                 </div>
             </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Send password
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="form-control-label" for="remoteSyncInterval">
+                            Keyboard layout
+                        </label>
+                        <select id="keyboardLayout" class="form-control"
+                                (change)="sendKeysService.refreshKeyboardLayout()"
+                                formControlName="keyboardLayout"  [(ngModel)]="globalSettingsForm.value['keyboardLayout']">
+
+                            <option value="">automatic - {{ sendKeysService.getKeyboardLayout().getName() }}</option>
+                            <option *ngFor="let layout of sendKeysService.getKeyboardLayouts(); trackBy: trackChildrenKeyboardLayouts">{{ layout.getName() }}</option>
+                        </select>
+                        <small class="form-text text-muted">
+                            This layout will be used to emulate keys to send passwords to other applications.
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
     </div>

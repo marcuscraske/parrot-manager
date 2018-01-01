@@ -113,38 +113,40 @@ public class KeyboardLayout
         this.os = (os != null ? os : null);
     }
 
-    static KeyboardLayout parse(String config, String nameForLogging)
+    static KeyboardLayout parse(String config, List<String> messages, String nameForLogging)
     {
         KeyboardLayout layout = new KeyboardLayout();
 
         // read line-by-line; ignore //, # or ; at start
         String[] lines = config.split("\n");
 
-        for (int lineNumber = 0; lineNumber < lines.length; lineNumber++)
+        for (int lineIndex = 0; lineIndex < lines.length; lineIndex++)
         {
-            String line = lines[lineNumber].trim();
+            String line = lines[lineIndex].trim();
             boolean ignore = line.isEmpty() || line.startsWith("//") || line.startsWith("#") || line.startsWith(";");
 
             if (!ignore)
             {
-                parseLine(layout, line, nameForLogging, lineNumber);
+                parseLine(layout, line, messages, nameForLogging, lineIndex + 1);
             }
         }
 
         // enforce mandatory options
         if (layout.name == null)
         {
+            messages.add("mandatory meta-data 'name' missing");
             throw new IllegalStateException("layout name must be defined");
         }
         else if (layout.locale == null)
         {
+            messages.add("mandatory meta-data 'locale' missing");
             throw new IllegalStateException("layout locale must be defined");
         }
 
         return layout;
     }
 
-    private static void parseLine(KeyboardLayout layout, String line, String nameForLogging, int lineNumber)
+    private static void parseLine(KeyboardLayout layout, String line, List<String> messages, String nameForLogging, int lineNumber)
     {
         // split by white-space
         String[] parts = splitIntoColumns(line);
@@ -192,17 +194,20 @@ public class KeyboardLayout
                     if (nativeKeys.length == 0)
                     {
                         LOG.warn("layout: {}, line: {} - ignored key '{}' as unable to map native keys", nameForLogging, lineNumber, key);
+                        messages.add("layout: " + nameForLogging + ", line: " + lineNumber + " - unable to map key '" + key + "'");
                     }
                     else
                     {
                         layout.keys.put(character, nativeKeys);
                         handled = true;
+
                         LOG.debug("layout: {}, line: {} - key '{}' mapped with {} native keys", nameForLogging, lineNumber, key, nativeKeys.length);
                     }
                 }
                 else
                 {
                     LOG.warn("layout: {}, line: {} - unknown character '{}'", nameForLogging, lineNumber, key);
+                    messages.add("layout: " + nameForLogging + ", line: " + lineNumber + " - unknown character '" + key + "'");
                 }
             }
         }
@@ -210,6 +215,7 @@ public class KeyboardLayout
         if (!handled)
         {
             LOG.warn("layout: {}, line: {} - invalid line", nameForLogging, lineNumber);
+            messages.add("layout: " + nameForLogging + ", line: " + lineNumber + " - malformed line, ignored");
         }
     }
 
@@ -233,13 +239,13 @@ public class KeyboardLayout
         {
             switch (part)
             {
-                case "\n":
+                case "\\n":
                     result = '\n';
                     break;
-                case "\t":
+                case "\\t":
                     result = '\t';
                     break;
-                case "\r":
+                case "\\r":
                     result = '\r';
                     break;
                 default:

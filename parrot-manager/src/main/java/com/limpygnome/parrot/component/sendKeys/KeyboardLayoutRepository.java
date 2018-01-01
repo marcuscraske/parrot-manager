@@ -12,9 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Repository of keyboard layouts.
@@ -27,11 +25,13 @@ public class KeyboardLayoutRepository
 {
     private static final Logger LOG = LogManager.getLogger(KeyboardLayoutRepository.class);
 
+    // Components
     @Autowired
     private SettingsService settingsService;
     @Autowired
     private FileComponent fileComponent;
 
+    // Available keyboard layouts
     private Map<String, KeyboardLayout> layoutMap;
 
     public KeyboardLayoutRepository()
@@ -39,12 +39,26 @@ public class KeyboardLayoutRepository
         layoutMap = new HashMap<>();
     }
 
+    /**
+     * Reloads keyboard layouts.
+     *
+     * @return list of error messages
+     */
     @PostConstruct
-    public synchronized void refresh()
+    public synchronized String[] reload()
     {
+        List<String> messages = new LinkedList<>();
+
+        // clear existing layouts
         layoutMap.clear();
-        loadFromClassPath();
-        loadFromFileSystem();
+
+        // load layouts
+        loadFromClassPath(messages);
+        loadFromFileSystem(messages);
+
+        // give back any errors, in case this was manually reloaded
+        String[] result = messages.toArray(new String[messages.size()]);
+        return result;
     }
 
     /**
@@ -78,6 +92,23 @@ public class KeyboardLayoutRepository
             }
         }
 
+        return result;
+    }
+
+    public synchronized KeyboardLayout[] getKeyboardLayouts()
+    {
+        return layoutMap.values().toArray(new KeyboardLayout[layoutMap.size()]);
+    }
+
+    public synchronized File getLocalDirectory()
+    {
+        File result = fileComponent.resolvePreferenceFile("keyboard-layout");
+        return result;
+    }
+
+    public synchronized File getWorkingDirectory()
+    {
+        File result = new File("keyboard-layout");
         return result;
     }
 
@@ -120,7 +151,7 @@ public class KeyboardLayoutRepository
         return result;
     }
 
-    private void loadFromClassPath()
+    private void loadFromClassPath(List<String> messages)
     {
         try
         {
@@ -132,32 +163,53 @@ public class KeyboardLayoutRepository
                 try
                 {
                     InputStream inputStream = resource.getInputStream();
-                    load(inputStream, resource.getFilename());
+                    load(inputStream, messages, resource.getFilename());
                 }
                 catch (IOException e)
                 {
-                    LOG.error("failed to load keyboard layout from class-path - path: {}", resource.getFilename(), e);
+                    String path = resource.getFile().getAbsolutePath();
+                    messages.add("failed to load keyboard layout - path: " + path);
+                    LOG.error("failed to load keyboard layout from class-path - path: {}", path, e);
                 }
             }
         }
         catch (IOException e)
         {
             LOG.error("failed to load keyboard layouts from class-path", e);
+            messages.add("failed to load keyboard layouts from class-path, refer to logs");
         }
     }
 
-    private void loadFromFileSystem()
+    private void loadFromFileSystem(List<String> messages)
     {
-        // load from local user's parrot dir
-        File localDirectory = fileComponent.resolvePreferenceFile("keyboard-layout");
-        loadFromDirectory(localDirectory);
+        // load from local user's parrot dir (or create it)
+        File localDirectory = getLocalDirectory();
 
-        // load from working directory
-        File workingDirectory = new File("keyboard-layout");
-        loadFromDirectory(workingDirectory);
+        if (!localDirectory.exists())
+        {
+            localDirectory.mkdirs();
+            messages.add("local preferences directory missing (created)");
+        }
+        else
+        {
+            loadFromDirectory(messages, localDirectory);
+        }
+
+        // load from working directory (or create it)
+        File workingDirectory = getWorkingDirectory();
+
+        if (!workingDirectory.exists())
+        {
+            workingDirectory.mkdirs();
+            messages.add("working directory missing (created)");
+        }
+        else
+        {
+            loadFromDirectory(messages, workingDirectory);
+        }
     }
 
-    private void loadFromDirectory(File directory)
+    private void loadFromDirectory(List<String> messages, File directory)
     {
         File[] files = directory.listFiles();
 
@@ -168,20 +220,27 @@ public class KeyboardLayoutRepository
                 try
                 {
                     InputStream inputStream = new FileInputStream(file);
-                    load(inputStream, file.getAbsolutePath());
-                } catch (IOException e)
+                    load(inputStream, messages, file.getAbsolutePath());
+                }
+                catch (IOException e)
                 {
-                    LOG.error("failed to load keyboard layout - path: {}", file.getAbsolutePath(), e);
+                    String path = file.getAbsolutePath();
+
+                    LOG.error("failed to load keyboard layout - path: {}", path, e);
+                    messages.add("failed to load keyboard layout, refer to logs - path: " + path);
                 }
             }
         }
         else
         {
-            LOG.info("keyboard layout directory does not exist or cannot be read - path: {}", directory.getAbsolutePath());
+            String path = directory.getAbsolutePath();
+
+            LOG.info("keyboard layout directory does not exist or cannot be read - path: {}", path);
+            messages.add("directory does not exist or cannot be read - path: " + path);
         }
     }
 
-    private void load(InputStream inputStream, String nameForLogging) throws IOException
+    private void load(InputStream inputStream, List<String> messages, String nameForLogging) throws IOException
     {
         // convert to string
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -196,7 +255,7 @@ public class KeyboardLayoutRepository
         String config = new String(raw, "UTF-8");
 
         // parse config and add to collection
-        KeyboardLayout keyboardLayout = KeyboardLayout.parse(config, nameForLogging);
+        KeyboardLayout keyboardLayout = KeyboardLayout.parse(config, messages, nameForLogging);
         layoutMap.put(keyboardLayout.getName(), keyboardLayout);
     }
 

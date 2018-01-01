@@ -4,12 +4,10 @@ import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
-import java.awt.im.InputContext;
-import java.security.Key;
-import java.util.Locale;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,6 +43,17 @@ public class SendKeysService
     private UUID pendingEncryptedValueId = null;
 
     /**
+     * Reloads the keyboard layouts.
+     *
+     * @return array of error messages, or empty if none
+     */
+    public String[] reload()
+    {
+        String[] messages = keyboardLayoutRepository.reload();
+        return messages;
+    }
+
+    /**
      * Triggers service to refresh the current keyboard layout to be used for sending keys.
      */
     @PostConstruct
@@ -52,6 +61,22 @@ public class SendKeysService
     {
         keyboardLayout = keyboardLayoutRepository.determineBest();
         LOG.info("keyboard layout: {}", keyboardLayout.getName());
+    }
+
+    /**
+     * @return array of all available keyboard layouts
+     */
+    public synchronized KeyboardLayout[] getKeyboardLayouts()
+    {
+        return keyboardLayoutRepository.getKeyboardLayouts();
+    }
+
+    /**
+     * @return the current keyboard layout
+     */
+    public KeyboardLayout getKeyboardLayout()
+    {
+        return keyboardLayout;
     }
 
     /**
@@ -89,6 +114,43 @@ public class SendKeysService
             pendingEncryptedValueId = null;
 
             LOG.debug("null encrypted value, not sending keys");
+        }
+    }
+
+    /**
+     * Test for emulating keys, but keys are sent immediately.
+     *
+     * This is intended for testing emulating keys within the app.
+     *
+     * @param text text to be tested
+     * @throws Exception thrown if unable to emulate keys
+     */
+    public synchronized void sendTest(String text) throws Exception
+    {
+        pendingData = text;
+        simulateKeys();
+    }
+
+    public void openLocalUserDirectory()
+    {
+        openDirectory(keyboardLayoutRepository.getLocalDirectory());
+    }
+
+    public void openWorkingDirectory()
+    {
+        openDirectory(keyboardLayoutRepository.getWorkingDirectory());
+    }
+
+    private void openDirectory(File file)
+    {
+        try
+        {
+            Desktop.getDesktop().open(file);
+        }
+        catch (IOException e)
+        {
+            String path = file.getAbsolutePath();
+            LOG.error("failed to open directory - path: {}", path, e);
         }
     }
 
@@ -158,7 +220,8 @@ public class SendKeysService
 
                 LOG.debug("finished simulating keys");
 
-            } catch (AWTException e)
+            }
+            catch (AWTException e)
             {
                 LOG.error("failed to send keys", e);
             }

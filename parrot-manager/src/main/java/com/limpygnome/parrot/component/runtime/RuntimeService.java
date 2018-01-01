@@ -3,10 +3,13 @@ package com.limpygnome.parrot.component.runtime;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
-import java.awt.Toolkit;
+
+import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -162,6 +165,28 @@ public class RuntimeService
     public void setReady(boolean ready)
     {
         this.ready = ready;
+    }
+
+    public void openLink(String url)
+    {
+        try
+        {
+            // create and validate url
+            URI uri = URI.create(url);
+            String schema = uri.getScheme();
+
+            if (!"https".equals(schema))
+            {
+                throw new SecurityException("invalid url schema for url: " + url);
+            }
+
+            // open url
+            Desktop.getDesktop().browse(uri);
+        }
+        catch (IOException e)
+        {
+            LOG.error("failed to open link - url: {}", url, e);
+        }
     }
 
 }

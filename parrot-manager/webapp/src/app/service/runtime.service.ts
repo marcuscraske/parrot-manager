@@ -68,4 +68,9 @@ export class RuntimeService {
         this.runtimeService.loadPage("http://localhost" + relativeCurrentUrl);
     }
 
+    openLink(url)
+    {
+        this.runtimeService.openLink(url);
+    }
+
 }

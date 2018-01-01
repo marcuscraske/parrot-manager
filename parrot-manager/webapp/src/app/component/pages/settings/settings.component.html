@@ -13,6 +13,12 @@
             Global
         </a>
     </li>
+    <li (click)="currentTab = 'keyboardLayouts'" [ngClass]="{ 'active' : currentTab == 'keyboardLayouts' }">
+        <a>
+            <span class="icon icon-keyboard"></span>
+            Keyboard Layout
+        </a>
+    </li>
     <li (click)="currentTab = 'changePassword'" *ngIf="databaseService.isOpen()" [ngClass]="{ 'active' : currentTab == 'changePassword' }">
         <a>
             <span class="icon icon-lock"></span>
@@ -32,6 +38,9 @@
 -->
 <div *ngIf="currentTab == 'globalSettings'">
     <globalSettings></globalSettings>
+</div>
+<div *ngIf="currentTab == 'keyboardLayouts'">
+    <keyboardLayouts></keyboardLayouts>
 </div>
 <div *ngIf="currentTab == 'changePassword' && databaseService.isOpen()">
     <changePassword></changePassword>

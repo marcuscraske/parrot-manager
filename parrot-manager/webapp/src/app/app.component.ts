@@ -10,6 +10,7 @@ import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { SettingsService } from 'app/service/settings.service'
 import { ThemeService } from 'app/service/theme.service'
+import { SendKeysService } from 'app/service/sendKeys.service'
 
 @Component({
   selector: 'my-app',
@@ -24,7 +25,8 @@ import { ThemeService } from 'app/service/theme.service'
         RemoteSyncService,
         RemoteSyncChangeLogService,
         SettingsService,
-        ThemeService
+        ThemeService,
+        SendKeysService
   ]
 })
 export class AppComponent

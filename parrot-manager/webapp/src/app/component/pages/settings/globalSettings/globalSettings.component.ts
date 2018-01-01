@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 
+import { RuntimeService } from 'app/service/runtime.service'
 import { SettingsService } from 'app/service/settings.service'
 import { DatabaseService } from 'app/service/database.service'
 import { RecentFileService } from 'app/service/recentFile.service'
 import { BackupService } from 'app/service/backup.service'
 import { ThemeService } from 'app/service/theme.service'
+import { SendKeysService } from 'app/service/sendKeys.service'
 
 @Component({
     templateUrl: "globalSettings.component.html",
@@ -26,17 +28,20 @@ export class GlobalSettingsComponent
         remoteSyncOnChange: [false],
         theme: [""],
         inactivityTimeout: [""],
-        autoSave: [true]
+        autoSave: [true],
+        keyboardLayout: [""]
     });
 
     recentFilesClearEnabled : boolean;
 
     constructor(
+        public runtimeService: RuntimeService,
         public settingsService: SettingsService,
         public databaseService: DatabaseService,
         public recentFileService: RecentFileService,
         public backupService: BackupService,
         public themeService: ThemeService,
+        public sendKeysService: SendKeysService,
         public fb: FormBuilder,
         public router: Router
     ) { }
@@ -126,6 +131,11 @@ export class GlobalSettingsComponent
         this.recentFilesClearEnabled = false;
 
         toastr.success("Cleared recent files");
+    }
+
+    trackChildrenKeyboardLayouts(index, layout)
+    {
+        return layout ? layout.getName() : null;;
     }
 
 }
