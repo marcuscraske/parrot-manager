@@ -174,6 +174,11 @@ public class SshSyncService
         }
         catch (Exception e)
         {
+            if (e instanceof InterruptedException)
+            {
+                throw new RuntimeException("sync aborted");
+            }
+
             messages = sshComponent.getExceptionMessage(e);
             success = false;
             LOG.error("sync - exception", e);

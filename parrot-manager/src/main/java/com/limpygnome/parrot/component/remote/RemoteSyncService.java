@@ -46,6 +46,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
     // State
     private Thread thread;
+    private boolean aborted;
     private long lastSync;
 
     /**
@@ -259,15 +260,29 @@ public class RemoteSyncService implements DatabaseChangingEvent
         syncLaunchAsyncThread(remotePassword, options);
     }
 
-    private void syncLaunchAsyncThread(String remotePassword, SshOptions... optionsArray)
+    private synchronized void syncLaunchAsyncThread(String remotePassword, SshOptions... optionsArray)
     {
         if (thread == null)
         {
             LOG.info("launching separate thread for sync");
 
+            // Reset abort flag
+            aborted = false;
+
             // Start separate thread for sync to prevent blocking
-            thread = new Thread(() -> {
-                syncAsyncThreadList(remotePassword, optionsArray);
+            thread = new Thread(() ->
+            {
+                try
+                {
+                    syncAsyncThreadList(remotePassword, optionsArray);
+                }
+                finally
+                {
+                    synchronized (this)
+                    {
+                        thread = null;
+                    }
+                }
             });
             thread.start();
         }
@@ -279,8 +294,9 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
     private void syncAsyncThreadList(String remotePassword, SshOptions... optionsArray)
     {
-        for (SshOptions options : optionsArray)
+        for (int i = 0; !aborted && i < optionsArray.length; i++)
         {
+            SshOptions options = optionsArray[i];
             syncAsyncThreadSync(options, remotePassword);
         }
     }
@@ -343,12 +359,15 @@ public class RemoteSyncService implements DatabaseChangingEvent
     {
         if (thread != null)
         {
-            // wake thread, just in case...
+            aborted = true;
+
+            // interrupt thread, this will cause it to abort
             thread.interrupt();
 
             // cleanup session
             sshSyncService.cleanup();
-            thread = null;
+
+            LOG.info("thread aborted");
         }
     }
 

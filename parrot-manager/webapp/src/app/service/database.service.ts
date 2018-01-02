@@ -111,7 +111,10 @@ export class DatabaseService
         this.remoteSyncChangeLogService.clear();
 
         // close actual db
-        this.databaseService.close();
+        if (this.isOpen())
+        {
+            this.databaseService.close();
+        }
     }
 
     getFileName() : string

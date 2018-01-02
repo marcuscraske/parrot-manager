@@ -128,6 +128,7 @@ public class RuntimeService
     public void exit()
     {
         // Just exit the application...
+        LOG.info("terminating jvm");
         System.exit(0);
     }
 

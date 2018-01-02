@@ -104,7 +104,7 @@ public class SshComponent
 
             if (message.toLowerCase().contains("socket is not established"))
             {
-                throw new RuntimeException("Unable to connect to specified host");
+                throw new RuntimeException("Unable to connect to host '" + options.getName() + "'");
             }
 
             throw e;
