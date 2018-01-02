@@ -6,3 +6,4 @@ Architecture: all
 Maintainer: "limpygnome" <limpygnome@gmail.com>
 Homepage: https://github.com/limpygnome/parrot-manager
 Description: Password manager
+Installed-Size: @PACKAGE_SIZE_BYTES@

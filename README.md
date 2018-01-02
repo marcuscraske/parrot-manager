@@ -93,7 +93,9 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
 
 ## Installation
 ### Prerequisites
-- Requires at least Java Runtime 1.8 - [download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+- Recommended [Java Runtime 1.9](http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html)
+    - Minimum [Java Runtime 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html), however
+      there are various JRE bugs that may cause stability issues.
 
 ### Ubuntu / Debian
 Download the latest deb file, to anywhere, and run the following command in the same directory; the file name
@@ -106,8 +108,7 @@ sudo dpkg -i parrot-manager.deb
 ### Windows
 Both an installer and stand-alone version are available.
 
-For the stand-alone, just extract the executable to anywhere you desire, no installation process is required. Settings
-are saved to `%APPATA%\parrot-manager`.
+For the stand-alone, just extract the executable to anywhere you desire, no installation process is required.
 
 ### Mac
 Download the latest pkg file, to anywhere, and

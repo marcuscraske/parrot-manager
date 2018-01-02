@@ -13,6 +13,11 @@
     <artifactId>debian</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <!-- TODO auto-generate at some point, just a guide-line for now -->
+        <package.size.bytes>20000</package.size.bytes>
+    </properties>
+
     <scm>
         <url>${scm.url}</url>
         <connection>${scm.connection}</connection>
@@ -36,9 +41,10 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <executable>dpkg</executable>
+                    <executable>fakeroot</executable>
                     <workingDirectory>${project.build.directory}</workingDirectory>
                     <arguments>
+                        <argument>dpkg</argument>
                         <argument>--build</argument>
                         <argument>parrot-manager-linux-${project.version}</argument>
                     </arguments>
@@ -63,6 +69,7 @@
                                     <fileset dir="${project.basedir}/src/main/resources/parrot-manager" />
                                     <filterset>
                                         <filter token="VERSION" value="${project.version}" />
+                                        <filter token="PACKAGE_SIZE_BYTES" value="${package.size.bytes}" />
                                     </filterset>
                                 </copy>
 
