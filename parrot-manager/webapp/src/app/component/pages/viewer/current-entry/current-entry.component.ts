@@ -1,4 +1,4 @@
-import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'

@@ -67,6 +67,7 @@ public class DatabaseNode
         this.deletedChildren = new HashSet<>();
         this.history = new DatabaseNodeHistory(this);
         this.localProperties = new HashMap<>();
+        this.childrenCached = new DatabaseNode[0];
     }
 
     /**
@@ -261,9 +262,6 @@ public class DatabaseNode
      */
     public synchronized DatabaseNode[] getChildren()
     {
-        // Build array and assign locally to avoid garbage collection
-        Collection<DatabaseNode> childNodes = children.values();
-        childrenCached = childNodes.toArray(new DatabaseNode[childNodes.size()]);
         return childrenCached;
     }
 
@@ -305,7 +303,7 @@ public class DatabaseNode
     /**
      * @return the number of child nodes / entries
      */
-    public int getChildCount()
+    public synchronized int getChildCount()
     {
         return children.size();
     }
@@ -391,6 +389,9 @@ public class DatabaseNode
         // Add to database lookup
         database.getLookup().add(node);
 
+        // Refresh cache
+        refreshChildrenCache();
+
         return node;
     }
 
@@ -418,6 +419,9 @@ public class DatabaseNode
             // Remove from parent
             parent.children.remove(id);
             parent.deletedChildren.add(id);
+
+            // Refresh parent cache
+            parent.refreshChildrenCache();
 
             // Remove from lookup
             database.getLookup().remove(this);
@@ -502,6 +506,12 @@ public class DatabaseNode
 
         // Set flag on database
         database.setDirty(true);
+    }
+
+    private void refreshChildrenCache()
+    {
+        Collection<DatabaseNode> childNodes = children.values();
+        childrenCached = childNodes.toArray(new DatabaseNode[childNodes.size()]);
     }
 
     @Override
