@@ -11,7 +11,8 @@ import {Pipe, PipeTransform, OnDestroy, ChangeDetectorRef, NgZone} from '@angula
 @Pipe({name: 'friendlyTime', pure: false})
 export class FriendlyTime implements PipeTransform, OnDestroy
 {
-    private timer: any;
+    private timer: number;
+
     private text: string;
     private seconds: number;
     private secondsSince;
@@ -30,14 +31,11 @@ export class FriendlyTime implements PipeTransform, OnDestroy
         {
             // Setup initial value / replace with new value
             this.seconds = seconds;
-
             this.text = this.generate(seconds);
+
             this.clearTimer();
             this.createTimer();
         }
-
-        this.clearTimer();
-        this.createTimer();
 
         return this.text;
     }
@@ -92,6 +90,12 @@ export class FriendlyTime implements PipeTransform, OnDestroy
 
     createTimer()
     {
+        // abort if timer alread
+        if (this.timer)
+        {
+            return;
+        }
+
         // determine when next update will occur
         var nextUpdate;
 
@@ -121,12 +125,16 @@ export class FriendlyTime implements PipeTransform, OnDestroy
 
             return window.setTimeout(() => {
 
-                // update text
-                this.text = this.generate(this.seconds);
-
-                // mark as changed
                 this.ngZone.run(() => {
+                    // update text
+                    this.text = this.generate(this.seconds);
+
+                    // mark as changed
                     this.changeDetectorRef.markForCheck();
+
+                    // prepare to update again
+                    this.clearTimer();
+                    this.createTimer();
                 });
 
             }, nextUpdate);
