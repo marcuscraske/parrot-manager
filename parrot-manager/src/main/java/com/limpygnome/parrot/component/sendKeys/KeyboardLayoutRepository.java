@@ -121,17 +121,21 @@ public class KeyboardLayoutRepository
         {
             os = os.toLowerCase();
 
-            if (os.contains("mac"))
-            {
-                result = "mac";
-            }
-            else if (os.contains("win"))
+            if (os.contains("windows"))
             {
                 result = "windows";
             }
-            else if (os.contains("nux"))
+            else if (os.contains("mac os"))
+            {
+                result = "mac";
+            }
+            else if (os.contains("nux") || os.contains("nix") || os.contains("aix"))
             {
                 result = "linux";
+            }
+            else
+            {
+                LOG.warn("unable to detect current os, keyboard layout may not be as expected - os: {}", os);
             }
         }
 
