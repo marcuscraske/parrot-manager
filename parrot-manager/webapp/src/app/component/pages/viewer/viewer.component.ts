@@ -1,4 +1,4 @@
-import { Component, Renderer } from '@angular/core';
+import { Component, Renderer, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
@@ -45,7 +45,9 @@ export class ViewerComponent
         public encryptedValueService: EncryptedValueService,
         public searchFilterService: SearchFilterService,
         public renderer: Renderer,
-        public fb: FormBuilder)
+        public fb: FormBuilder,
+        public changeDetectorRef: ChangeDetectorRef
+    )
     {
         // Setup tree
         this.initTree();
@@ -373,6 +375,9 @@ export class ViewerComponent
 
         // reset form as untouched
         this.updateEntryForm.reset();
+
+        // mark as invalid
+        this.markChangeDetection();
     }
 
     updateSearchFilter(searchFilter)
@@ -380,6 +385,13 @@ export class ViewerComponent
         console.log("search filter changed: " + searchFilter);
         this.searchFilter = searchFilter;
         this.updateTree();
+    }
+
+    markChangeDetection()
+    {
+        // mark current and all child components for change detection
+        this.changeDetectorRef.markForCheck();
+        console.log("marked cd");
     }
 
 }

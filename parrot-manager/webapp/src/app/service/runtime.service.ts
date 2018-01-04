@@ -66,6 +66,7 @@ export class RuntimeService {
     refreshPage(relativeCurrentUrl)
     {
         this.runtimeService.loadPage("http://localhost" + relativeCurrentUrl);
+        console.log("invoked refresh page");
     }
 
     openLink(url)

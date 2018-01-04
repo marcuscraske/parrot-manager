@@ -42,6 +42,8 @@ public class SendKeysService
     private String pendingData = null;
     // -- The encrypted value pending being sent
     private UUID pendingEncryptedValueId = null;
+    // -- Cache of available keyboards
+    private KeyboardLayout[] keyboardLayoutsCache = new KeyboardLayout[0];
 
     /**
      * Reloads the keyboard layouts.
@@ -51,6 +53,10 @@ public class SendKeysService
     public String[] reload()
     {
         String[] messages = keyboardLayoutRepository.reload();
+
+        // update cache
+        updateKeyboardLayoutsCache();
+
         return messages;
     }
 
@@ -60,7 +66,12 @@ public class SendKeysService
     @PostConstruct
     public void refreshKeyboardLayout()
     {
+        // update current keyboard to use
         keyboardLayout = keyboardLayoutRepository.determineBest();
+
+        // initialise/update cache
+        updateKeyboardLayoutsCache();
+
         LOG.info("keyboard layout: {}", keyboardLayout.getName());
     }
 
@@ -69,7 +80,7 @@ public class SendKeysService
      */
     public synchronized KeyboardLayout[] getKeyboardLayouts()
     {
-        return keyboardLayoutRepository.getKeyboardLayouts();
+        return keyboardLayoutsCache;
     }
 
     /**
@@ -140,6 +151,12 @@ public class SendKeysService
     public void openWorkingDirectory()
     {
         openDirectory(keyboardLayoutRepository.getWorkingDirectory());
+    }
+
+
+    private void updateKeyboardLayoutsCache()
+    {
+        this.keyboardLayoutsCache = keyboardLayoutRepository.getKeyboardLayouts();
     }
 
     private void openDirectory(File file)
