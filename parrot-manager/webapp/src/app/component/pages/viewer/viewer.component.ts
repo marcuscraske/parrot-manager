@@ -272,6 +272,10 @@ export class ViewerComponent
                 }
             });
 
+            $("#tree").on("changed.jstree", (e, data) => {
+                this.updateTreeSelection();
+            });
+
         });
 
         // Update actual data
@@ -291,7 +295,7 @@ export class ViewerComponent
         }
 
         // update tree
-        $(function(){
+        $(() => {
             // Update tree
             var tree = $("#tree").jstree(true);
 
@@ -302,9 +306,9 @@ export class ViewerComponent
             // restore data
             tree.settings.core.data = data;
             tree.refresh();
-        });
 
-        this.updateTreeSelection();
+            console.log("tree updated");
+        });
     }
 
     // Updates the selected node in the tree with the current node
@@ -391,7 +395,7 @@ export class ViewerComponent
     {
         // mark current and all child components for change detection
         this.changeDetectorRef.markForCheck();
-        console.log("marked cd");
+        console.log("marked for change detection");
     }
 
 }

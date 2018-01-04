@@ -56,7 +56,7 @@ export class CurrentEntryComponent
         this.updateTree.emit();
 
         // Navigate to parent node
-        console.log("navigating to parent node...");
+        console.log("navigating to parent node - id: " + parentNodeId);
         this.changeNodeBeingViewed.emit(parentNodeId);
     }
 

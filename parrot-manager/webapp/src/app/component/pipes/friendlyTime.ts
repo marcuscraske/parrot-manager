@@ -23,6 +23,9 @@ export class FriendlyTime implements PipeTransform, OnDestroy
 
     transform(seconds : number): any
     {
+        // Unless input changes, do nothing as we'll let timer handle changes to same input,
+        // otherwise expression check errors occur
+
         if (seconds != this.seconds)
         {
             // Setup initial value / replace with new value
@@ -32,11 +35,9 @@ export class FriendlyTime implements PipeTransform, OnDestroy
             this.clearTimer();
             this.createTimer();
         }
-        else
-        {
-            // Do nothing, only timers should be able to change text to mark changes
-            this.createTimer();
-        }
+
+        this.clearTimer();
+        this.createTimer();
 
         return this.text;
     }
