@@ -4,9 +4,9 @@
   "scripts": {
     "pre-install": "npm i -g @angular/cli",
     "start": "ng serve --sourcemaps=false",
-    "start-prod": "ng serve --aot --sourcemaps=false",
+    "start-prod": "ng serve --prod --sourcemaps=false",
     "build": "ng build --sourcemaps=false",
-    "build-prod": "ng build --aot --sourcemaps=false",
+    "build-prod": "ng build --prod --sourcemaps=false",
     "tsc": "tsc",
     "tsc:w": "tsc -w"
   },
@@ -40,7 +40,7 @@
     "zone.js": "0.8.19"
   },
   "devDependencies": {
-    "@angular/cli": "1.6.2",
+    "@angular/cli": "1.6.3",
     "@angular/compiler-cli": "5.1.2",
     "@types/core-js": "0.9.43",
     "@types/node": "8.0.53",

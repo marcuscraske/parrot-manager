@@ -8,7 +8,7 @@ export class ErrorWatcherHandler implements ErrorHandler
         var message = error.message != null ? error.message : "(unknown)";
         var stack = error.stack != null ? error.stack : "(unknown)";
 
-        console.error("angular caught exception - message: " + message + "\n\nstack:\n" + stack);
+        console.log("angular caught exception - message: " + message + "\n\nstack:\n" + stack);
 
         errorWatcherShow(message, stack);
     }

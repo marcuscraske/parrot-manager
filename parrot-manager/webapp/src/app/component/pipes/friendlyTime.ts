@@ -6,13 +6,41 @@
     If zero or null is provided, 'never' is returned.
 */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform, OnDestroy, ChangeDetectorRef, NgZone} from '@angular/core';
 
 @Pipe({name: 'friendlyTime', pure: false})
-export class FriendlyTime implements PipeTransform
+export class FriendlyTime implements PipeTransform, OnDestroy
 {
+    private timer: number;
 
-    transform(input : number): any
+    private text: string;
+    private seconds: number;
+    private secondsSince;
+
+    constructor(
+        private changeDetectorRef: ChangeDetectorRef,
+        private ngZone: NgZone
+    ) {}
+
+    transform(seconds : number): any
+    {
+        // Unless input changes, do nothing as we'll let timer handle changes to same input,
+        // otherwise expression check errors occur
+
+        if (seconds != this.seconds)
+        {
+            // Setup initial value / replace with new value
+            this.seconds = seconds;
+            this.text = this.generate(seconds);
+
+            this.clearTimer();
+            this.createTimer();
+        }
+
+        return this.text;
+    }
+
+    generate(input: number)
     {
         var result;
 
@@ -53,9 +81,79 @@ export class FriendlyTime implements PipeTransform
             {
                 result = totalSeconds + " sec" + (totalSeconds > 1 ? "s" : "") + " ago";
             }
+
+            this.secondsSince = seconds;
         }
 
         return result;
+    }
+
+    createTimer()
+    {
+        // abort if timer alread
+        if (this.timer)
+        {
+            return;
+        }
+
+        // determine when next update will occur
+        var nextUpdate;
+
+        if (this.secondsSince < 60)
+        {
+            nextUpdate = 1;
+        }
+        else if (this.secondsSince < 60*60)
+        {
+            nextUpdate = 60;
+        }
+        else if (this.secondsSince < 60*60*24)
+        {
+            nextUpdate = 3600;
+        }
+        else
+        {
+            // every day
+            nextUpdate = 86400;
+        }
+
+        // convert to seconds
+        nextUpdate *= 1000;
+
+        // prevent change detection from setting up the timeout (performance improvement)
+        this.timer = this.ngZone.runOutsideAngular(() => {
+
+            return window.setTimeout(() => {
+
+                this.ngZone.run(() => {
+                    // update text
+                    this.text = this.generate(this.seconds);
+
+                    // mark as changed
+                    this.changeDetectorRef.markForCheck();
+
+                    // prepare to update again
+                    this.clearTimer();
+                    this.createTimer();
+                });
+
+            }, nextUpdate);
+
+        });
+    }
+
+    clearTimer()
+    {
+        if (this.timer)
+        {
+            window.clearTimeout(this.timer);
+            this.timer = null;
+        }
+    }
+
+    ngOnDestroy()
+    {
+        this.clearTimer();
     }
 
 }

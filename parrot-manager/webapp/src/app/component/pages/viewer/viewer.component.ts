@@ -1,4 +1,4 @@
-import { Component, Renderer } from '@angular/core';
+import { Component, Renderer, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
@@ -45,7 +45,9 @@ export class ViewerComponent
         public encryptedValueService: EncryptedValueService,
         public searchFilterService: SearchFilterService,
         public renderer: Renderer,
-        public fb: FormBuilder)
+        public fb: FormBuilder,
+        public changeDetectorRef: ChangeDetectorRef
+    )
     {
         // Setup tree
         this.initTree();
@@ -270,6 +272,10 @@ export class ViewerComponent
                 }
             });
 
+            $("#tree").on("changed.jstree", (e, data) => {
+                this.updateTreeSelection();
+            });
+
         });
 
         // Update actual data
@@ -289,7 +295,7 @@ export class ViewerComponent
         }
 
         // update tree
-        $(function(){
+        $(() => {
             // Update tree
             var tree = $("#tree").jstree(true);
 
@@ -300,9 +306,9 @@ export class ViewerComponent
             // restore data
             tree.settings.core.data = data;
             tree.refresh();
-        });
 
-        this.updateTreeSelection();
+            console.log("tree updated");
+        });
     }
 
     // Updates the selected node in the tree with the current node
@@ -373,6 +379,9 @@ export class ViewerComponent
 
         // reset form as untouched
         this.updateEntryForm.reset();
+
+        // mark as invalid
+        this.markChangeDetection();
     }
 
     updateSearchFilter(searchFilter)
@@ -380,6 +389,13 @@ export class ViewerComponent
         console.log("search filter changed: " + searchFilter);
         this.searchFilter = searchFilter;
         this.updateTree();
+    }
+
+    markChangeDetection()
+    {
+        // mark current and all child components for change detection
+        this.changeDetectorRef.markForCheck();
+        console.log("marked for change detection");
     }
 
 }

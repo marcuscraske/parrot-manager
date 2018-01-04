@@ -34,12 +34,12 @@ export class ViewerEntriesComponent
 
         if (newNode != null)
         {
+            // Update tree
+            this.updateTree.emit();
+
             // Change view to new node
             var nodeId = newNode.getId();
             this.changeNodeBeingViewed.emit(nodeId);
-
-            // Update tree
-            this.updateTree.emit();
 
             console.log("added new entry - id: " + nodeId);
         }

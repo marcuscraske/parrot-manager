@@ -43,7 +43,7 @@ function errorWatcherShow(title, body)
     bootbox.dialog({
         message :   "<h3>Unexpected exception</h3>" +
                     "<p>Something has gone wrong, please send us the below information on our Github. Be sure to remove any sensitive information.</p>" +
-                    "<div class='form-group'><textarea class='form-control' rows='6'>" + body + "</textarea></div>" +
+                    "<div class='form-group'><textarea class='form-control' rows='12'>" + body + "</textarea></div>" +
                     "<div class='form-group clearfix'>" +
                         "<button class='btn btn-primary pull-left' onclick='errorWatcherGithub()'>Copy Github Issue Link</button>" +
                         "<button class='btn btn-primary pull-right' onclick='errorWatcherCopy()'>Copy</button>" +
