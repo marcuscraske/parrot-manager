@@ -3,6 +3,7 @@ Version: @VERSION@
 Section: web
 Priority: optional
 Architecture: all
-Maintainer: limpygnome
-Homepage: https://limpygnome.com/parrot
+Maintainer: "limpygnome" <limpygnome@gmail.com>
+Homepage: https://github.com/limpygnome/parrot-manager
 Description: Password manager
+Installed-Size: @PACKAGE_SIZE_BYTES@

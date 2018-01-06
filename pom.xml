@@ -6,7 +6,7 @@
 
     <groupId>com.limpygnome</groupId>
     <artifactId>parrot</artifactId>
-    <version>5.0</version>
+    <version>6.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -94,12 +94,12 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
-                <version>5.0.0.RELEASE</version>
+                <version>5.0.2.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
-                <version>5.0.0.RELEASE</version>
+                <version>5.0.2.RELEASE</version>
             </dependency>
 
             <!-- javax annotations -->
@@ -111,14 +111,19 @@
 
             <!-- logging -->
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>2.9.1</version>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>2.9.1</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
             </dependency>
 
             <!-- unit testing -->
@@ -131,7 +136,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>2.11.0</version>
+                <version>2.13.0</version>
                 <scope>test</scope>
             </dependency>
 
@@ -178,6 +183,11 @@
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.1.0</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
                 </plugin>
 
                 <plugin>

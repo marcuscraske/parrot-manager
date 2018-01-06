@@ -1,0 +1,38 @@
+name    en-GB
+locale  en-GB
+os      *
+
+`    VK_BACK_QUOTE
+-    VK_MINUS
+=    VK_EQUALS
+~    VK_SHIFT    VK_NUMBER_SIGN
+!    VK_SHIFT    VK_1
+@    VK_SHIFT    VK_QUOTE
+#    VK_NUMBER_SIGN
+$    VK_SHIFT    VK_4
+%    VK_SHIFT    VK_5
+^    VK_SHIFT    VK_6
+&    VK_SHIFT    VK_7
+*    VK_SHIFT    VK_8
+(    VK_LEFT_PARENTHESIS
+)    VK_RIGHT_PARENTHESIS
+_    VK_SHIFT    VK_MINUS
++    VK_SHIFT    VK_EQUALS
+\t    VK_TAB
+\n    VK_ENTER
+[    VK_OPEN_BRACKET
+]    VK_CLOSE_BRACKET
+\    VK_BACK_SLASH
+{    VK_SHIFT    VK_OPEN_BRACKET
+}    VK_SHIFT    VK_CLOSE_BRACKET
+|    VK_SHIFT    VK_BACK_SLASH
+;    VK_SEMICOLON
+:    VK_SHIFT    VK_SEMICOLON
+'    VK_QUOTE
+"    VK_SHIFT    VK_2
+,    VK_COMMA
+<    VK_SHIFT    VK_COMMA
+>    VK_SHIFT    VK_PERIOD
+.    VK_PERIOD
+/    VK_SLASH
+?    VK_SHIFT    VK_SLASH

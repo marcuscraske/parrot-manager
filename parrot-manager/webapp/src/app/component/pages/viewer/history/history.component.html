@@ -1,0 +1,52 @@
+<div class="form-group">
+    <button class="btn btn-danger" (click)="clearAll()">
+        Clear History
+    </button>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            Created
+        </th>
+        <th>
+            Value
+        </th>
+        <th>
+            Options
+        </th>
+    </tr>
+
+    <tr *ngIf="currentNode.getHistory().size() == 0">
+        <td colspan="3">
+            None
+        </td>
+    </tr>
+
+    <tr *ngFor="let historicValue of (currentNode.getHistory().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
+        <td title="{{ historicValue.getLastModified() | formattedDate }}">
+            {{ historicValue.getLastModified() | friendlyTime }}
+        </td>
+        <td>
+            <toggle-value [encryptedValue]="historicValue"></toggle-value>
+        </td>
+        <td>
+
+            <!-- copy to clipboard button -->
+            <copy-clipboard [encryptedValue]="historicValue"></copy-clipboard>
+
+            <!-- restore button -->
+            <button class="btn btn-default" (click)="restore(historicValue)">
+                Restore
+            </button>
+
+            <!-- delete button -->
+            <button class="btn btn-danger" (click)="delete(historicValue)">
+                <span class="icon icon-cross"></span>
+                Delete
+            </button>
+
+        </td>
+    </tr>
+
+</table>

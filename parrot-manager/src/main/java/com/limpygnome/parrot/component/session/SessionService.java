@@ -1,7 +1,8 @@
 package com.limpygnome.parrot.component.session;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.limpygnome.parrot.event.DatabaseChangingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,9 +18,9 @@ import java.util.Map;
  * - All data is wiped when opening/closing a database.
  */
 @Service
-public class SessionService
+public class SessionService implements DatabaseChangingEvent
 {
-    private static final Logger LOG = LogManager.getLogger(SessionService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
 
     private Map<String, Object> store;
 
@@ -28,28 +29,34 @@ public class SessionService
         store = new HashMap<>();
     }
 
-    public void reset()
+    public synchronized void reset()
     {
         store.clear();
         LOG.debug("wiped session data");
     }
 
-    public void put(String key, Object value)
+    public synchronized void put(String key, Object value)
     {
         store.put(key, value);
         LOG.debug("added value - key: {}", key);
     }
 
-    public Object get(String key)
+    public synchronized Object get(String key)
     {
         return store.get(key);
     }
 
-    public Object remove(String key)
+    public synchronized Object remove(String key)
     {
         Object object = store.remove(key);
         LOG.debug("removed value - key: {}", key);
         return object;
+    }
+
+    @Override
+    public synchronized void eventDatabaseChanged(boolean open)
+    {
+        reset();
     }
 
 }

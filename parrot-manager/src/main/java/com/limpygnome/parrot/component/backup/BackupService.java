@@ -1,21 +1,19 @@
 package com.limpygnome.parrot.component.backup;
 
-import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.session.SessionService;
+import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.limpygnome.parrot.event.DatabaseSavedEvent;
+import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
@@ -23,9 +21,9 @@ import java.util.Arrays;
  * Used to create backups of a database.
  */
 @Service
-public class BackupService
+public class BackupService implements DatabaseSavedEvent
 {
-    private static final Logger LOG = LogManager.getLogger(BackupService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BackupService.class);
 
     @Autowired
     private SettingsService settingsService;
@@ -171,6 +169,17 @@ public class BackupService
         }
 
         return result;
+    }
+
+    @Override
+    public void eventDatabaseSaved()
+    {
+        String result = create();
+
+        if (result != null)
+        {
+            throw new RuntimeException(result);
+        }
     }
 
     private File[] fetchFiles()

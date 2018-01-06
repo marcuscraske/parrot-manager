@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>5.0</version>
+        <version>6.0</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-manager</artifactId>
@@ -67,12 +67,16 @@
 
         <!-- logging -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
         </dependency>
 
         <!-- unit testing -->
@@ -92,16 +96,17 @@
     <build>
         <plugins>
 
-            <!-- compile angular app by invoking npm -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
+
+                    <!-- retrieve dependencies -->
                     <execution>
                         <id>exec-npm-install</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <workingDirectory>${project.basedir}/src/main/resources/webapp</workingDirectory>
+                            <workingDirectory>${project.basedir}/webapp</workingDirectory>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>install</argument>
@@ -111,21 +116,48 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
+
+                    <!-- build app -->
                     <execution>
-                        <id>exec-npm-run-tsc</id>
+                        <id>exec-npm-run-build-prod</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <workingDirectory>${project.basedir}/src/main/resources/webapp</workingDirectory>
+                            <workingDirectory>${project.basedir}/webapp</workingDirectory>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
-                                <argument>tsc</argument>
+                                <argument>build-prod</argument>
                             </arguments>
                         </configuration>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                     </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+
+                    <!-- copy compiled app -->
+                    <execution>
+                        <id>copy-webapp</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes/webapp</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/webapp/dist</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
 

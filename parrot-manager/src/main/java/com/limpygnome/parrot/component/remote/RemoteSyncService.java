@@ -6,28 +6,27 @@ import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
+import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.MergeLog;
-import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Service for synchronizing database files remotely.
  */
 @Service
-public class RemoteSyncService
+public class RemoteSyncService implements DatabaseChangingEvent
 {
-    private static final Logger LOG = LogManager.getLogger(RemoteSyncService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncService.class);
 
     private static final String SESSION_KEY_OPTIONS = "remoteSshOptions";
 
@@ -47,6 +46,7 @@ public class RemoteSyncService
 
     // State
     private Thread thread;
+    private boolean aborted;
     private long lastSync;
 
     /**
@@ -260,15 +260,29 @@ public class RemoteSyncService
         syncLaunchAsyncThread(remotePassword, options);
     }
 
-    private void syncLaunchAsyncThread(String remotePassword, SshOptions... optionsArray)
+    private synchronized void syncLaunchAsyncThread(String remotePassword, SshOptions... optionsArray)
     {
         if (thread == null)
         {
             LOG.info("launching separate thread for sync");
 
+            // Reset abort flag
+            aborted = false;
+
             // Start separate thread for sync to prevent blocking
-            thread = new Thread(() -> {
-                syncAsyncThreadList(remotePassword, optionsArray);
+            thread = new Thread(() ->
+            {
+                try
+                {
+                    syncAsyncThreadList(remotePassword, optionsArray);
+                }
+                finally
+                {
+                    synchronized (this)
+                    {
+                        thread = null;
+                    }
+                }
             });
             thread.start();
         }
@@ -280,8 +294,9 @@ public class RemoteSyncService
 
     private void syncAsyncThreadList(String remotePassword, SshOptions... optionsArray)
     {
-        for (SshOptions options : optionsArray)
+        for (int i = 0; !aborted && i < optionsArray.length; i++)
         {
+            SshOptions options = optionsArray[i];
             syncAsyncThreadSync(options, remotePassword);
         }
     }
@@ -336,19 +351,30 @@ public class RemoteSyncService
     }
 
     /**
-     * Aborts any SSH connection currently in progress.
+     * Aborts sync in progress.
+     *
+     * This can be safely invoked with uncertainty.
      */
     public synchronized void abort()
     {
-        // Wake thread, just in case...
-        thread.interrupt();
-
-        // Dispose session as well
         if (thread != null)
         {
+            aborted = true;
+
+            // interrupt thread, this will cause it to abort
+            thread.interrupt();
+
+            // cleanup session
             sshSyncService.cleanup();
-            thread = null;
+
+            LOG.info("thread aborted");
         }
+    }
+
+    @Override
+    public synchronized void eventDatabaseChanged(boolean open)
+    {
+        abort();
     }
 
     /**

@@ -1,0 +1,138 @@
+<p>
+    This settings tab is only relevant if you need to create custom keyboard layouts.
+</p>
+
+<div class="form-group">
+    <a class="btn btn-primary" (click)="runtimeService.openLink('https://github.com/limpygnome/parrot-manager/blob/develop/docs/keyboard-layouts.md')">
+        <span class="icon icon-github"></span>
+        Docs
+    </a>
+    <a class="btn btn-default" (click)="runtimeService.openLink('https://docs.oracle.com/javase/9/docs/api/java/awt/event/KeyEvent.html')">
+        <span class="icon icon-earth"></span>
+        VK Constants
+    </a>
+    <a class="btn btn-default" (click)="sendKeysService.openLocalUserDirectory()">
+        <span class="icon icon-folder"></span>
+        Open Local User Preferences
+    </a>
+    <a class="btn btn-default" (click)="sendKeysService.openWorkingDirectory()">
+        <span class="icon icon-folder"></span>
+        Open Working Directory
+    </a>
+</div>
+
+<div class="form-group">
+    <label class="form-control-label">
+        Error messages
+    </label>
+    <textarea rows="4" class="form-control" id="keyboardLayoutMessages" disabled="disabled">{{ reloadErrorMessages }}</textarea>
+</div>
+
+<div class="form-group">
+    <a class="btn btn-primary" (click)="reloadKeyboardLayouts()">
+        <span class="icon icon-loop2 syncing"></span>
+        Reload layouts
+    </a>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-title">
+            Generate Key Mappings
+        </div>
+    </div>
+    <div class="panel-body">
+
+
+        <div class="form-group">
+            <label class="form-control-label">
+                Type character
+            </label>
+            <input id="keyboardLayoutTestInput"
+                   type="text"
+                   class="form-control"
+                   placeholder="Type character here"
+                   (keydown)="storeKeyCodePressedTester($event)"
+                   (keyup)="generateMappingTester()"
+            />
+            <small class="form-text text-muted">
+                Hold a key down and the mapping will be generated below.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label">
+                Mapping Output
+            </label>
+            <textarea id="keyboardLayoutTestOutput"
+                   rows="8"
+                   class="form-control"
+                   placeholder="Mapping line will be outputted here"
+                   readonly
+            ></textarea>
+            <small class="form-text text-muted">
+                Copy the above mapping into a keyboard layout file.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-default" (click)="copyKeyCodes()">
+                <span class="icon icon-copy"></span>
+                Copy
+            </button>
+            <button class="btn btn-default" (click)="clearKeyCodes()">
+                <span class="icon icon-bin"></span>
+                Clear
+            </button>
+        </div>
+
+
+    </div>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-title">
+            Test Mappings
+        </div>
+    </div>
+    <div class="panel-body">
+
+
+        <div class="form-group">
+            <label class="form-control-label">
+                Input
+            </label>
+            <div class="input-group">
+                <input id="keyboardLayoutSendKeysInput"
+                       type="text"
+                       class="form-control"
+                       placeholder="Enter test data"
+                />
+                <span class="input-group-btn">
+                <button class="btn btn-default" (click)="sendKeysTest()">
+                    <span class="icon icon-keyboard"></span>
+                    Send
+                </button>
+            </span>
+            </div>
+            <small class="form-text text-muted">
+                Enter test data in the above box and click send.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label">
+                Output
+            </label>
+            <input id="keyboardLayoutSendKeysOutput"
+                   type="text"
+                   class="form-control"
+                   placeholder="Result will appear here"
+            />
+        </div>
+
+    </div>
+</div>

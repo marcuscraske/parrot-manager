@@ -1,14 +1,9 @@
 package com.limpygnome.parrot.component.remote;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.*;
 import com.limpygnome.parrot.component.file.FileComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +17,7 @@ import java.util.Properties;
 @Component
 public class SshComponent
 {
-    private static final Logger LOG = LogManager.getLogger(SshComponent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SshComponent.class);
 
     private static final int CONNECTION_TIMEOUT = 10000;
 
@@ -94,7 +89,21 @@ public class SshComponent
         session.setConfig(properties);
         session.setProxy(options.getProxy());
 
-        session.connect(CONNECTION_TIMEOUT);
+        try
+        {
+            session.connect(CONNECTION_TIMEOUT);
+        }
+        catch (JSchException e)
+        {
+            String message = e.getMessage();
+
+            if (message.toLowerCase().contains("socket is not established"))
+            {
+                throw new RuntimeException("Unable to connect to host '" + options.getName() + "'");
+            }
+
+            throw e;
+        }
 
         // Start sftp in session
         Channel channel = session.openChannel("sftp");

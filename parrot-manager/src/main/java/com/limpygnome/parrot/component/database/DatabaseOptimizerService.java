@@ -2,8 +2,8 @@ package com.limpygnome.parrot.component.database;
 
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseOptimizer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DatabaseOptimizerService
 {
-    private static final Logger LOG = LogManager.getLogger(DatabaseOptimizerService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseOptimizerService.class);
 
     // Services
     @Autowired

@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    Deleted Entries History
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            The identifiers of deleted entries are retained for remote synchronisation of the database. If you have
+                            synchronised your database with all remote copies, you can wipe the history to reduce storage and memory
+                            usage.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <a class="btn btn-default" (click)="databaseOptimizeDeletedNodeHistory()">
+                            <span class="icon icon-bin"></span>
+                            Clear
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    Entries History
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            The history of values is retained, which can be wiped to reduce storage and memory.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <a class="btn btn-default" (click)="databaseOptimizeValueHistory()">
+                            <span class="icon icon-bin"></span>
+                            Clear history
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

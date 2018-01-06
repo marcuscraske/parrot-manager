@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DevWebViewInit implements WebViewInit
 {
-    private static final String NODE_SERVER_DEV_URL = "http://localhost:3000";
+    private static final String NODE_SERVER_DEV_URL = "http://localhost:4200";
 
     @Autowired
     @Qualifier("default")

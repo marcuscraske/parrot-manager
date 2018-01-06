@@ -1,13 +1,13 @@
 package com.limpygnome.parrot.library.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.security.SecureRandom;
@@ -19,7 +19,7 @@ import java.security.SecureRandom;
  */
 public class CryptoReaderWriter
 {
-    private static final Logger LOG = LogManager.getLogger(CryptoReaderWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CryptoReaderWriter.class);
 
     private SecureRandom random;
 

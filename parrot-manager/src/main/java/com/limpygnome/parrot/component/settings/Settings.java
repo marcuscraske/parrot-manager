@@ -19,19 +19,23 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> remoteSyncOnChange;
     private SettingsValue<String> theme;
     private SettingsValue<Long> inactivityTimeout;
+    private SettingsValue<Boolean> autoSave;
+    private SettingsValue<String> keyboardLayout;
 
     public Settings()
     {
         this.recentFilesEnabled = new SettingsValue<>(true);
         this.recentFilesOpenLastOnStartup = new SettingsValue<>(true);
         this.automaticBackupsOnSave = new SettingsValue<>(true);
-        this.automaticBackupsRetained = new SettingsValue(10L);
+        this.automaticBackupsRetained = new SettingsValue(30L);
         this.remoteSyncInterval = new SettingsValue<>(10L * 60L * 1000L);
         this.remoteSyncIntervalEnabled = new SettingsValue<>(true);
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
         this.remoteSyncOnChange = new SettingsValue<>(true);
         this.theme = new SettingsValue<>("dark");
         this.inactivityTimeout = new SettingsValue<>(0L);
+        this.autoSave = new SettingsValue<>(true);
+        this.keyboardLayout = new SettingsValue<>(null);
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()
@@ -83,6 +87,16 @@ public class Settings implements Serializable
         return inactivityTimeout;
     }
 
+    public SettingsValue<Boolean> getAutoSave()
+    {
+        return autoSave;
+    }
+
+    public SettingsValue<String> getKeyboardLayout()
+    {
+        return keyboardLayout;
+    }
+
     @JsonIgnore
     @Override
     public String toString()
@@ -98,6 +112,8 @@ public class Settings implements Serializable
                 ", remoteSyncOnChange=" + remoteSyncOnChange +
                 ", theme=" + theme +
                 ", inactivityTimeout=" + inactivityTimeout +
+                ", autoSave=" + autoSave +
+                ", keyboardLayout=" + keyboardLayout +
                 '}';
     }
 

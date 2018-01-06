@@ -1,0 +1,59 @@
+<header>
+    <div class="actions">
+
+        <div class="general-file" *ngIf="!databaseService.isOpen()">
+            <a tabindex="1" routerLink="/open" title="Open">
+                <span class="icon icon-folder"></span>
+            </a>
+            <a tabindex="2" routerLink="/create" title="Create">
+                <span class="icon icon-file-text2"></span>
+            </a>
+        </div>
+
+        <div class="db-open" *ngIf="databaseService.isOpen()">
+            <a tabindex="1" title="View Entries" routerLink="/viewer">
+                <span class="icon icon-search"></span>
+            </a>
+            <a tabindex="3" title="Sync Settings" routerLink="/remote-sync">
+                <span class="icon icon-earth"></span>
+            </a>
+            <a tabindex="2" title="Backups" routerLink="/backups">
+                <span class="icon icon-database"></span>
+            </a>
+            <!--<a tabindex="4" title="Import/export entries" routerLink="/import-export">-->
+                <!--<span class="icon icon-copy"></span>-->
+            <!--</a>-->
+        </div>
+
+        <div class="db-open" *ngIf="databaseService.isOpen()">
+            <a tabindex="5" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
+                <span class="icon icon-floppy-disk"></span>
+            </a>
+            <a tabindex="6" title="Sync Now" (click)="remoteSyncService.syncAll()">
+                <span class="icon" [ngClass]="{ 'icon-download3' : !remoteSyncService.isSyncing(), 'icon-loop2 syncing' : remoteSyncService.isSyncing() }"></span>
+            </a>
+            <a tabindex="7" title="Change Database" (click)="attemptToCloseDatabase(false)">
+                <span class="icon icon-exit"></span>
+            </a>
+        </div>
+
+        <div>
+            <a tabindex="8" routerLink="/settings" title="Settings">
+                <span class="icon icon-cog"></span>
+            </a>
+            <a tabindex="9" *ngIf="runtimeService.isDevelopmentMode()" title="Refresh" (click)="devReload()">
+                <span class="icon icon-loop2"></span>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="options">
+        <a tabindex="10" routerLink="help">
+            <span class="icon icon-question"></span>
+        </a>
+    </div>
+
+</header>
+
+<div class="faux-header"></div>

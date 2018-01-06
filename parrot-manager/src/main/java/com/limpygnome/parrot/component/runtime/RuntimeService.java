@@ -3,17 +3,20 @@ package com.limpygnome.parrot.component.runtime;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
+import javafx.scene.Scene;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
-import javafx.scene.Scene;
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.net.URI;
 
 /**
  * A archive for runtime state and functionality.
@@ -21,12 +24,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class RuntimeService
 {
-    private static final Logger LOG = LogManager.getLogger(RuntimeService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RuntimeService.class);
 
     @Autowired
     private WebStageInitService webStageInitService;
     @Autowired
     private UrlStreamOverrideService urlStreamOverrideService;
+
+    /* Flag to indicate whether webapp is ready to run. */
+    private boolean ready;
 
     /**
      * @return indicates if running in development mode
@@ -122,6 +128,7 @@ public class RuntimeService
     public void exit()
     {
         // Just exit the application...
+        LOG.info("terminating jvm");
         System.exit(0);
     }
 
@@ -143,6 +150,44 @@ public class RuntimeService
 
 
         LOG.info("copied value to clipboard - length: {}", value.length());
+    }
+
+    /**
+     * @return indicates whether runtime is ready
+     */
+    public boolean isReady()
+    {
+        return ready;
+    }
+
+    /**
+     * @param ready sets whether runtime is ready
+     */
+    public void setReady(boolean ready)
+    {
+        this.ready = ready;
+    }
+
+    public void openLink(String url)
+    {
+        try
+        {
+            // create and validate url
+            URI uri = URI.create(url);
+            String schema = uri.getScheme();
+
+            if (!"https".equals(schema))
+            {
+                throw new SecurityException("invalid url schema for url: " + url);
+            }
+
+            // open url
+            Desktop.getDesktop().browse(uri);
+        }
+        catch (IOException e)
+        {
+            LOG.error("failed to open link - url: {}", url, e);
+        }
     }
 
 }

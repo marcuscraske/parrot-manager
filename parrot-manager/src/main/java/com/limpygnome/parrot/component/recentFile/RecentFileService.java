@@ -2,9 +2,9 @@ package com.limpygnome.parrot.component.recentFile;
 
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import java.util.LinkedList;
 @Service
 public class RecentFileService
 {
-    private static final Logger LOG = LogManager.getLogger(RecentFileService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RecentFileService.class);
 
     // Can consider as setting in future...
     private static final int RECENT_FILES_LIMIT = 5;

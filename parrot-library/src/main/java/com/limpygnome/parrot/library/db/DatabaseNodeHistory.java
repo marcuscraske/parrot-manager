@@ -31,6 +31,7 @@ public class DatabaseNodeHistory
         this.currentNode = currentNode;
         this.history = new HashMap<>();
         this.deleted = new HashSet<>();
+        this.historyCached = new EncryptedValue[0];
     }
 
     /**
@@ -77,7 +78,6 @@ public class DatabaseNodeHistory
      */
     public synchronized EncryptedValue[] fetch()
     {
-        historyCached = history.values().toArray(new EncryptedValue[history.size()]);
         return historyCached;
     }
 
@@ -86,7 +86,7 @@ public class DatabaseNodeHistory
      *
      * @param encryptedValue value to be removed
      */
-    public void remove(EncryptedValue encryptedValue)
+    public synchronized void remove(EncryptedValue encryptedValue)
     {
         // Remove from collection
         if (history.remove(encryptedValue.getId()) != null)
@@ -101,7 +101,7 @@ public class DatabaseNodeHistory
     /**
      * clears all stored history.
      */
-    public void clearAll()
+    public synchronized void clearAll()
     {
         // Clear history
         history.clear();
@@ -115,7 +115,7 @@ public class DatabaseNodeHistory
     /**
      * @return total number of historic values
      */
-    public int size()
+    public synchronized int size()
     {
         return history.size();
     }
@@ -125,7 +125,7 @@ public class DatabaseNodeHistory
      *
      * @param otherHistory the other history
      */
-    public void merge(DatabaseNodeHistory otherHistory)
+    public synchronized void merge(DatabaseNodeHistory otherHistory)
     {
         boolean isDirty = false;
 
@@ -159,6 +159,14 @@ public class DatabaseNodeHistory
     {
         // Mark database as dirty
         currentNode.getDatabase().setDirty(true);
+
+        // Refresh items
+        refreshItemCache();
+    }
+
+    private void refreshItemCache()
+    {
+        historyCached = history.values().toArray(new EncryptedValue[history.size()]);
     }
 
     @Override

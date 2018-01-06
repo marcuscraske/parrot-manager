@@ -3,8 +3,8 @@ package com.limpygnome.parrot.component.ui;
 
 import javafx.event.EventHandler;
 import javafx.stage.WindowEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Close handler for {@link WebViewStage}.
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class CloseHandler implements EventHandler<WindowEvent>
 {
-    private static final Logger LOG = LogManager.getLogger(CloseHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CloseHandler.class);
 
     private static final long FORCE_EXIT_TIMEOUT_MILLISECONDS = 5000;
     private static final long CLICKS_FOR_EXIT = 5;

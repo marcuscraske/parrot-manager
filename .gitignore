@@ -16,3 +16,6 @@ target/
 *.sync
 
 .DS_Store
+
+// Keyboard layout dir created when doing development
+/keyboard-layout/

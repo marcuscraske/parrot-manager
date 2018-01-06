@@ -2,14 +2,8 @@ package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.lib.WebViewDebug;
 import com.limpygnome.parrot.lib.init.WebViewInit;
-
-import java.awt.*;
-import java.io.InputStream;
-
-//import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -17,8 +11,14 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.InputStream;
+
+//import com.sun.javafx.webkit.WebConsoleListener;
 
 /**
  * A JavaFX web view stage.
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class WebViewStage extends Stage
 {
-    private static final Logger LOG = LogManager.getLogger(WebViewStage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WebViewStage.class);
 
     private WebStageInitService webStageInitService;
     private ContextMenuHandler contextMenuHandler;
@@ -106,13 +106,16 @@ public class WebViewStage extends Stage
     {
         WebEngine engine = webView.getEngine();
 
-        // override to provide basic logging of console messages
-        console = new WebViewConsole();
-        console.setup(this);
-
         // monitor navigation
         engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             LOG.info("WebView state has changed - old: {}, new: {}", oldValue, newValue);
+
+            if (newValue == Worker.State.SUCCEEDED)
+            {
+                // override to provide basic logging of console messages
+                console = new WebViewConsole();
+                console.setup(this);
+            }
         });
 
         // log errors

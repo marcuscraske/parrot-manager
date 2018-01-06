@@ -1,0 +1,130 @@
+@font-face
+{
+    font-family: "OpenSans-Regular";
+    src:    local("OpenSans-Regular"),
+            url("fonts/open-sans/OpenSans-Regular.ttf");
+}
+
+html,
+body,
+.app
+{
+    width: 100%;
+    height: 100%;
+}
+
+body,
+header,
+header p
+{
+    margin: 0;
+    padding: 0;
+}
+
+body
+{
+    font: normal 16px "OpenSans-Regular",sans-serif;
+
+    /* Disable general text selection, adds to feel of real desktop app */
+    -webkit-user-select: none;
+}
+
+main
+{
+    padding: 0 1em 1em 1em;
+}
+
+main h1
+{
+    margin: 0.3em 0 0.5em 0;
+    font-size: 2em;
+}
+
+main h1 .icon
+{
+    position: relative;
+    top: -0.1em;
+    opacity: 0.4;
+    font-size: 0.6em !important;
+}
+
+main h2
+{
+    font-size: 1.5em;
+}
+
+a
+{
+    color: #ff5733;
+}
+
+/*
+    Bootstrap theme overrides
+*/
+
+.btn .icon
+{
+    margin-right: 0.2em;
+}
+
+.btn-primary
+{
+    background: #333;
+    color: #fff;
+    border-color: #333;
+}
+
+.btn-primary:hover,
+.btn-primary:focus
+{
+    background: #666;
+    border-color: #666;
+}
+
+.btn-danger
+{
+    background: #ff5733;
+}
+
+/*
+    toastr theme overrides
+*/
+
+.toast-top-center
+{
+    margin-top: 1em;
+}
+
+/*
+    jstree theme overrides
+*/
+
+.jstree-default .jstree-clicked
+{
+    background: #ddd;
+}
+
+.jstree-anchor
+{
+    color: #666 !important;
+}
+
+.jstree-anchor .icon
+{
+    color: #999;
+}
+
+/*
+    nav tabs
+*/
+
+.nav.nav-tabs a
+{
+    color: #333;
+    cursor: pointer !important;
+}
+
+.modal-dialog
+{
+    box-shadow: 0 0 2em #444;
+}

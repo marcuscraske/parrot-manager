@@ -2,18 +2,19 @@ package com.limpygnome.parrot.component.remote;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.settings.SettingsService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.limpygnome.parrot.event.DatabaseChangingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Performs remote sync at timed intervals, the database oprns or changes occur.
+ * Performs remote sync at timed intervals, the database opens or changes occur.
  */
 @Service
-public class RemoteSyncChangeService
+public class RemoteSyncChangeService implements DatabaseChangingEvent
 {
-    private static final Logger LOG = LogManager.getLogger(RemoteSyncChangeService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncChangeService.class);
 
     @Autowired
     private SettingsService settingsService;
@@ -32,16 +33,19 @@ public class RemoteSyncChangeService
         this.thread = null;
     }
 
-    /**
-     * To be invoked when database is opened.
-     */
-    public synchronized void eventDatabaseOpened()
+    @Override
+    public synchronized void eventDatabaseChanged(boolean open)
     {
-        boolean syncOnDatabaseOpened = settingsService.getSettings().getRemoteSyncOnOpeningDatabase().getSafeBoolean(false);
+        refreshContext();
 
-        if (syncOnDatabaseOpened)
+        if (open)
         {
-            forceSync();
+            boolean syncOnDatabaseOpened = settingsService.getSettings().getRemoteSyncOnOpeningDatabase().getSafeBoolean(false);
+
+            if (syncOnDatabaseOpened)
+            {
+                forceSync();
+            }
         }
     }
 
@@ -61,7 +65,7 @@ public class RemoteSyncChangeService
     /**
      * Should be invoked when the state of the current database changes.
      */
-    public void refresh()
+    public void refreshContext()
     {
         try
         {

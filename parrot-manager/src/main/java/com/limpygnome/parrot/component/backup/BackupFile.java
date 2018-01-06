@@ -1,7 +1,5 @@
 package com.limpygnome.parrot.component.backup;
 
-import org.joda.time.DateTime;
-
 import java.io.File;
 
 /**
@@ -30,10 +28,9 @@ public class BackupFile
         return name;
     }
 
-    public String getCreated()
+    public long getLastModified()
     {
-        DateTime dateTime = new DateTime(lastModified);
-        return dateTime.toString("dd-MM-yyyy HH:mm:ss");
+        return lastModified;
     }
 
 }

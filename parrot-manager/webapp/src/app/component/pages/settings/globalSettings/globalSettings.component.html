@@ -1,0 +1,268 @@
+<div [formGroup]="globalSettingsForm" #form="ngForm">
+    <div class="row">
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Recent files
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox"
+                                   id="recentFilesEnabled"
+                                   formControlName="recentFilesEnabled"
+                                   [(ngModel)]="globalSettingsForm.value['recentFilesEnabled']"
+                            />
+                            Enabled
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox"
+                                   id="recentFilesOpenLastOnStartup"
+                                   formControlName="recentFilesOpenLastOnStartup"
+                                   [(ngModel)]="globalSettingsForm.value['recentFilesOpenLastOnStartup']"
+                            />
+                            Open last file on startup
+                        </label>
+                    </div>
+
+                    <div class="form-group" *ngIf="recentFilesClearEnabled">
+                        <a class="btn btn-default" (click)="globalRecentFilesClear()">
+                            <span class="icon icon-bin"></span>
+                            Clear recent files
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Backups
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="form-control-label" for="automaticBackupsRetained">
+                            Maximum backups retained
+                        </label>
+                        <input id="automaticBackupsRetained"
+                               type="number"
+                               class="form-control"
+                               placeholder="Leave empty for unlimited"
+                               formControlName="automaticBackupsRetained"
+                               [(ngModel)]="globalSettingsForm.value['automaticBackupsRetained']"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox"
+                                   id="automaticBackupsOnSave"
+                                   formControlName="automaticBackupsOnSave"
+                                   [(ngModel)]="globalSettingsForm.value['automaticBackupsOnSave']"
+                            />
+                            Backup on save
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Security
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="form-control-label" for="inactivityTimeout">
+                            Minutes of inactivity to trigger database close
+                        </label>
+                        <input id="inactivityTimeout"
+                               type="number"
+                               class="form-control"
+                               placeholder="Number of minutes"
+                               formControlName="inactivityTimeout"
+                               [(ngModel)]="globalSettingsForm.value['inactivityTimeout']"
+                        />
+                        <small class="form-text text-muted">
+                            Leave as zero to disable.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Remote Sync
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="form-control-label" for="remoteSyncInterval">
+                            Sync interval in minutes
+                        </label>
+                        <input id="remoteSyncInterval"
+                               type="number"
+                               class="form-control"
+                               placeholder="Number of minutes"
+                               formControlName="remoteSyncInterval"
+                               [(ngModel)]="globalSettingsForm.value['remoteSyncInterval']"
+                        />
+                        <small class="form-text text-muted">
+                            Leave as zero to disable.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox"
+                                   id="remoteSyncIntervalEnabled"
+                                   formControlName="remoteSyncIntervalEnabled"
+                                   [(ngModel)]="globalSettingsForm.value['remoteSyncIntervalEnabled']"
+                            />
+                            Sync at interval
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox"
+                                   id="remoteSyncOnOpeningDatabase"
+                                   formControlName="remoteSyncOnOpeningDatabase"
+                                   [(ngModel)]="globalSettingsForm.value['remoteSyncOnOpeningDatabase']"
+                            />
+                            Sync on opening database
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox"
+                                   id="remoteSyncOnChange"
+                                   formControlName="remoteSyncOnChange"
+                                   [(ngModel)]="globalSettingsForm.value['remoteSyncOnChange']"
+                            />
+                            Sync on save
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Customisation
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="form-control-label" for="remoteSyncInterval">
+                            Theme
+                        </label>
+                        <select id="theme" class="form-control"
+                                (change)="themeService.set($event.target.value)"
+                                formControlName="theme"  [(ngModel)]="globalSettingsForm.value['theme']">
+
+                            <option value="">light</option>
+                            <option>dark</option>
+                            <option>hacker</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Saving
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox"
+                                   id="autoSave"
+                                   formControlName="autoSave"
+                                   [(ngModel)]="globalSettingsForm.value['autoSave']"
+                            />
+                            Save on any changes
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Send password
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="form-control-label" for="remoteSyncInterval">
+                            Keyboard layout
+                        </label>
+                        <select id="keyboardLayout" class="form-control"
+                                (change)="sendKeysService.refreshKeyboardLayout()"
+                                formControlName="keyboardLayout"  [(ngModel)]="globalSettingsForm.value['keyboardLayout']">
+
+                            <option value="">automatic - {{ sendKeysService.getKeyboardLayout().getName() }}</option>
+                            <option *ngFor="let layout of sendKeysService.getKeyboardLayouts(); trackBy: trackChildrenKeyboardLayouts">{{ layout.getName() }}</option>
+                        </select>
+                        <small class="form-text text-muted">
+                            This layout will be used to emulate keys to send passwords to other applications.
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="form-group text-center">
+        <button type="button" class="btn btn-primary btn-lg" (click)="save()">
+            <span class="icon icon-checkmark"></span>
+            Save
+        </button>
+    </div>
+
+    <div class="form-group text-center">
+        <button type="button" class="btn btn-default" (click)="globalResetToDefault()">
+            <span class="icon icon-undo2"></span>
+            Reset to default
+        </button>
+    </div>
+</div>
