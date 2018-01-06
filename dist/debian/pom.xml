@@ -62,7 +62,7 @@
                         <id>prepare-archive</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <tasks>
+                            <target>
 
                                 <!-- copy pre-made DEBIAN dir -->
                                 <copy todir="${project.build.directory}/parrot-manager-linux-${project.version}">
@@ -87,7 +87,7 @@
                                 <!-- set appropriate ownership -->
                                 <chmod perm="755" dir="${project.build.directory}/parrot-manager-linux-${project.version}" />
 
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

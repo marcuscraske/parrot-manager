@@ -1,6 +1,15 @@
 # parrot manager dev
 This module keeps development code, where possible, away from actual builds of parrot manager.
 
+
+## First Time Setup
+Make sure you have the following installed:
+* JDK 9
+* npm (latest)
+
+Install global npm packages by going to `parrot-manager/webapp` and running `npm run pre-install`.
+
+
 ## Intellij and JDK 9+
 When running parrot from Intellij, you will need to allow access to an internal API for WebView debugging.
 

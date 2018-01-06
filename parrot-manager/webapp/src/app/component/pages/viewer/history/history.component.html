@@ -24,7 +24,7 @@
     </tr>
 
     <tr *ngFor="let historicValue of (currentNode.getHistory().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
-        <td>
+        <td title="{{ historicValue.getLastModified() | formattedDate }}">
             {{ historicValue.getLastModified() | friendlyTime }}
         </td>
         <td>

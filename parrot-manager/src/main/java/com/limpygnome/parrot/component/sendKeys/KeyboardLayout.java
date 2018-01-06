@@ -65,7 +65,7 @@ public class KeyboardLayout
                 LOG.warn("multiple keyboard layouts conflicting - '{}' and '{}'", name, layout.name);
                 return false;
             }
-            else if (!osMatch && !otherLocaleMatch)
+            else if (!osMatch && !otherOsMatch)
             {
                 // no os is always better
                 return os == null;

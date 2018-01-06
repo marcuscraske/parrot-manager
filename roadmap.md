@@ -21,6 +21,4 @@
 - Recent files drop-down on topbar
 
 ## Bugs
-- Enable Angular prod
-    - Events not firing, such as clicking to display a password (click event on textarea) and keyboard-layout keydown event
-    - Prod mode disabled for now, just needs `--prod` adding to npm scripts
+- none (known)

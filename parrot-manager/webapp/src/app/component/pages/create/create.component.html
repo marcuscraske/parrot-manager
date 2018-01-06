@@ -9,7 +9,13 @@
             Location
         </label>
         <div class="input-group">
-            <input id="location" formControlName="location" type="text" class="form-control" [(ngModel)]="form.value['location']" />
+            <input id="location"
+                   formControlName="location"
+                   type="text"
+                   class="form-control"
+                   [(ngModel)]="form.value['location']"
+                   placeholder="Path of database"
+            />
             <span class="input-group-btn">
                 <button class="btn btn-default form-control" type="button" (click)="openSaveFileDialogue()">
                     Find

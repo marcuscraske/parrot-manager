@@ -31,8 +31,8 @@
                 </th>
             </tr>
             <tr *ngFor="let file of (backupFiles | orderBy: ['-getName()']); trackBy: trackChildren">
-                <td class="text-center">
-                    {{ file.getCreated() }}
+                <td class="text-center" title="{{ file.getLastModified() | formattedDate }}">
+                    {{ file.getLastModified() | friendlyTime }}
                 </td>
                 <td>
                     <button class="btn btn-default" (click)="open(file)">
