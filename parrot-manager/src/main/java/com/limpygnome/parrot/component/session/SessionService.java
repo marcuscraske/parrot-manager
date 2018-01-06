@@ -1,8 +1,8 @@
 package com.limpygnome.parrot.component.session;
 
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 public class SessionService implements DatabaseChangingEvent
 {
-    private static final Logger LOG = LogManager.getLogger(SessionService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
 
     private Map<String, Object> store;
 

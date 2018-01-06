@@ -3,8 +3,8 @@ package com.limpygnome.parrot.component.sendKeys;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -23,7 +23,7 @@ import java.util.*;
 @Repository
 public class KeyboardLayoutRepository
 {
-    private static final Logger LOG = LogManager.getLogger(KeyboardLayoutRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KeyboardLayoutRepository.class);
 
     // Components
     @Autowired

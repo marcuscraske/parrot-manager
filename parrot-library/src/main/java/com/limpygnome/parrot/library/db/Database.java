@@ -1,16 +1,11 @@
 package com.limpygnome.parrot.library.db;
 
-import com.limpygnome.parrot.library.crypto.CryptoParams;
-import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
-import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
-import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
-import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import com.limpygnome.parrot.library.crypto.*;
 import com.limpygnome.parrot.library.event.DatabaseDirtyEventHandler;
 import com.limpygnome.parrot.library.event.EventHandlerCollection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -24,7 +19,7 @@ import java.util.UUID;
  */
 public class Database
 {
-    private static final Logger LOG = LogManager.getLogger(Database.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Database.class);
 
     // Components
     private CryptoReaderWriter cryptoReaderWriter;

@@ -3,8 +3,8 @@ package com.limpygnome.parrot.component.remote;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RemoteSyncChangeService implements DatabaseChangingEvent
 {
-    private static final Logger LOG = LogManager.getLogger(RemoteSyncChangeService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncChangeService.class);
 
     @Autowired
     private SettingsService settingsService;

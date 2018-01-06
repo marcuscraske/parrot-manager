@@ -1,12 +1,10 @@
 package com.limpygnome.parrot.lib.urlStream;
 
 import com.limpygnome.parrot.lib.init.SandboxedWebViewInit;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -18,7 +16,7 @@ import java.net.URLStreamHandler;
  */
 class LocalResourceStreamHandler extends URLStreamHandler
 {
-    private static final Logger LOG = LogManager.getLogger(LocalResourceStreamHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalResourceStreamHandler.class);
 
     /*
         The base URL for requests served by the class path.

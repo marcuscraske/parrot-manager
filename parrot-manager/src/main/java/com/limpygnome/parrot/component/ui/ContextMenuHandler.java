@@ -9,8 +9,8 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.html.HTMLElement;
 
 /**
@@ -18,7 +18,7 @@ import org.w3c.dom.html.HTMLElement;
  */
 public class ContextMenuHandler implements EventHandler<MouseEvent>
 {
-    private static final Logger LOG = LogManager.getLogger(ContextMenuHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ContextMenuHandler.class);
 
     // The parent window/stage to which this belongs
     private WebViewStage webViewStage;

@@ -9,16 +9,16 @@ import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Service for synchronizing database files remotely.
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RemoteSyncService implements DatabaseChangingEvent
 {
-    private static final Logger LOG = LogManager.getLogger(RemoteSyncService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncService.class);
 
     private static final String SESSION_KEY_OPTIONS = "remoteSshOptions";
 

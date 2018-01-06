@@ -1,8 +1,8 @@
 package com.limpygnome.parrot.dev;
 
 import com.limpygnome.parrot.lib.urlStream.DetermineResourceHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import java.net.URL;
 @Component
 public class DevDetermineResourceHandler implements DetermineResourceHandler
 {
-    private static final Logger LOG = LogManager.getLogger(DevDetermineResourceHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DevDetermineResourceHandler.class);
 
     /*
         The base file path of where resources are read for requests during development mode.

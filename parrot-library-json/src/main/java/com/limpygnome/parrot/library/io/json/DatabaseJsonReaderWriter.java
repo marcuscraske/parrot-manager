@@ -4,17 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.limpygnome.parrot.library.crypto.CryptoParams;
-import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
-import com.limpygnome.parrot.library.crypto.CryptoReaderWriter;
-import com.limpygnome.parrot.library.crypto.EncryptedAesValue;
-import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import com.limpygnome.parrot.library.crypto.*;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -68,7 +64,7 @@ import java.util.UUID;
  */
 public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
 {
-    private static final Logger LOG = LogManager.getLogger(DatabaseJsonReaderWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseJsonReaderWriter.class);
 
     private CryptoReaderWriter cryptoReaderWriter;
     private CryptoParamsFactory cryptoParamsFactory;

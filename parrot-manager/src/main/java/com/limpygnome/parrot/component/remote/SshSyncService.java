@@ -6,8 +6,8 @@ import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.MergeLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import java.io.IOException;
 @Service
 public class SshSyncService
 {
-    private static final Logger LOG = LogManager.getLogger(SshSyncService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SshSyncService.class);
 
     @Autowired
     private SshComponent sshComponent;

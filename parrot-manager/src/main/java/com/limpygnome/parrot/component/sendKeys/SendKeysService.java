@@ -4,18 +4,18 @@ import com.limpygnome.parrot.component.database.EncryptedValueService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
-
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.awt.AWTException;
+import java.awt.Desktop;
+import java.awt.Robot;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * A service for sending keys to another application.
@@ -23,7 +23,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class SendKeysService
 {
-    private static final Logger LOG = LogManager.getLogger(SendKeysService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SendKeysService.class);
 
     // Components
     @Autowired

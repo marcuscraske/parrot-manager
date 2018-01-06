@@ -1,7 +1,7 @@
 package com.limpygnome.parrot.component.randomGenerator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -12,7 +12,7 @@ import java.security.SecureRandom;
 @Service
 public class RandomGeneratorService
 {
-    private static final Logger LOG = LogManager.getLogger(RandomGeneratorService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RandomGeneratorService.class);
 
     private static final char[] NUMBERS = { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58 };
 

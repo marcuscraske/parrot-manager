@@ -9,8 +9,8 @@ import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.CryptoParamsFactory;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 public class DatabaseService
 {
-    private static final Logger LOG = LogManager.getLogger(DatabaseService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseService.class);
 
     // Services
     @Autowired
