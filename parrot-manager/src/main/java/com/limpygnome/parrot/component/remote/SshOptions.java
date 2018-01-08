@@ -6,7 +6,7 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
-import com.limpygnome.parrot.component.database.EncryptedValueService;
+import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
@@ -278,14 +278,15 @@ public class SshOptions implements Serializable, Cloneable
      * Deserializes a JSON string into a new instance of this class.
      *
      * @param encryptedValueService used to decrypt value stored in node
+     * @param database database
      * @param node a standard child node
      * @return an instance
      * @throws Exception when cannot be deserialized or crypto problem
      */
-    public static SshOptions read(EncryptedValueService encryptedValueService, DatabaseNode node) throws Exception
+    public static SshOptions read(EncryptedValueService encryptedValueService, Database database, DatabaseNode node) throws Exception
     {
         // Fetch value as string
-        String value = encryptedValueService.asString(node.getValue());
+        String value = encryptedValueService.asString(database, node.getValue());
 
         // Deserialize into object
         ObjectMapper mapper = new ObjectMapper();
@@ -325,7 +326,7 @@ public class SshOptions implements Serializable, Cloneable
         JsonObject json = parser.parse(rawJson).getAsJsonObject();
 
         // Create encrypted JSON object
-        EncryptedValue encryptedValue = encryptedValueService.fromJson(json);
+        EncryptedValue encryptedValue = encryptedValueService.fromJson(database, json);
 
         // Store in new node
         DatabaseNode newNode = new DatabaseNode(database, name);

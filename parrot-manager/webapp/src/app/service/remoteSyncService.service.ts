@@ -24,9 +24,9 @@ export class RemoteSyncService {
         return options;
     }
 
-    createOptionsFromNode(node)
+    createOptionsFromNode(database, node)
     {
-        var options = this.remoteSyncService.createOptionsFromNode(node);
+        var options = this.remoteSyncService.createOptionsFromNode(database. node);
         return options;
     }
 

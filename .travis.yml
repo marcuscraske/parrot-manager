@@ -18,7 +18,7 @@ node_js:
   - "node"
 before_install:
   - npm i npm@^4 -g
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y fakeroot fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y fakeroot; fi
 install: true
 script:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then     mvn clean package -Pjar,windows-standalone,mac;     fi

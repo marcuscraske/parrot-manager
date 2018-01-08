@@ -18,12 +18,14 @@ export class EncryptedValueService {
 
     setString(databaseNode, value)
     {
+        // TODO fix
         var encryptedValue = this.encryptedValueService.fromString(value);
         databaseNode.setValue(encryptedValue);
     }
 
     getString(databaseNode) : string
     {
+        // TODO fix
         var encryptedValue = databaseNode.getValue();
         var result = this.getStringFromValue(encryptedValue);
         return result;
@@ -31,6 +33,7 @@ export class EncryptedValueService {
 
     getStringFromValue(encryptedValue) : string
     {
+        // TODO fix
         var result = this.encryptedValueService.asString(encryptedValue);
         return result;
     }

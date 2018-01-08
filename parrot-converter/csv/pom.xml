@@ -5,36 +5,19 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.limpygnome</groupId>
-        <artifactId>parrot</artifactId>
+        <groupId>com.limpygnome.parrot</groupId>
+        <artifactId>parrot-converter</artifactId>
         <version>6.0</version>
     </parent>
-    <groupId>com.limpygnome.parrot</groupId>
-    <artifactId>parrot-manager-lib</artifactId>
+    <groupId>com.limpygnome.parrot.parrot-converter</groupId>
+    <artifactId>csv</artifactId>
 
     <dependencies>
 
-        <!-- local -->
+        <!-- joda -->
         <dependency>
-            <groupId>com.limpygnome.parrot</groupId>
-            <artifactId>parrot-library</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!-- json -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
-
-        <!-- spring -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
         </dependency>
 
         <!-- logging -->
@@ -49,6 +32,18 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
+        </dependency>
+
+        <!-- unit testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

@@ -24,9 +24,13 @@
     </scm>
 
     <modules>
+
+        <!-- core database lib -->
         <module>parrot-library</module>
         <module>parrot-library-json</module>
+
         <module>parrot-manager-lib</module>
+        <module>parrot-converter</module>
         <module>parrot-manager</module>
     </modules>
 

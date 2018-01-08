@@ -1,9 +1,11 @@
 package com.limpygnome.parrot.component.sendKeys;
 
-import com.limpygnome.parrot.component.database.EncryptedValueService;
+import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
+import com.limpygnome.parrot.library.db.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ public class SendKeysService
     private static final Logger LOG = LoggerFactory.getLogger(SendKeysService.class);
 
     // Components
+    @Autowired
+    private DatabaseService databaseService;
     @Autowired
     private WebStageInitService initService;
     @Autowired
@@ -113,8 +117,10 @@ public class SendKeysService
                 LOG.info("queueing sending keys");
 
                 // Fetch and store decrypted value and id
+                Database database = databaseService.getDatabase();
+
                 pendingEncryptedValueId = encryptedValue.getId();
-                pendingData = encryptedValueService.asString(encryptedValue);
+                pendingData = encryptedValueService.asString(database, encryptedValue);
 
                 // Ensure we know when the app is minimized
                 hookStageMinimized();

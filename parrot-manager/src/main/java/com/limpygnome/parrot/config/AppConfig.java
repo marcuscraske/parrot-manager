@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.config;
 
+import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,12 @@ public class AppConfig
         PropertySourcesPlaceholderConfigurer config = new PropertySourcesPlaceholderConfigurer();
         config.setIgnoreResourceNotFound(true);
         return config;
+    }
+
+    @Bean
+    public StringStreamOperations stringStreamOperations()
+    {
+        return new StringStreamOperations();
     }
 
 }

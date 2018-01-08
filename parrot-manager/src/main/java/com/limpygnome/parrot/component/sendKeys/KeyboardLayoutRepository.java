@@ -3,6 +3,7 @@ package com.limpygnome.parrot.component.sendKeys;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
+import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ public class KeyboardLayoutRepository
     private SettingsService settingsService;
     @Autowired
     private FileComponent fileComponent;
+    @Autowired
+    private StringStreamOperations stringStreamOperations;
 
     // Available keyboard layouts
     private Map<String, KeyboardLayout> layoutMap;
@@ -252,16 +255,7 @@ public class KeyboardLayoutRepository
     private void load(InputStream inputStream, List<String> messages, String nameForLogging) throws IOException
     {
         // convert to string
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = inputStream.read(buffer)) != -1)
-        {
-            baos.write(buffer, 0, read);
-        }
-
-        byte[] raw = baos.toByteArray();
-        String config = new String(raw, "UTF-8");
+        String config = stringStreamOperations.readString(inputStream);
 
         // parse config and add to collection
         try

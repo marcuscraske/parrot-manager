@@ -1,7 +1,7 @@
 package com.limpygnome.parrot.component.remote;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
-import com.limpygnome.parrot.component.database.EncryptedValueService;
+import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
@@ -77,13 +77,14 @@ public class RemoteSyncService implements DatabaseChangingEvent
      * Creates options from a database node, which is under the standard remote-sync key and saved in the standard
      * JSON format.
      *
+     * @param database database
      * @param node the node with remote-sync config saved as its value
      * @return the options
      * @throws Exception {@see SshOptions}
      */
-    public SshOptions createOptionsFromNode(DatabaseNode node) throws Exception
+    public SshOptions createOptionsFromNode(Database database, DatabaseNode node) throws Exception
     {
-        SshOptions options = SshOptions.read(encryptedValueService, node);
+        SshOptions options = SshOptions.read(encryptedValueService, database, node);
 
         // Persist to session to avoid gc
         sessionService.put(SESSION_KEY_OPTIONS, options);
@@ -156,7 +157,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
             {
                 try
                 {
-                    options = SshOptions.read(encryptedValueService, node);
+                    options = SshOptions.read(encryptedValueService, database, node);
 
                     if (canAutoSync(options, currentHostName))
                     {

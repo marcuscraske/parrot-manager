@@ -1,9 +1,8 @@
-package com.limpygnome.parrot.component.database;
+package com.limpygnome.parrot.lib.database;
 
 import com.google.gson.JsonObject;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,23 +11,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class EncryptedValueService
 {
-    @Autowired
-    private DatabaseService databaseService;
 
     /**
      * Creates an encrypted value from a string.
      *
+     * @param database database
      * @param text value to be encrypted; can be null
      * @return an instance, or null if the provided value is null
      * @throws Exception
      */
-    public EncryptedValue fromString(String text) throws Exception
+    public EncryptedValue fromString(Database database, String text) throws Exception
     {
         EncryptedValue result = null;
 
         if (text != null)
         {
-            Database database = getDatabase();
             byte[] data = text.getBytes("UTF-8");
             result = database.encrypt(data);
         }
@@ -36,13 +33,12 @@ public class EncryptedValueService
         return result;
     }
 
-    public String asString(EncryptedValue encryptedValue) throws Exception
+    public String asString(Database database, EncryptedValue encryptedValue) throws Exception
     {
         String result = null;
 
         if (encryptedValue != null)
         {
-            Database database = getDatabase();
             byte[] decrypted = database.decrypt(encryptedValue);
 
             if (decrypted != null)
@@ -54,22 +50,17 @@ public class EncryptedValueService
         return result;
     }
 
-    public EncryptedValue fromJson(JsonObject json) throws Exception
+    public EncryptedValue fromJson(Database database, JsonObject json) throws Exception
     {
         EncryptedValue result = null;
 
         if (json != null)
         {
             String text = json.toString();
-            result = fromString(text);
+            result = fromString(database, text);
         }
 
         return result;
-    }
-
-    private Database getDatabase()
-    {
-        return databaseService.getDatabase();
     }
 
 }

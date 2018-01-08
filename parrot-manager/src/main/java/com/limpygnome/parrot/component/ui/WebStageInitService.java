@@ -4,7 +4,7 @@ import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.buildInfo.BuildInfoService;
 import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
 import com.limpygnome.parrot.component.database.DatabaseService;
-import com.limpygnome.parrot.component.database.EncryptedValueService;
+import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
 import com.limpygnome.parrot.component.remote.RemoteSyncService;

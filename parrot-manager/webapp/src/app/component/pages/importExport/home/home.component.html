@@ -1,0 +1,83 @@
+<h1>
+    <span class="icon icon-copy"></span>
+    Import / Export
+</h1>
+
+<h2 class="text-center">
+    Select Format
+</h2>
+<div class="form-group">
+    <select class="form-control" size="8" id="format">
+        <option value="json">
+            JSON
+        </option>
+        <option value="csv">
+            CSV
+        </option>
+    </select>
+</div>
+
+<div class="row">
+    <div class="col-md-6 text-right">
+        <h2>
+            Import
+        </h2>
+        <p>
+            <button class="btn btn-lg btn-default" (click)="chooseImportText()">
+                Text
+            </button>
+            <button class="btn btn-lg btn-default" (click)="chooseImportFile()">
+                File
+            </button>
+        </p>
+    </div>
+    <div class="col-md-6">
+        <h2>
+            Export
+        </h2>
+        <p>
+            <button class="btn btn-lg btn-default" (click)="chooseExportText()">
+                Text
+            </button>
+            <button class="btn btn-lg btn-default" (click)="chooseExportFile()">
+                File
+            </button>
+        </p>
+    </div>
+</div>
+
+<div *ngIf="importText">
+    <p class="text-center">
+        <textarea id="importText" rows="12" cols="100" placeholder="Paste text here to be imported"></textarea>
+    </p>
+
+    <p class="text-center">
+        <button class="btn btn-lg btn-primary" (click)="chooseImportText()">
+            Continue
+        </button>
+    </p>
+</div>
+
+<div *ngIf="exportText != null">
+    <h2 class="text-center">
+        Result
+    </h2>
+    <div class="text-center">
+        <p>
+            <textarea id="exportText" rows="12" cols="100" placeholder="Your database is empty" readonly>{{ exportText }}</textarea>
+        </p>
+        <p>
+            <button class="btn btn-default">
+                Copy to Clipboard
+            </button>
+        </p>
+    </div>
+</div>
+
+<div class="alert alert-success" *ngIf="success != null">
+    {{ success }}
+</div>
+
+<div class="alert alert-error" *ngIf="error != null">
+    {{ error }}
+</div>

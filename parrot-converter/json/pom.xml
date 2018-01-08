@@ -5,19 +5,29 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.limpygnome</groupId>
-        <artifactId>parrot</artifactId>
+        <groupId>com.limpygnome.parrot</groupId>
+        <artifactId>parrot-converter</artifactId>
         <version>6.0</version>
     </parent>
-    <groupId>com.limpygnome.parrot</groupId>
-    <artifactId>parrot-manager-lib</artifactId>
+    <groupId>com.limpygnome.parrot.parrot-converter</groupId>
+    <artifactId>json</artifactId>
 
     <dependencies>
 
         <!-- local -->
         <dependency>
+            <groupId>com.limpygnome.parrot.parrot-converter</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.limpygnome.parrot</groupId>
             <artifactId>parrot-library</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.limpygnome.parrot</groupId>
+            <artifactId>parrot-manager-lib</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -25,6 +35,12 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+        </dependency>
+
+        <!-- joda -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
         </dependency>
 
         <!-- spring -->
@@ -49,6 +65,18 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
+        </dependency>
+
+        <!-- unit testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

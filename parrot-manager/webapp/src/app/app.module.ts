@@ -13,6 +13,7 @@ import { NotificationsComponent }   from 'app/component/notifications/notificati
 // Modules
 import { PipesModule }              from 'app/component/pipes/pipes.module'
 import { SettingsModule }           from 'app/component/pages/settings/settings.module'
+import { ImportExportModule }       from 'app/component/pages/importExport/importExport.module'
 
 // Pages
 import { ErrorComponent }           from 'app/component/pages/error/error.component'
@@ -59,6 +60,7 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     RouterModule.forRoot(appRoutes),
     SettingsModule,
+    ImportExportModule,
     PipesModule
   ],
   declarations: [

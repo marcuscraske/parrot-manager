@@ -101,6 +101,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         console.log("syncing node - id: " + nodeId);
 
         // Create SSH options and invoke sync
+        var database = this.databaseService.getDatabase();
         var node = this.databaseService.getNode(nodeId);
 
         if (node != null)
@@ -111,7 +112,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
             try
             {
                 // Read existing options
-                options = this.remoteSyncService.createOptionsFromNode(node);
+                options = this.remoteSyncService.createOptionsFromNode(database, node);
 
                 if (options == null)
                 {
