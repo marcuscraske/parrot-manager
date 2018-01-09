@@ -375,9 +375,7 @@ export class RemoteSyncSshComponent {
 
         // Create new node
         console.log("persisting options to new node");
-
-        var database = this.databaseService.getDatabase();
-        this.encryptedValueService.persistSshOptions(database, options);
+        this.encryptedValueService.persistSshOptions(options);
     }
 
     /* Handler for cancel button (navigates to appropriate previous page in flow */

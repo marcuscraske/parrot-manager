@@ -13,6 +13,11 @@
   - Option to be toggled in settings
 
 ## Later
+- Check for updates
+    - <https://api.github.com/repos/limpygnome/parrot-manager/releases/latest>
+- Change entry types
+  - File: encrypted payload is bytes; base64 can be copypasta or saved to directory
+  - URL: value can be opened in browser
 - Last few backups should be backups from long time periods - 1 week, 3 months, 6 months.
   - Backup strategies: consecutive,  consecutive + 7 days,  consecutive + 7 days + 1 month + 3 months + 6 months
 - When viewing backup, have toolbar or large button to restore permanently.

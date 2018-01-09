@@ -12,12 +12,12 @@ import java.io.OutputStream;
 public interface Converter
 {
 
-    void databaseImportText(Database database, String text) throws ConversionException, MalformedInputException;
+    void databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
 
-    void databaseImport(Database database, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
+    void databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
 
-    String databaseExportText(Database database) throws ConversionException;
+    String databaseExportText(Database database, Options options) throws ConversionException;
 
-    void databaseExport(Database database, OutputStream outputStream) throws ConversionException, IOException;
+    void databaseExport(Database database, Options options, OutputStream outputStream) throws ConversionException, IOException;
 
 }

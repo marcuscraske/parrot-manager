@@ -4,6 +4,7 @@ import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.buildInfo.BuildInfoService;
 import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
 import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.importExport.ImportExportService;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
@@ -46,6 +47,9 @@ public class WebStageInitService
     private DatabaseOptimizerService databaseOptimizerService;
     @Autowired
     private SendKeysService sendKeysService;
+    @Autowired
+    private ImportExportService importExportService;
+
     @Autowired(required = false)
     private WebViewDebug webViewDebug;
 
@@ -82,6 +86,7 @@ public class WebStageInitService
         stage.exposeJsObject("buildInfoService", buildInfoService);
         stage.exposeJsObject("databaseOptimizerService", databaseOptimizerService);
         stage.exposeJsObject("sendKeysService", sendKeysService);
+        stage.exposeJsObject("importExportService", importExportService);
 
         // runtime is now ready
         runtimeService.setReady(true);

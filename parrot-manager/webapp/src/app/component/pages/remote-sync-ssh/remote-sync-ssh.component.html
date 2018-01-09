@@ -1,9 +1,13 @@
 <!--
     Heading for when opening new host
 -->
-<h1 *ngIf="currentMode == 'open'">
-    Open Remote Database (SSH)
+<h1 *ngIf="currentMode == 'open'" routerLink="/open">
+    <span class="icon icon-folder"></span>
+    Open
 </h1>
+<h2 *ngIf="currentMode == 'open'">
+    Remote Database (SSH)
+</h2>
 <p *ngIf="currentMode == 'open'">
     This will copy a remote database to your local filesystem and add the host as a remote-sync target. This means
     you will be able to easily keep both databases synchronized.
@@ -12,7 +16,8 @@
 <!--
     Heading for when creating new host for an open database
 -->
-<h1 *ngIf="currentMode == 'new'">
+<h1 *ngIf="currentMode == 'new'" routerLink="/remote-sync">
+    <span class="icon icon-earth"></span>
     Sync
 </h1>
 <h2 *ngIf="currentMode == 'new'">
@@ -26,7 +31,8 @@
 <!--
     Heading for when editing an already existing host
 -->
-<h1 *ngIf="currentMode == 'edit'">
+<h1 *ngIf="currentMode == 'edit'" routerLink="/remote-sync">
+    <span class="icon icon-earth"></span>
     Sync
 </h1>
 <h2 *ngIf="currentMode == 'edit'">

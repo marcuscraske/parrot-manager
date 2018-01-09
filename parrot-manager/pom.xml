@@ -31,6 +31,23 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- local: converters -->
+        <dependency>
+            <groupId>com.limpygnome.parrot.parrot-converter</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.limpygnome.parrot.parrot-converter</groupId>
+            <artifactId>json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.limpygnome.parrot.parrot-converter</groupId>
+            <artifactId>csv</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- cryptography -->
         <dependency>
             <groupId>org.bouncycastle</groupId>

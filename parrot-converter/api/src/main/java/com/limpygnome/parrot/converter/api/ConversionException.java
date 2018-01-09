@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.converter.api;
 
-public class ConversionException extends Throwable
+public class ConversionException extends Exception
 {
 
     public ConversionException(String message, Throwable cause)

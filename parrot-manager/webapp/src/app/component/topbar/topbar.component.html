@@ -29,10 +29,15 @@
             <a tabindex="5" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
             </a>
-            <a tabindex="6" title="Sync Now" (click)="remoteSyncService.syncAll()">
-                <span class="icon" [ngClass]="{ 'icon-download3' : !remoteSyncService.isSyncing(), 'icon-loop2 syncing' : remoteSyncService.isSyncing() }"></span>
+
+            <a tabindex="6" title="Sync Now" (click)="remoteSyncService.syncAll()" *ngIf="!remoteSyncService.isSyncing()">
+                <span class="icon icon-download3"></span>
             </a>
-            <a tabindex="7" title="Change Database" (click)="attemptToCloseDatabase(false)">
+            <a tabindex="6" title="Syncing" routerLink="/remote-sync" *ngIf="remoteSyncService.isSyncing()">
+                <span class="icon icon-loop2 syncing"></span>
+            </a>
+
+            <a tabindex="7" title="Close Database" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>
             </a>
         </div>

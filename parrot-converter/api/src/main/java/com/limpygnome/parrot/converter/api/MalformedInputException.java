@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.converter.api;
 
-public class MalformedInputException extends Throwable
+public class MalformedInputException extends Exception
 {
 
     public MalformedInputException(String message)

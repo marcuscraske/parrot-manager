@@ -1,9 +1,13 @@
 package com.limpygnome.parrot.converter.json;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.limpygnome.parrot.converter.api.Converter;
 import com.limpygnome.parrot.converter.api.MalformedInputException;
 import com.limpygnome.parrot.converter.api.ConversionException;
+import com.limpygnome.parrot.converter.api.Options;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
@@ -17,8 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-@Qualifier("json")
-@Component
+@Component("json")
 public class JsonConverter implements Converter
 {
     @Autowired
@@ -27,12 +30,12 @@ public class JsonConverter implements Converter
     private EncryptedValueService encryptedValueService;
 
     @Override
-    public void databaseImport(Database database, InputStream inputStream) throws ConversionException, MalformedInputException, IOException
+    public void databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException
     {
         try
         {
             String text = stringStreamOperations.readString(inputStream);
-            databaseImportText(database, text);
+            databaseImportText(database, options, text);
         }
         catch (ConversionException e)
         {
@@ -41,11 +44,11 @@ public class JsonConverter implements Converter
     }
 
     @Override
-    public void databaseExport(Database database, OutputStream outputStream) throws ConversionException, IOException
+    public void databaseExport(Database database, Options options, OutputStream outputStream) throws ConversionException, IOException
     {
         try
         {
-            String text = databaseExportText(database);
+            String text = databaseExportText(database, options);
             stringStreamOperations.writeString(outputStream, text);
         }
         catch (ConversionException e)
@@ -55,13 +58,13 @@ public class JsonConverter implements Converter
     }
 
     @Override
-    public void databaseImportText(Database database, String text) throws ConversionException, MalformedInputException
+    public void databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException
     {
 
     }
 
     @Override
-    public String databaseExportText(Database database) throws ConversionException
+    public String databaseExportText(Database database, Options options) throws ConversionException
     {
         DatabaseNode root = database.getRoot();
         JsonObject jsonRoot = new JsonObject();
@@ -69,8 +72,9 @@ public class JsonConverter implements Converter
         // iterate and add all DB children
         addChildren(database, root, jsonRoot);
 
-        // convert to string
-        String text = jsonRoot.toString();
+        // convert to pretty string
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String text = gson.toJson(jsonRoot);
 
         return text;
     }
@@ -94,6 +98,23 @@ public class JsonConverter implements Converter
             jsonRoot.addProperty("id", root.getId());
             jsonRoot.addProperty("name", root.getName());
             jsonRoot.addProperty("value", decryptedString);
+        }
+
+        // recursively add children
+        DatabaseNode[] children = root.getChildren();
+
+        if (children.length > 0)
+        {
+            JsonArray jsonArray = new JsonArray(children.length);
+            jsonRoot.add("children", jsonArray);
+
+            for (DatabaseNode child : root.getChildren())
+            {
+                JsonObject jsonChild = new JsonObject();
+                jsonArray.add(jsonChild);
+
+                addChildren(database, child, jsonChild);
+            }
         }
     }
 
