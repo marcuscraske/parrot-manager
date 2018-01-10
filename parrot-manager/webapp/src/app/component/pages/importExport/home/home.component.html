@@ -2,6 +2,10 @@
     <span class="icon icon-copy"></span>
     Import / Export
 </h1>
+<p>
+    Use this page to import and export your password database between different formats, useful for migrating between
+    password managers.
+</p>
 
 <h2 class="text-center">
     Select Format
@@ -83,6 +87,14 @@
         </p>
     </div>
 </div>
+
+<!-- TODO merge messages / multiple strings component shared with remote-sync -->
+<div *ngIf="messages != null">
+    <b>
+        merge messages
+    </b>
+</div>
+<!-- TODO end -->
 
 <div class="alert alert-success" *ngIf="success != null">
     {{ success }}

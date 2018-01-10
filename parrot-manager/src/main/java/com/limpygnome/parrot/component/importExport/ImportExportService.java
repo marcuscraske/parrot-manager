@@ -48,8 +48,8 @@ public class ImportExportService
 
         try
         {
-            converter.databaseImportText(database, options, text);
-            return new Result();
+            String[] messages = converter.databaseImportText(database, options, text);
+            return new Result(messages);
         }
         catch (MalformedInputException e)
         {

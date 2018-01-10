@@ -152,17 +152,21 @@ public class DatabaseNode
     }
 
     /**
-     * This will set the last modified to the provided value, but the underlying database dirty flag will be set.
-     * Usually the last modified would be the current time, thus use this with caution!
-     *
-     * @return the last modified date
+     * @return last modified epoch ms time
      */
     public long getLastModified()
     {
         return lastModified;
     }
 
-    void setLastModified(long lastModified)
+    /**
+     * Sets the time at which this was last modified.
+     *
+     * This will set the dirty flag on the database.
+     *
+     * @param lastModified last modified epoch ms time
+     */
+    public void setLastModified(long lastModified)
     {
         this.lastModified = lastModified;
         database.setDirty(true);

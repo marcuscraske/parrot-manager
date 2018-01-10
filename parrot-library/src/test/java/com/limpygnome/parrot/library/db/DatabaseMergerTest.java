@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,8 +60,6 @@ public class DatabaseMergerTest
     private DatabaseNodeHistory oldHistory;
     @Mock
     private DatabaseNodeHistory newHistory;
-    @Mock
-    private DatabaseNodeHistory clonedHistory;
 
     // Test data
     private Set<UUID> deletedChildren;
@@ -153,7 +152,22 @@ public class DatabaseMergerTest
         verify(destination).setDirty(true);
     }
 
+    @Test
+    public void mergeDatabaseNoPassword_doesNotMergeCryptoParams()  throws Exception
+    {
+        // given
+        given(sourceMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
+        given(destMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
+        given(sourceFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
+        given(destFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
 
+        // when
+        merger.merge(source, destination, null);
+
+        // then
+        verify(destination, never()).updateMemoryCryptoParams(sourceMemoryCryptoParams, PASSWORD);
+        verify(destination, never()).setDirty(true);
+    }
 
     @Test
     public void mergeNodeProperties_srcNewerThanDest_updatesName()  throws Exception

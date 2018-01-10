@@ -24,7 +24,7 @@ public class EncryptedValueService
     {
         EncryptedValue result = null;
 
-        if (text != null)
+        if (text != null && !text.isEmpty())
         {
             byte[] data = text.getBytes("UTF-8");
             result = database.encrypt(data);

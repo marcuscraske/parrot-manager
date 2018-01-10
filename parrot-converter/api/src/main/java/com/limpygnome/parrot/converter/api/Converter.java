@@ -12,9 +12,28 @@ import java.io.OutputStream;
 public interface Converter
 {
 
-    void databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
+    /**
+     *
+     * @param database
+     * @param options
+     * @param text
+     * @return list of merge messages / changes
+     * @throws ConversionException
+     * @throws MalformedInputException
+     */
+    String[] databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
 
-    void databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
+    /**
+     *
+     * @param database
+     * @param options
+     * @param inputStream
+     * @return list of merge messages / changes
+     * @throws ConversionException
+     * @throws MalformedInputException
+     * @throws IOException
+     */
+    String[] databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
 
     String databaseExportText(Database database, Options options) throws ConversionException;
 

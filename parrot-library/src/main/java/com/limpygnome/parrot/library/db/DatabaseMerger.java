@@ -24,7 +24,7 @@ public class DatabaseMerger
      *
      * @param remote the database being merged into the destination
      * @param local the database to have the final version of everything
-     * @param password the password for the destination database
+     * @param password the password for the destination database; if null, crypto params are not merged
      * @return a log of actions performed on the database
      * @throws Exception if a crypto operation fails
      */
@@ -46,8 +46,11 @@ public class DatabaseMerger
                     mergeLog.add("changes detected, merging...");
 
                     // merge crypto params
-                    mergeDatabaseFileCryptoParams(mergeLog, remote, local, password);
-                    mergeDatabaseMemoryCryptoParams(mergeLog, remote, local, password);
+                    if (password != null && password.length > 0)
+                    {
+                        mergeDatabaseFileCryptoParams(mergeLog, remote, local, password);
+                        mergeDatabaseMemoryCryptoParams(mergeLog, remote, local, password);
+                    }
 
                     // merge nodes
                     boolean changed = mergeNode(mergeLog, local, remote.getRoot(), local.getRoot());

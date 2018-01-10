@@ -17,6 +17,7 @@ export class HomeComponent {
     public success: string;
     public error: string;
     public exportText: string;
+    public messages: string[];
 
     constructor(
         private importExportService: ImportExportService,
@@ -25,20 +26,32 @@ export class HomeComponent {
 
     chooseImportText()
     {
+        var importText = this.importText;
         this.reset();
-        this.importText = true;
 
-        var text = $("#importText").val();
-
-        if (format.length > 0 && text.length > 0)
+        if (importText)
         {
-            var options = this.createOptions();
-            var result = this.importExportService.databaseImportText(options, text);
-            this.isSuccess(result);
+            var text = $("#importText").val();
+
+            if (text.length > 0)
+            {
+                var options = this.createOptions();
+                var result = this.importExportService.databaseImportText(options, text);
+                if (this.isSuccess(result))
+                {
+                    this.success = "Imported database changes successfully";
+                }
+                this.messages = result.getMessages();
+            }
+            else
+            {
+                this.error = "Enter some text to be imported";
+            }
         }
         else
         {
-            this.errorSelectFormat();
+            // Show text area first
+            this.importText = true;
         }
     }
 
@@ -51,31 +64,25 @@ export class HomeComponent {
     {
         this.reset();
 
-        if (format != null)
-        {
-            var options = this.createOptions();
-            var result = this.importExportService.databaseExportText(options);
+        var options = this.createOptions();
+        var result = this.importExportService.databaseExportText(options);
 
-            if (this.isSuccess(result))
-            {
-                this.exportText = result.getText();
-            }
-        }
-        else
+        if (this.isSuccess(result))
         {
-            this.errorSelectFormat();
+            this.exportText = result.getText();
         }
     }
 
     chooseExportFile()
     {
         this.reset();
+
         // show dialogue
     }
 
     copyText()
     {
-        this.runtimeService.setClipboard(this.text);
+        this.runtimeService.setClipboard(this.exportText);
     }
 
 
@@ -86,11 +93,6 @@ export class HomeComponent {
 
         var options = this.importExportService.createOptions(format, remoteSync);
         return options;
-    }
-
-    private errorSelectFormat()
-    {
-        this.error = "You need to select a format";
     }
 
     private isSuccess(result) : boolean
@@ -107,6 +109,7 @@ export class HomeComponent {
         this.exportText = null;
         this.error = null;
         this.success = null;
+        this.messages = null;
     }
 
 }

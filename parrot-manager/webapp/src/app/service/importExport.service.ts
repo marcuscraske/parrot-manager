@@ -21,13 +21,13 @@ export class ImportExportService
     databaseImportText(options, text)
     {
         var database = this.databaseService.getDatabase();
-        return this.importExportService.databaseImportText(database, text, options);
+        return this.importExportService.databaseImportText(database, options, text);
     }
 
     databaseImportFile(options, path)
     {
         var database = this.databaseService.getDatabase();
-        return this.importExportService.databaseImportFile(database, path, options);
+        return this.importExportService.databaseImportFile(database, options, path);
     }
 
     databaseExportText(options)
@@ -39,7 +39,7 @@ export class ImportExportService
     databaseExportFile(options, path)
     {
         var database = this.databaseService.getDatabase();
-        return this.importExportService.databaseExportFile(database, path, options);
+        return this.importExportService.databaseExportFile(database, options, path);
     }
 
 }
