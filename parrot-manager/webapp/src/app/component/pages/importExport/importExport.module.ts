@@ -4,6 +4,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { ReactiveFormsModule } from "@angular/forms";
 
 import { PipesModule } from "app/component/pipes/pipes.module"
+import { ControlsModule } from "app/component/controls/controls.module"
 
 import { HomeComponent } from "app/component/pages/importExport/home/home.component"
 
@@ -16,7 +17,8 @@ const routes: Routes = [
         BrowserModule,
         RouterModule.forChild(routes),
         ReactiveFormsModule,
-        PipesModule
+        PipesModule,
+        ControlsModule
     ],
     declarations: [
         HomeComponent

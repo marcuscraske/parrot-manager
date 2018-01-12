@@ -14,6 +14,7 @@ import { NotificationsComponent }   from 'app/component/notifications/notificati
 import { PipesModule }              from 'app/component/pipes/pipes.module'
 import { SettingsModule }           from 'app/component/pages/settings/settings.module'
 import { ImportExportModule }       from 'app/component/pages/importExport/importExport.module'
+import { ControlsModule }           from 'app/component/controls/controls.module'
 
 // Pages
 import { ErrorComponent }           from 'app/component/pages/error/error.component'
@@ -61,7 +62,8 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes),
     SettingsModule,
     ImportExportModule,
-    PipesModule
+    PipesModule,
+    ControlsModule
   ],
   declarations: [
 

@@ -29,6 +29,10 @@ public class WebViewConsole
         // override console.log and write a test/init message
         WebView webView = stage.getWebView();
         webView.getEngine().executeScript("console.log = function(m){ logger.log(m); }");
+        webView.getEngine().executeScript("console.debug = function(m){ logger.log(m); }");
+        webView.getEngine().executeScript("console.info = function(m){ logger.log(m); }");
+        webView.getEngine().executeScript("console.warn = function(m){ logger.log(m); }");
+        webView.getEngine().executeScript("console.error = function(m){ logger.log(m); }");
         webView.getEngine().executeScript("console.log('web console setup');");
     }
 

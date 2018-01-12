@@ -58,6 +58,19 @@ export class HomeComponent {
     chooseImportFile()
     {
         this.reset();
+        var path = this.runtimeService.pickFile("Select file to import", null, false);
+
+        if (path != null)
+        {
+            var options = this.createOptions();
+            var result = this.importExportService.databaseImportFile(options, path);
+
+            if (this.isSuccess(result))
+            {
+                this.success = "Imported database changes successfully";
+            }
+            this.messages = result.getMessages();
+        }
     }
 
     chooseExportText()
@@ -76,8 +89,19 @@ export class HomeComponent {
     chooseExportFile()
     {
         this.reset();
+        var path = this.runtimeService.pickFile("Select file to export", null, true);
 
-        // show dialogue
+        if (path != null)
+        {
+            var options = this.createOptions();
+            var result = this.importExportService.databaseExportFile(options, path);
+
+            if (this.isSuccess(result))
+            {
+                this.success = "Exported database successfully";
+            }
+            this.messages = result.getMessages();
+        }
     }
 
     copyText()

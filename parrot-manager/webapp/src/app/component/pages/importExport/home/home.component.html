@@ -88,13 +88,9 @@
     </div>
 </div>
 
-<!-- TODO merge messages / multiple strings component shared with remote-sync -->
-<div *ngIf="messages != null">
-    <b>
-        merge messages
-    </b>
-</div>
-<!-- TODO end -->
+<p *ngIf="messages != null">
+    <messageBox [messages]="messages"></messageBox>
+</p>
 
 <div class="alert alert-success" *ngIf="success != null">
     {{ success }}

@@ -49,7 +49,8 @@ public class ImportExportService
         try
         {
             String[] messages = converter.databaseImportText(database, options, text);
-            return new Result(messages);
+            Result result = new Result(messages);
+            return result;
         }
         catch (MalformedInputException e)
         {
@@ -84,8 +85,9 @@ public class ImportExportService
         try
         {
             FileInputStream fis = new FileInputStream(path);
-            converter.databaseImport(database, options, fis);
-            return new Result();
+            String[] messages = converter.databaseImport(database, options, fis);
+            Result result = new Result(messages);
+            return result;
         }
         catch (MalformedInputException e)
         {
@@ -117,7 +119,7 @@ public class ImportExportService
         }
     }
 
-    public Result databaseExportFile(Database database, String path, Options options)
+    public Result databaseExportFile(Database database, Options options, String path)
     {
         Converter converter = getConverter(options);
 

@@ -29,7 +29,14 @@ var handle = setInterval(() => {
         console.log("runtime ready, bootstrapping app");
 
         // load application
-        platformBrowserDynamic().bootstrapModule(AppModule);
+        try
+        {
+            platformBrowserDynamic().bootstrapModule(AppModule);
+        }
+        catch (e)
+        {
+            console.error(e);
+        }
 
         // stop interval
         clearInterval(handle);
