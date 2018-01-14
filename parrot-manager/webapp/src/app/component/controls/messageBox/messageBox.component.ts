@@ -15,6 +15,7 @@ export class MessageBoxComponent
     ngAfterViewInit()
     {
         // Scroll to bottom
+        // TODO wont support multiple message boxes on same page
         var messageBox = $("messageBox textarea");
         if (messageBox.length > 0)
         {

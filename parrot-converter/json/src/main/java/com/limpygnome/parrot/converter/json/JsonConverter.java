@@ -6,28 +6,26 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.limpygnome.parrot.converter.api.ConversionException;
 import com.limpygnome.parrot.converter.api.Converter;
 import com.limpygnome.parrot.converter.api.MalformedInputException;
-import com.limpygnome.parrot.converter.api.ConversionException;
 import com.limpygnome.parrot.converter.api.Options;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.MergeLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.UUID;
 
+// TODO bug where (root?) node is imported as unnamed node
 @Component("json")
-public class JsonConverter implements Converter
+public class JsonConverter extends Converter
 {
     @Autowired
     private StringStreamOperations stringStreamOperations;
@@ -66,21 +64,10 @@ public class JsonConverter implements Converter
         Database databaseParsed = new Database(database.getMemoryCryptoParams(), database.getFileCryptoParams());
         DatabaseNode root = databaseParsed.getRoot();
 
-        importAddChildren(databaseParsed, root, jsonRoot);
+        importAddChildren(databaseParsed, root, jsonRoot, options);
 
-        // merge with current database
-        try
-        {
-            DatabaseMerger merger = new DatabaseMerger();
-            MergeLog mergeLog = merger.merge(databaseParsed, database, null);
-            List<String> listMessages = mergeLog.getMessages();
-            String[] messages = listMessages.toArray(new String[listMessages.size()]);
-            return messages;
-        }
-        catch (Exception e)
-        {
-            throw new ConversionException("Failed to merge database - " + e.getMessage(), e);
-        }
+        // merge them
+        return merge(database, databaseParsed);
     }
 
     @Override
@@ -90,7 +77,7 @@ public class JsonConverter implements Converter
         JsonObject jsonRoot = new JsonObject();
 
         // iterate and add all DB children
-        exportAddChildren(database, root, jsonRoot);
+        exportAddChildren(database, root, jsonRoot, options);
 
         // convert to pretty string
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -99,8 +86,13 @@ public class JsonConverter implements Converter
         return text;
     }
 
-    private void importAddChildren(Database database, DatabaseNode root, JsonObject jsonRoot) throws ConversionException
+    private void importAddChildren(Database database, DatabaseNode root, JsonObject jsonRoot, Options options) throws ConversionException
     {
+        if (isProhibitedNode(options, root))
+        {
+            return;
+        }
+
         // parse properties
         if (!root.isRoot())
         {
@@ -154,13 +146,18 @@ public class JsonConverter implements Converter
                 JsonObject child = childElement.getAsJsonObject();
                 DatabaseNode childNode = root.addNew();
 
-                importAddChildren(database, childNode, child);
+                importAddChildren(database, childNode, child, options);
             }
         }
     }
 
-    private void exportAddChildren(Database database, DatabaseNode root, JsonObject jsonRoot) throws ConversionException
+    private void exportAddChildren(Database database, DatabaseNode root, JsonObject jsonRoot, Options options) throws ConversionException
     {
+        if (isProhibitedNode(options, root))
+        {
+            return;
+        }
+
         if (!root.isRoot())
         {
             String decryptedString;
@@ -194,7 +191,7 @@ public class JsonConverter implements Converter
                 JsonObject jsonChild = new JsonObject();
                 jsonArray.add(jsonChild);
 
-                exportAddChildren(database, child, jsonChild);
+                exportAddChildren(database, child, jsonChild, options);
             }
         }
     }

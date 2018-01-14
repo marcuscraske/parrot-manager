@@ -488,11 +488,21 @@ public class DatabaseNode
      */
     public String getPath()
     {
-        String path = name != null && name.length() > 0 ? name : "[" + id + "]";
+        String path;
 
-        if (parent != null)
+        if (parent == null)
         {
-            path = parent.getPath() + "/" + path;
+            // TODO unit test
+            path = "/root";
+        }
+        else
+        {
+            path = name != null && name.length() > 0 ? name : "[" + id + "]";
+
+            if (parent != null)
+            {
+                path = parent.getPath() + "/" + path;
+            }
         }
 
         return path;

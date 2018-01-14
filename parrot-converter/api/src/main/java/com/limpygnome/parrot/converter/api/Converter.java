@@ -1,15 +1,19 @@
 package com.limpygnome.parrot.converter.api;
 
 import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.DatabaseMerger;
+import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.db.MergeLog;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Used to convert between input-stream/text and database.
  */
-public interface Converter
+public abstract class Converter
 {
 
     /**
@@ -21,7 +25,7 @@ public interface Converter
      * @throws ConversionException
      * @throws MalformedInputException
      */
-    String[] databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
+    public abstract String[] databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
 
     /**
      *
@@ -33,10 +37,37 @@ public interface Converter
      * @throws MalformedInputException
      * @throws IOException
      */
-    String[] databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
+    public abstract String[] databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
 
-    String databaseExportText(Database database, Options options) throws ConversionException;
+    public abstract String databaseExportText(Database database, Options options) throws ConversionException;
 
-    void databaseExport(Database database, Options options, OutputStream outputStream) throws ConversionException, IOException;
+    public abstract void databaseExport(Database database, Options options, OutputStream outputStream) throws ConversionException, IOException;
+
+    protected String[] merge(Database database, Database databaseParsed) throws ConversionException
+    {
+        // merge with current database
+        try
+        {
+            DatabaseMerger merger = new DatabaseMerger();
+            MergeLog mergeLog = merger.merge(databaseParsed, database, null);
+            List<String> listMessages = mergeLog.getMessages();
+            String[] messages = listMessages.toArray(new String[listMessages.size()]);
+            return messages;
+        }
+        catch (Exception e)
+        {
+            throw new ConversionException("Failed to merge database - " + e.getMessage(), e);
+        }
+    }
+
+    protected boolean isProhibitedNode(Options options, DatabaseNode node)
+    {
+        if (!options.isRemoteSync() && "/root/remote-sync".equals(node.getPath()))
+        {
+            return true;
+        }
+
+        return false;
+    }
 
 }
