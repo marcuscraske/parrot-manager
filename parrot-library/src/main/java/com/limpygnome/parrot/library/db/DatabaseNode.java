@@ -71,6 +71,16 @@ public class DatabaseNode
     }
 
     /**
+     * Creates a new database node.
+     *
+     * WARNING: use this very carefully.
+     */
+    public DatabaseNode(Database database)
+    {
+        this(database, null, null, 0);
+    }
+
+    /**
      * Creates a new node with already encrypted data.
      *
      * @param database the DB to which this belongs
@@ -299,6 +309,9 @@ public class DatabaseNode
         return children;
     }
 
+    /*
+        Use #add from parent node :)
+     */
     void setParent(DatabaseNode node)
     {
         this.parent = node;

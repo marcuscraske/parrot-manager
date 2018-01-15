@@ -51,7 +51,16 @@ public class JsonConverter extends Converter
     {
         // parse to json
         JsonParser parser = new JsonParser();
-        JsonElement element = parser.parse(text);
+        JsonElement element;
+
+        try
+        {
+            element = parser.parse(text);
+        }
+        catch (Exception e)
+        {
+            throw new ConversionException("Malformed JSON", e);
+        }
 
         if (!element.isJsonObject())
         {
@@ -61,13 +70,14 @@ public class JsonConverter extends Converter
         JsonObject jsonRoot = element.getAsJsonObject();
 
         // convert to database
-        Database databaseParsed = new Database(database.getMemoryCryptoParams(), database.getFileCryptoParams());
+        Database databaseParsed = createDatabase(database);
         DatabaseNode root = databaseParsed.getRoot();
 
         importAddChildren(databaseParsed, root, jsonRoot, options);
 
         // merge them
-        return merge(database, databaseParsed);
+        String[] messages = merge(database, databaseParsed);
+        return messages;
     }
 
     @Override
@@ -90,6 +100,7 @@ public class JsonConverter extends Converter
     {
         if (isProhibitedNode(options, root))
         {
+            root.remove();
             return;
         }
 
@@ -153,11 +164,6 @@ public class JsonConverter extends Converter
 
     private void exportAddChildren(Database database, DatabaseNode root, JsonObject jsonRoot, Options options) throws ConversionException
     {
-        if (isProhibitedNode(options, root))
-        {
-            return;
-        }
-
         if (!root.isRoot())
         {
             String decryptedString;
@@ -188,10 +194,13 @@ public class JsonConverter extends Converter
 
             for (DatabaseNode child : root.getChildren())
             {
-                JsonObject jsonChild = new JsonObject();
-                jsonArray.add(jsonChild);
+                if (!isProhibitedNode(options, root))
+                {
+                    JsonObject jsonChild = new JsonObject();
+                    jsonArray.add(jsonChild);
 
-                exportAddChildren(database, child, jsonChild, options);
+                    exportAddChildren(database, child, jsonChild, options);
+                }
             }
         }
     }

@@ -18,38 +18,34 @@
     No backups created.
 </p>
 
-<div class="row" *ngIf="isBackups()">
-    <div class="col-xs-3"></div>
-    <div class="col-xs-6">
-        <table class="table">
-            <tr>
-                <th class="text-center">
-                    Created
-                </th>
-                <th>
-                    Options
-                </th>
-            </tr>
-            <tr *ngFor="let file of (backupFiles | orderBy: ['-getName()']); trackBy: trackChildren">
-                <td class="text-center" title="{{ file.getLastModified() | formattedDate }}">
-                    {{ file.getLastModified() | friendlyTime }}
-                </td>
-                <td>
-                    <button class="btn btn-default" (click)="open(file)">
-                        <span class="icon icon-folder"></span>
-                        Open
-                    </button>
-                    <button class="btn btn-default" (click)="restore(file)">
-                        <span class="icon icon-undo2"></span>
-                        Restore
-                    </button>
-                    <button class="btn btn-danger" (click)="delete(file)">
-                        <span class="icon icon-cross"></span>
-                        Delete
-                    </button>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="col-xs-3"></div>
+<div *ngIf="isBackups()">
+    <table class="table">
+        <tr>
+            <th>
+                Created
+            </th>
+            <th>
+                Options
+            </th>
+        </tr>
+        <tr *ngFor="let file of (backupFiles | orderBy: ['-getName()']); trackBy: trackChildren">
+            <td title="{{ file.getLastModified() | formattedDate }}">
+                {{ file.getLastModified() | friendlyTime }}
+            </td>
+            <td>
+                <button class="btn btn-default" (click)="open(file)">
+                    <span class="icon icon-folder"></span>
+                    Open
+                </button>
+                <button class="btn btn-default" (click)="restore(file)">
+                    <span class="icon icon-undo2"></span>
+                    Restore
+                </button>
+                <button class="btn btn-danger" (click)="delete(file)">
+                    <span class="icon icon-cross"></span>
+                    Delete
+                </button>
+            </td>
+        </tr>
+    </table>
 </div>

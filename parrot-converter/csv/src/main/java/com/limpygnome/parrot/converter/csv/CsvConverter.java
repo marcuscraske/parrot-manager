@@ -5,6 +5,8 @@ import com.limpygnome.parrot.converter.api.Converter;
 import com.limpygnome.parrot.converter.api.MalformedInputException;
 import com.limpygnome.parrot.converter.api.Options;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
+import com.limpygnome.parrot.lib.io.StringStreamOperations;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,31 +15,119 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component("csv")
 public class CsvConverter extends Converter
 {
+    @Autowired
+    private StringStreamOperations stringStreamOperations;
     @Autowired
     private EncryptedValueService encryptedValueService;
 
     @Override
     public String[] databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException
     {
-        return new String[0];
+        String text = stringStreamOperations.readString(inputStream);
+        return databaseImportText(database, options, text);
     }
 
     @Override
     public void databaseExport(Database database, Options options, OutputStream outputStream) throws ConversionException, IOException
     {
+        String text = databaseExportText(database, options);
+        stringStreamOperations.writeString(outputStream, text);
     }
 
     @Override
     public String[] databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException
     {
-        return new String[0];
+        if (text == null || text.isEmpty())
+        {
+            throw new ConversionException("Provided text is empty");
+        }
+
+        // parse as csx text
+        List<String[]> rows = parse(text);
+
+        if (rows.size() <= 1)
+        {
+            throw new ConversionException("Provided text has no data");
+        }
+
+        // convert each row into database node in database
+        Database databaseParsed = createDatabase(database);
+
+        String[] headers = rows.get(0);
+        Map<String, DatabaseNode> parentNameToNode = new HashMap<>();
+
+        // drop first row (headers)
+        rows.remove(0);
+
+        // scan for best column for determining parent
+        int parentHeaderIndex = -1;
+        boolean isParentId = false;
+
+        for (int headerIndex = 0; headerIndex < headers.length && !isParentId; headerIndex++)
+        {
+            String header = headers[headerIndex].toLowerCase();
+            switch (header)
+            {
+                case "parentid":
+                    parentHeaderIndex = headerIndex;
+                    isParentId = true;
+                    break;
+                case "parentname":
+                case "group":
+                    parentHeaderIndex = headerIndex;
+                    break;
+            }
+        }
+
+        if (parentHeaderIndex == -1)
+        {
+            throw new ConversionException("No header defines the parent/group, thus items cannot be mapped to a parent node/entry");
+        }
+
+        /*
+            Since parents may be defined after children, we'll scan top to bottom and try to add the next available
+            parent.
+
+            This is not greatly efficient, but probably the most straight forward approach and expected data-set is
+            small. In most cases this parents will be defined first, especially when exporting data from this same
+            converter.
+         */
+
+        boolean anyImported;
+
+        do
+        {
+            anyImported = false;
+
+            for (int rowNum = 0; rowNum < rows.size(); rowNum++)
+            {
+                String[] row = rows.get(rowNum);
+                if (importRow(database, databaseParsed, options, parentNameToNode, parentHeaderIndex, isParentId, headers, row, rowNum))
+                {
+                    rows.remove(rowNum);
+                    anyImported = true;
+                }
+            }
+        }
+        while (rows.size() > 1 && anyImported);
+
+        // check whether there's orphaned data left over
+        if (rows.size() > 1)
+        {
+            throw new ConversionException("Some data is orphaned / cannot be mapped to a parent - rows: " + rows.size());
+        }
+
+        // perform merge
+        return merge(database, databaseParsed);
     }
 
     @Override
@@ -50,15 +140,14 @@ public class CsvConverter extends Converter
 
         // append nodes
         DatabaseNode node = database.getRoot();
-        exportAppend(database, node, buffer);
+        exportAppend(database, node, buffer, options);
 
         String text = buffer.toString();
         return text;
     }
 
-    private void exportAppend(Database database, DatabaseNode node, StringBuilder buffer) throws ConversionException
+    private void exportAppend(Database database, DatabaseNode node, StringBuilder buffer, Options options) throws ConversionException
     {
-        // TODO ignore remote sync
         if (!node.isRoot())
         {
             // collect data
@@ -125,7 +214,10 @@ public class CsvConverter extends Converter
         {
             for (DatabaseNode child : children)
             {
-                exportAppend(database, child, buffer);
+                if (!isProhibitedNode(options, node))
+                {
+                    exportAppend(database, child, buffer, options);
+                }
             }
         }
     }
@@ -153,8 +245,149 @@ public class CsvConverter extends Converter
         return value;
     }
 
+    private boolean importRow(Database database, Database databaseParsed, Options options, Map<String, DatabaseNode> parentNameToNode,
+                              int parentHeaderIndex, boolean isParentId, String[] headers, String[] row, int rowNum) throws ConversionException
+    {
+        // check column count matches header
+        if (row.length != headers.length)
+        {
+            throw new ConversionException("Number of columns does not match header - data row: " + (rowNum+1));
+        }
+
+        // create new node
+        DatabaseNode node = new DatabaseNode(databaseParsed);
+
+        // handle parent
+        String parentValue = row[parentHeaderIndex];
+        DatabaseNode parentNode;
+
+        if ("root".equals(parentValue) || parentValue.isEmpty())
+        {
+            parentNode = databaseParsed.getRoot();
+        }
+        else if (isParentId)
+        {
+            try
+            {
+                UUID parentId = UUID.fromString(parentValue);
+                parentNode = databaseParsed.getNodeByUuid(parentId);
+            }
+            catch (IllegalArgumentException e)
+            {
+                throw new ConversionException("Malformed parent identifier - value: " + parentValue, e);
+            }
+        }
+        else
+        {
+            parentNode = parentNameToNode.get(parentValue);
+        }
+
+        // check we found parent, otherwise must be in future record
+        if (parentNode == null)
+        {
+            return false;
+        }
+
+        // attach to parent
+        parentNode.add(node);
+
+        // parse properties
+        for (int index = 0; index < headers.length; index++)
+        {
+            String header = headers[index].toLowerCase();
+            String value = row[index];
+
+            switch (header)
+            {
+                // Columns which natively map 1 to 1
+                case "parentid":
+                case "parentname":
+                case "group":
+                    // do nothing; parent already previously handled
+                    break;
+                case "id":
+                    try
+                    {
+                        UUID nodeId = UUID.fromString(value);
+                        node.setId(nodeId);
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        throw new ConversionException("Invalid identifier for node - value: " + value, e);
+                    }
+                    break;
+                case "name":
+                case "title":
+                    node.setName(value);
+                    break;
+                case "value":
+                case "password":
+                    try
+                    {
+                        EncryptedValue encryptedValue = encryptedValueService.fromString(databaseParsed, value);
+                        node.setValue(encryptedValue);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ConversionException("Failed to encrypt value - " + e.getMessage(), e);
+                    }
+                    break;
+                case "lastmodified":
+                case "last modified":
+                    try
+                    {
+                        long lastModified = Long.parseLong(value);
+                        node.setLastModified(lastModified);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        throw new ConversionException("Invalid value for last modified - parent: " + parentValue + ", value: " + value);
+                    }
+                    break;
+
+                // Columns to be treated as sub-children (third-party password managers)
+                case "user name":
+                    // TODO add child
+                    break;
+                case "url":
+                    // TODO add child
+                    break;
+                case "notes":
+                    // TODO add child
+                    break;
+
+                default:
+                    // TODO option to ignore unknown data
+                    break;
+            }
+        }
+
+        // drop and stop if prohibited node
+        if (isProhibitedNode(options, node))
+        {
+            node.remove();
+        }
+        else if (!isParentId)
+        {
+            // add to map of names to nodes
+            String nodeName = node.getName();
+
+            if (nodeName != null)
+            {
+                if (parentNameToNode.containsKey(nodeName))
+                {
+                    throw new ConversionException("Cannot add node with identical name when parent nodes/identification is name based - name: " + nodeName);
+                }
+                parentNameToNode.put(nodeName, node);
+            }
+        }
+
+        return true;
+    }
+
     /* matrix of lines/rows by columns */
-    String[][] parse(String text)
+    // TODO ignore empty or commented-out lines
+    List<String[]> parse(String text)
     {
         int colStart = 0;
 
@@ -230,6 +463,11 @@ public class CsvConverter extends Converter
                     // add empty column
                     cols.add("");
                 }
+                else
+                {
+                    String column = text.substring(colStart, pos);
+                    cols.add(column);
+                }
 
                 // looks like end of the row; reset col pos to next position
                 colStart = pos + 1;
@@ -237,12 +475,13 @@ public class CsvConverter extends Converter
                 // add columns as row
                 String[] row = cols.toArray(new String[cols.size()]);
                 rows.add(row);
+
+                // reset columns
+                cols.clear();
             }
         }
 
-        // build final matrix
-        String[][] matrix = rows.toArray(new String[rows.size()][]);
-        return matrix;
+        return rows;
     }
 
 }

@@ -43,6 +43,8 @@ public abstract class Converter
 
     public abstract void databaseExport(Database database, Options options, OutputStream outputStream) throws ConversionException, IOException;
 
+
+
     protected String[] merge(Database database, Database databaseParsed) throws ConversionException
     {
         // merge with current database
@@ -68,6 +70,12 @@ public abstract class Converter
         }
 
         return false;
+    }
+
+    protected Database createDatabase(Database original)
+    {
+        Database database = new Database(original.getMemoryCryptoParams(), original.getFileCryptoParams());
+        return database;
     }
 
 }

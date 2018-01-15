@@ -4,6 +4,8 @@ package com.limpygnome.parrot.converter.api;
  * Generic conversion options.
  *
  * For format-specific options, extend this class.
+ *
+ * TODO no IDs / name-only identification / identify by name not ID
  */
 public class Options
 {
