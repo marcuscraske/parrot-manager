@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -43,7 +45,7 @@ public class DatabaseNode
     private Map<String, String> localProperties;
 
     // Any sub-nodes which belong to this node
-    private Map<UUID, DatabaseNode> children;
+    private List<DatabaseNode> children;
 
     // A list of previously deleted children; used for merging
     private Set<UUID> deletedChildren;
@@ -69,7 +71,7 @@ public class DatabaseNode
         this.name = name;
         this.lastModified = lastModified;
 
-        this.children = new HashMap<>(0);
+        this.children = new LinkedList<>();
         this.deletedChildren = new HashSet<>();
         this.history = new DatabaseNodeHistory(this);
         this.localProperties = new HashMap<>();
@@ -297,7 +299,7 @@ public class DatabaseNode
 
         if (name != null)
         {
-            result = children.values()
+            result = children
                     .stream()
                     .filter(node -> name.equals(node.name))
                     .findFirst()
@@ -305,14 +307,6 @@ public class DatabaseNode
         }
 
         return result;
-    }
-
-    /**
-     * @return retrieves read-only underlying map of children
-     */
-    synchronized Map<UUID, DatabaseNode> getChildrenMap()
-    {
-        return children;
     }
 
     /*
@@ -357,7 +351,7 @@ public class DatabaseNode
         }
 
         // Perform on child nodes
-        for (DatabaseNode child : children.values())
+        for (DatabaseNode child : children)
         {
             child.rebuildCrypto(oldMemoryCryptoParams);
         }
@@ -383,7 +377,7 @@ public class DatabaseNode
 
         // Perform same recursion on children
         DatabaseNode clonedChild;
-        for (DatabaseNode child : children.values())
+        for (DatabaseNode child : children)
         {
             clonedChild = child.clone(database);
             newNode.add(clonedChild);
@@ -401,7 +395,7 @@ public class DatabaseNode
     public synchronized DatabaseNode add(DatabaseNode node)
     {
         // Add as child
-        children.put(node.id, node);
+        children.add(node);
 
         // Update parent
         node.setParent(this);
@@ -440,7 +434,7 @@ public class DatabaseNode
         if (parent != null)
         {
             // Remove from parent
-            parent.children.remove(id);
+            parent.children.remove(this);
             parent.deletedChildren.add(id);
 
             // Refresh parent cache
@@ -480,7 +474,7 @@ public class DatabaseNode
     {
         id = UUID.randomUUID();
 
-        for (DatabaseNode child : children.values())
+        for (DatabaseNode child : children)
         {
             child.regenerateIds();
         }
@@ -543,8 +537,7 @@ public class DatabaseNode
 
     private void refreshChildrenCache()
     {
-        Collection<DatabaseNode> childNodes = children.values();
-        childrenCached = childNodes.toArray(new DatabaseNode[childNodes.size()]);
+        childrenCached =  children.toArray(new DatabaseNode[children.size()]);
     }
 
     @Override

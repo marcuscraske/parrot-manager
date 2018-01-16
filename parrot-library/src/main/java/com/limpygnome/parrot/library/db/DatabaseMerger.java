@@ -3,6 +3,7 @@ package com.limpygnome.parrot.library.db;
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
@@ -116,7 +117,7 @@ public class DatabaseMerger
         boolean changed;
 
         changed  = mergeNodeProperties(mergeLog, remoteNode, localNode);
-        changed |= mergeLocalNodeChildren(mergeLog, local, remoteNode, localNode);
+        changed |= checkLocalChildrenAgainstRemote(mergeLog, local, remoteNode, localNode);
         changed |= mergeRemoteNodeChildren(mergeLog, local, remoteNode, localNode);
 
         return changed;
@@ -182,18 +183,18 @@ public class DatabaseMerger
     /*
         Updates all nodes in the current database, so they're in sync with the remote database.
      */
-    boolean mergeLocalNodeChildren(MergeLog mergeLog, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
+    boolean checkLocalChildrenAgainstRemote(MergeLog mergeLog, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
     {
         boolean changed = false;
 
         DatabaseNode localChild;
         DatabaseNode remoteChild;
 
-        Map<UUID, DatabaseNode> localChildren = localNode.getChildrenMap();
+        Map<UUID, DatabaseNode> localChildren = createMap(localNode.getChildren());
         Iterator<Map.Entry<UUID, DatabaseNode>> iterator = localChildren.entrySet().iterator();
         Map.Entry<UUID, DatabaseNode> kv;
 
-        Map<UUID, DatabaseNode> srcChildren = remoteNode.getChildrenMap();
+        Map<UUID, DatabaseNode> srcChildren = createMap(remoteNode.getChildren());
 
         while (iterator.hasNext())
         {
@@ -243,8 +244,8 @@ public class DatabaseMerger
         DatabaseNode newNode;
         boolean isDeleted;
 
-        Map<UUID, DatabaseNode> remoteChildren = remoteNode.getChildrenMap();
-        Map<UUID, DatabaseNode> localChildren = localNode.getChildrenMap();
+        Map<UUID, DatabaseNode> remoteChildren = createMap(remoteNode.getChildren());
+        Map<UUID, DatabaseNode> localChildren = createMap(localNode.getChildren());
 
         for (Map.Entry<UUID, DatabaseNode> kv : remoteChildren.entrySet())
         {
@@ -289,6 +290,16 @@ public class DatabaseMerger
         }
 
         return differ;
+    }
+
+    Map<UUID, DatabaseNode> createMap(DatabaseNode[] children)
+    {
+        Map<UUID, DatabaseNode> result = new HashMap<>();
+        for (DatabaseNode node : children)
+        {
+            result.put(node.getUuid(), node);
+        }
+        return result;
     }
 
 }

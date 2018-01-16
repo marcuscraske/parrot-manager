@@ -16,6 +16,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+// TODO needs finishing / review
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseMergerTest
 {
@@ -90,6 +91,10 @@ public class DatabaseMergerTest
         {
             deletedChildren.add(UUID.randomUUID());
         }
+
+        // By default no child nodes
+        given(sourceRoot.getChildren()).willReturn(new DatabaseNode[0]);
+        given(destinationRoot.getChildren()).willReturn(new DatabaseNode[0]);
     }
 
 
@@ -155,12 +160,6 @@ public class DatabaseMergerTest
     @Test
     public void mergeDatabaseNoPassword_doesNotMergeCryptoParams()  throws Exception
     {
-        // given
-        given(sourceMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
-        given(destMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
-        given(sourceFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
-        given(destFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
-
         // when
         merger.merge(source, destination, null);
 

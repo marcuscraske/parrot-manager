@@ -115,7 +115,7 @@ public class CsvConverter extends Converter
             for (int rowNum = 0; rowNum < rows.size(); rowNum++)
             {
                 String[] row = rows.get(rowNum);
-                if (importRow(databaseParsed, options, parentNameToNode, parentHeaderIndex, isParentId, headers, row, rowNum))
+                if (importRow(database, databaseParsed, options, parentNameToNode, parentHeaderIndex, isParentId, headers, row, rowNum))
                 {
                     rows.remove(rowNum);
                     anyImported = true;
@@ -249,7 +249,7 @@ public class CsvConverter extends Converter
         return value;
     }
 
-    private boolean importRow(Database databaseParsed, Options options, Map<String, DatabaseNode> parentNameToNode,
+    private boolean importRow(Database database, Database databaseParsed, Options options, Map<String, DatabaseNode> parentNameToNode,
                               int parentHeaderIndex, boolean isParentId, String[] headers, String[] row, int rowNum) throws ConversionException
     {
         // check column count matches header
@@ -296,6 +296,8 @@ public class CsvConverter extends Converter
         parentNode.add(node);
 
         // parse properties
+        boolean hasSetId = false;
+
         for (int index = 0; index < headers.length; index++)
         {
             String header = headers[index].toLowerCase();
@@ -314,6 +316,7 @@ public class CsvConverter extends Converter
                     {
                         UUID nodeId = UUID.fromString(value);
                         node.setId(nodeId);
+                        hasSetId = true;
                     }
                     catch (IllegalArgumentException e)
                     {
@@ -367,6 +370,20 @@ public class CsvConverter extends Converter
             }
         }
 
+        if (!hasSetId)
+        {
+            // check whether original DB has same node
+            // -- pull parent from original DB
+            DatabaseNode originalParent = parentNode.isRoot() ? database.getRoot() : database.getNodeByUuid(parentNode.getUuid());
+            DatabaseNode sameNode = originalParent.getByName(node.getName());
+
+            if (sameNode != null)
+            {
+                UUID sameId = sameNode.getUuid();
+                node.setId(sameId);
+            }
+        }
+
         // drop and stop if prohibited node
         if (isProhibitedNode(options, node))
         {
@@ -410,7 +427,6 @@ public class CsvConverter extends Converter
     }
 
     /* matrix of lines/rows by columns */
-    // TODO ignore empty or commented-out lines
     List<String[]> parse(String text)
     {
         int colStart = 0;

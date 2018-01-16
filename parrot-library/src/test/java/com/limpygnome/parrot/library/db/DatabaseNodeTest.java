@@ -609,17 +609,17 @@ public class DatabaseNodeTest
     }
 
     @Test
-    public void getPath_whenName()
+    public void getPath_whenRoot_andName()
     {
         // When
         String path = node.getPath();
 
         // Then
-        assertEquals("Unexpected format", path, NAME);
+        assertEquals("Unexpected format", "/root", path);
     }
 
     @Test
-    public void getPath_noNameIsUUid()
+    public void getPath_whenRoot_andNoName()
     {
         // Given
         node.setName(null);
@@ -628,21 +628,35 @@ public class DatabaseNodeTest
         String path = node.getPath();
 
         // Then
-        assertEquals("Unexpected format", "[" + uuid.toString() + "]", path);
+        assertEquals("Unexpected format", "/root", path);
     }
 
     @Test
-    public void getPath_whenChild()
+    public void getPath_whenChild_andName()
     {
         // Given
-        DatabaseNode node = new DatabaseNode(database, NAME);
         DatabaseNode child = node.addNew();
+        child.setName(NAME);
 
         // When
         String path = child.getPath();
 
         // Then
-        assertEquals("Unexpected format", NAME + "/[" + child.getId() + "]", path);
+        assertEquals("Unexpected format", "/root/" + NAME, path);
+    }
+
+    @Test
+    public void getPath_whenChild_andNoName_usesUuid()
+    {
+        // Given
+        DatabaseNode child = node.addNew();
+        child.setName(null);
+
+        // When
+        String path = child.getPath();
+
+        // Then
+        assertEquals("Unexpected format", "/root/[" + child.getId() + "]", path);
     }
 
     @Test
