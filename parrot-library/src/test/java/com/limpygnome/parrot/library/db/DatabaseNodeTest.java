@@ -69,6 +69,13 @@ public class DatabaseNodeTest
         assertEquals("Encrypted value is different", encryptedValue, node.getValue());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void constructor_fiveParams_nullIdThrowsException()
+    {
+        // When
+        new DatabaseNode(database, null, "test", 1234L, encryptedValue);
+    }
+
     @Test
     public void setId_isReflected()
     {

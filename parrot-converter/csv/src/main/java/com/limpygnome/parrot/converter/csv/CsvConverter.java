@@ -9,6 +9,8 @@ import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,8 @@ import java.util.UUID;
 @Component("csv")
 public class CsvConverter extends Converter
 {
+    private static final Logger LOG = LoggerFactory.getLogger(CsvConverter.class);
+
     @Autowired
     private StringStreamOperations stringStreamOperations;
     @Autowired
@@ -111,14 +115,14 @@ public class CsvConverter extends Converter
             for (int rowNum = 0; rowNum < rows.size(); rowNum++)
             {
                 String[] row = rows.get(rowNum);
-                if (importRow(database, databaseParsed, options, parentNameToNode, parentHeaderIndex, isParentId, headers, row, rowNum))
+                if (importRow(databaseParsed, options, parentNameToNode, parentHeaderIndex, isParentId, headers, row, rowNum))
                 {
                     rows.remove(rowNum);
                     anyImported = true;
                 }
             }
         }
-        while (rows.size() > 1 && anyImported);
+        while (!rows.isEmpty() && anyImported);
 
         // check whether there's orphaned data left over
         if (rows.size() > 1)
@@ -245,7 +249,7 @@ public class CsvConverter extends Converter
         return value;
     }
 
-    private boolean importRow(Database database, Database databaseParsed, Options options, Map<String, DatabaseNode> parentNameToNode,
+    private boolean importRow(Database databaseParsed, Options options, Map<String, DatabaseNode> parentNameToNode,
                               int parentHeaderIndex, boolean isParentId, String[] headers, String[] row, int rowNum) throws ConversionException
     {
         // check column count matches header
@@ -347,17 +351,18 @@ public class CsvConverter extends Converter
 
                 // Columns to be treated as sub-children (third-party password managers)
                 case "user name":
-                    // TODO add child
+                case "username":
+                    importAddSubChild(databaseParsed, node, "User Name", value);
                     break;
                 case "url":
-                    // TODO add child
+                    importAddSubChild(databaseParsed, node, "URL", value);
                     break;
                 case "notes":
-                    // TODO add child
+                    importAddSubChild(databaseParsed, node, "Notes", value);
                     break;
 
                 default:
-                    // TODO option to ignore unknown data
+                    LOG.warn("unhandled/ignored header - header: {}", header);
                     break;
             }
         }
@@ -383,6 +388,25 @@ public class CsvConverter extends Converter
         }
 
         return true;
+    }
+
+    private void importAddSubChild(Database databaseParsed, DatabaseNode parent, String key, String value) throws ConversionException
+    {
+        if (value != null && value.length() > 0)
+        {
+            try
+            {
+                EncryptedValue encryptedValue = encryptedValueService.fromString(databaseParsed, value);
+
+                DatabaseNode child = parent.addNew();
+                child.setName(key);
+                child.setValue(encryptedValue);
+            }
+            catch (Exception e)
+            {
+                throw new ConversionException("Failed to encrypt value for special child - parent: " + parent.getPath() + ", key: " + key, e);
+            }
+        }
     }
 
     /* matrix of lines/rows by columns */
@@ -455,7 +479,8 @@ public class CsvConverter extends Converter
                 // reset col position to next position
                 colStart = pos + 1;
             }
-            else if ((c == '\n' && !insideQuote) || pos + 1 == len)
+
+            if ((c == '\n' && !insideQuote) || (pos + 1 == len))
             {
                 // check if we captured an empty column
                 if (colStart == pos)
@@ -465,7 +490,8 @@ public class CsvConverter extends Converter
                 }
                 else
                 {
-                    String column = text.substring(colStart, pos);
+                    // include current char if end of text, otherwise exclude this char
+                    String column = text.substring(colStart, pos + 1 == len ? pos + 1 : pos);
                     cols.add(column);
                 }
 

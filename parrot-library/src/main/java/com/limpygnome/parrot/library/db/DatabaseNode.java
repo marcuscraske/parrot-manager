@@ -57,6 +57,12 @@ public class DatabaseNode
 
     private DatabaseNode(Database database, UUID id, String name, long lastModified)
     {
+        // TODO unit test
+        if (id == null)
+        {
+            throw new IllegalArgumentException("Database node identifier cannot be null");
+        }
+
         this.database = database;
         this.parent = null;
         this.id = id;
@@ -77,7 +83,7 @@ public class DatabaseNode
      */
     public DatabaseNode(Database database)
     {
-        this(database, null, null, 0);
+        this(database, UUID.randomUUID(), null, 0);
     }
 
     /**

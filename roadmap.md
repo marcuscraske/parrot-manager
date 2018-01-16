@@ -13,6 +13,9 @@
   - Option to be toggled in settings
 
 ## Later
+- Changelog on remote sync improved UI
+  - Show friendly e.g. plus/minus icons for nodes added and removed
+  - Currently too technical, needs to be very user friendly and simple
 - Check for updates
     - <https://api.github.com/repos/limpygnome/parrot-manager/releases/latest>
 - Change entry types
