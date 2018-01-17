@@ -37,6 +37,10 @@ public class DatabaseMerger
         {
             synchronized (local)
             {
+                // Disable events
+                remote.setEventsEnabled(false);
+                local.setEventsEnabled(false);
+
                 // check if databases are the same, skip if so...
                 if (local.equals(remote))
                 {
@@ -66,6 +70,10 @@ public class DatabaseMerger
                     // TODO update unit tests
                     mergeLog.setRemoteOutOfDate(true);
                 }
+
+                // Enable events
+                local.setEventsEnabled(true);
+                remote.setEventsEnabled(true);
             }
         }
 
@@ -142,7 +150,14 @@ public class DatabaseMerger
             if (isDifferent(localNode.getValue(), remoteNode.getValue()))
             {
                 EncryptedValue srcValue = remoteNode.getValue();
-                localNode.setValue(srcValue.clone());
+                if (srcValue != null)
+                {
+                    localNode.setValue(srcValue.clone());
+                }
+                else
+                {
+                    localNode.setValue(null);
+                }
                 mergeLog.add(localNode, "value updated");
             }
 

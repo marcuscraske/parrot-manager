@@ -2,7 +2,9 @@ package com.limpygnome.parrot.component.remote;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.settings.SettingsService;
+import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
+import com.limpygnome.parrot.event.DatabaseSavedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service;
  * Performs remote sync at timed intervals, the database opens or changes occur.
  */
 @Service
-public class RemoteSyncChangeService implements DatabaseChangingEvent
+public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseSavedEvent, SettingsRefreshedEvent
 {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncChangeService.class);
 
@@ -49,9 +51,7 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent
         }
     }
 
-    /**
-     * To be invoked when database is saved.
-     */
+    @Override
     public synchronized void eventDatabaseSaved()
     {
         boolean syncOnChange = settingsService.getSettings().getRemoteSyncOnChange().getSafeBoolean(false);
@@ -62,10 +62,16 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent
         }
     }
 
+    @Override
+    public void eventSettingsRefreshed()
+    {
+        refreshContext();
+    }
+
     /**
      * Should be invoked when the state of the current database changes.
      */
-    public void refreshContext()
+    public synchronized void refreshContext()
     {
         try
         {

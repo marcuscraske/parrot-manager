@@ -18,7 +18,7 @@ public class DatabaseAutoSaveHandler implements DatabaseDirtyEventHandler
     private SettingsService settingsService;
 
     @Override
-    public void eventDatabaseDirtyEventHandler(Database database, boolean dirty)
+    public synchronized void eventDatabaseDirtyEventHandler(Database database, boolean dirty)
     {
         if (dirty)
         {

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Collection for event handlers (observer pattern).
  *
- * @param <T> event class
+ * @param <T> event class; used to map invocations
  */
 public abstract class EventHandlerCollection<T>
 {
@@ -18,7 +18,7 @@ public abstract class EventHandlerCollection<T>
     }
 
     /**
-     * Triggers handlers.
+     * Triggers handlers, when enabled.
      *
      * @param args args to be passed
      */

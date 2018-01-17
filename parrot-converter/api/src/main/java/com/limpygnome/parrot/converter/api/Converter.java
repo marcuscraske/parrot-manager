@@ -4,6 +4,8 @@ import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.db.MergeLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +17,7 @@ import java.util.List;
  */
 public abstract class Converter
 {
+    private static final Logger LOG = LoggerFactory.getLogger(Converter.class);
 
     /**
      *
@@ -58,6 +61,7 @@ public abstract class Converter
         }
         catch (Exception e)
         {
+            LOG.error("failed to merge database", e);
             throw new ConversionException("Failed to merge database - " + e.getMessage(), e);
         }
     }

@@ -21,7 +21,7 @@ import java.util.Arrays;
  * Used to create backups of a database.
  */
 @Service
-public class BackupService implements DatabaseSavedEvent
+public class BackupService
 {
     private static final Logger LOG = LoggerFactory.getLogger(BackupService.class);
 
@@ -169,17 +169,6 @@ public class BackupService implements DatabaseSavedEvent
         }
 
         return result;
-    }
-
-    @Override
-    public void eventDatabaseSaved()
-    {
-        String result = create();
-
-        if (result != null)
-        {
-            throw new RuntimeException(result);
-        }
     }
 
     private File[] fetchFiles()

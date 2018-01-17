@@ -42,12 +42,16 @@ public class Database
 
     // Event handlers
     private EventHandlerCollection<DatabaseDirtyEventHandler> dirtyEventHandlers;
+    private boolean eventsEnabled;
 
 
     private Database()
     {
+        // Enable events
+        eventsEnabled = true;
+
         // Setup handler collections
-        dirtyEventHandlers = new EventHandlerCollection<DatabaseDirtyEventHandler>()
+        dirtyEventHandlers = new EventHandlerCollection<>()
         {
             @Override
             protected void invoke(DatabaseDirtyEventHandler instance, Object... args)
@@ -292,7 +296,11 @@ public class Database
     public synchronized void setDirty(boolean dirty)
     {
         isDirty = dirty;
-        dirtyEventHandlers.trigger(this, dirty);
+
+        if (eventsEnabled)
+        {
+            dirtyEventHandlers.trigger(this, dirty);
+        }
     }
 
     /**
@@ -311,8 +319,28 @@ public class Database
         return dirtyEventHandlers;
     }
 
+    /**
+     * Sets whether events are enabled.
+     *
+     * This should be used to disable events when there's large changes to the database, such as merging. This will
+     * improve performance.
+     *
+     * @param enabled whether events are enabled
+     */
+    public void setEventsEnabled(boolean enabled)
+    {
+        this.eventsEnabled = enabled;
+
+        // Re-trigger dirty event when enabled
+        if (enabled)
+        {
+            setDirty(isDirty);
+        }
+    }
+
     @Override
-    public synchronized boolean equals(Object o) {
+    public synchronized boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 

@@ -2,6 +2,7 @@ package com.limpygnome.parrot.component.settings;
 
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.remote.RemoteSyncChangeService;
+import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Manages global application settings, saved under the user's config directory.
@@ -27,6 +29,12 @@ public class SettingsService
     @Autowired
     private FileComponent fileComponent;
 
+    // Dependent components with refresh event
+    @Lazy
+    @Autowired
+    private List<SettingsRefreshedEvent> refreshEventListeners;
+
+    // Current settings
     private Settings settings;
 
     @PostConstruct
@@ -68,6 +76,8 @@ public class SettingsService
                 settings = new Settings();
                 result = save();
             }
+
+            raiseChangeEvent();
         }
         catch (IOException e)
         {
@@ -92,8 +102,8 @@ public class SettingsService
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(settingsFile, settings);
 
-            // Refresh interval syncing
-            remoteSyncChangeService.refreshContext();
+            // Invoke listeners
+            raiseChangeEvent();
         }
         catch (IOException e)
         {
@@ -128,6 +138,18 @@ public class SettingsService
     public synchronized Settings getSettings()
     {
         return settings;
+    }
+
+    private void raiseChangeEvent()
+    {
+        LOG.debug("raising settings change event...");
+
+        for (SettingsRefreshedEvent eventListener : refreshEventListeners)
+        {
+            eventListener.eventSettingsRefreshed();
+        }
+
+        LOG.debug("finished settings changed event");
     }
 
 }

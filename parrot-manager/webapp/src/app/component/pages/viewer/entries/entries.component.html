@@ -31,13 +31,13 @@
         </td>
     </tr>
 
-    <tr *ngFor="let node of getFilteredChildren(); trackBy: trackChildren">
+    <tr *ngFor="let node of (getFilteredChildren() | orderBy: ['+getName()']); trackBy: trackChildren">
         <td>
             <input type="checkbox" attr.data-node-id="{{ node.getId() }}" />
         </td>
         <td>
             <span (click)="changeNodeBeingViewed.emit(node.getId())">
-                {{ node.getName() != null ? node.getName() : "(unnamed)" }}
+                {{ node.getName() != null && node.getName().length > 0 ? node.getName() : "(unnamed)" }}
             </span>
         </td>
         <td>

@@ -184,7 +184,7 @@ export class DatabaseService
 
         var newJsonNode = {
             "id" : databaseNode.getId(),
-            "text" : name != null ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
+            "text" : name != null && name.length > 0 ? name : databaseNode.isRoot() ? this.getFileName() :  "(unnamed)",
             "children" : [],
             "icon" : "icon icon-folder",
             "state" : {

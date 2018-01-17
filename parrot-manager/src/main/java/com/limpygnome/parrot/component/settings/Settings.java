@@ -13,6 +13,7 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> recentFilesOpenLastOnStartup;
     private SettingsValue<Boolean> automaticBackupsOnSave;
     private SettingsValue<Long> automaticBackupsRetained;
+    private SettingsValue<Long> automaticBackupDelay;
     private SettingsValue<Long> remoteSyncInterval;
     private SettingsValue<Boolean> remoteSyncIntervalEnabled;
     private SettingsValue<Boolean> remoteSyncOnOpeningDatabase;
@@ -28,6 +29,7 @@ public class Settings implements Serializable
         this.recentFilesOpenLastOnStartup = new SettingsValue<>(true);
         this.automaticBackupsOnSave = new SettingsValue<>(true);
         this.automaticBackupsRetained = new SettingsValue(30L);
+        this.automaticBackupDelay = new SettingsValue<>(30L);
         this.remoteSyncInterval = new SettingsValue<>(10L * 60L * 1000L);
         this.remoteSyncIntervalEnabled = new SettingsValue<>(true);
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
@@ -56,6 +58,11 @@ public class Settings implements Serializable
     public SettingsValue<Long> getAutomaticBackupsRetained()
     {
         return automaticBackupsRetained;
+    }
+
+    public SettingsValue<Long> getAutomaticBackupDelay()
+    {
+        return automaticBackupDelay;
     }
 
     public SettingsValue<Long> getRemoteSyncInterval()
@@ -106,6 +113,7 @@ public class Settings implements Serializable
                 ", recentFilesOpenLastOnStartup=" + recentFilesOpenLastOnStartup +
                 ", automaticBackupsOnSave=" + automaticBackupsOnSave +
                 ", automaticBackupsRetained=" + automaticBackupsRetained +
+                ", automaticBackupDelay=" + automaticBackupDelay +
                 ", remoteSyncInterval=" + remoteSyncInterval +
                 ", remoteSyncIntervalEnabled=" + remoteSyncIntervalEnabled +
                 ", remoteSyncOnOpeningDatabase=" + remoteSyncOnOpeningDatabase +

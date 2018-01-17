@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.sendKeys;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
@@ -23,7 +24,7 @@ import java.util.UUID;
  * A service for sending keys to another application.
  */
 @Service
-public class SendKeysService
+public class SendKeysService implements SettingsRefreshedEvent
 {
     private static final Logger LOG = LoggerFactory.getLogger(SendKeysService.class);
 
@@ -159,6 +160,11 @@ public class SendKeysService
         openDirectory(keyboardLayoutRepository.getWorkingDirectory());
     }
 
+    @Override
+    public void eventSettingsRefreshed()
+    {
+        refreshKeyboardLayout();
+    }
 
     private void updateKeyboardLayoutsCache()
     {
