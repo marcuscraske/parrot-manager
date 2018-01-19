@@ -304,10 +304,8 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
     private void syncAsyncThreadSync(SshOptions options, String remotePassword)
     {
-        WebViewStage stage = webStageInitService.getStage();
-
         // trigger sync is starting...
-        stage.triggerEvent("document", "remoteSyncStart", options);
+        webStageInitService.triggerEvent("document", "remoteSyncStart", options);
 
         // validate destination path
         SyncResult syncResult;
@@ -324,7 +322,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
         }
 
         // trigger end event...
-        stage.triggerEvent("document", "remoteSyncFinish", syncResult);
+        webStageInitService.triggerEvent("document", "remoteSyncFinish", syncResult);
 
         thread = null;
     }

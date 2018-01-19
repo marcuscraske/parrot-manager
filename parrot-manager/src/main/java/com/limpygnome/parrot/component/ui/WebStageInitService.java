@@ -123,4 +123,16 @@ public class WebStageInitService
     {
         return webViewInitDev != null ? webViewInitDev : webViewInitDefault;
     }
+
+    /**
+     * @see {@link WebViewStage#triggerEvent(String, String, Object)}
+     */
+    public void triggerEvent(String domElement, String eventName, Object eventData)
+    {
+        if (stage != null)
+        {
+            stage.triggerEvent(domElement, eventName, eventData);
+        }
+    }
+
 }

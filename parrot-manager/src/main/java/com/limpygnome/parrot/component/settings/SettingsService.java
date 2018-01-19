@@ -146,7 +146,7 @@ public class SettingsService
 
         for (SettingsRefreshedEvent eventListener : refreshEventListeners)
         {
-            eventListener.eventSettingsRefreshed();
+            eventListener.eventSettingsRefreshed(settings);
         }
 
         LOG.debug("finished settings changed event");

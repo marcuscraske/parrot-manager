@@ -22,6 +22,7 @@ export class GlobalSettingsComponent
         recentFilesOpenLastOnStartup: [false],
         automaticBackupsOnSave: [false],
         automaticBackupsRetained: [""],
+        automaticBackupDelay: [""],
         remoteSyncInterval: [""],
         remoteSyncIntervalEnabled: [false],
         remoteSyncOnOpeningDatabase: [false],

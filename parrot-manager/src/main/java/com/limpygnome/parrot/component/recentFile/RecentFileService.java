@@ -30,8 +30,14 @@ public class RecentFileService
     @Autowired
     private FileComponent fileComponent;
 
+    // Recent files
     private LinkedList<RecentFile> recentFiles;
+
+    // Used for persisting recent files
     private ObjectMapper objectMapper;
+
+    // Cache of recent files
+    private RecentFile[] cacheRecentFiles;
 
     public RecentFileService() throws IOException
     {
@@ -42,10 +48,15 @@ public class RecentFileService
     @PostConstruct
     public void initialLoad() throws IOException
     {
-        loadFromFile();
+        reloadFromFile();
     }
 
-    public synchronized void loadFromFile() throws IOException
+    /**
+     * Reloads recently used database files from a persisted file.
+     *
+     * @throws IOException if unable to read persisted file
+     */
+    public synchronized void reloadFromFile() throws IOException
     {
         File file = getRecentFilesFile();
 
@@ -53,6 +64,8 @@ public class RecentFileService
         {
             RecentFile[] recentFiles = objectMapper.readValue(file, RecentFile[].class);
             Arrays.stream(recentFiles).forEach(recentFile -> this.recentFiles.add(recentFile));
+            updateCache();
+
             LOG.debug("recent files loaded - count: {}", recentFiles.length);
         }
         else
@@ -61,28 +74,9 @@ public class RecentFileService
         }
     }
 
-    private synchronized void saveToFile() throws IOException
-    {
-        File file = getRecentFilesFile();
-        RecentFile[] recentFiles = this.recentFiles.toArray(new RecentFile[this.recentFiles.size()]);
-        objectMapper.writeValue(file, recentFiles);
-
-        LOG.debug("persisted recent files");
-    }
-
-    private File getRecentFilesFile()
-    {
-        return fileComponent.resolvePreferenceFile("recent-files.json");
-    }
-
     public synchronized RecentFile[] fetch()
     {
-        RecentFile[] recentFiles = this.recentFiles.toArray(new RecentFile[this.recentFiles.size()]);
-
-        // Persist to session archive to prevent GC
-        sessionService.put("recentFiles", recentFiles);
-
-        return recentFiles;
+        return cacheRecentFiles;
     }
 
     public synchronized void add(RecentFile recentFile) throws IOException
@@ -141,6 +135,26 @@ public class RecentFileService
         {
             LOG.error("failed to save recent files", e);
         }
+    }
+
+    private synchronized void saveToFile() throws IOException
+    {
+        File file = getRecentFilesFile();
+        RecentFile[] recentFiles = this.recentFiles.toArray(new RecentFile[this.recentFiles.size()]);
+        objectMapper.writeValue(file, recentFiles);
+        updateCache();
+
+        LOG.debug("persisted recent files");
+    }
+
+    private File getRecentFilesFile()
+    {
+        return fileComponent.resolvePreferenceFile("recent-files.json");
+    }
+
+    private void updateCache()
+    {
+        this.cacheRecentFiles = this.recentFiles.toArray(new RecentFile[this.recentFiles.size()]);
     }
 
 }

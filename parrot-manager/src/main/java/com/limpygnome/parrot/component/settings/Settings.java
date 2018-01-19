@@ -29,7 +29,7 @@ public class Settings implements Serializable
         this.recentFilesOpenLastOnStartup = new SettingsValue<>(true);
         this.automaticBackupsOnSave = new SettingsValue<>(true);
         this.automaticBackupsRetained = new SettingsValue(30L);
-        this.automaticBackupDelay = new SettingsValue<>(30L);
+        this.automaticBackupDelay = new SettingsValue<>(60L);
         this.remoteSyncInterval = new SettingsValue<>(10L * 60L * 1000L);
         this.remoteSyncIntervalEnabled = new SettingsValue<>(true);
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);

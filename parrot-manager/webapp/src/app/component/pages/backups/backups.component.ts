@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -12,6 +12,9 @@ import { BackupService } from 'app/service/backup.service'
 })
 export class BackupsComponent {
 
+    // Event for refreshing backups
+    backupChangeEvent : Function;
+
     // Cached array of backup files from backup service (reduces I/O to look for files)
     backupFiles : any;
     errorMessage : string;
@@ -20,12 +23,23 @@ export class BackupsComponent {
         public fb: FormBuilder,
         private databaseService: DatabaseService,
         private backupService: BackupService,
-        private router: Router
+        private router: Router,
+        public renderer: Renderer
     ) {}
 
     ngOnInit()
     {
         this.refreshBackups();
+
+        // Setup event to listen for changes to backups
+        this.backupChangeEvent = this.renderer.listenGlobal("document", "backupChange", (event) => {
+            this.refreshBackups();
+        });
+    }
+
+    ngOnDestroy()
+    {
+        this.backupChangeEvent();
     }
 
     create()
@@ -41,6 +55,7 @@ export class BackupsComponent {
 
     refreshBackups()
     {
+        // TODO needs to be async or observable?
         this.backupFiles = this.backupService.fetch();
         console.log("refreshed backups");
     }

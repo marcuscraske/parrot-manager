@@ -4,6 +4,8 @@ import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
+import com.limpygnome.parrot.component.ui.WebStageInitService;
+import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.event.DatabaseSavedEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
@@ -21,7 +23,7 @@ import java.util.Arrays;
  * Used to create backups of a database.
  */
 @Service
-public class BackupService
+public class BackupService implements DatabaseChangingEvent
 {
     private static final Logger LOG = LoggerFactory.getLogger(BackupService.class);
 
@@ -33,6 +35,25 @@ public class BackupService
     private DatabaseReaderWriter databaseReaderWriter;
     @Autowired
     private SessionService sessionService;
+    @Autowired
+    private WebStageInitService webStageInitService;
+
+    // Cache of available backup files
+    private BackupFile[] cachedBackupFiles;
+
+    @Override
+    public void eventDatabaseChanged(boolean open)
+    {
+        if (open)
+        {
+            updateCache();
+        }
+        else
+        {
+            cachedBackupFiles = null;
+            LOG.debug("wiped cache of files");
+        }
+    }
 
     /**
      * Creates a new backup.
@@ -85,6 +106,9 @@ public class BackupService
             }
         }
 
+        // Refresh files
+        updateCache();
+
         return errorMessage;
     }
 
@@ -97,15 +121,7 @@ public class BackupService
      */
     public BackupFile[] fetch()
     {
-        File[] files = fetchFiles();
-
-        // Translate to view model
-        BackupFile[] backupFiles = Arrays.stream(files).map(file -> new BackupFile(file)).toArray(size -> new BackupFile[size]);
-
-        // Store in session to prevent GC
-        sessionService.put("backups", backupFiles);
-
-        return backupFiles;
+        return cachedBackupFiles;
     }
 
     /**
@@ -168,7 +184,22 @@ public class BackupService
             result = "Unable to delete file (unknown reason)";
         }
 
+        // Refresh files
+        updateCache();
+
         return result;
+    }
+
+    private void updateCache()
+    {
+        File[] files = fetchFiles();
+        BackupFile[] backupFiles = Arrays.stream(files).map(file -> new BackupFile(file)).toArray(size -> new BackupFile[size]);
+        this.cachedBackupFiles = backupFiles;
+
+        // Raise change event
+        webStageInitService.triggerEvent("document", "backupChange", null);
+
+        LOG.debug("updated cache and triggered change event");
     }
 
     private File[] fetchFiles()

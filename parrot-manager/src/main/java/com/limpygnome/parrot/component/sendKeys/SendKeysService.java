@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.sendKeys;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
@@ -161,7 +162,7 @@ public class SendKeysService implements SettingsRefreshedEvent
     }
 
     @Override
-    public void eventSettingsRefreshed()
+    public void eventSettingsRefreshed(Settings settings)
     {
         refreshKeyboardLayout();
     }

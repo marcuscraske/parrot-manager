@@ -22,6 +22,7 @@ export class SettingsService {
             "recentFilesOpenLastOnStartup" : settings.getRecentFilesOpenLastOnStartup().getValue(),
             "automaticBackupsOnSave" : settings.getAutomaticBackupsOnSave().getValue(),
             "automaticBackupsRetained" : settings.getAutomaticBackupsRetained().getValue(),
+            "automaticBackupDelay" : settings.getAutomaticBackupDelay().getValue(),
             "remoteSyncInterval" : (remoteSyncInterval != null ? remoteSyncInterval / 60 / 1000 : null),
             "remoteSyncIntervalEnabled" : settings.getRemoteSyncIntervalEnabled().getValue(),
             "remoteSyncOnOpeningDatabase" : settings.getRemoteSyncOnOpeningDatabase().getValue(),
@@ -57,6 +58,9 @@ export class SettingsService {
         );
         settings.getAutomaticBackupsRetained().setValueLong(
             json.automaticBackupsRetained
+        );
+        settings.getAutomaticBackupDelay().setValueLong(
+            json.automaticBackupDelay
         );
         settings.getRemoteSyncInterval().setValueLong(
             (json.remoteSyncInterval != null ? json.remoteSyncInterval * 60 * 1000 : null)

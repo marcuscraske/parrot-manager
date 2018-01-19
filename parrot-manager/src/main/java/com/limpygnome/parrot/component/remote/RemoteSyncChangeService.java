@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.remote;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
@@ -19,11 +20,15 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
     private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncChangeService.class);
 
     @Autowired
-    private SettingsService settingsService;
-    @Autowired
     private DatabaseService databaseService;
     @Autowired
     private RemoteSyncService remoteSyncService;
+
+    // Settings
+    private boolean intervalSyncEnabled;
+    private long intervalMs;
+    private boolean syncOnDatabaseOpened;
+    private boolean syncOnChange;
 
     // Thread data
     private boolean continueToExecute;
@@ -42,8 +47,6 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
 
         if (open)
         {
-            boolean syncOnDatabaseOpened = settingsService.getSettings().getRemoteSyncOnOpeningDatabase().getSafeBoolean(false);
-
             if (syncOnDatabaseOpened)
             {
                 forceSync();
@@ -54,8 +57,6 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
     @Override
     public synchronized void eventDatabaseSaved()
     {
-        boolean syncOnChange = settingsService.getSettings().getRemoteSyncOnChange().getSafeBoolean(false);
-
         if (syncOnChange)
         {
             forceSync();
@@ -63,8 +64,15 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
     }
 
     @Override
-    public void eventSettingsRefreshed()
+    public void eventSettingsRefreshed(Settings settings)
     {
+        // Update settings
+        intervalSyncEnabled = settings.getRemoteSyncIntervalEnabled().getSafeBoolean(false);
+        intervalMs = settings.getRemoteSyncInterval().getSafeLong(0L);
+        syncOnDatabaseOpened = settings.getRemoteSyncOnOpeningDatabase().getSafeBoolean(false);
+        syncOnChange = settings.getRemoteSyncOnChange().getSafeBoolean(false);
+
+        // Refresh context (automatic syncing)
         refreshContext();
     }
 
@@ -121,9 +129,6 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
 
     private void execute()
     {
-        boolean intervalSyncEnabled = settingsService.getSettings().getRemoteSyncIntervalEnabled().getSafeBoolean(false);
-        Long intervalMs = settingsService.getSettings().getRemoteSyncInterval().getSafeLong(0L);
-
         LOG.debug("thread started");
 
         while (continueToExecute)
@@ -203,12 +208,7 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
      */
     private boolean canRunAtAll()
     {
-        boolean intervalEnabled = settingsService.getSettings().getRemoteSyncIntervalEnabled().getSafeBoolean(false);
-        long intervalPeriod = settingsService.getSettings().getRemoteSyncInterval().getSafeLong(0L);
-        boolean interval = intervalEnabled && intervalPeriod > 0;
-
-        boolean syncOnDatabaseOpened = settingsService.getSettings().getRemoteSyncOnOpeningDatabase().getSafeBoolean(false);
-        boolean syncOnChange = settingsService.getSettings().getRemoteSyncOnChange().getSafeBoolean(false);
+        boolean interval = intervalSyncEnabled && intervalMs > 0;
 
         boolean result = interval || syncOnDatabaseOpened || syncOnChange;
         return result;
