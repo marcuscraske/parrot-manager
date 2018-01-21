@@ -3,10 +3,12 @@ import { Component } from '@angular/core';
 import { SendKeysService } from 'app/service/sendKeys.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { ClipboardService } from 'app/service/clipboard.service'
+import { BrowserService } from 'app/service/browser.service'
 
 @Component({
     templateUrl: "keyboardLayouts.component.html",
-    selector: "keyboardLayouts"
+    selector: "keyboardLayouts",
+    providers: [BrowserService]
 })
 export class KeyboardLayoutsComponent
 {
@@ -16,7 +18,8 @@ export class KeyboardLayoutsComponent
     constructor(
         public sendKeysService: SendKeysService,
         public runtimeService: RuntimeService,
-        public clipboardService: ClipboardService
+        public clipboardService: ClipboardService,
+        public browserService: BrowserService
     ) { }
 
     storeKeyCodePressedTester(event)

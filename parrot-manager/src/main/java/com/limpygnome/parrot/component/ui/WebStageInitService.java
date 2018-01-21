@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.ui;
 
 import com.limpygnome.parrot.component.backup.BackupService;
+import com.limpygnome.parrot.component.browser.BrowserService;
 import com.limpygnome.parrot.component.buildInfo.BuildInfoService;
 import com.limpygnome.parrot.component.clipboard.ClipboardService;
 import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
@@ -52,6 +53,8 @@ public class WebStageInitService
     private ImportExportService importExportService;
     @Autowired
     private ClipboardService clipboardService;
+    @Autowired
+    private BrowserService browserService;
 
     @Autowired(required = false)
     private WebViewDebug webViewDebug;
@@ -91,6 +94,7 @@ public class WebStageInitService
         stage.exposeJsObject("sendKeysService", sendKeysService);
         stage.exposeJsObject("importExportService", importExportService);
         stage.exposeJsObject("clipboardService", clipboardService);
+        stage.exposeJsObject("browserService", browserService);
 
         // runtime is now ready
         runtimeService.setReady(true);

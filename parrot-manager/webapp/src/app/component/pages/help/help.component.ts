@@ -3,18 +3,20 @@ import { Component } from '@angular/core';
 import { RuntimeService } from 'app/service/runtime.service'
 import { ClipboardService } from 'app/service/clipboard.service'
 import { BuildInfoService } from 'app/service/buildInfo.service'
+import { BrowserService } from 'app/service/browser.service'
 
 @Component({
     templateUrl: 'help.component.html',
     styleUrls: ['help.component.css'],
-    providers: [BuildInfoService]
+    providers: [BuildInfoService, BrowserService]
 })
 export class HelpComponent {
 
     constructor(
         public buildInfoService: BuildInfoService,
         public runtimeService: RuntimeService,
-        public clipboardService: ClipboardService
+        public clipboardService: ClipboardService,
+        public browserService: BrowserService
     ) {
     }
 
