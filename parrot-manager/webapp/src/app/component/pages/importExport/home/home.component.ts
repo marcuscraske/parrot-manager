@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { ImportExportService } from 'app/service/importExport.service'
 import { RuntimeService } from 'app/service/runtime.service'
+import { ClipboardService } from 'app/service/clipboard.service'
 
 @Component({
     templateUrl: 'home.component.html',
@@ -21,7 +22,8 @@ export class HomeComponent {
 
     constructor(
         private importExportService: ImportExportService,
-        private runtimeService: RuntimeService
+        private runtimeService: RuntimeService,
+        private clipboardService: ClipboardService
     ) { }
 
     chooseImportText()
@@ -106,9 +108,8 @@ export class HomeComponent {
 
     copyText()
     {
-        this.runtimeService.setClipboard(this.exportText);
+        this.clipboardService.setText(this.exportText);
     }
-
 
     private createOptions()
     {

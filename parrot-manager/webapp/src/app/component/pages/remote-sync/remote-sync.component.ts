@@ -6,7 +6,7 @@ import { DatabaseService } from 'app/service/database.service'
 import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
-import { RuntimeService } from 'app/service/runtime.service'
+import { ClipboardService } from 'app/service/clipboard.service'
 
 @Component({
     templateUrl: 'remote-sync.component.html',
@@ -21,7 +21,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         public remoteSyncService: RemoteSyncService,
         public databaseService: DatabaseService,
         public encryptedValueService: EncryptedValueService,
-        public runtimeService: RuntimeService,
+        public clipboardService: ClipboardService,
         public router: Router,
         public fb: FormBuilder,
         public remoteSyncChangeLogService: RemoteSyncChangeLogService
@@ -247,7 +247,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
     copyToClipboard()
     {
         var changeLog = this.remoteSyncChangeLogService.getChangeLog();
-        this.runtimeService.setClipboard(changeLog);
+        this.clipboardService.setText(changeLog);
     }
 
     isSyncing() : boolean

@@ -29,6 +29,7 @@ export class GlobalSettingsComponent
         remoteSyncOnChange: [false],
         theme: [""],
         inactivityTimeout: [""],
+        wipeClipboardDelay: [""],
         autoSave: [true],
         keyboardLayout: [""]
     });

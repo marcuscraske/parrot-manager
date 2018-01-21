@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.awt.Desktop;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -130,26 +128,6 @@ public class RuntimeService
         // Just exit the application...
         LOG.info("terminating jvm");
         System.exit(0);
-    }
-
-    /**
-     * @param value the text value to be set as the clipboard contents
-     */
-    public void setClipboard(String value)
-    {
-        // Replace null with empty value
-        if (value == null)
-        {
-            value = "";
-        }
-
-        StringSelection selection = new StringSelection(value);
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
-
-        // Wipe clipboard within timeout period if enabled
-
-
-        LOG.info("copied value to clipboard - length: {}", value.length());
     }
 
     /**

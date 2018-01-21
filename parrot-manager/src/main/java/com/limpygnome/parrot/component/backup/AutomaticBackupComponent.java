@@ -3,6 +3,7 @@ package com.limpygnome.parrot.component.backup;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.event.DatabaseSavedEvent;
+import com.limpygnome.parrot.lib.threading.DelayedThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,16 @@ public class AutomaticBackupComponent implements DatabaseSavedEvent, SettingsRef
     @Autowired
     private BackupService backupService;
 
-    // Current thread sleeping to make backup after interval
-    private Thread queuedThread;
+    // Manager for queued thread
+    DelayedThread queuedThread;
 
     // Delay between backups
     private long backupDelay;
+
+    public AutomaticBackupComponent()
+    {
+        queuedThread = new DelayedThread();
+    }
 
     @Override
     public void eventDatabaseSaved()
@@ -41,13 +47,7 @@ public class AutomaticBackupComponent implements DatabaseSavedEvent, SettingsRef
     @Override
     public void eventSettingsRefreshed(Settings settings)
     {
-        backupDelay = settings.getAutomaticBackupDelay().getValue();
-
-        if (backupDelay > 0)
-        {
-            // Convert from seconds to milliseconds
-            backupDelay *= 1000;
-        }
+        backupDelay = settings.getAutomaticBackupDelay().getSafeLong(0L) * 1000L;
     }
 
     private synchronized void createBackup()
@@ -62,36 +62,8 @@ public class AutomaticBackupComponent implements DatabaseSavedEvent, SettingsRef
 
     private synchronized void queueBackup()
     {
-        // Kill existing thread
-        if (queuedThread != null)
-        {
-            queuedThread.interrupt();
-            queuedThread = null;
-        }
-
         // Start new thread
-        queuedThread = new Thread(() ->
-        {
-           try
-           {
-               // Delay saving backup...
-               Thread.sleep(backupDelay);
-
-               synchronized (this)
-               {
-                   // Make backup
-                   createBackup();
-
-                   // Mark self as done
-                   queuedThread = null;
-               }
-           }
-           catch (InterruptedException e)
-           {
-               LOG.debug("aborted queued backup");
-           }
-        });
-        queuedThread.start();
+        queuedThread.start(() -> createBackup(), backupDelay);
     }
 
 }

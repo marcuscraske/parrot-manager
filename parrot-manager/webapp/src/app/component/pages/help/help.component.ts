@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { RuntimeService } from 'app/service/runtime.service'
+import { ClipboardService } from 'app/service/clipboard.service'
 import { BuildInfoService } from 'app/service/buildInfo.service'
 
 @Component({
@@ -12,7 +13,8 @@ export class HelpComponent {
 
     constructor(
         public buildInfoService: BuildInfoService,
-        public runtimeService: RuntimeService
+        public runtimeService: RuntimeService,
+        public clipboardService: ClipboardService
     ) {
     }
 
@@ -37,7 +39,7 @@ export class HelpComponent {
     copyBuildInfo()
     {
         var buildInfo = this.buildInfoService.getBuildInfo();
-        this.runtimeService.setClipboard(buildInfo);
+        this.clipboardService.setText(buildInfo);
     }
 
 }

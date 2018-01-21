@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { SendKeysService } from 'app/service/sendKeys.service'
 import { RuntimeService } from 'app/service/runtime.service'
+import { ClipboardService } from 'app/service/clipboard.service'
 
 @Component({
     templateUrl: "keyboardLayouts.component.html",
@@ -14,7 +15,8 @@ export class KeyboardLayoutsComponent
 
     constructor(
         public sendKeysService: SendKeysService,
-        public runtimeService: RuntimeService
+        public runtimeService: RuntimeService,
+        public clipboardService: ClipboardService
     ) { }
 
     storeKeyCodePressedTester(event)
@@ -102,7 +104,7 @@ export class KeyboardLayoutsComponent
     copyKeyCodes()
     {
         var keyCodes = $("#keyboardLayoutTestOutput").val();
-        this.runtimeService.setClipboard(keyCodes);
+        this.clipboardService.setText(keyCodes);
     }
 
     clearKeyCodes()

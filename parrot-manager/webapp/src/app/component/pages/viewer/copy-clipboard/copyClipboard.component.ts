@@ -1,6 +1,7 @@
 import { Component, Input, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 import { RuntimeService } from 'app/service/runtime.service'
+import { ClipboardService } from 'app/service/clipboard.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
@@ -17,6 +18,7 @@ export class CopyClipboardComponent
 
     constructor(
         private runtimeService: RuntimeService,
+        private clipboardService: ClipboardService,
         private encryptedValueService: EncryptedValueService
     ) { }
 
@@ -32,7 +34,7 @@ export class CopyClipboardComponent
             console.log("setting clipboard to empty, as decrypted value is not set");
         }
 
-        this.runtimeService.setClipboard(decryptedValue);
+        this.clipboardService.setText(decryptedValue);
         console.log("clipboard updated with decrypted value");
 
         // Add rainbow effect to button

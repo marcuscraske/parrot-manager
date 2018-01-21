@@ -51,7 +51,7 @@ public class Database
         eventsEnabled = true;
 
         // Setup handler collections
-        dirtyEventHandlers = new EventHandlerCollection<>()
+        dirtyEventHandlers = new EventHandlerCollection<DatabaseDirtyEventHandler>()
         {
             @Override
             protected void invoke(DatabaseDirtyEventHandler instance, Object... args)

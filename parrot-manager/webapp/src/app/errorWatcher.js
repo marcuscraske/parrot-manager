@@ -55,7 +55,7 @@ function errorWatcherShow(title, body)
 
 function errorWatcherCopy()
 {
-    this.runtimeService.setClipboard(errorWatcherReport);
+    this.clipboardService.setText(errorWatcherReport);
     toastr.info("Info copied to clipboard");
 }
 

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { KeyBindsService } from 'app/service/global/keyBinds.service'
 import { InactivityWatcherService } from 'app/service/global/inactivityWatcher.service'
 import { RuntimeService } from 'app/service/runtime.service'
+import { ClipboardService } from 'app/service/clipboard.service'
 import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
@@ -19,6 +20,7 @@ import { SendKeysService } from 'app/service/sendKeys.service'
         KeyBindsService,
         InactivityWatcherService,
         RuntimeService,
+        ClipboardService,
         DatabaseService,
         BackupService,
         EncryptedValueService,

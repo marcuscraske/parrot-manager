@@ -2,7 +2,7 @@ import { Component, Renderer, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
-import { RuntimeService } from 'app/service/runtime.service'
+import { ClipboardService } from 'app/service/clipboard.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { SearchFilterService } from 'app/service/searchFilter.service'
 
@@ -41,7 +41,7 @@ export class ViewerComponent
 
     constructor(
         public databaseService: DatabaseService,
-        public runtimeService: RuntimeService,
+        public clipboardService: ClipboardService,
         public encryptedValueService: EncryptedValueService,
         public searchFilterService: SearchFilterService,
         public renderer: Renderer,
@@ -103,7 +103,7 @@ export class ViewerComponent
             var decryptedValue = this.encryptedValueService.getStringFromValue(encryptedValue);
 
             // Set on clipboard
-            this.runtimeService.setClipboard(decryptedValue);
+            this.clipboardService.setText(decryptedValue);
         });
 
         this.databaseEntryExpandEvent = renderer.listenGlobal("document", "databaseEntryExpand", (event) => {

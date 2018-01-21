@@ -29,6 +29,7 @@ export class SettingsService {
             "remoteSyncOnChange" : settings.getRemoteSyncOnChange().getValue(),
             "theme" : settings.getTheme().getValue(),
             "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null),
+            "wipeClipboardDelay" : settings.getWipeClipboardDelay().getValue(),
             "autoSave" : settings.getAutoSave().getValue(),
             "keyboardLayout" : settings.getKeyboardLayout().getValue()
         };
@@ -79,6 +80,9 @@ export class SettingsService {
         );
         settings.getInactivityTimeout().setValueLong(
             (json.inactivityTimeout != null ? json.inactivityTimeout * 60 * 1000 : null)
+        );
+        settings.getWipeClipboardDelay().setValueLong(
+            json.wipeClipboardDelay
         );
         settings.getAutoSave().setValue(
             json.autoSave

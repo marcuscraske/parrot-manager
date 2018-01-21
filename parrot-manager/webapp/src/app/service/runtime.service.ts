@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Injectable()
-export class RuntimeService {
-
+export class RuntimeService
+{
     oldHeight: number;
     runtimeService : any;
 
@@ -47,15 +47,6 @@ export class RuntimeService {
     exit()
     {
          this.runtimeService.exit();
-    }
-
-    setClipboard(value)
-    {
-        // Set clipboard
-        this.runtimeService.setClipboard(value);
-
-        // Show notification
-        toastr.info("Copied to clipboard");
     }
 
     isDevelopmentMode() : boolean
