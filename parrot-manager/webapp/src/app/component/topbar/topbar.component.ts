@@ -1,10 +1,11 @@
 import { Component, Renderer } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLinkActive } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
+import { SettingsService } from 'app/service/settings.service'
 
 import "app/global-vars"
 
@@ -23,6 +24,7 @@ export class TopBarComponent
         public databaseService: DatabaseService,
         public remoteSyncService: RemoteSyncService,
         public remoteSyncChangeLogService: RemoteSyncChangeLogService,
+        public settingsService: SettingsService,
         public router: Router,
         public renderer: Renderer
     ) {
@@ -224,6 +226,11 @@ export class TopBarComponent
         }
 
         return isSuccess;
+    }
+
+    isSaveButtonNeeded()
+    {
+        return this.databaseService.isDirty() || this.settingsService.fetch("autoSave") != true;
     }
 
     /* Used in dev mode to reload page. */

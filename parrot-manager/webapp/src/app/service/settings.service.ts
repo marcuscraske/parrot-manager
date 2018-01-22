@@ -5,12 +5,15 @@ export class SettingsService {
 
     settingsService : any;
 
+    // Cache json object of settings (massive performance gains)
+    settingsCache : any = null;
+
     constructor()
     {
         this.settingsService = (window as any).settingsService;
     }
 
-    fetchAll()
+    updateCache()
     {
         var settings = this.settingsService.getSettings();
 
@@ -35,7 +38,17 @@ export class SettingsService {
             "keyboardLayout" : settings.getKeyboardLayout().getValue()
         };
 
-        return json;
+        this.settingsCache = json;
+    }
+
+    fetchAll()
+    {
+        if (this.settingsCache == null)
+        {
+            this.updateCache();
+        }
+
+        return this.settingsCache;
     }
 
     fetch(name: string)
@@ -97,12 +110,20 @@ export class SettingsService {
 
         // Save
         var result = this.settingsService.save();
+
+        // Refresh cache
+        this.updateCache();
+
         return result;
     }
 
     reset()
     {
         var result = this.settingsService.reset();
+
+        // Refresh cache
+        this.updateCache();
+
         return result;
     }
 

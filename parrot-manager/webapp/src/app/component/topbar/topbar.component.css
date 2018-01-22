@@ -3,45 +3,13 @@ header
     position: fixed;
     top: 0;
     left: 0;
-    display: table;
-    width: 100%;
-    height: 2.2em;
+    width: 12em;
+    height: 100%;
     background: #333;
     color: #ccc;
     overflow: hidden;
     z-index: 99999;
 }
-
-/* Used to create space between top of page and content; this is due to using fixed positioning on actual header */
-.faux-header
-{
-    height: 2.2em;
-}
-
-header > div
-{
-    display: table-cell;
-    white-space: nowrap;
-}
-
-/* The inner groups of the div blocks i.e. buttons to the left. */
-header > div > div
-{
-    display: inline-block;
-}
-
-/* Inner group separators */
-header > div > div:after
-{
-    content: "|";
-}
-
-header > div > div:last-child:after
-{
-    content: "";
-}
-
-
 
 header .actions
 {
@@ -50,15 +18,18 @@ header .actions
 
 header .options
 {
-    text-align: right;
+    position: fixed;
+    width: 12em;
+    bottom: 0;
+    left: 0;
 }
 
 header div a
 {
-    display: inline-block;
+    display: block;
     color: inherit;
     text-decoration: none;
-    padding: 0.4em 0.6em;
+    padding: 1em 1em;
     cursor: pointer;
 }
 
@@ -68,10 +39,17 @@ header div a span.icon
 }
 
 header div a:hover,
-header div a:focus
+header div a:focus,
+header div a.selected
 {
     color: #fff;
     background: #666;
+}
+
+header div.bottom
+{
+    bottom: 0;
+    background: red;
 }
 
 .dirty,

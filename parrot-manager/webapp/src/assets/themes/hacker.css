@@ -33,7 +33,8 @@ header .current-file
 }
 
 header div a:hover,
-header div a:focus
+header div a:focus,
+header div a.selected
 {
     background: #000 !important;
     color: #0f0 !important;
