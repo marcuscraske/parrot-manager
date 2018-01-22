@@ -10,7 +10,7 @@
 </p>
 
 [![Build Status](https://travis-ci.org/limpygnome/parrot-manager.svg)](https://travis-ci.org/limpygnome/parrot-manager)
-[![Github All Releases](https://img.shields.io/github/downloads/atom/atom/total.svg)](https://github.com/limpygnome/parrot-manager)
+[![Github All Releases](https://img.shields.io/github/downloads/limpygnome/parrot-manager/total.svg)](https://github.com/limpygnome/parrot-manager)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 [![Github Issues](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/issues.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/issues)
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/pulls.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/pulls)
