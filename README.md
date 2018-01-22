@@ -14,121 +14,48 @@
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 [![Github Issues](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/issues.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/issues)
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/pulls.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/pulls)
+[![Join the chat at https://gitter.im/parrot-manager/Lobby](https://badges.gitter.im/parrot-manager/chat.svg)](https://gitter.im/parrot-manager/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 
 A simple password manager with a modern interface, with ability to synchronize databases using SSH.
 
 Supports Linux, Windows and Mac.
+
+<p align="center">
+    <img src="docs/screenshots/7.0/parrot-window.png" alt="Parrot manager window" />
+</p>
+
 
 ## Features
 - File encryption
 - In-memory encryption (until revealed/copied/etc)
 - Automatic backups on save
 - Sync databases using SSH
-    - Multiple hosts at once
+    - Multiple hosts
     - Automatic merge to avoid conflicts and losing data
 - Copy values to clipboard
+    - Automatically clear after period
 - Send values as keys to other applications
+- Import/export data
+    - Currently supports csv and json
 - Modern UI
 
-Upcoming features can be seen on the [roadmap](roadmap.md).
+Upcoming features can be seen on the [roadmap](ROADMAP.md).
 
 
 ## Download
 Binaries are available on the [releases](https://github.com/limpygnome/parrot-manager/releases) page.
 
 
-## Screenshots
-<table>
-    <tr>
-        <td>
-            <img src="media/screenshot-mac-menu.png" alt="open menu on mac" />
-        </td>
-        <td>
-            <img src="media/screenshot-mac-installer.png" alt="installer for mac" />
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img src="media/screenshot-list.png" alt="listing of entries" />
-        </td>
-        <td>
-            <img src="media/screenshot-entry.png" alt="viewing an entry and history" />
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img src="media/screenshot-backups.png" alt="database backups" />
-        </td>
-        <td>
-            <img src="media/screenshot-sync.png" alt="database backups" />
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img src="media/screenshot-sync-2.png" alt="database backups" />
-        </td>
-        <td>
-            <img src="media/screenshot-password.png" alt="entering password with hacker theme" />
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img src="media/screenshot-hacker.png" alt="hacker theme" />
-        </td>
-        <td>
-            <img src="media/screenshot-dark.png" alt="dark theme" />
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img src="media/screenshot-settings.png" alt="settings with dark theme" />
-        </td>
-        <td>
-            <img src="media/screenshot-windows-installer.png" alt="windows installer" />
-        </td>
-    </tr>
-</table>
-
-
 ## Installation
-### Prerequisites
-- Recommended [Java Runtime 1.9](http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html)
-    - Minimum [Java Runtime 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html), however
-      there are various JRE bugs that may cause stability issues.
+Prerequisites:
+- Recommended [Java Runtime 1.9](http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html).
+    - Older versions have stability issues around webkit.
 
-### Ubuntu / Debian
-Download the latest deb file, to anywhere, and run the following command in the same directory; the file name
-may differ:
+For help installing on your platform, see [installation](docs/installation.md).
 
-````
-sudo dpkg -i parrot-manager.deb
-````
-
-### Windows
-Both an installer and stand-alone version are available.
-
-For the stand-alone, just extract the executable to anywhere you desire, no installation process is required.
-
-### Mac
-Download the latest pkg file, to anywhere, and
-
-### Other Platforms
-Download the latest jar zip or tar archive, extract the jar file and run:
-
-````
-java -jar parrot-manager.jar
-````
-
-File name may differ and no installation process is required, as the JAR is standalone.
-
-
-## Dependencies
-
-[![Dependency Status](https://gemnasium.com/badges/github.com/limpygnome/parrot-manager.svg)](https://gemnasium.com/github.com/limpygnome/parrot-manager)
-[![Dependency Status](https://www.versioneye.com/user/projects/58f5b1d4307d03003e9de24e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58f5b1d4307d03003e9de24e)
 
 ## Contribute
-This project is open to [contributions](contribute.md).
+This project is open to [contributions](CONTRIBUTING.md).
 
 Donations can be sent to:
 * PayPal: limpygnome@gmail.com
