@@ -5,6 +5,7 @@ import com.limpygnome.parrot.config.AppConfig;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -42,7 +43,6 @@ public class Program extends Application
     {
         // Create and show stage
         WebViewStage stage = new WebViewStage(webStageInitService);
-        stage.show();
     }
 
     public static void main(String[] args)

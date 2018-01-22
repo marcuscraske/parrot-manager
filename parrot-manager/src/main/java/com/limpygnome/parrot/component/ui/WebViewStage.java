@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.ui;
 
+import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import com.limpygnome.parrot.lib.WebViewDebug;
 import com.limpygnome.parrot.lib.init.WebViewInit;
 import javafx.application.Platform;
@@ -54,19 +55,16 @@ public class WebViewStage extends Stage
         WebEngine engine = webView.getEngine();
         engine.loadContent("<html><head><style>body{ background: #333; }</style></head></html>");
 
+        // window title
+        setTitle("parrot manager");
+
         // initialize webview (load page)
         WebViewInit webViewInit = webStageInitService.getWebViewInit();
         webViewInit.init(webView);
 
         // build scene for web view
         scene = new Scene(webView, Color.valueOf("#333333"));
-
-        // general window config
         setScene(scene);
-        setTitle("parrot manager");
-        setWidth(1200.0);
-        setHeight(700.0);
-        setMaximized(true);
 
         // fix for "maximizing" on osx
         String os = System.getProperty("os.name");
@@ -85,7 +83,15 @@ public class WebViewStage extends Stage
         addIcon("/icons/parrot.svg");
 
         // prevent window from closing to prevent data loss for dirty databases
-        setOnCloseRequest(new CloseHandler(this));
+        // Set window preferences
+        WindowPreferencesInitService windowPreferencesInitService = webStageInitService.getWindowPreferencesInitService();
+        setOnCloseRequest(new CloseHandler(this, windowPreferencesInitService));
+
+        // Set window size and show window once UI thread started
+        Platform.runLater(() -> {
+            windowPreferencesInitService.attach(this);
+            show();
+        });
     }
 
     private void addIcon(String path)

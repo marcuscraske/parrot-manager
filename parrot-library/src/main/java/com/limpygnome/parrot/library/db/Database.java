@@ -128,7 +128,7 @@ public class Database
         catch (IllegalArgumentException e)
         {
             result = null;
-            LOG.warn("Failed to retrieve node due to invalid uuid - raw uuid: {}", rawUuid, e);
+            LOG.debug("Failed to retrieve node due to invalid uuid - raw uuid: {}", rawUuid, e);
         }
 
         return result;

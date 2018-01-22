@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.ui;
 
 
+import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import javafx.event.EventHandler;
 import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
@@ -23,13 +24,15 @@ public class CloseHandler implements EventHandler<WindowEvent>
     private static final long CLICKS_FOR_EXIT = 5;
 
     private WebViewStage stage;
+    private WindowPreferencesInitService windowPreferencesInitService;
 
     private long lastExitRequest;
     private long closeRequestsCounter;
 
-    CloseHandler(WebViewStage stage)
+    CloseHandler(WebViewStage stage, WindowPreferencesInitService windowPreferencesInitService)
     {
         this.stage = stage;
+        this.windowPreferencesInitService = windowPreferencesInitService;
     }
 
     @Override
@@ -64,6 +67,12 @@ public class CloseHandler implements EventHandler<WindowEvent>
             stage.triggerEvent("document", "nativeExit", null);
 
             LOG.info("request to exit consumed - force exit count: {}/{}", closeRequestsCounter, CLICKS_FOR_EXIT);
+
+            // Safe window preferences
+            if (closeRequestsCounter == 1)
+            {
+                windowPreferencesInitService.save(stage);
+            }
         }
         else
         {

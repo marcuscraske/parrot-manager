@@ -7,6 +7,8 @@ import com.limpygnome.parrot.component.clipboard.ClipboardService;
 import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.importExport.ImportExportService;
+import com.limpygnome.parrot.component.ui.preferences.WindowPreferences;
+import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
@@ -66,6 +68,9 @@ public class WebStageInitService
     @Autowired
     private WebViewInit webViewInitDefault;
 
+    @Autowired
+    private WindowPreferencesInitService windowPreferencesInitService;
+
     // Stage
     private WebViewStage stage;
 
@@ -74,13 +79,11 @@ public class WebStageInitService
      */
     public void attach(WebViewStage stage)
     {
-        // Pass stage onto services which need to know about it
         this.stage = stage;
 
         // Inject required objects into front-end
         // WARNING: due to JavaFX "bug", never pass newly constructed instances here
 
-        // -- Services
         stage.exposeJsObject("settingsService", settingsService);
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);
@@ -96,7 +99,7 @@ public class WebStageInitService
         stage.exposeJsObject("clipboardService", clipboardService);
         stage.exposeJsObject("browserService", browserService);
 
-        // runtime is now ready
+        // Runtime is now ready
         runtimeService.setReady(true);
     }
 
@@ -141,6 +144,11 @@ public class WebStageInitService
         {
             stage.triggerEvent(domElement, eventName, eventData);
         }
+    }
+
+    WindowPreferencesInitService getWindowPreferencesInitService()
+    {
+        return windowPreferencesInitService;
     }
 
 }

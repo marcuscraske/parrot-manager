@@ -28,6 +28,7 @@ export class SettingsService {
             "remoteSyncOnOpeningDatabase" : settings.getRemoteSyncOnOpeningDatabase().getValue(),
             "remoteSyncOnChange" : settings.getRemoteSyncOnChange().getValue(),
             "theme" : settings.getTheme().getValue(),
+            "saveWindowState" : settings.getSaveWindowState().getValue(),
             "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null),
             "wipeClipboardDelay" : settings.getWipeClipboardDelay().getValue(),
             "autoSave" : settings.getAutoSave().getValue(),
@@ -77,6 +78,9 @@ export class SettingsService {
         );
         settings.getTheme().setValue(
             json.theme
+        );
+        settings.getSaveWindowState().setValue(
+            json.saveWindowState
         );
         settings.getInactivityTimeout().setValueLong(
             (json.inactivityTimeout != null ? json.inactivityTimeout * 60 * 1000 : null)

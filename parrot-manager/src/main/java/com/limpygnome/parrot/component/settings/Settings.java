@@ -19,6 +19,7 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> remoteSyncOnOpeningDatabase;
     private SettingsValue<Boolean> remoteSyncOnChange;
     private SettingsValue<String> theme;
+    private SettingsValue<Boolean> saveWindowState;
     private SettingsValue<Long> inactivityTimeout;
     private SettingsValue<Long> wipeClipboardDelay;
     private SettingsValue<Boolean> autoSave;
@@ -36,6 +37,7 @@ public class Settings implements Serializable
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
         this.remoteSyncOnChange = new SettingsValue<>(true);
         this.theme = new SettingsValue<>("dark");
+        this.saveWindowState = new SettingsValue<>(true);
         this.inactivityTimeout = new SettingsValue<>(0L);
         this.wipeClipboardDelay = new SettingsValue<>(10L);
         this.autoSave = new SettingsValue<>(true);
@@ -89,6 +91,11 @@ public class Settings implements Serializable
 
     public SettingsValue<String> getTheme() {
         return theme;
+    }
+
+    public SettingsValue<Boolean> getSaveWindowState()
+    {
+        return saveWindowState;
     }
 
     public SettingsValue<Long> getInactivityTimeout()

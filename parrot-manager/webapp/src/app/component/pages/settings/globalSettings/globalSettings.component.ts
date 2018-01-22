@@ -28,6 +28,7 @@ export class GlobalSettingsComponent
         remoteSyncOnOpeningDatabase: [false],
         remoteSyncOnChange: [false],
         theme: [""],
+        saveWindowState: [""],
         inactivityTimeout: [""],
         wipeClipboardDelay: [""],
         autoSave: [true],
