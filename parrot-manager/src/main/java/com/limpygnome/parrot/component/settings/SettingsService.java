@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.settings;
 
+import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.remote.RemoteSyncChangeService;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
@@ -26,6 +27,10 @@ public class SettingsService
     @Lazy
     @Autowired
     private RemoteSyncChangeService remoteSyncChangeService;
+    @Lazy
+    @Autowired
+    private BackupService backupService;
+
     @Autowired
     private FileComponent fileComponent;
 
@@ -93,22 +98,32 @@ public class SettingsService
         String result = null;
         File settingsFile = getSettingsPath();
 
-        LOG.info("saving settings - file: {}", settingsFile.getAbsolutePath());
-        LOG.debug("settings: {}", settings);
+        // create backup
+        result = backupService.create();
 
-        try
+        if (result == null)
         {
-            // Write settings to file
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(settingsFile, settings);
+            LOG.info("saving settings - file: {}", settingsFile.getAbsolutePath());
+            LOG.debug("settings: {}", settings);
 
-            // Invoke listeners
-            raiseChangeEvent();
+            try
+            {
+                // Write settings to file
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(settingsFile, settings);
+
+                // Invoke listeners
+                raiseChangeEvent();
+            }
+            catch (IOException e)
+            {
+                LOG.error("failed to save settings", e);
+                result = "Failed to save settings - path: " + settingsFile.getAbsolutePath();
+            }
         }
-        catch (IOException e)
+        else
         {
-            LOG.error("failed to save settings", e);
-            result = "Failed to save settings - path: " + settingsFile.getAbsolutePath();
+            LOG.warn("skipped saving settings due to backup failure - message: {}", result);
         }
 
         return result;

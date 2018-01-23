@@ -59,6 +59,20 @@ a
 }
 
 /*
+    Fix for Bootbox to support Bootstrap v4
+*/
+
+.bootbox .modal-header h4
+{
+    order: 0;
+}
+.bootbox .modal-header button
+{
+    order: 1;
+}
+
+
+/*
     Bootstrap theme overrides
 */
 
@@ -81,9 +95,25 @@ a
     border-color: #666;
 }
 
+.btn-default
+{
+    background: #ddd;
+}
+.btn-default:hover,
+.btn-default:focus
+{
+    background: #eee;
+}
+
 .btn-danger
 {
     background: #ff5733;
+}
+
+.list-group-item.active
+{
+    background: #666;
+    border-color: #333;
 }
 
 /*

@@ -49,69 +49,7 @@ export class GlobalSettingsComponent
         public router: Router
     ) { }
 
-    ngOnInit()
-    {
-        this.populateSettings();
-    }
 
-    ngOnDestroy()
-    {
-        // reset theme (in case unsaved)
-        var theme = this.settingsService.fetch("theme");
-        this.themeService.set(theme);
-    }
-
-    populateSettings()
-    {
-        console.log("populating form with settings...");
-
-        // Read existing settings
-        var settings = this.settingsService.fetchAll();
-
-        // Apply to form
-        this.globalSettingsForm.patchValue(settings);
-
-        // Determine if any recent files
-        this.recentFilesClearEnabled = this.recentFileService.isAny();
-    }
-
-    save()
-    {
-        var form = this.globalSettingsForm;
-
-        if (form.valid)
-        {
-            console.log("saving settings...");
-
-            // Make a backup
-            if (this.backupService.create())
-            {
-                var errorMessage = null;
-
-                // Save settings
-                var newSettings = form.value;
-                errorMessage = this.settingsService.save(newSettings);
-
-                // Display notification
-                if (errorMessage == null)
-                {
-                    toastr.success("Settings saved");
-                }
-                else
-                {
-                    toastr.error(errorMessage);
-                }
-            }
-            else
-            {
-                console.log("failed to create backup, aborted save settings");
-            }
-        }
-        else
-        {
-            console.log("settings form not valid");
-        }
-    }
 
     globalResetToDefault()
     {
@@ -124,16 +62,6 @@ export class GlobalSettingsComponent
         }
 
         this.populateSettings();
-    }
-
-    globalRecentFilesClear()
-    {
-        console.log("clearing recent files");
-
-        this.recentFileService.clear();
-        this.recentFilesClearEnabled = false;
-
-        toastr.success("Cleared recent files");
     }
 
     trackChildrenKeyboardLayouts(index, layout)

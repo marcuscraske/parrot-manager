@@ -3,48 +3,74 @@
     Settings
 </h1>
 
-<!--
-    tabs
--->
-<ul class="nav nav-tabs">
-    <li (click)="currentTab = 'globalSettings'" [ngClass]="{ 'active' : currentTab == 'globalSettings' }">
-        <a>
-            <span class="icon icon-cogs"></span>
-            Global
-        </a>
-    </li>
-    <li (click)="currentTab = 'keyboardLayouts'" [ngClass]="{ 'active' : currentTab == 'keyboardLayouts' }">
-        <a>
-            <span class="icon icon-keyboard"></span>
-            Keyboard Layout
-        </a>
-    </li>
-    <li (click)="currentTab = 'changePassword'" *ngIf="databaseService.isOpen()" [ngClass]="{ 'active' : currentTab == 'changePassword' }">
-        <a>
-            <span class="icon icon-lock"></span>
-            Change Database Password
-        </a>
-    </li>
-    <li (click)="currentTab = 'databaseOptimisation'" *ngIf="databaseService.isOpen()" [ngClass]="{ 'active' : currentTab == 'databaseOptimisation' }">
-        <a>
-            <span class="icon icon-power"></span>
-            Optimisation
-        </a>
-    </li>
-</ul>
+<div class="row">
+    <div class="col-md-3">
 
-<!--
-    content
--->
-<div *ngIf="currentTab == 'globalSettings'">
-    <globalSettings></globalSettings>
-</div>
-<div *ngIf="currentTab == 'keyboardLayouts'">
-    <keyboardLayouts></keyboardLayouts>
-</div>
-<div *ngIf="currentTab == 'changePassword' && databaseService.isOpen()">
-    <changePassword></changePassword>
-</div>
-<div *ngIf="currentTab == 'databaseOptimisation' && databaseService.isOpen()">
-    <databaseOptimisation></databaseOptimisation>
+        <ul class="list-group" *ngIf="databaseService.isOpen()">
+            <li class="list-group-item" (click)="currentTab = 'changePassword'" [ngClass]="{ 'active' : currentTab == 'changePassword' }">
+                <span class="icon icon-lock"></span>
+                Database Password
+            </li>
+            <li class="list-group-item" (click)="currentTab = 'databaseOptimisation'" [ngClass]="{ 'active' : currentTab == 'databaseOptimisation' }">
+                <span class="icon icon-power"></span>
+                Database Optimisation
+            </li>
+        </ul>
+
+        <ul class="list-group">
+            <li class="list-group-item" (click)="currentTab = 'recentFiles'" [ngClass]="{ 'active' : currentTab == 'recentFiles' }">
+                <span class="icon icon-stack"></span>
+                Recent Files
+            </li>
+            <li class="list-group-item" (click)="currentTab = 'backups'" [ngClass]="{ 'active' : currentTab == 'backups' }">
+                <span class="icon icon-database"></span>
+                Backups
+            </li>
+            <li class="list-group-item" (click)="currentTab = 'security'" [ngClass]="{ 'active' : currentTab == 'security' }">
+                <span class="icon icon-lock"></span>
+                Security
+            </li>
+            <li class="list-group-item" (click)="currentTab = 'remoteSync'" [ngClass]="{ 'active' : currentTab == 'remoteSync' }">
+                <span class="icon icon-earth"></span>
+                Remote Sync
+            </li>
+            <li class="list-group-item" (click)="currentTab = 'saving'" [ngClass]="{ 'active' : currentTab == 'saving' }">
+                <span class="icon icon-copy"></span>
+                Saving
+            </li>
+            <li class="list-group-item" (click)="currentTab = 'customisation'" [ngClass]="{ 'active' : currentTab == 'customisation' }">
+                <span class="icon icon-magic-wand"></span>
+                Customisation
+            </li>
+            <li class="list-group-item" (click)="currentTab = 'keyboardLayout'" [ngClass]="{ 'active' : currentTab == 'keyboardLayout' }">
+                <span class="icon icon-keyboard"></span>
+                Keyboard Layout
+            </li>
+        </ul>
+
+        <ul class="list-group">
+            <li class="list-group-item">
+                <span class="icon icon-hammer"></span>
+                Restore to Default
+            </li>
+        </ul>
+
+    </div>
+    <div class="col-md-9">
+
+        <div *ngIf="currentTab == 'changePassword' && databaseService.isOpen()">
+            <changePassword></changePassword>
+        </div>
+        <div *ngIf="currentTab == 'databaseOptimisation' && databaseService.isOpen()">
+            <databaseOptimisation></databaseOptimisation>
+        </div>
+
+        <div *ngIf="currentTab == 'recentFiles'">
+            <recentFiles [globalSettingsForm]="globalSettingsForm"></recentFiles>
+        </div>
+        <div *ngIf="currentTab == 'keyboardLayout'">
+            <keyboardLayouts></keyboardLayouts>
+        </div>
+
+    </div>
 </div>

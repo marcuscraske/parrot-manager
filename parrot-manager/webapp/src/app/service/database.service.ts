@@ -36,7 +36,7 @@ export class DatabaseService
             console.log("prompting for database password... - path: " + path);
 
             var box = bootbox.prompt({
-                title: "Enter database password:",
+                title: "Enter database password",
                 inputType: "password",
                 callback: (password) => {
                     console.log("password entered, opening database file...");

@@ -2,3 +2,13 @@
 {
     margin-bottom: 1em;
 }
+
+.list-group:nth-child(1n)
+{
+    margin-bottom: 2em;
+}
+
+.list-group-item
+{
+    cursor: pointer;
+}
