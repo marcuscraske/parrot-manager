@@ -11,6 +11,11 @@ import { ChangePasswordComponent } from "app/component/pages/settings/changePass
 import { DatabaseOptimisationComponent } from "app/component/pages/settings/databaseOptimisation/databaseOptimisation.component"
 
 import { RecentFilesComponent } from "app/component/pages/settings/recentFiles/recentFiles.component"
+import { BackupsComponent } from "app/component/pages/settings/backups/backups.component"
+import { SecurityComponent } from "app/component/pages/settings/security/security.component"
+import { RemoteSyncComponent } from "app/component/pages/settings/remoteSync/remoteSync.component"
+import { SavingComponent } from "app/component/pages/settings/saving/saving.component"
+import { CustomisationComponent } from "app/component/pages/settings/customisation/customisation.component"
 import { KeyboardLayoutsComponent } from "app/component/pages/settings/keyboardLayouts/keyboardLayouts.component"
 
 const routes: Routes = [
@@ -31,6 +36,11 @@ const routes: Routes = [
         DatabaseOptimisationComponent,
 
         RecentFilesComponent,
+        BackupsComponent,
+        SecurityComponent,
+        RemoteSyncComponent,
+        SavingComponent,
+        CustomisationComponent,
         KeyboardLayoutsComponent
     ],
     exports: [

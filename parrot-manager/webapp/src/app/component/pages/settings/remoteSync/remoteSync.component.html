@@ -1,0 +1,47 @@
+<div [formGroup]="globalSettingsForm" #form="ngForm">
+    <div class="form-group">
+        <label class="form-control-label" for="remoteSyncInterval">
+            Sync interval in minutes
+        </label>
+        <input id="remoteSyncInterval"
+               type="number"
+               class="form-control"
+               placeholder="Number of minutes"
+               formControlName="remoteSyncInterval"
+               [(ngModel)]="globalSettingsForm.value['remoteSyncInterval']"
+        />
+        <small class="form-text text-muted">
+            Leave as zero to disable.
+        </small>
+    </div>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="remoteSyncIntervalEnabled"
+                   formControlName="remoteSyncIntervalEnabled"
+                   [(ngModel)]="globalSettingsForm.value['remoteSyncIntervalEnabled']"
+            />
+            Sync at interval
+        </label>
+    </div>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="remoteSyncOnOpeningDatabase"
+                   formControlName="remoteSyncOnOpeningDatabase"
+                   [(ngModel)]="globalSettingsForm.value['remoteSyncOnOpeningDatabase']"
+            />
+            Sync on opening database
+        </label>
+    </div>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="remoteSyncOnChange"
+                   formControlName="remoteSyncOnChange"
+                   [(ngModel)]="globalSettingsForm.value['remoteSyncOnChange']"
+            />
+            Sync on save
+        </label>
+    </div>
+</div>

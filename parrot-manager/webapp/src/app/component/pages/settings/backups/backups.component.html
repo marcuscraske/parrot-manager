@@ -1,0 +1,43 @@
+<div [formGroup]="globalSettingsForm" #form="ngForm">
+    <div class="form-group">
+        <label class="form-control-label" for="automaticBackupsRetained">
+            Maximum backups retained
+        </label>
+        <input id="automaticBackupsRetained"
+               type="number"
+               class="form-control"
+               placeholder="Leave empty for unlimited"
+               formControlName="automaticBackupsRetained"
+               [(ngModel)]="globalSettingsForm.value['automaticBackupsRetained']"
+        />
+        <small class="form-text text-muted">
+            After the maximum, older backups are deleted. Leave empty for no limit.
+        </small>
+    </div>
+    <div class="form-group">
+        <label class="form-control-label">
+            Delay in seconds when saved
+        </label>
+        <input id="automaticBackupDelay"
+               type="number"
+               class="form-control"
+               placeholder="Leave empty to disable"
+               formControlName="automaticBackupDelay"
+               [(ngModel)]="globalSettingsForm.value['automaticBackupDelay']"
+        />
+        <small class="form-text text-muted">
+            Useful when automatic saving is enabled, as to prevent creating a backup for each small
+            change. Leave empty for no delay.
+        </small>
+    </div>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="automaticBackupsOnSave"
+                   formControlName="automaticBackupsOnSave"
+                   [(ngModel)]="globalSettingsForm.value['automaticBackupsOnSave']"
+            />
+            Backup on save
+        </label>
+    </div>
+</div>

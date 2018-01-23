@@ -36,7 +36,7 @@ public class Settings implements Serializable
         this.remoteSyncIntervalEnabled = new SettingsValue<>(true);
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
         this.remoteSyncOnChange = new SettingsValue<>(true);
-        this.theme = new SettingsValue<>("dark");
+        this.theme = new SettingsValue<>("light");
         this.saveWindowState = new SettingsValue<>(true);
         this.inactivityTimeout = new SettingsValue<>(0L);
         this.wipeClipboardDelay = new SettingsValue<>(10L);

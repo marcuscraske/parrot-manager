@@ -1,0 +1,32 @@
+<div [formGroup]="globalSettingsForm" #form="ngForm">
+    <div class="form-group">
+        <label class="form-control-label" for="inactivityTimeout">
+            Minutes of inactivity to trigger database close
+        </label>
+        <input id="inactivityTimeout"
+               type="number"
+               class="form-control"
+               placeholder="Number of minutes"
+               formControlName="inactivityTimeout"
+               [(ngModel)]="globalSettingsForm.value['inactivityTimeout']"
+        />
+        <small class="form-text text-muted">
+            Leave as zero to disable.
+        </small>
+    </div>
+    <div class="form-group">
+        <label class="form-control-label" for="wipeClipboardDelay">
+            Seconds until clipboard is wiped after copying data
+        </label>
+        <input id="wipeClipboardDelay"
+               type="number"
+               class="form-control"
+               placeholder="Number of seconds"
+               formControlName="wipeClipboardDelay"
+               [(ngModel)]="globalSettingsForm.value['wipeClipboardDelay']"
+        />
+        <small class="form-text text-muted">
+            Leave as zero to disable.
+        </small>
+    </div>
+</div>

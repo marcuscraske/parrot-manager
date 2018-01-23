@@ -49,7 +49,7 @@
         </ul>
 
         <ul class="list-group">
-            <li class="list-group-item">
+            <li class="list-group-item" (click)="globalResetToDefault()">
                 <span class="icon icon-hammer"></span>
                 Restore to Default
             </li>
@@ -68,8 +68,23 @@
         <div *ngIf="currentTab == 'recentFiles'">
             <recentFiles [globalSettingsForm]="globalSettingsForm"></recentFiles>
         </div>
+        <div *ngIf="currentTab == 'backups'">
+            <backups [globalSettingsForm]="globalSettingsForm"></backups>
+        </div>
+        <div *ngIf="currentTab == 'security'">
+            <security [globalSettingsForm]="globalSettingsForm"></security>
+        </div>
+        <div *ngIf="currentTab == 'remoteSync'">
+            <remoteSync [globalSettingsForm]="globalSettingsForm"></remoteSync>
+        </div>
+        <div *ngIf="currentTab == 'saving'">
+            <saving [globalSettingsForm]="globalSettingsForm"></saving>
+        </div>
+        <div *ngIf="currentTab == 'customisation'">
+            <customisation [globalSettingsForm]="globalSettingsForm"></customisation>
+        </div>
         <div *ngIf="currentTab == 'keyboardLayout'">
-            <keyboardLayouts></keyboardLayouts>
+            <keyboardLayouts [globalSettingsForm]="globalSettingsForm"></keyboardLayouts>
         </div>
 
     </div>

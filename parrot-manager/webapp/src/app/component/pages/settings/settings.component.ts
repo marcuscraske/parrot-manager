@@ -12,6 +12,7 @@ import { ThemeService } from 'app/service/theme.service'
 export class SettingsComponent
 {
     public currentTab: string;
+    public lastSettings;
 
     public globalSettingsForm = this.fb.group({
         recentFilesEnabled: [false],
@@ -49,17 +50,19 @@ export class SettingsComponent
         this.populateSettings();
 
         // Subscribe to changes
-        this.globalSettingsForm.valueChanges.subscribe(form => {
-            // Save changes
-            this.settingsService.save(form);
-        });
-    }
+        this.globalSettingsForm.valueChanges.subscribe(form =>
+        {
+            // Check settings have changed, as binding form controls between components will trigger this event
+            if (JSON.stringify(form) != JSON.stringify(this.lastSettings))
+            {
+                console.log("settings changed");
+                console.log(JSON.stringify(form));
+                console.log(JSON.stringify(this.lastSettings));
 
-    ngOnDestroy()
-    {
-        // reset theme (in case unsaved)
-        var theme = this.settingsService.fetch("theme");
-        this.themeService.set(theme);
+                // Save changes
+                this.settingsService.save(form);
+            }
+        });
     }
 
     populateSettings()
@@ -68,6 +71,7 @@ export class SettingsComponent
 
         // Read existing settings
         var settings = this.settingsService.fetchAll();
+        this.lastSettings = settings;
 
         // Apply to form
         this.globalSettingsForm.patchValue(settings);
@@ -99,6 +103,27 @@ export class SettingsComponent
         {
             console.log("settings form not valid");
         }
+    }
+
+    globalResetToDefault()
+    {
+        console.log("resetting to default settings");
+        var errorMessage = this.settingsService.reset();
+
+        if (errorMessage != null)
+        {
+            toastr.error(errorMessage);
+        }
+        else
+        {
+            toastr.info("Settings reset to default");
+        }
+
+        // reset theme
+        var theme = this.settingsService.fetch("theme");
+        this.themeService.set(theme);
+
+        this.populateSettings();
     }
 
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { SendKeysService } from 'app/service/sendKeys.service'
 import { RuntimeService } from 'app/service/runtime.service'
@@ -14,6 +14,9 @@ export class KeyboardLayoutsComponent
 {
     reloadErrorMessages: string;
     testerKeyCodes: string;
+
+    @Input()
+    globalSettingsForm: any;
 
     constructor(
         public sendKeysService: SendKeysService,
@@ -130,6 +133,11 @@ export class KeyboardLayoutsComponent
             var text = input.val();
             this.sendKeysService.sendTest(text);
         }, 1000);
+    }
+
+    trackChildrenKeyboardLayouts(index, layout)
+    {
+        return layout ? layout.getName() : null;;
     }
 
 }

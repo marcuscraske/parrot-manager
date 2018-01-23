@@ -1,0 +1,12 @@
+<div [formGroup]="globalSettingsForm" #form="ngForm">
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="autoSave"
+                   formControlName="autoSave"
+                   [(ngModel)]="globalSettingsForm.value['autoSave']"
+            />
+            Save on any changes
+        </label>
+    </div>
+</div>

@@ -39,24 +39,10 @@ body
     color: #333;
 }
 
-
-.panel
-{
-    background: #333;
-    border: none;
-}
-
-.panel-default > .panel-heading
-{
-    background: #222;
-    color: #fff;
-    border: none;
-}
-
 .btn.btn-default
 {
     background: #999 !important;
-    color: #333;
+    color: #333 !important;
     border: none;
 }
 
@@ -108,4 +94,9 @@ textarea
 .search-reset
 {
     color: #333;
+}
+
+.list-group-item
+{
+    background: #333;
 }

@@ -88,7 +88,7 @@ public class KeyboardLayoutRepository
 
             for (KeyboardLayout layout : layoutMap.values())
             {
-                if (result == null || layout.isBetterMatch(layout, os, locale))
+                if (result == null || layout.isBetterMatch(result, os, locale))
                 {
                     result = layout;
                 }
