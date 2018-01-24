@@ -1,0 +1,23 @@
+ul
+{
+    list-style: none;
+    padding-left: 0.5em;
+}
+
+ul li .icon
+{
+    float: left;
+    font-size: 1.5em;
+    vertical-align: middle;
+    padding-right: 0.5em;
+}
+
+ul li
+{
+    padding: 0.5em;
+}
+
+ul ul
+{
+    margin-top: 0.5em;
+}

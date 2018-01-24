@@ -9,6 +9,9 @@ import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.db.log.LogItem;
+import com.limpygnome.parrot.library.db.log.LogLevel;
+import com.limpygnome.parrot.library.db.log.MergeLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,8 @@ public class RemoteSyncService implements DatabaseChangingEvent
     private WebStageInitService webStageInitService;
     @Autowired
     private SshSyncService sshSyncService;
+    @Autowired
+    private RemoteSyncResultService resultService;
 
     // State
     private Thread thread;
@@ -295,6 +300,9 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
     private void syncAsyncThreadList(String remotePassword, SshOptions... optionsArray)
     {
+        // Reset results
+        resultService.clear();
+
         for (int i = 0; !aborted && i < optionsArray.length; i++)
         {
             SshOptions options = optionsArray[i];
@@ -310,10 +318,12 @@ public class RemoteSyncService implements DatabaseChangingEvent
         // validate destination path
         SyncResult syncResult;
 
-        String messages = checkDestinationPath(options);
-        if (messages != null)
+        String message = checkDestinationPath(options);
+        if (message != null)
         {
-            syncResult = new SyncResult(messages, false, false, options.getName());
+            MergeLog mergeLog = new MergeLog();
+            mergeLog.add(new LogItem(LogLevel.ERROR, message));
+            syncResult = new SyncResult(options.getName(), mergeLog, false, false);
         }
         else
         {
@@ -321,9 +331,10 @@ public class RemoteSyncService implements DatabaseChangingEvent
             syncResult = sshSyncService.sync(options, remotePassword);
         }
 
-        // trigger end event...
-        webStageInitService.triggerEvent("document", "remoteSyncFinish", syncResult);
+        // pass result
+        resultService.add(syncResult);
 
+        // Reset thread, as this one is now done
         thread = null;
     }
 

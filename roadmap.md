@@ -4,9 +4,6 @@
 - Document database format
 - Stand-alone should be own JAR, with settings saved relative
 - Prevent sync when unsaved changes.
-- Changelog on remote sync improved UI
-  - Show friendly e.g. plus/minus icons for nodes added and removed
-  - Currently too technical, needs to be very user friendly and simple
 
 ## Later
 - Change entry types

@@ -8,7 +8,6 @@ import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { RemoteSyncService } from 'app/service/remoteSyncService.service'
-import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { SettingsService } from 'app/service/settings.service'
 import { ThemeService } from 'app/service/theme.service'
 import { SendKeysService } from 'app/service/sendKeys.service'
@@ -25,7 +24,6 @@ import { SendKeysService } from 'app/service/sendKeys.service'
         BackupService,
         EncryptedValueService,
         RemoteSyncService,
-        RemoteSyncChangeLogService,
         SettingsService,
         ThemeService,
         SendKeysService

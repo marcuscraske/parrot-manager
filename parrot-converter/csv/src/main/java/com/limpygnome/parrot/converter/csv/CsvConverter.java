@@ -9,6 +9,7 @@ import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.db.log.MergeLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class CsvConverter extends Converter
     private EncryptedValueService encryptedValueService;
 
     @Override
-    public String[] databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException
+    public MergeLog databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException
     {
         String text = stringStreamOperations.readString(inputStream);
         return databaseImportText(database, options, text);
@@ -48,7 +49,7 @@ public class CsvConverter extends Converter
     }
 
     @Override
-    public String[] databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException
+    public MergeLog databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException
     {
         if (text == null || text.isEmpty())
         {

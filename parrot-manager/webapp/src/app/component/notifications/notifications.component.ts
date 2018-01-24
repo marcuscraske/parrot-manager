@@ -1,7 +1,6 @@
 import { Component, Renderer } from '@angular/core';
 
 import { RemoteSyncService } from 'app/service/remoteSyncService.service'
-import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 
 @Component({
   selector: 'notifications',
@@ -14,8 +13,7 @@ export class NotificationsComponent
 
     constructor(
         private renderer: Renderer,
-        private remoteSyncService: RemoteSyncService,
-        private remoteSyncChangeLogService: RemoteSyncChangeLogService
+        private remoteSyncService: RemoteSyncService
     ) { }
 
     ngOnInit()
@@ -35,23 +33,19 @@ export class NotificationsComponent
             this.remoteSyncService.setLastHostSynchronizing(hostName);
 
             // Show notification
-            toastr.info("syncing " + hostName);
+            toastr.info("Syncing " + hostName);
         });
 
-        // Setup hook for when remote syncing finishes
+        // Setup hook for when remote syncing changes/finishes
         this.syncFinishEvent = this.renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
             console.log("received remote sync finish event");
 
-            var messages = event.data.getMessages();
+            var hostName = event.data.getHostName();
             var isSuccess = event.data.isSuccess();
             var isChanges = event.data.isChanges();
-            var hostName = event.data.getHostName();
 
             // Switch state to not syncing
             this.remoteSyncService.setSyncing(false);
-
-            // Send result to logging service
-            this.remoteSyncChangeLogService.add(messages);
 
             // Show notification
             if (isSuccess)
@@ -67,7 +61,7 @@ export class NotificationsComponent
             }
             else
             {
-                toastr.error("failed to synchronize " + hostName);
+                toastr.error("Failed to synchronize " + hostName);
             }
         });
     }

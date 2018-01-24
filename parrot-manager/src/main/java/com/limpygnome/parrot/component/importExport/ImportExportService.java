@@ -4,7 +4,9 @@ import com.limpygnome.parrot.converter.api.ConversionException;
 import com.limpygnome.parrot.converter.api.Converter;
 import com.limpygnome.parrot.converter.api.MalformedInputException;
 import com.limpygnome.parrot.converter.api.Options;
+import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.log.MergeLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +17,13 @@ import java.io.IOException;
 import java.util.Map;
 
 @Service
-public class ImportExportService
+public class ImportExportService implements DatabaseChangingEvent
 {
     @Autowired
     private Map<String, Converter> converters;
+
+    // Keep the last result to prevent GC
+    private Result result;
 
     /**
      * Creates options for use with importing and exporting operations.
@@ -39,6 +44,8 @@ public class ImportExportService
 
     public Result databaseImportText(Database database, Options options, String text)
     {
+        resetResult();
+
         Converter converter = getConverter(options);
 
         if (converter == null)
@@ -48,9 +55,9 @@ public class ImportExportService
 
         try
         {
-            String[] messages = converter.databaseImportText(database, options, text);
-            Result result = new Result(messages);
-            return result;
+            MergeLog mergeLog = converter.databaseImportText(database, options, text);
+            this.result = new Result(mergeLog);
+            return this.result;
         }
         catch (MalformedInputException e)
         {
@@ -64,6 +71,8 @@ public class ImportExportService
 
     public Result databaseImportFile(Database database, Options options, String path)
     {
+        resetResult();
+
         Converter converter = getConverter(options);
 
         if (converter == null)
@@ -85,9 +94,9 @@ public class ImportExportService
         try
         {
             FileInputStream fis = new FileInputStream(path);
-            String[] messages = converter.databaseImport(database, options, fis);
-            Result result = new Result(messages);
-            return result;
+            MergeLog mergeLog = converter.databaseImport(database, options, fis);
+            this.result = new Result(mergeLog);
+            return this.result;
         }
         catch (MalformedInputException e)
         {
@@ -101,6 +110,8 @@ public class ImportExportService
 
     public Result databaseExportText(Database database, Options options)
     {
+        resetResult();
+
         Converter converter = getConverter(options);
 
         if (converter == null)
@@ -121,6 +132,8 @@ public class ImportExportService
 
     public Result databaseExportFile(Database database, Options options, String path)
     {
+        resetResult();
+
         Converter converter = getConverter(options);
 
         if (converter == null)
@@ -138,6 +151,13 @@ public class ImportExportService
         {
             return conversionException(e);
         }
+    }
+
+    @Override
+    public void eventDatabaseChanged(boolean open)
+    {
+        // Reset result
+        result = null;
     }
 
     private Converter getConverter(Options options)
@@ -161,6 +181,11 @@ public class ImportExportService
     private Result conversionException(Exception e)
     {
         return new Result(null, "Problem occurred - " + e.getMessage());
+    }
+
+    private void resetResult()
+    {
+        this.result = null;
     }
 
 }

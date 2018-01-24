@@ -1,26 +1,35 @@
 package com.limpygnome.parrot.component.remote;
 
+import com.limpygnome.parrot.library.db.log.MergeLog;
+
 /**
  * Used as aggregate of results for 'remoteSyncFinish' trigger event.
  */
 public class SyncResult
 {
-    private String messages;
+    private String hostName;
+    private MergeLog mergeLog;
     private boolean success;
     private boolean changes;
-    private String hostName;
+    private long timestamp;
 
-    public SyncResult(String messages, boolean success, boolean changes, String hostName)
+    public SyncResult(String hostName, MergeLog mergeLog, boolean success, boolean changes)
     {
-        this.messages = messages;
+        this.hostName = hostName;
+        this.mergeLog = mergeLog;
         this.success = success;
         this.changes = changes;
-        this.hostName = hostName;
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public String getMessages()
+    public String getHostName()
     {
-        return messages;
+        return hostName;
+    }
+
+    public MergeLog getMergeLog()
+    {
+        return mergeLog;
     }
 
     public boolean isSuccess()
@@ -33,9 +42,9 @@ public class SyncResult
         return changes;
     }
 
-    public String getHostName()
+    public long getTimestamp()
     {
-        return hostName;
+        return timestamp;
     }
 
 }

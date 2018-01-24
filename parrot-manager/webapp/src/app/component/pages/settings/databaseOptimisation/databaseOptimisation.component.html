@@ -1,28 +1,39 @@
-<h2>
-    Deleted Entries History
-</h2>
-<p>
-    The identifiers of deleted entries are retained for remote synchronisation of the database. If you have
-    synchronised your database with all remote copies, you can wipe the history to reduce storage and memory
-    usage.
-</p>
-<p>
-    <a class="btn btn-default" (click)="databaseOptimizeDeletedNodeHistory()">
-        <span class="icon icon-bin"></span>
-        Clear
-    </a>
-</p>
+<div class="mb-3">
+    <div class="card">
+        <div class="card-header">
+            Deleted Entries History
+        </div>
+        <div class="card-body">
+            <p>
+                The identifiers of deleted entries are retained for remote synchronisation of the database. If you have
+                synchronised your database with all remote copies, you can wipe the history to reduce storage and memory
+                usage.
+            </p>
+            <p>
+                <a class="btn btn-default" (click)="databaseOptimizeDeletedNodeHistory()">
+                    <span class="icon icon-bin"></span>
+                    Clear
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
 
-
-<h2>
-    Entries History
-</h2>
-<p>
-    The history of values is retained, which can be wiped to reduce storage and memory.
-</p>
-<p>
-    <a class="btn btn-default" (click)="databaseOptimizeValueHistory()">
-        <span class="icon icon-bin"></span>
-        Clear history
-    </a>
-</p>
+<div class="mb-3">
+    <div class="card">
+        <div class="card-header">
+            Entries History
+        </div>
+        <div class="card-body">
+            <p>
+                The history of values is retained, which can be wiped to reduce storage and memory.
+            </p>
+            <p>
+                <a class="btn btn-default" (click)="databaseOptimizeValueHistory()">
+                    <span class="icon icon-bin"></span>
+                    Clear history
+                </a>
+            </p>
+        </div>
+    </div>
+</div>

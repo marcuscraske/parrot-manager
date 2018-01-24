@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 
-import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
-
 import "app/global-vars"
 
 @Injectable()
@@ -12,7 +10,6 @@ export class DatabaseService
     databaseService: any;
 
     constructor(
-        private remoteSyncChangeLogService: RemoteSyncChangeLogService
     ) {
         this.databaseService = (window as any).databaseService;
     }
@@ -107,9 +104,6 @@ export class DatabaseService
 
     close()
     {
-        // clear sync log
-        this.remoteSyncChangeLogService.clear();
-
         // close actual db
         if (this.isOpen())
         {

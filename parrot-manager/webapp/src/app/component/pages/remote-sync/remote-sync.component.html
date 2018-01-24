@@ -12,10 +12,10 @@
     <table class="table remote-sync" *ngIf="isTargets()" id="remoteSyncTargets">
         <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
             <td>
-                <a class="btn btn-primary" (click)="sync(node.getId(), false)">
+                <button class="btn btn-primary" (click)="sync(node.getId(), false)">
                     <span class="icon icon-download"></span>
                     Sync
-                </a>
+                </button>
             </td>
             <td>
                 {{ node.getName() }}
@@ -24,18 +24,18 @@
                 {{ getHostName(node) }}
             </td>
             <td>
-                <a class="btn btn-primary" (click)="sync(node.getId(), true)" title="Asks for any required auth (database password, user pass, key pass)">
+                <button class="btn btn-primary" (click)="sync(node.getId(), true)" title="Asks for any required auth (database password, user pass, key pass)">
                     <span class="icon icon-lock"></span>
                     Auth Sync
-                </a>
-                <a class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
+                </button>
+                <button class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}">
                     <span class="icon icon-pencil"></span>
                     Edit
-                </a>
-                <a class="btn btn-danger" (click)="node.remove();">
+                </button>
+                <button class="btn btn-danger" (click)="node.remove();">
                     <span class="icon icon-cross"></span>
                     Delete
-                </a>
+                </button>
             </td>
         </tr>
     </table>
@@ -74,25 +74,19 @@
 
 </div>
 
-<h2>
-    Changelog
+<h2 class="mb-3">
+    Change Log
 </h2>
 
-<p>
-    When syncing, a list of changes will be listed below.
-</p>
-
-<div class="form-group">
-    <textarea class="form-control" id="changeLog" disabled="disabled">{{ remoteSyncChangeLogService.getChangeLog() }}</textarea>
-</div>
-
-<div class="form-group">
-    <button class="btn btn-default" (click)="copyToClipboard()">
+<p *ngIf="syncResults.length > 0">
+    <button class="btn btn-default" (click)="copySyncLogToClipboard()">
         <span class="icon icon-clipboard"></span>
         Copy to Clipboard
     </button>
-    <button class="btn btn-default" (click)="remoteSyncChangeLogService.clear()">
+    <button class="btn btn-default" (click)="remoteSyncResultService.clear()">
         <span class="icon icon-bin"></span>
         Clear
     </button>
-</div>
+</p>
+
+<changeLog [syncResults]="syncResults"></changeLog>

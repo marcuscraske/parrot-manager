@@ -4,7 +4,9 @@ import com.jcraft.jsch.SftpException;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
-import com.limpygnome.parrot.library.db.MergeLog;
+import com.limpygnome.parrot.library.db.log.LogItem;
+import com.limpygnome.parrot.library.db.log.LogLevel;
+import com.limpygnome.parrot.library.db.log.MergeLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +95,7 @@ public class SshSyncService
 
     synchronized SyncResult sync(SshOptions options, String remotePassword)
     {
-        String messages;
+        MergeLog mergeLog;
         boolean success = true;
         boolean dirty = false;
 
@@ -118,8 +120,6 @@ public class SshSyncService
             // start download...
             LOG.info("sync - downloading");
             boolean exists = sshComponent.download(sshSession, options, syncPath, null);
-
-            MergeLog mergeLog;
 
             if (exists)
             {
@@ -149,6 +149,7 @@ public class SshSyncService
                 {
                     LOG.info("sync - uploading to remote host...");
                     sshComponent.upload(sshSession, options, options.getDestinationPath(), null);
+                    mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database"));
                 }
                 else
                 {
@@ -160,17 +161,13 @@ public class SshSyncService
                 LOG.info("sync - uploading current database");
 
                 mergeLog = new MergeLog();
-                mergeLog.add("uploading current database, as does not exist remotely");
+                mergeLog.add(new LogItem(LogLevel.DEBUG, "Uploading current database, as does not exist remotely"));
 
                 String currentPath = databaseService.getPath();
                 sshComponent.upload(sshSession, options, currentPath, null);
 
-                mergeLog.add("uploaded successfully");
+                mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database for first time"));
             }
-
-            // build result
-            String hostName = options.getName();
-            messages = mergeLog.getMessages(hostName);
         }
         catch (Exception e)
         {
@@ -179,7 +176,11 @@ public class SshSyncService
                 throw new RuntimeException("sync aborted");
             }
 
-            messages = sshComponent.getExceptionMessage(e);
+            // Convert to failed merge
+            String message = sshComponent.getExceptionMessage(e);
+            mergeLog = new MergeLog();
+            mergeLog.add(new LogItem(LogLevel.ERROR, message));
+
             success = false;
             LOG.error("sync - exception", e);
         }
@@ -206,7 +207,7 @@ public class SshSyncService
 
         // raise event with result
         SyncResult syncResult = new SyncResult(
-                messages, success, dirty, options.getName()
+                options.getName(), mergeLog, success, dirty
         );
         return syncResult;
     }

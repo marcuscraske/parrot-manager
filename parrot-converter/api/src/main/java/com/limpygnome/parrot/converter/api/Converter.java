@@ -3,7 +3,7 @@ package com.limpygnome.parrot.converter.api;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.MergeLog;
+import com.limpygnome.parrot.library.db.log.MergeLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,23 +24,23 @@ public abstract class Converter
      * @param database
      * @param options
      * @param text
-     * @return list of merge messages / changes
+     * @return result of import
      * @throws ConversionException
      * @throws MalformedInputException
      */
-    public abstract String[] databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
+    public abstract MergeLog databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
 
     /**
      *
      * @param database
      * @param options
      * @param inputStream
-     * @return list of merge messages / changes
+     * @return result of import
      * @throws ConversionException
      * @throws MalformedInputException
      * @throws IOException
      */
-    public abstract String[] databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
+    public abstract MergeLog databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
 
     public abstract String databaseExportText(Database database, Options options) throws ConversionException;
 
@@ -48,16 +48,14 @@ public abstract class Converter
 
 
 
-    protected String[] merge(Database database, Database databaseParsed) throws ConversionException
+    protected MergeLog merge(Database database, Database databaseParsed) throws ConversionException
     {
         // merge with current database
         try
         {
             DatabaseMerger merger = new DatabaseMerger();
             MergeLog mergeLog = merger.merge(databaseParsed, database, null);
-            List<String> listMessages = mergeLog.getMessages();
-            String[] messages = listMessages.toArray(new String[listMessages.size()]);
-            return messages;
+            return mergeLog;
         }
         catch (Exception e)
         {

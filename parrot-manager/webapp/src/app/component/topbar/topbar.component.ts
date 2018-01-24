@@ -4,7 +4,6 @@ import { Router, RouterLinkActive } from '@angular/router';
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { RemoteSyncService } from 'app/service/remoteSyncService.service'
-import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
 import { SettingsService } from 'app/service/settings.service'
 
 import "app/global-vars"
@@ -23,7 +22,6 @@ export class TopBarComponent
         public runtimeService: RuntimeService,
         public databaseService: DatabaseService,
         public remoteSyncService: RemoteSyncService,
-        public remoteSyncChangeLogService: RemoteSyncChangeLogService,
         public settingsService: SettingsService,
         public router: Router,
         public renderer: Renderer
@@ -155,9 +153,6 @@ export class TopBarComponent
         }
         else
         {
-            // wipe sync log
-            this.remoteSyncChangeLogService.clear();
-
             // redirect to open page
             console.log("redirecting to open page...");
             this.router.navigate(["/open"]);

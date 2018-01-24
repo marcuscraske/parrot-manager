@@ -7,6 +7,7 @@ import com.limpygnome.parrot.component.clipboard.ClipboardService;
 import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.importExport.ImportExportService;
+import com.limpygnome.parrot.component.remote.RemoteSyncResultService;
 import com.limpygnome.parrot.component.ui.preferences.WindowPreferences;
 import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
@@ -37,6 +38,8 @@ public class WebStageInitService
     private RandomGeneratorService randomGeneratorService;
     @Autowired
     private RemoteSyncService remoteSyncService;
+    @Autowired
+    private RemoteSyncResultService remoteSyncResultService;
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
@@ -89,6 +92,7 @@ public class WebStageInitService
         stage.exposeJsObject("databaseService", databaseService);
         stage.exposeJsObject("randomGeneratorService", randomGeneratorService);
         stage.exposeJsObject("remoteSyncService", remoteSyncService);
+        stage.exposeJsObject("remoteSyncResultService", remoteSyncResultService);
         stage.exposeJsObject("backupService", backupService);
         stage.exposeJsObject("recentFileService", recentFileService);
         stage.exposeJsObject("encryptedValueService", encryptedValueService);

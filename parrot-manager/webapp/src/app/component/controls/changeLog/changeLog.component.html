@@ -1,0 +1,18 @@
+<p *ngIf="syncResults.length == 0">
+    After syncing with a remote host, a list of changes will be displayed here.
+</p>
+
+<div *ngIf="syncResults.length > 0">
+    <ul>
+        <li *ngFor="let syncResult of syncResults; trackBy: trackSyncResults">
+            <span class="icon icon-display"></span>
+            {{ syncResult.getHostName() }}
+            <ul>
+                <li *ngFor="let logItem of syncResult.getMergeLog().getLogItems(); trackBy: trackLogItems">
+                    <span class="icon" [ngClass]="getLogItemIcon(logItem)"></span>
+                    {{ logItem.getText() }}
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

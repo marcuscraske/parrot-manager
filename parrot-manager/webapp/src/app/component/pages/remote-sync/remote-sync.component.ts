@@ -1,30 +1,34 @@
-import { Component, AfterViewChecked } from '@angular/core';
+import { Component, AfterViewChecked, Renderer } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { DatabaseService } from 'app/service/database.service'
 import { RemoteSyncService } from 'app/service/remoteSyncService.service'
-import { RemoteSyncChangeLogService } from 'app/service/remoteSyncChangeLog.service'
+import { RemoteSyncResultService } from 'app/service/remoteSyncResult.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { ClipboardService } from 'app/service/clipboard.service'
 
 @Component({
     templateUrl: 'remote-sync.component.html',
-    styleUrls: ['remote-sync.component.css']
+    styleUrls: ['remote-sync.component.css'],
+    providers: [RemoteSyncResultService]
 })
 export class RemoteSyncComponent implements AfterViewChecked {
 
-    private remoteSyncNode : any;
-    private oldChangeLog : string;
+    private remoteSyncNode: any;
+    private oldChangeLog: string;
+    private remoteSyncChangeEvent: Function;
+    private syncResults: any;
 
     constructor(
         public remoteSyncService: RemoteSyncService,
+        public remoteSyncResultService: RemoteSyncResultService,
         public databaseService: DatabaseService,
         public encryptedValueService: EncryptedValueService,
         public clipboardService: ClipboardService,
         public router: Router,
         public fb: FormBuilder,
-        public remoteSyncChangeLogService: RemoteSyncChangeLogService
+        private renderer: Renderer
     ) { }
 
     ngOnInit()
@@ -34,6 +38,19 @@ export class RemoteSyncComponent implements AfterViewChecked {
         var rootNode = database.getRoot();
 
         this.remoteSyncNode = rootNode.getByName("remote-sync");
+
+        // Hook for sync result changes
+        this.remoteSyncChangeEvent = this.renderer.listenGlobal("document", "remoteSyncLogChange", (event) => {
+            this.syncResults = event.data;
+        });
+
+        // Fetch last results
+        this.syncResults = this.remoteSyncResultService.getResults();
+    }
+
+    ngOnDestroy()
+    {
+        this.remoteSyncChangeEvent();
     }
 
     ngAfterViewChecked()
@@ -145,7 +162,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
             }
             else
             {
-                this.remoteSyncChangeLogService.add(node.getName() + " - failed to read host options; delete and re-create the sync host...");
+                toastr.error(node.getName() + " - failed to read host options; delete and re-create the sync host...");
             }
         }
         else
@@ -244,12 +261,6 @@ export class RemoteSyncComponent implements AfterViewChecked {
         }
     }
 
-    copyToClipboard()
-    {
-        var changeLog = this.remoteSyncChangeLogService.getChangeLog();
-        this.clipboardService.setText(changeLog);
-    }
-
     isSyncing() : boolean
     {
         return this.remoteSyncService.isSyncing();
@@ -259,6 +270,15 @@ export class RemoteSyncComponent implements AfterViewChecked {
     {
         console.log("aborting sync");
         this.remoteSyncService.abort();
+    }
+
+    copySyncLogToClipboard()
+    {
+        // Fetch log as text
+        var text = "TODO";
+
+        // Update clipboard
+        this.clipboardService.setText(text);
     }
 
 }

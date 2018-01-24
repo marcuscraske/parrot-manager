@@ -2,7 +2,6 @@ package com.limpygnome.parrot.component.remote;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.settings.Settings;
-import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.event.DatabaseSavedEvent;
@@ -15,9 +14,9 @@ import org.springframework.stereotype.Service;
  * Performs remote sync at timed intervals, the database opens or changes occur.
  */
 @Service
-public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseSavedEvent, SettingsRefreshedEvent
+public class RemoteSyncIntervalService implements DatabaseChangingEvent, DatabaseSavedEvent, SettingsRefreshedEvent
 {
-    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncChangeService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncIntervalService.class);
 
     @Autowired
     private DatabaseService databaseService;
@@ -34,7 +33,7 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
     private boolean continueToExecute;
     private Thread thread;
 
-    public RemoteSyncChangeService()
+    public RemoteSyncIntervalService()
     {
         this.continueToExecute = false;
         this.thread = null;
@@ -93,18 +92,6 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
 
                 // Force wake it...
                 forceSync();
-
-                // Join execution...
-                LOG.debug("joining thread");
-
-                try
-                {
-                    thread.join();
-                }
-                catch (InterruptedException e)
-                {
-                    LOG.warn("interrupted when waiting for interval service to end");
-                }
             }
 
             // Check database is open and we have settings enabling this feature...
@@ -186,10 +173,6 @@ public class RemoteSyncChangeService implements DatabaseChangingEvent, DatabaseS
 
             try
             {
-                synchronized (thread)
-                {
-                    thread.notify();
-                }
                 thread.interrupt();
             }
             catch (Exception e)
