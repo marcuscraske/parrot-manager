@@ -18,7 +18,7 @@ export class HomeComponent {
     public success: string;
     public error: string;
     public exportText: string;
-    public messages: string[];
+    public mergeLog: any;
 
     constructor(
         private importExportService: ImportExportService,
@@ -43,7 +43,7 @@ export class HomeComponent {
                 {
                     this.success = "Imported database changes successfully";
                 }
-                this.messages = result.getMessages();
+                this.mergeLog = result.getMergeLog();
             }
             else
             {
@@ -66,12 +66,11 @@ export class HomeComponent {
         {
             var options = this.createOptions();
             var result = this.importExportService.databaseImportFile(options, path);
-
             if (this.isSuccess(result))
             {
                 this.success = "Imported database changes successfully";
             }
-            this.messages = result.getMessages();
+            this.mergeLog = result.getMergeLog();
         }
     }
 
@@ -102,7 +101,6 @@ export class HomeComponent {
             {
                 this.success = "Exported database successfully";
             }
-            this.messages = result.getMessages();
         }
     }
 
@@ -134,7 +132,6 @@ export class HomeComponent {
         this.exportText = null;
         this.error = null;
         this.success = null;
-        this.messages = null;
     }
 
 }

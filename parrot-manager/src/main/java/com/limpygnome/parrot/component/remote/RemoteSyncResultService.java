@@ -49,6 +49,17 @@ public class RemoteSyncResultService implements DatabaseChangingEvent
         return results;
     }
 
+    public String getResultsAsText()
+    {
+        StringBuilder sb = new StringBuilder();
+        String ls = System.getProperty("line.separator");
+        for (SyncResult syncResult : results)
+        {
+            sb.append(syncResult.asText()).append(ls);
+        }
+        return sb.toString();
+    }
+
     @Override
     public void eventDatabaseChanged(boolean open)
     {

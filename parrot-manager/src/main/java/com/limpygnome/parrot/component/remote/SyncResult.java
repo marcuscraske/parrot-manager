@@ -47,4 +47,15 @@ public class SyncResult
         return timestamp;
     }
 
+    public String asText()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(hostName).append(" [success: ").append(success)
+                .append(", changes: ").append(changes)
+                .append(", timestamp: ").append(timestamp).append("]")
+                .append(System.getProperty("line.separator"))
+                .append(mergeLog.asText());
+        return sb.toString();
+    }
+
 }

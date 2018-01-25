@@ -23,6 +23,7 @@ public class Settings implements Serializable
     private SettingsValue<Long> inactivityTimeout;
     private SettingsValue<Long> wipeClipboardDelay;
     private SettingsValue<Boolean> autoSave;
+    private SettingsValue<Boolean> mergeLogShowDetail;
     private SettingsValue<String> keyboardLayout;
 
     public Settings()
@@ -41,6 +42,7 @@ public class Settings implements Serializable
         this.inactivityTimeout = new SettingsValue<>(0L);
         this.wipeClipboardDelay = new SettingsValue<>(10L);
         this.autoSave = new SettingsValue<>(true);
+        this.mergeLogShowDetail = new SettingsValue<>(false);
         this.keyboardLayout = new SettingsValue<>(null);
     }
 
@@ -113,6 +115,11 @@ public class Settings implements Serializable
         return autoSave;
     }
 
+    public SettingsValue<Boolean> getMergeLogShowDetail()
+    {
+        return mergeLogShowDetail;
+    }
+
     public SettingsValue<String> getKeyboardLayout()
     {
         return keyboardLayout;
@@ -133,8 +140,11 @@ public class Settings implements Serializable
                 ", remoteSyncOnOpeningDatabase=" + remoteSyncOnOpeningDatabase +
                 ", remoteSyncOnChange=" + remoteSyncOnChange +
                 ", theme=" + theme +
+                ", saveWindowState=" + saveWindowState +
                 ", inactivityTimeout=" + inactivityTimeout +
+                ", wipeClipboardDelay=" + wipeClipboardDelay +
                 ", autoSave=" + autoSave +
+                ", mergeLogShowDetail=" + mergeLogShowDetail +
                 ", keyboardLayout=" + keyboardLayout +
                 '}';
     }

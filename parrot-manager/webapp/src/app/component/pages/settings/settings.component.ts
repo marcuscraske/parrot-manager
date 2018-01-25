@@ -29,6 +29,7 @@ export class SettingsComponent
         inactivityTimeout: [""],
         wipeClipboardDelay: [""],
         autoSave: [true],
+        mergeLogShowDetail: [false],
         keyboardLayout: [""]
     });
 

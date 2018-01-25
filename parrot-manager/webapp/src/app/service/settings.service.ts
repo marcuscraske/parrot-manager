@@ -35,6 +35,7 @@ export class SettingsService {
             "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null),
             "wipeClipboardDelay" : settings.getWipeClipboardDelay().getValue(),
             "autoSave" : settings.getAutoSave().getValue(),
+            "mergeLogShowDetail" : settings.getMergeLogShowDetail().getValue(),
             "keyboardLayout" : settings.getKeyboardLayout().getValue()
         };
 
@@ -103,6 +104,9 @@ export class SettingsService {
         );
         settings.getAutoSave().setValue(
             json.autoSave
+        );
+        settings.getMergeLogShowDetail().setValue(
+            json.mergeLogShowDetail
         );
         settings.getKeyboardLayout().setValue(
             json.keyboardLayout

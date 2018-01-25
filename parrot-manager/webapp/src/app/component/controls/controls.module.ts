@@ -6,6 +6,7 @@ import { PipesModule } from "app/component/pipes/pipes.module"
 
 import { MessageBoxComponent } from "app/component/controls/messageBox/messageBox.component"
 import { ChangeLogComponent } from "app/component/controls/changeLog/changeLog.component"
+import { MergeLogComponent } from "app/component/controls/mergeLog/mergeLog.component"
 
 @NgModule({
     imports: [
@@ -15,11 +16,13 @@ import { ChangeLogComponent } from "app/component/controls/changeLog/changeLog.c
     ],
     declarations: [
         MessageBoxComponent,
+        MergeLogComponent,
         ChangeLogComponent
     ],
     exports: [
         MessageBoxComponent,
-        ChangeLogComponent
+        ChangeLogComponent,
+        MergeLogComponent
     ]
 })
 export class ControlsModule { }

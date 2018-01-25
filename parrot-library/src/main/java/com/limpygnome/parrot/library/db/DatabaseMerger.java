@@ -51,7 +51,7 @@ public class DatabaseMerger
                 }
                 else
                 {
-                    mergeLog.add(new LogItem(LogLevel.DEBUG, "Changes detected"));
+                    mergeLog.add(new LogItem(LogLevel.INFO, "Changes detected"));
 
                     // merge crypto params
                     if (password != null && password.length > 0)
@@ -195,7 +195,7 @@ public class DatabaseMerger
         }
 
         // Add high-level merge message
-        if (change)
+        if (changed)
         {
             mergeLog.add(new LogItem(LogLevel.INFO, localNode, "Changed"));
         }

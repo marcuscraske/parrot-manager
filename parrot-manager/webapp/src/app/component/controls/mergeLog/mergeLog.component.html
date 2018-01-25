@@ -1,0 +1,6 @@
+<ul>
+    <li *ngFor="let logItem of (filterByShowDetails(mergeLog.getLogItems())); trackBy: trackLogItems">
+        <span class="icon" [ngClass]="getLogItemIcon(logItem)"></span>
+        {{ logItem.getText() }}
+    </li>
+</ul>

@@ -20,4 +20,9 @@ export class RemoteSyncResultService
         this.remoteSyncResultService.clear();
     }
 
+    getResultsAsText()
+    {
+        return this.remoteSyncResultService.getResultsAsText();
+    }
+
 }

@@ -41,6 +41,23 @@ public class MergeLog
         return cachedLogItems;
     }
 
+    public String asText()
+    {
+        if (logItems.isEmpty())
+        {
+            return "no log items";
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            for (LogItem logItem : logItems)
+            {
+                sb.append(logItem.getLevel()).append(" - ").append(logItem.getText()).append(System.getProperty("line.separator"));
+            }
+            return sb.toString();
+        }
+    }
+
     public void setLogItems(List<LogItem> logItems)
     {
         this.logItems = logItems;

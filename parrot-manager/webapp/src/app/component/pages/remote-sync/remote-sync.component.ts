@@ -275,7 +275,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
     copySyncLogToClipboard()
     {
         // Fetch log as text
-        var text = "TODO";
+        var text = this.remoteSyncResultService.getResultsAsText();
 
         // Update clipboard
         this.clipboardService.setText(text);

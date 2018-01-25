@@ -9,4 +9,14 @@
             Save on any changes
         </label>
     </div>
+    <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="mergeLogShowDetail"
+                   formControlName="mergeLogShowDetail"
+                   [(ngModel)]="globalSettingsForm.value['mergeLogShowDetail']"
+            />
+            Show debug details on merge logs
+        </label>
+    </div>
 </div>
