@@ -194,10 +194,12 @@ public class BackupService implements DatabaseChangingEvent
     {
         File[] files = fetchFiles();
         BackupFile[] backupFiles = Arrays.stream(files).map(file -> new BackupFile(file)).toArray(size -> new BackupFile[size]);
+
+        // Store copy internally to prevent gc
         this.cachedBackupFiles = backupFiles;
 
         // Raise change event
-        webStageInitService.triggerEvent("document", "backupChange", null);
+        webStageInitService.triggerEvent("document", "backupChange", backupFiles);
 
         LOG.debug("updated cache and triggered change event");
     }

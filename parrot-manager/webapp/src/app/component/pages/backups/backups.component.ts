@@ -1,4 +1,4 @@
-import { Component, Renderer } from '@angular/core';
+import { Component, Renderer, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -8,7 +8,8 @@ import { BackupService } from 'app/service/backup.service'
 @Component({
     templateUrl: "backups.component.html",
     providers: [],
-    styleUrls: ["backups.component.css"]
+    styleUrls: ["backups.component.css"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BackupsComponent {
 
@@ -24,16 +25,19 @@ export class BackupsComponent {
         private databaseService: DatabaseService,
         private backupService: BackupService,
         private router: Router,
-        public renderer: Renderer
+        public renderer: Renderer,
+        private changeDetectorRef: ChangeDetectorRef
     ) {}
 
     ngOnInit()
     {
-        this.refreshBackups();
+        // Fetch backups for initial view
+        this.backupFiles = this.backupService.fetch();
 
         // Setup event to listen for changes to backups
         this.backupChangeEvent = this.renderer.listenGlobal("document", "backupChange", (event) => {
-            this.refreshBackups();
+            this.backupFiles = event.data;
+            this.changeDetectorRef.markForCheck();
         });
     }
 
@@ -45,19 +49,7 @@ export class BackupsComponent {
     create()
     {
         console.log("creating backup...");
-
-        // Create backup
-        if (this.backupService.create())
-        {
-            this.refreshBackups();
-        }
-    }
-
-    refreshBackups()
-    {
-        // TODO needs to be async or observable?
-        this.backupFiles = this.backupService.fetch();
-        console.log("refreshed backups");
+        this.errorMessage = this.backupService.create();
     }
 
     isBackups()
@@ -111,12 +103,6 @@ export class BackupsComponent {
     delete(file)
     {
         this.errorMessage = this.backupService.delete(file);
-
-        // Check if file has been deleted
-        if (this.errorMessage == null)
-        {
-            this.refreshBackups();
-        }
     }
 
 }
