@@ -27,22 +27,31 @@ export class OpenComponent {
 
     ngOnInit()
     {
-        // Fetch recently opened files
-        this.refreshRecentFiles();
-
-        // Open database on startup if there's recent files and enabled...
-        if (OpenComponent.isStartup && this.recentFiles.length > 0)
+        // Check whether database open, if so redirect to viewer (mainly for development)
+        if (this.databaseService.isOpen())
         {
-            var isEnabled = this.settingsService.fetch("recentFilesOpenLastOnStartup");
-
-            if (isEnabled)
-            {
-                this.openFile(this.recentFiles[0].getFullPath());
-            }
+            console.log("database already open, redirecting to viewer");
+            this.router.navigate(["/viewer"]);
         }
+        else
+        {
+            // Fetch recently opened files
+            this.refreshRecentFiles();
 
-        // Set startup flag, hence the above will only occur on startup
-        OpenComponent.isStartup = false;
+            // Open database on startup if there's recent files and enabled...
+            if (OpenComponent.isStartup && this.recentFiles.length > 0)
+            {
+                var isEnabled = this.settingsService.fetch("recentFilesOpenLastOnStartup");
+
+                if (isEnabled)
+                {
+                    this.openFile(this.recentFiles[0].getFullPath());
+                }
+            }
+
+            // Set startup flag, hence the above will only occur on startup
+            OpenComponent.isStartup = false;
+        }
     }
 
     refreshRecentFiles()

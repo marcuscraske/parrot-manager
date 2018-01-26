@@ -104,6 +104,11 @@
     cursor: pointer;
 }
 
+.nav li
+{
+    margin-left: 0.5em;
+}
+
 .nav li:first-child
 {
     margin-left: 1em;

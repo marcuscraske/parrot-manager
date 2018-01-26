@@ -16,13 +16,17 @@
                         getRecentFilesOpenLastOnStartup : function() { return { getValue : function() { return "true" } } },
                         getAutomaticBackupsOnSave : function() { return { getValue : function() { return "true" } } },
                         getAutomaticBackupsRetained : function() { return { getValue : function() { return "20" } } },
+                        getAutomaticBackupDelay : function() { return { getValue : function() { return "20" } } },
                         getRemoteSyncInterval : function() { return { getValue : function() { return "60" } } },
                         getRemoteSyncIntervalEnabled : function() { return { getValue : function() { return "true" } } },
                         getRemoteSyncOnOpeningDatabase : function() { return { getValue : function() { return "true" } } },
                         getRemoteSyncOnChange : function() { return { getValue : function() { return "true" } } },
                         getTheme : function() { return { getValue : function() { return "" } } },
+                        getSaveWindowState : function() { return { getValue : function() { return "true" } } },
                         getInactivityTimeout : function() { return { getValue : function() { return "0" } } },
+                        getWipeClipboardDelay : function() { return { getValue : function() { return "0" } } },
                         getAutoSave : function() { return { getValue : function() { return "false" } } },
+                        getMergeLogShowDetail : function() { return { getValue : function() { return "false" } } },
                         getKeyboardLayout : function() { return { getValue : function() { return "" } } }
                     }
                 }
@@ -89,7 +93,9 @@
 
                                 ] },
                                 isRoot : function() { return false },
-                                getLocalProperty : function() { return "false" }
+                                getLocalProperty : function() { return "false" },
+                                getByName: function() { return null },
+                                getValue: function() { return null }
                             }
                         },
 
@@ -116,7 +122,8 @@
                                ] },
                                isRoot : function() { return false },
                                setValueString : function() {},
-                               getLocalProperty : function() { return "false" }
+                               getLocalProperty : function() { return "false" },
+                               getValue: function() { return null }
                            }
                         }
                     }
@@ -163,7 +170,8 @@
 
             return {
 
-               create : function() { return true }
+               create : function() { return true },
+               fetch : function() { return [] }
 
             }
 
@@ -215,6 +223,17 @@
                         }
                     ];
                 }
+            }
+        })();
+    }
+
+    if (window.remoteSyncResultsService == null)
+    {
+        window.remoteSyncResultsService = (function(){
+            return {
+                getResults: function() { return [] },
+                clear: function() { },
+                getResultsAsText: function() { "test text" }
             }
         })();
     }

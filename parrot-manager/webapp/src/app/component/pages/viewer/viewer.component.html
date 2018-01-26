@@ -26,13 +26,13 @@
         ></current-entry>
 
         <ul class="nav nav-tabs">
-            <li (click)="currentSubView = 'entries'" [ngClass]="{ 'active' : currentSubView == 'entries' }">
-                <a>
+            <li class="nav-item" (click)="currentSubView = 'entries'">
+                <a href="#" class="nav-link" [ngClass]="{ 'active' : currentSubView == 'entries' }">
                     Entries
                 </a>
             </li>
-            <li *ngIf="!this.currentNode.isRoot()" (click)="currentSubView = 'history'" [ngClass]="{ 'active' : currentSubView == 'history' }">
-                <a>
+            <li class="nav-item" *ngIf="!this.currentNode.isRoot()" (click)="currentSubView = 'history'">
+                <a href="#" class="nav-link" [ngClass]="{ 'active' : currentSubView == 'history' }">
                     History
                 </a>
             </li>

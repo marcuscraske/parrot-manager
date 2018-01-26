@@ -69,7 +69,7 @@ textarea
     border-top-right-radius: 0.4em;
 }
 
-.nav li.active a
+.nav li a.active
 {
     background: none !important;
 }

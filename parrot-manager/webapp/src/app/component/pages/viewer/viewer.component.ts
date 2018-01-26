@@ -365,11 +365,21 @@ export class ViewerComponent
     {
         console.log("saving current value");
 
-        // fetch value and update current node if changed
+        // Fetch values; set to empty string if null, never allow null
         var currentValue = $("#currentValue");
         var value = currentValue.val();
+        if (value == null)
+        {
+            value = "";
+        }
 
         var decryptedValue = this.encryptedValueService.getString(this.currentNode);
+        if (decryptedValue == null)
+        {
+            decryptedValue = "";
+        }
+
+        // Update value if changed
         var isChanged = value != decryptedValue;
 
         if (isChanged)

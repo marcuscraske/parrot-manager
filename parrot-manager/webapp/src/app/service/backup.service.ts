@@ -11,7 +11,7 @@ export class BackupService
     }
 
     // Creates a backup and returns boolean (true - success/disabled, false - error occurred)
-    create() : boolean
+    create() : string
     {
         var result = this.backupService.create();
 
@@ -23,7 +23,7 @@ export class BackupService
             toastr.error(result);
         }
 
-        return success;
+        return result;
     }
 
     fetch() : any

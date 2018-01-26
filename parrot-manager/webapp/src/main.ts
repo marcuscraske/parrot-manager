@@ -6,6 +6,10 @@ import { environment } from './environments/environment';
 
 console.log("loading app...");
 
+// rewrite url to root /
+// TODO only needed due to bug in angular cli 1.7 beta
+window.history.pushState({}, 'home', '/');
+
 // set environment
 if (environment.production)
 {

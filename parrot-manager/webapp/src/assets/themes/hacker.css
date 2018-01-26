@@ -97,8 +97,10 @@ header div a.selected
 
 .btn.btn-default:hover,
 .btn.btn-default:focus,
+.btn.btn-default:active,
 .btn.btn-primary:hover,
-.btn.btn-primary:focus
+.btn.btn-primary:focus,
+.btn.btn-primary:active
 {
     background: none !important;
     color: #0f0 !important;
@@ -111,7 +113,8 @@ header div a.selected
     color: #0f0;
 }
 .btn.btn-danger:hover,
-.btn.btn-danger:focus
+.btn.btn-danger:focus,
+.btn.btn-danger:active
 {
     color: #f00;
 }
@@ -145,7 +148,7 @@ header div a.selected
     text-decoration: none;
 }
 
-.nav li.active a
+.nav li a.active
 {
     background: #0f0 !important;
     color: #000 !important;

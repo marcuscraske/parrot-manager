@@ -52,6 +52,8 @@ export class OrderBy implements PipeTransform {
                 var isFunction = property.indexOf("(") > 0;
 
                 return input.sort(function(a:any,b:any){
+                    // dirty null checks :)
+                    if (a == null || b == null || a[property] == null || b[property] == null) return 1;
 
                     return !desc
                         ? OrderBy._orderByComparator(isFunction  ? a[property]() : a[property], isFunction ? b[property]() : b[property])
