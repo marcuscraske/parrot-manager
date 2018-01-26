@@ -124,6 +124,14 @@ public class WebStageInitService
     }
 
     /**
+     * @return current instance of runtime service
+     */
+    public RuntimeService getRuntimeService()
+    {
+        return runtimeService;
+    }
+
+    /**
      * @return instance for debugging web view
      */
     public WebViewDebug getWebViewDebug()

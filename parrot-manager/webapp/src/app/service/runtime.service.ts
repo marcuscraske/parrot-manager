@@ -60,9 +60,9 @@ export class RuntimeService
         console.log("invoked refresh page");
     }
 
-    openLink(url)
+    isStandalone()
     {
-        this.runtimeService.openLink(url);
+        return this.runtimeService.isStandalone();
     }
 
 }

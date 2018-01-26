@@ -15,6 +15,16 @@
         </small>
     </div>
     <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="automaticBackupsOnSave"
+                   formControlName="automaticBackupsOnSave"
+                   [(ngModel)]="globalSettingsForm.value['automaticBackupsOnSave']"
+            />
+            Backup on save
+        </label>
+    </div>
+    <div class="form-group">
         <label class="form-control-label">
             Delay in seconds when saved
         </label>
@@ -29,15 +39,5 @@
             Useful when automatic saving is enabled, as to prevent creating a backup for each small
             change. Leave empty for no delay.
         </small>
-    </div>
-    <div class="form-group">
-        <label class="checkbox-inline">
-            <input type="checkbox"
-                   id="automaticBackupsOnSave"
-                   formControlName="automaticBackupsOnSave"
-                   [(ngModel)]="globalSettingsForm.value['automaticBackupsOnSave']"
-            />
-            Backup on save
-        </label>
     </div>
 </div>

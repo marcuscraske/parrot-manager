@@ -38,6 +38,7 @@ Supports Linux, Windows and Mac.
 - Import/export data
     - Currently supports csv and json
 - Modern UI
+- Standalone mode - useful for memory sticks and restrictive environments
 
 Upcoming features can be seen on the [roadmap](ROADMAP.md).
 

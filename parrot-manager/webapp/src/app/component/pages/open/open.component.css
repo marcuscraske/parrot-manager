@@ -7,3 +7,8 @@
 {
     flex: 1;
 }
+
+.no-recent-files .icon
+{
+    font-size: 2em;
+}

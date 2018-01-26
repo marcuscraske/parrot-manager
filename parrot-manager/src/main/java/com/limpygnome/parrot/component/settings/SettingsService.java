@@ -79,7 +79,7 @@ public class SettingsService
 
                 // Create settings from default values
                 settings = new Settings();
-                result = save();
+                result = saveInternal(true);
             }
 
             raiseChangeEvent();
@@ -95,11 +95,19 @@ public class SettingsService
 
     public synchronized String save()
     {
+        return saveInternal(false);
+    }
+
+    private synchronized String saveInternal(boolean firstTime)
+    {
         String result = null;
         File settingsFile = getSettingsPath();
 
         // create backup
-        result = backupService.create();
+        if (!firstTime)
+        {
+            result = backupService.create();
+        }
 
         if (result == null)
         {

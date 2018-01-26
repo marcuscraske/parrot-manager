@@ -64,14 +64,14 @@ public class RecentFileService
         {
             RecentFile[] recentFiles = objectMapper.readValue(file, RecentFile[].class);
             Arrays.stream(recentFiles).forEach(recentFile -> this.recentFiles.add(recentFile));
-            updateCache();
-
             LOG.debug("recent files loaded - count: {}", recentFiles.length);
         }
         else
         {
             LOG.debug("no recent files preference file found, skipped loading");
         }
+
+        updateCache();
     }
 
     public synchronized RecentFile[] fetch()

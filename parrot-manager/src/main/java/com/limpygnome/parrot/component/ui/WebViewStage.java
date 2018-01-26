@@ -56,7 +56,8 @@ public class WebViewStage extends Stage
         engine.loadContent("<html><head><style>body{ background: #333; }</style></head></html>");
 
         // window title
-        setTitle("parrot manager");
+        boolean isStandAloneMode = webStageInitService.getRuntimeService().isStandalone();
+        setTitle(!isStandAloneMode ? "parrot-manager" : "parrot-manager - standalone");
 
         // initialize webview (load page)
         WebViewInit webViewInit = webStageInitService.getWebViewInit();

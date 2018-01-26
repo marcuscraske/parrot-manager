@@ -12,20 +12,22 @@ using the project's version as the release tag.
 
 ## Release
 
-Linux:
-
-````
-mvn clean install -Pgithub,jar,linux
-````
-
 Mac:
 
 ````
-mvn clean install -Pmac
+mvn clean install -Pgithub,jar,mac
 ````
+
+
+Linux:
+
+````
+mvn clean install -Plinux
+````
+
 
 Windows:
 
 ````
-mvn clean install -Pwindows,windows-standalone
+mvn clean install -Pwindows
 ````

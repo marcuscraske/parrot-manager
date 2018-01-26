@@ -1,6 +1,8 @@
 package com.limpygnome.parrot.component.buildInfo;
 
+import com.limpygnome.parrot.component.settings.StandAloneComponent;
 import javafx.scene.web.WebView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class BuildInfoService
 {
+    @Autowired
+    private StandAloneComponent standAloneComponent;
 
     /**
      * @return string with lots of build information
@@ -23,6 +27,7 @@ public class BuildInfoService
         appendCurrentPlatform(buffer, newLineSeparator);
         appendCurrentJavaRuntime(buffer, newLineSeparator);
         appendJavaFxWebViewUserAgent(buffer, newLineSeparator);
+        appendStandAlone(buffer, newLineSeparator);
 
         return buffer.toString();
     }
@@ -51,6 +56,11 @@ public class BuildInfoService
         WebView webView = new WebView();
         String userAgent = webView.getEngine().getUserAgent();
         buffer.append("JavaFX webkit version: ").append(userAgent).append(newLineSeparator);
+    }
+
+    private void appendStandAlone(StringBuilder buffer, String newLineSeparator)
+    {
+        buffer.append("Standalone mode: ").append(standAloneComponent.isStandalone()).append(newLineSeparator);
     }
 
 }

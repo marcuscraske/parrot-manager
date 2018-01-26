@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.runtime;
 
+import com.limpygnome.parrot.component.settings.StandAloneComponent;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
@@ -28,6 +29,8 @@ public class RuntimeService
     private WebStageInitService webStageInitService;
     @Autowired
     private UrlStreamOverrideService urlStreamOverrideService;
+    @Autowired
+    private StandAloneComponent standAloneComponent;
 
     /* Flag to indicate whether webapp is ready to run. */
     private boolean ready;
@@ -90,6 +93,11 @@ public class RuntimeService
         {
             fileChooser.setInitialDirectory(new File(initialPath));
         }
+        else if (standAloneComponent.isStandalone())
+        {
+            // Set to working directory by default on stand-alone
+            fileChooser.setInitialDirectory(standAloneComponent.getRoot());
+        }
 
         // Display and capture file
         File result;
@@ -146,26 +154,12 @@ public class RuntimeService
         this.ready = ready;
     }
 
-    public void openLink(String url)
+    /**
+     * @return indicates whether in stand-alone mode
+     */
+    public boolean isStandalone()
     {
-        try
-        {
-            // create and validate url
-            URI uri = URI.create(url);
-            String schema = uri.getScheme();
-
-            if (!"https".equals(schema))
-            {
-                throw new SecurityException("invalid url schema for url: " + url);
-            }
-
-            // open url
-            Desktop.getDesktop().browse(uri);
-        }
-        catch (IOException e)
-        {
-            LOG.error("failed to open link - url: {}", url, e);
-        }
+        return standAloneComponent.isStandalone();
     }
 
 }

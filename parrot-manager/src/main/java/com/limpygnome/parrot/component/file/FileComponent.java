@@ -1,7 +1,9 @@
 package com.limpygnome.parrot.component.file;
 
+import com.limpygnome.parrot.component.settings.StandAloneComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -13,6 +15,9 @@ import java.io.File;
 public class FileComponent
 {
     private static final Logger LOG = LoggerFactory.getLogger(FileComponent.class);
+
+    @Autowired
+    private StandAloneComponent standAloneComponent;
 
     /**
      * Used to resolve path shortcuts.
@@ -61,59 +66,66 @@ public class FileComponent
      */
     public File getPreferenceFileRoot()
     {
-        // TODO: need to consider windows
-        String homeDir = System.getProperty("user.home");
-        String os = System.getProperty("os.name");
-
-        // determine location based on operating system
         File result = null;
 
-        if (os != null)
+        if (!standAloneComponent.isStandalone())
         {
-            os = os.toLowerCase();
+            String homeDir = System.getProperty("user.home");
+            String os = System.getProperty("os.name");
 
-            if (os.contains("win"))
+            // determine location based on operating system
+            if (os != null)
             {
-                String appData = System.getProperty("APPDATA");
+                os = os.toLowerCase();
 
-                if (appData != null && appData.length() > 0)
+                if (os.contains("win"))
                 {
-                    result = new File(appData + "\\parrot-manager");
+                    String appData = System.getProperty("APPDATA");
+
+                    if (appData != null && appData.length() > 0)
+                    {
+                        result = new File(appData + "\\parrot-manager");
+                    }
+                    else
+                    {
+                        result = new File(homeDir + "\\Local Settings\\Application Data\\parrot-manager");
+                    }
+                }
+                else if (os.contains("mac"))
+                {
+                    result = new File(homeDir + "/Preferences/parrot-manager");
+                }
+            }
+
+            // default to linux dir when unknown
+            if (result == null)
+            {
+                result = new File(homeDir + "/.config/parrot-manager");
+            }
+
+            // Check the root exists, otherwise make it
+            if (!result.exists())
+            {
+                boolean isSuccess = result.mkdirs();
+
+                if (isSuccess)
+                {
+                    LOG.info("created preferences directory - path: {}", result.getAbsolutePath());
                 }
                 else
                 {
-                    result = new File(homeDir + "\\Local Settings\\Application Data\\parrot-manager");
+                    LOG.error("failed to create preferences directory - path: {}", result.getAbsolutePath());
                 }
-            }
-            else if (os.contains("mac"))
-            {
-                result = new File(homeDir + "/Preferences/parrot-manager");
-            }
-        }
-
-        // default to linux dir when unknown
-        if (result == null)
-        {
-            result = new File(homeDir + "/.config/parrot-manager");
-        }
-
-        // Check the root exists, otherwise make it
-        if (!result.exists())
-        {
-            boolean isSuccess = result.mkdirs();
-
-            if (isSuccess)
-            {
-                LOG.info("created preferences directory - path: {}", result.getAbsolutePath());
             }
             else
             {
-                LOG.error("failed to create preferences directory - path: {}", result.getAbsolutePath());
+                LOG.debug("preferences directory already exists");
             }
         }
         else
         {
-            LOG.debug("preferences directory already exists");
+            // set to working directory
+            result = standAloneComponent.getRoot();
         }
 
         return result;

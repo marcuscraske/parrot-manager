@@ -16,6 +16,7 @@
 .viewer .sidebar
 {
     display: table-cell;
+    min-width: 16em;
     padding: 1em 1em 1em 0;
 }
 

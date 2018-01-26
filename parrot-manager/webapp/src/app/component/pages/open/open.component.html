@@ -3,6 +3,10 @@
     Open
 </h1>
 
+<div *ngIf="runtimeService.isStandalone()" class="alert alert-info">
+    Running in standalone mode
+</div>
+
 <!--
     Error message
 -->
@@ -32,17 +36,26 @@
 <!--
     A list of recently opened files
 -->
-<div *ngIf="recentFiles != null && recentFiles.length > 0">
-    <h2>
-        Recent Files
-    </h2>
 
+<h2 class="text-center mt-5 mb-4">
+    Recent Files
+</h2>
+
+<div *ngIf="recentFiles == null || recentFiles.length == 0" class="no-recent-files">
+    <p class="text-center">
+        <span class="icon icon-copy"></span>
+    </p>
+    <p class="text-center">
+        You haven't recently opened any files.
+    </p>
+</div>
+
+<div *ngIf="recentFiles != null && recentFiles.length > 0">
     <div class="form-group">
         <span class="help-block">
             You can configure automatically opening the last recent file in <a href="/settings" routerLink="/settings">settings</a>.
         </span>
     </div>
-
     <div *ngFor="let recentFile of recentFiles; trackBy: trackChildren">
         <p class="btn-group form-group">
             <button class="btn btn-default btn-file" (click)="openFile(recentFile.getFullPath())">
@@ -53,5 +66,4 @@
             </button>
         </p>
     </div>
-
 </div>

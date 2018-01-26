@@ -2,7 +2,6 @@
 
 ## Upcoming
 - Document database format
-- Stand-alone should be own JAR, with settings saved relative
 - Prevent sync when unsaved changes.
 
 ## Later
@@ -14,6 +13,7 @@
 - Persist random generator settings to local user file
 
 # Maybe
+- Key-pair used to encrypt/decrypt file.
 - Save-as
 - Add gzip compression to database file
 - Recent files drop-down on topbar

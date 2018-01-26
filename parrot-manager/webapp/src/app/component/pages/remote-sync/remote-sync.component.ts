@@ -18,7 +18,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
     private remoteSyncNode: any;
     private oldChangeLog: string;
     private remoteSyncChangeEvent: Function;
-    private syncResults: any;
+    public syncResults: any;
 
     constructor(
         public remoteSyncService: RemoteSyncService,

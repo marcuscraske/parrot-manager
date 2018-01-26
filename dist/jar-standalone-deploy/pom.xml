@@ -10,7 +10,7 @@
         <version>6.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
-    <artifactId>jar</artifactId>
+    <artifactId>jar-standalone-deploy</artifactId>
     <packaging>pom</packaging>
 
     <scm>
@@ -23,14 +23,14 @@
     <build>
         <plugins>
 
-            <!-- build archives containing jar file -->
+            <!-- build archives containing baked standalone jar file -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/assembly/jar.xml</descriptor>
+                        <descriptor>src/assembly/jar-standalone.xml</descriptor>
                     </descriptors>
-                    <finalName>parrot-manager-jar-${project.version}</finalName>
+                    <finalName>parrot-manager-jar-standalone-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
@@ -63,8 +63,8 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-manager-jar-${project.version}.zip</include>
-                                <include>parrot-manager-jar-${project.version}.tar.gz</include>
+                                <include>parrot-manager-jar-standalone-${project.version}.zip</include>
+                                <include>parrot-manager-jar-standalone-${project.version}.tar.gz</include>
                             </includes>
                         </fileSet>
                     </fileSets>

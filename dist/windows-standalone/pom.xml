@@ -37,7 +37,7 @@
                         <configuration>
                             <headerType>gui</headerType>
                             <outfile>target/parrot.exe</outfile>
-                            <jar>../../parrot-manager/target/parrot.jar</jar>
+                            <jar>../jar-standalone/target/parrot-standalone.jar</jar>
                             <dontWrapJar>false</dontWrapJar>
                             <errTitle>Error in launch4j plugin</errTitle>
                             <classPath>

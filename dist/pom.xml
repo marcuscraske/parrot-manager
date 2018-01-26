@@ -26,6 +26,14 @@
             <id>jar</id>
             <modules>
                 <module>jar</module>
+                <module>jar-standalone</module>
+                <module>jar-standalone-deploy</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <modules>
+                <module>mac</module>
             </modules>
         </profile>
         <profile>
@@ -38,18 +46,8 @@
             <id>windows</id>
             <modules>
                 <module>windows</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>windows-standalone</id>
-            <modules>
+                <module>jar-standalone</module>
                 <module>windows-standalone</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>mac</id>
-            <modules>
-                <module>mac</module>
             </modules>
         </profile>
 

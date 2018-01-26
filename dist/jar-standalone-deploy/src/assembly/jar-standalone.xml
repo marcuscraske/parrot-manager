@@ -9,10 +9,10 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../parrot-manager/target</directory>
+            <directory>${project.basedir}/../jar-standalone/target</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>parrot.jar</include>
+                <include>parrot-standalone.jar</include>
             </includes>
         </fileSet>
         <fileSet>
