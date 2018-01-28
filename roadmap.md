@@ -2,7 +2,8 @@
 
 ## Upcoming
 - Document database format
-- Prevent sync when unsaved changes.
+- Database version marker, for future format changes
+- Closing database after inactivity moved out of front-end.
 
 ## Later
 - Change entry types

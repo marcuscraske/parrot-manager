@@ -21,7 +21,7 @@ A simple password manager with a modern interface, with ability to synchronize d
 Supports Linux, Windows and Mac.
 
 <p align="center">
-    <img src="docs/screenshots/7.0/parrot-window.png" alt="Parrot manager window" />
+    <img src="docs/screenshots/7.0/parrot-window2.png" alt="Parrot manager window" />
 </p>
 
 
