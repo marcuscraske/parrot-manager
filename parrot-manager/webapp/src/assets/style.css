@@ -43,9 +43,8 @@ main h1
 main h1 .icon
 {
     position: relative;
-    top: -0.1em;
     opacity: 0.4;
-    font-size: 0.6em !important;
+    font-size: 0.8em !important;
 }
 
 main h2
@@ -76,6 +75,11 @@ a
     Bootstrap theme overrides
 */
 
+.btn
+{
+    border: none !important;
+}
+
 .btn .icon
 {
     margin-right: 0.2em;
@@ -85,7 +89,6 @@ a
 {
     background: #333;
     color: #fff;
-    border-color: #333;
 }
 
 .btn-primary:hover,
@@ -103,18 +106,29 @@ a
 .btn-default:hover,
 .btn-default:focus
 {
-    background: #eee;
+    background: #ccc;
 }
 
-.btn-danger
+.btn-danger,
+.list-group-item-danger
 {
-    background: #ff5733;
+    background: #f75047;
+    color: #fff;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.list-group-item-danger:hover,
+.list-group-item-danger:focus
+{
+    background: #c1443e;
 }
 
 .list-group-item.active
 {
-    background: #666;
-    border-color: #333;
+    background: #eee;
+    border-color: #ccc;
+    color: inherit;
 }
 
 /*

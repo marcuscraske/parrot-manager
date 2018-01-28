@@ -106,11 +106,12 @@ header div a.selected
     color: #0f0 !important;
 }
 
-.btn.btn-danger
+.btn.btn-danger,
+.list-group-item-danger
 {
-    background: none !important;
+    background: #0f0 !important;
     border: solid 1px #0f0;
-    color: #0f0;
+    color: #000;
 }
 .btn.btn-danger:hover,
 .btn.btn-danger:focus,
@@ -193,4 +194,5 @@ header div a.selected
 {
     background: #000;
     color: #0f0;
+    border-color: #000;
 }

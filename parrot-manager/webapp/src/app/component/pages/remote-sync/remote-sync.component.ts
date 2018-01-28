@@ -108,11 +108,6 @@ export class RemoteSyncComponent implements AfterViewChecked {
         return result;
     }
 
-    syncAll()
-    {
-        this.remoteSyncService.syncAll();
-    }
-
     sync(nodeId, askForPassword)
     {
         console.log("syncing node - id: " + nodeId);

@@ -5,6 +5,11 @@ body
     color: #fff;
 }
 
+input::placeholder,
+textarea::placeholder
+{
+    color: #ccc !important;
+}
 
 .jstree-anchor
 {
@@ -99,4 +104,10 @@ textarea
 .list-group-item
 {
     background: #333;
+}
+
+.list-group-item.active
+{
+    background: #000;
+    border-color: #000;
 }

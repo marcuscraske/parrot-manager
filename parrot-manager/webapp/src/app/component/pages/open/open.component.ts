@@ -18,8 +18,8 @@ export class OpenComponent {
     recentFiles: any;
 
     constructor(
+        public runtimeService: RuntimeService,
         private databaseService: DatabaseService,
-        private runtimeService: RuntimeService,
         private recentFileService: RecentFileService,
         private settingsService: SettingsService,
         private router: Router

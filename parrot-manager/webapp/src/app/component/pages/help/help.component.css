@@ -4,6 +4,16 @@
     width: 16em;
     height: 16em;
     overflow: hidden;
+
+    animation-name: pulse;
+    animation-duration: 1000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 1000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
 }
 
 #buildInfo
@@ -11,4 +21,18 @@
     max-width: 40em;
     overflow: hidden;
     resize: none;
+}
+
+@keyframes pulse
+{
+	0% { transform: scale(0.95); }
+	50% { transform: scale(1); }
+	100% { transform: scale(0.95); }
+}
+
+@-webkit-keyframes pulse
+{
+	0% { transform: scale(0.95); }
+	50% { transform: scale(1); }
+	100% { transform: scale(0.95); }
 }

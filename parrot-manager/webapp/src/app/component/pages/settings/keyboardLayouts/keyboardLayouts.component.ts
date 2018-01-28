@@ -8,7 +8,8 @@ import { BrowserService } from 'app/service/browser.service'
 @Component({
     templateUrl: "keyboardLayouts.component.html",
     selector: "keyboardLayouts",
-    providers: [BrowserService]
+    providers: [BrowserService],
+    styleUrls: ['keyboardLayouts.component.css']
 })
 export class KeyboardLayoutsComponent
 {

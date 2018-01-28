@@ -35,7 +35,9 @@ header div a
 
 header div a span.icon
 {
-    vertical-align: middle;
+    position: relative;
+    margin-right: 0.4em;
+    top: 0.1em;
 }
 
 header div a:hover,
