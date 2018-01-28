@@ -1,11 +1,11 @@
 package com.limpygnome.parrot.component.remote;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.remote.ssh.SshOptions;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
-import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
@@ -57,7 +57,6 @@ public class RemoteSyncService implements DatabaseChangingEvent
     /**
      * Creates options from a set of mandatory values.
      *
-     * @param randomToken a random token for retrieving the download/upload status, equivalent to e.g. a ticket or tx id
      * @param name the name of the options, used later for persistence
      * @param host the remote host
      * @param port the remote port
@@ -66,10 +65,10 @@ public class RemoteSyncService implements DatabaseChangingEvent
      * @param destinationPath the local path of where to save a local copy of the database
      * @return a new instance
      */
-    public SshOptions createOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
+    public SshOptions createOptions(String name, String host, int port, String user, String remotePath, String destinationPath)
     {
         // Create new instance
-        SshOptions options = new SshOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+        SshOptions options = new SshOptions(name, host, port, user, remotePath, destinationPath);
 
         // Persist to session to avoid gc; it's possible multiple options could be made and this won't work, but it'll
         // do for now
@@ -81,6 +80,8 @@ public class RemoteSyncService implements DatabaseChangingEvent
     /**
      * Creates options from a database node, which is under the standard remote-sync key and saved in the standard
      * JSON format.
+     *
+     * WARNING: do not remove, used by front-end.
      *
      * @param database database
      * @param node the node with remote-sync config saved as its value
@@ -312,30 +313,38 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
     private void syncAsyncThreadSync(SshOptions options, String remotePassword)
     {
-        // trigger sync is starting...
-        webStageInitService.triggerEvent("document", "remoteSyncStart", options);
-
-        // validate destination path
-        SyncResult syncResult;
-
-        String message = checkDestinationPath(options);
-        if (message != null)
+        // check there isn't unsaved database changes
+        if (databaseService.isDirty())
         {
-            MergeLog mergeLog = new MergeLog();
-            mergeLog.add(new LogItem(LogLevel.ERROR, message));
-            syncResult = new SyncResult(options.getName(), mergeLog, false, false);
+            LOG.warn("skipped sync due to unsaved database changes");
         }
         else
         {
-            // sync...
-            syncResult = sshSyncService.sync(options, remotePassword);
+            // trigger sync is starting...
+            webStageInitService.triggerEvent("document", "remoteSyncStart", options);
+
+            // validate destination path
+            SyncResult syncResult;
+
+            String message = checkDestinationPath(options);
+            if (message != null)
+            {
+                MergeLog mergeLog = new MergeLog();
+                mergeLog.add(new LogItem(LogLevel.ERROR, message));
+                syncResult = new SyncResult(options.getName(), mergeLog, false, false);
+            }
+            else
+            {
+                // sync...
+                syncResult = sshSyncService.sync(options, remotePassword);
+            }
+
+            // pass result
+            resultService.add(syncResult);
+
+            // Reset thread, as this one is now done
+            thread = null;
         }
-
-        // pass result
-        resultService.add(syncResult);
-
-        // Reset thread, as this one is now done
-        thread = null;
     }
 
     private String checkDestinationPath(SshOptions options)

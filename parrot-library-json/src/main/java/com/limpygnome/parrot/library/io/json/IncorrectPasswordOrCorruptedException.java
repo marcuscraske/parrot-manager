@@ -11,4 +11,9 @@ public class IncorrectPasswordOrCorruptedException extends Exception
         super("incorrect password or database file is corrupted");
     }
 
+    public IncorrectPasswordOrCorruptedException(Throwable e)
+    {
+        super("incorrect password or database file is corrupted", e);
+    }
+
 }

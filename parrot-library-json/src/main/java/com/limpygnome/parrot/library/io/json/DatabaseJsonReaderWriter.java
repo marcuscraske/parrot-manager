@@ -102,7 +102,16 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
         String encryptedText = new String(encryptedData, "UTF-8");
 
         JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(encryptedText).getAsJsonObject();
+        JsonObject json;
+
+        try
+        {
+            json = parser.parse(encryptedText).getAsJsonObject();
+        }
+        catch (IllegalStateException e)
+        {
+            throw new IncorrectPasswordOrCorruptedException(e);
+        }
 
         // Read params to decrypt database
         CryptoParams fileCryptoParams = cryptoParamsJsonReaderWriter.parse(json, password);

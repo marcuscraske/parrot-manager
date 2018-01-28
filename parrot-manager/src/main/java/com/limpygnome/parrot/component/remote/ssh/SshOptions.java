@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.remote.ssh;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -23,9 +23,6 @@ import java.io.Serializable;
  */
 public class SshOptions implements Serializable, Cloneable
 {
-    @JsonIgnore
-    private String randomToken;
-
     // Mandatory
     private String name;
     private String host;
@@ -55,9 +52,8 @@ public class SshOptions implements Serializable, Cloneable
 
     public SshOptions() { }
 
-    public SshOptions(String randomToken, String name, String host, int port, String user, String remotePath, String destinationPath)
+    public SshOptions(String name, String host, int port, String user, String remotePath, String destinationPath)
     {
-        this.randomToken = randomToken;
         this.name = name;
         this.host = host;
         this.port = port;
@@ -219,18 +215,6 @@ public class SshOptions implements Serializable, Cloneable
     }
 
     @JsonIgnore
-    public String getRandomToken()
-    {
-        return randomToken;
-    }
-
-    @JsonIgnore
-    public void setRandomToken(String randomToken)
-    {
-        this.randomToken = randomToken;
-    }
-
-    @JsonIgnore
     public boolean isPrivateKey()
     {
         return privateKeyPath != null && privateKeyPath.length() > 0;
@@ -338,8 +322,7 @@ public class SshOptions implements Serializable, Cloneable
     public String toString()
     {
         return "SshOptions{" +
-                "randomToken='" + randomToken + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
                 ", user='" + user + '\'' +

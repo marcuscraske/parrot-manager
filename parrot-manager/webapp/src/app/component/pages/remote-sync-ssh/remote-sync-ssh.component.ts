@@ -324,13 +324,8 @@ export class RemoteSyncSshComponent {
             form.value["name"] = form.value["host"] + ":" + form.value["port"];
         }
 
-        // Build random token for tracking download status
-        // -- This is just left for the future, in case we want async downloading / progress bar
-        var randomToken = "not so random";
-
         // Create actual instance
         var options = this.remoteSyncService.createOptions(
-            randomToken,
             form.value["name"],
             form.value["host"],
             form.value["port"],

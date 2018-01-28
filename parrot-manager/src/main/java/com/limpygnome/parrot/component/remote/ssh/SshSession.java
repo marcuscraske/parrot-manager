@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.remote.ssh;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;

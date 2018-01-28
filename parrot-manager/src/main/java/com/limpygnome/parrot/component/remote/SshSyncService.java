@@ -2,6 +2,10 @@ package com.limpygnome.parrot.component.remote;
 
 import com.jcraft.jsch.SftpException;
 import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.remote.ssh.SshComponent;
+import com.limpygnome.parrot.component.remote.ssh.SshFile;
+import com.limpygnome.parrot.component.remote.ssh.SshOptions;
+import com.limpygnome.parrot.component.remote.ssh.SshSession;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.log.LogItem;
@@ -16,6 +20,9 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Currently only supports SSH, but this could be split into multiple services for different remote sync options.
+ */
 @Service
 public class SshSyncService
 {
@@ -45,12 +52,15 @@ public class SshSyncService
             this.options = options;
 
             // Start download...
-            sshComponent.download(sshSession, options, null);
+            SshFile source = new SshFile(sshSession, options.getRemotePath());
+            String destionation = options.getDestinationPath();
+
+            sshComponent.download(sshSession, source, destionation);
         }
         catch (Exception e)
         {
             result = sshComponent.getExceptionMessage(e);
-            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
+            LOG.error("failed to download remote file", e);
         }
         finally
         {
@@ -75,7 +85,9 @@ public class SshSyncService
             createLock(options);
 
             // check remote connection works and file exists
-            if (!sshComponent.checkRemotePathExists(options, sshSession, null))
+            SshFile file = new SshFile(sshSession, options.getRemotePath());
+
+            if (!sshComponent.checkRemotePathExists(sshSession, file))
             {
                 result = "Remote file does not exist - ignore if expected";
             }
@@ -83,7 +95,7 @@ public class SshSyncService
         catch (Exception e)
         {
             result = sshComponent.getExceptionMessage(e);
-            LOG.error("transfer - {} - exception", options.getRandomToken(), e);
+            LOG.error("failed to test if remote file exists", e);
         }
         finally
         {
@@ -95,7 +107,7 @@ public class SshSyncService
 
     synchronized SyncResult sync(SshOptions options, String remotePassword)
     {
-        MergeLog mergeLog;
+        MergeLog mergeLog = new MergeLog();
         boolean success = true;
         boolean dirty = false;
 
@@ -106,6 +118,9 @@ public class SshSyncService
         String syncPath = options.getDestinationPath();
         syncPath = syncPath + "." + fullHostNameHash + "." + System.currentTimeMillis() + ".sync";
 
+        // fetch current path to database
+        String currentPath = databaseService.getPath();
+
         // begin sync process...
         try
         {
@@ -114,14 +129,33 @@ public class SshSyncService
             sshSession = sshComponent.connect(options);
             this.options = options;
 
+            SshFile source = new SshFile(sshSession, options.getRemotePath());
+            SshFile fileSyncBackup = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".sync");
+
             // create lock file
             createLock(options);
 
+            // check whether an old renamed file exists; if so, restore it
+            if (sshComponent.checkRemotePathExists(sshSession, fileSyncBackup))
+            {
+                mergeLog.add(new LogItem(LogLevel.ERROR, "Old file from previous failed sync found"));
+
+                // move current file to corrupted
+                SshFile fileCorrupted = source.clone().postFixFileName(".corrupted." + System.currentTimeMillis());
+                sshComponent.rename(sshSession, source, fileCorrupted);
+                mergeLog.add(new LogItem(LogLevel.INFO, "Corrupted file moved to " + fileCorrupted.getFileName()));
+
+                // restore backup file
+                sshComponent.rename(sshSession, fileSyncBackup, source);
+                mergeLog.add(new LogItem(LogLevel.INFO, "Sync backup file restored"));
+            }
+
             // start download...
             LOG.info("sync - downloading");
-            boolean exists = sshComponent.download(sshSession, options, syncPath, null);
 
-            if (exists)
+            String error = sshComponent.download(sshSession, source, syncPath);
+
+            if (error == null)
             {
                 // load remote database
                 LOG.info("sync - loading remote database");
@@ -135,7 +169,7 @@ public class SshSyncService
                 if (database.isDirty())
                 {
                     LOG.info("sync - database(s) dirty, saving...");
-                    databaseReaderWriter.save(database, options.getDestinationPath());
+                    databaseReaderWriter.save(database, currentPath);
 
                     // reset dirty flag
                     database.setDirty(false);
@@ -148,8 +182,18 @@ public class SshSyncService
                 if (mergeLog.isRemoteOutOfDate())
                 {
                     LOG.info("sync - uploading to remote host...");
-                    sshComponent.upload(sshSession, options, options.getDestinationPath(), null);
+
+                    // move current file as backup in case upload fails
+                    sshComponent.rename(sshSession, source, fileSyncBackup);
+                    mergeLog.add(new LogItem(LogLevel.DEBUG, "Renamed remote database in case sync fails"));
+
+                    // upload new file
+                    sshComponent.upload(sshSession, currentPath, source);
                     mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database"));
+
+                    // delete old renamed file
+                    sshComponent.remove(sshSession, fileSyncBackup);
+                    mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed sync backup file"));
                 }
                 else
                 {
@@ -160,11 +204,9 @@ public class SshSyncService
             {
                 LOG.info("sync - uploading current database");
 
-                mergeLog = new MergeLog();
                 mergeLog.add(new LogItem(LogLevel.DEBUG, "Uploading current database, as does not exist remotely"));
 
-                String currentPath = databaseService.getPath();
-                sshComponent.upload(sshSession, options, currentPath, null);
+                sshComponent.upload(sshSession, currentPath, source);
 
                 mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database for first time"));
             }
@@ -173,13 +215,13 @@ public class SshSyncService
         {
             if (e instanceof InterruptedException)
             {
-                throw new RuntimeException("sync aborted");
+                throw new RuntimeException("Sync aborted");
             }
 
             // Convert to failed merge
             String message = sshComponent.getExceptionMessage(e);
             mergeLog = new MergeLog();
-            mergeLog.add(new LogItem(LogLevel.ERROR, message));
+            mergeLog.add(new LogItem(LogLevel.ERROR, e.getClass().getSimpleName() + " - " + message));
 
             success = false;
             LOG.error("sync - exception", e);
@@ -197,6 +239,8 @@ public class SshSyncService
             // disconnect
             try
             {
+                // destroys lock, even if DB currently locked; means slow connections could write at the same time
+                // TODO whether this should be changed
                 cleanup();
             }
             catch (Exception e)
@@ -238,10 +282,12 @@ public class SshSyncService
     {
         try
         {
+            SshFile fileLock = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".lock");
+
             // create lock file
             String tmpDir = System.getProperty("java.io.tmpdir");
-            File file = new File(tmpDir, "parrot-manager.lock");
-            file.createNewFile();
+            File fileLocalLock = new File(tmpDir, "parrot-manager.lock");
+            fileLocalLock.createNewFile();
 
             // check lock file doesn't already exist...
             boolean isLocked;
@@ -251,7 +297,7 @@ public class SshSyncService
             {
                 LOG.info("checking for database lock - attempt {}", attempts);
 
-                isLocked = sshComponent.checkRemotePathExists(options, sshSession, "parrot.lock");
+                isLocked = sshComponent.checkRemotePathExists(sshSession, fileLock);
                 attempts++;
 
                 if (isLocked)
@@ -268,7 +314,7 @@ public class SshSyncService
             }
 
             // upload
-            sshComponent.upload(sshSession, options, file.getAbsolutePath(), "parrot.lock");
+            sshComponent.upload(sshSession, fileLocalLock.getAbsolutePath(), fileLock);
             LOG.info("remote database lock file created");
         }
         catch (IOException e)
@@ -285,7 +331,8 @@ public class SshSyncService
     {
         try
         {
-            sshComponent.remove(sshSession, options, "parrot.lock");
+            SshFile fileLock = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".lock");
+            sshComponent.remove(sshSession, fileLock);
             LOG.info("remote database lock file removed");
         }
         catch (SftpException | SyncFailureException e)

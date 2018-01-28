@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { DatabaseService } from './database.service'
 
 import "app/global-vars"
 
@@ -14,26 +15,22 @@ export class RemoteSyncService {
     // TODO deprecated; only temporary, should be multi-threaded in background and UI shows status per each host
     private lastHostSynchronizing: string;
 
-    constructor() {
+    constructor(
+        private databaseService: DatabaseService
+    ) {
         this.remoteSyncService = (window as any).remoteSyncService;
     }
 
-    createOptions(randomToken, name, host, port, user, remotePath, destinationPath)
+    createOptions(name, host, port, user, remotePath, destinationPath)
     {
-        var options = this.remoteSyncService.createOptions(randomToken, name, host, port, user, remotePath, destinationPath);
+        var options = this.remoteSyncService.createOptions(name, host, port, user, remotePath, destinationPath);
         return options;
     }
 
     createOptionsFromNode(database, node)
     {
-        var options = this.remoteSyncService.createOptionsFromNode(database. node);
+        var options = this.remoteSyncService.createOptionsFromNode(database, node);
         return options;
-    }
-
-    getStatus(randomToken)
-    {
-        var result = this.remoteSyncService.getStatus(randomToken);
-        return result;
     }
 
     download(options)
@@ -50,17 +47,26 @@ export class RemoteSyncService {
 
     syncAll()
     {
-        this.remoteSyncService.syncAll();
+        if (this.canContinue())
+        {
+            this.remoteSyncService.syncAll();
+        }
     }
 
     sync(options)
     {
-        this.remoteSyncService.sync(options);
+        if (this.canContinue())
+        {
+            this.remoteSyncService.sync(options);
+        }
     }
 
     syncWithAuth(options, remoteDatabasePassword)
     {
-        this.remoteSyncService.syncWithAuth(options, remoteDatabasePassword);
+        if (this.canContinue())
+        {
+            this.remoteSyncService.syncWithAuth(options, remoteDatabasePassword);
+        }
     }
 
     setSyncing(syncing)
@@ -99,6 +105,16 @@ export class RemoteSyncService {
     getLastSync()
     {
         return this.remoteSyncService.getLastSync();
+    }
+
+    private canContinue() : boolean
+    {
+        var result = !this.databaseService.isDirty();
+        if (!result)
+        {
+            toastr.error("Unable to sync until you save your database changes.");
+        }
+        return result;
     }
 
 }
