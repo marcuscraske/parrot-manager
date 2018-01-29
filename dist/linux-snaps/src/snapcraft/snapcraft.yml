@@ -1,0 +1,29 @@
+name: parrot-manager
+version: '@VERSION@'
+summary: Password manager with ability to sync using SSH.
+description: |
+  Passwords made simple. Create and sync password databases securely across SSH,
+  with apps available for Linux, Mac and Windows. This application features basic
+  memory encryption, emulating keys to send passwords to apps, automatic closing
+  of database after inactivity, wiping clipboard after an amount of time,
+  importing/exporting data in various formats and much more.
+
+grade: stable
+confinement: devmode
+
+apps:
+  parrot-manager:
+    command: desktop-launch $SNAP/parrot.jar
+
+parts:
+  parrot-manager:
+    after: [desktop-glib-only]
+    plugin: maven
+    source: ./../../
+    build: |
+      export JAVA_HOME="/usr/lib/jvm/java-9-openjdk-amd64"
+      mvn clean package -Plinux-snaps
+    install: |
+      cp "./parrot-manager/target/parrot.jar" "$SNAPCRAFT_PART_INSTALL/"
+    build-packages:
+      - openjdk-9-jdk

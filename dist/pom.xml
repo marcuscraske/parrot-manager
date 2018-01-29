@@ -39,7 +39,14 @@
         <profile>
             <id>linux</id>
             <modules>
-                <module>debian</module>
+                <module>linux-debian</module>
+                <module>linux-snaps</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>linux-snaps</id>
+            <modules>
+                <module>linux-snaps</module>
             </modules>
         </profile>
         <profile>
