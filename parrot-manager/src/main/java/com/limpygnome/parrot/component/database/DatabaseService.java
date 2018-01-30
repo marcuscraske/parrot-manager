@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.List;
 
 /**
@@ -25,10 +26,6 @@ import java.util.List;
 public class DatabaseService
 {
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseService.class);
-
-    // Services
-    @Autowired
-    private RecentFileService recentFileService;
 
     // Components
     @Autowired
@@ -119,6 +116,11 @@ public class DatabaseService
             setDatabase(database, password, path);
 
             result = null;
+        }
+        catch (NoSuchFileException e)
+        {
+            result = "File does not exist - " + path;
+            LOG.error("Failed to open database - path: {}", path, e);
         }
         catch (Exception e)
         {
@@ -289,14 +291,17 @@ public class DatabaseService
     {
         if (currentFile != null)
         {
-            try
+            // Ensure parent is resolved
+            if (currentFile.getParentFile() == null)
             {
-                RecentFile recentFile = new RecentFile(currentFile);
-                recentFileService.add(recentFile);
-            }
-            catch (IOException e)
-            {
-                LOG.error("failed to update recent files", e);
+                String path = currentFile.getAbsolutePath();
+                currentFile = new File(path);
+
+                // Parent should be defined now, otherwise throw exception...
+                if (currentFile.getParentFile() == null)
+                {
+                    throw new IllegalStateException("Current file has no parent - " + currentFile + " - absolute path: " + path);
+                }
             }
         }
 

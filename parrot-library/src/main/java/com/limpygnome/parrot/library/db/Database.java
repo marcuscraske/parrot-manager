@@ -25,7 +25,7 @@ public class Database
     private CryptoReaderWriter cryptoReaderWriter;
     private CryptoParamsFactory cryptoParamsFactory;
 
-    // Indicates if the database has been modified
+    // Indicates if the database has been modified (not persisted)
     private boolean isDirty;
 
     // Params used for file crypto
@@ -336,6 +336,22 @@ public class Database
         {
             setDirty(isDirty);
         }
+    }
+
+    /**
+     * This shallow clone will still share references with this instance.
+     *
+     * @return a shallow clone of this database instance
+     */
+    public Database clone()
+    {
+        Database database = new Database(
+            memoryCryptoParams.clone(), fileCryptoParams.clone()
+        );
+
+        DatabaseNode node = this.root.clone(database);
+        database.setRoot(node);
+        return database;
     }
 
     @Override

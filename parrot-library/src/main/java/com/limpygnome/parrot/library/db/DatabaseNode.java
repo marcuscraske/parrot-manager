@@ -358,16 +358,18 @@ public class DatabaseNode
     }
 
     /**
-     * Clones current node.
+     * Performs shallow clone of this node.
      *
      * This does not add it to the target database, nor does this operation set the dirty flag.
      *
-     * @param database the database to contain the new cloned node
+     * @param newDatabase the database to contain the new cloned node
      * @return a cloned instance of this node
      */
-    protected synchronized DatabaseNode clone(Database database)
+    protected synchronized DatabaseNode clone(Database newDatabase)
     {
-        DatabaseNode newNode = new DatabaseNode(database, id, name, lastModified);
+        DatabaseNode newNode = new DatabaseNode(
+                newDatabase, id, name, lastModified
+        );
 
         if (value != null)
         {
@@ -379,7 +381,7 @@ public class DatabaseNode
         DatabaseNode clonedChild;
         for (DatabaseNode child : children)
         {
-            clonedChild = child.clone(database);
+            clonedChild = child.clone(newDatabase);
             newNode.add(clonedChild);
         }
 

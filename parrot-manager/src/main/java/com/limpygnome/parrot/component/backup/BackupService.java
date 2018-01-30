@@ -5,8 +5,6 @@ import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
-import com.limpygnome.parrot.event.DatabaseChangingEvent;
-import com.limpygnome.parrot.event.DatabaseSavedEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
 import org.slf4j.Logger;
@@ -23,7 +21,7 @@ import java.util.Arrays;
  * Used to create backups of a database.
  */
 @Service
-public class BackupService implements DatabaseChangingEvent
+public class BackupService
 {
     private static final Logger LOG = LoggerFactory.getLogger(BackupService.class);
 
@@ -38,22 +36,11 @@ public class BackupService implements DatabaseChangingEvent
     @Autowired
     private WebStageInitService webStageInitService;
 
+    // When a backup is opened, the path to the actual database is stored here; presence used to indicate database is a backup
+    private File fileActualDatabase;
+
     // Cache of available backup files
     private BackupFile[] cachedBackupFiles;
-
-    @Override
-    public void eventDatabaseChanged(boolean open)
-    {
-        if (open)
-        {
-            updateCache();
-        }
-        else
-        {
-            cachedBackupFiles = null;
-            LOG.debug("wiped cache of files");
-        }
-    }
 
     /**
      * Creates a new backup.
@@ -85,7 +72,7 @@ public class BackupService implements DatabaseChangingEvent
                 Database database = databaseService.getDatabase();
 
                 // Check if max retained databases has been met
-                if(deleteOldFiles)
+                if (deleteOldFiles)
                 {
                     checkRetainedDatabases();
                 }
@@ -190,7 +177,36 @@ public class BackupService implements DatabaseChangingEvent
         return result;
     }
 
-    private void updateCache()
+    /**
+     * @return indicates whether current database is a backup file
+     */
+    public boolean isBackupOpen()
+    {
+        return fileActualDatabase != null;
+    }
+
+    void setFileActualDatabase(File file)
+    {
+        this.fileActualDatabase = file;
+    }
+
+    /**
+     * @return file for the actual database; null if backup not open
+     */
+    public File getFileActualDatabase()
+    {
+        return fileActualDatabase;
+    }
+
+    /**
+     * @return path for the actual database; null if backup not open
+     */
+    public String getActualDatabasePath()
+    {
+        return fileActualDatabase.getAbsolutePath();
+    }
+
+    void updateCache()
     {
         File[] files = fetchFiles();
         BackupFile[] backupFiles = Arrays.stream(files).map(file -> new BackupFile(file)).toArray(size -> new BackupFile[size]);
@@ -251,6 +267,13 @@ public class BackupService implements DatabaseChangingEvent
                     file.delete();
                     LOG.info("deleted old retained file (max reached) - name: {}", file.getName());
                 });
+    }
+
+    void reset()
+    {
+        fileActualDatabase = null;
+        cachedBackupFiles = null;
+        LOG.debug("wiped cache of files");
     }
 
 }

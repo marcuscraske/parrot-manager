@@ -1,0 +1,16 @@
+.banner
+{
+    position: relative;
+    left: 12em;
+    width: calc(100% - 12em);
+    background: #fff3b5;
+    color: #874c00;
+    padding: 0.5em 1em;
+    line-height: 3em;
+    margin-bottom: 0.5em;
+}
+
+.options
+{
+    float: right;
+}

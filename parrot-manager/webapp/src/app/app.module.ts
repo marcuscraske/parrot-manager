@@ -9,6 +9,7 @@ import { ErrorWatcherHandler }      from 'app/error-watcher-handler';
 import { AppComponent }             from 'app/app.component';
 import { TopBarComponent }          from 'app/component/topbar/topbar.component'
 import { NotificationsComponent }   from 'app/component/notifications/notifications.component'
+import { BackupWarningComponent }   from 'app/component/backupWarning/backupWarning.component'
 
 // Modules
 import { PipesModule }              from 'app/component/pipes/pipes.module'
@@ -68,7 +69,7 @@ const appRoutes: Routes = [
   declarations: [
 
     // Global
-    AppComponent, TopBarComponent, NotificationsComponent,
+    AppComponent, BackupWarningComponent, TopBarComponent, NotificationsComponent,
 
     // Pages
     ErrorComponent,

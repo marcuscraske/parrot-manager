@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -91,7 +92,14 @@ public class DatabaseJsonReaderWriter implements DatabaseReaderWriter
     @Override
     public synchronized Database open(String path, char[] password) throws Exception
     {
-        byte[] encryptedData = Files.readAllBytes(new File(path).toPath());
+        File file = new File(path);
+
+        if (!file.exists())
+        {
+            throw new NoSuchFileException("file does not exist - " + path);
+        }
+
+        byte[] encryptedData = Files.readAllBytes(file.toPath());
         Database database = openFileEncrypted(encryptedData, password);
         return database;
     }

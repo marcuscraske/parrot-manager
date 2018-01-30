@@ -1,0 +1,23 @@
+<div *ngIf="backupService.isBackupOpen()" class="banner">
+
+    <div class="options">
+        <button class="btn btn-danger">
+            <span class="icon icon-bin2"></span>
+            Delete
+        </button>
+        <button class="btn btn-default">
+            <span class="icon icon-undo2"></span>
+            Restore
+        </button>
+        <button class="btn btn-default">
+            <span class="icon icon-folder-upload"></span>
+            Back to Main
+        </button>
+    </div>
+
+    <div>
+        <span class="icon icon-warning"></span>
+        Current database is a backup - some features have been disabled.
+    </div>
+
+</div>

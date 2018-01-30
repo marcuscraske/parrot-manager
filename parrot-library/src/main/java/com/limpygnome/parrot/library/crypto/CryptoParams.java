@@ -66,6 +66,19 @@ public class CryptoParams implements Serializable
         return secretKey;
     }
 
+    /**
+     * This shallow clone will still share references with this instance.
+     *
+     * @return a shallow clone of this instance
+     */
+    public CryptoParams clone()
+    {
+        CryptoParams result = new CryptoParams(
+                salt, rounds, lastModified, secretKey
+        );
+        return result;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

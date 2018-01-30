@@ -295,6 +295,13 @@
         </small>
     </div>
 
+    <p class="text-center">
+        {{ errorMessage }}
+    </p>
+    <p class="text-center">
+        {{ successMessage }}
+    </p>
+
     <div class="form-group text-center">
         <button type="button" class="btn btn-lg btn-primary" (click)="persist()">
             <span class="icon icon-floppy-disk"></span>
@@ -304,16 +311,13 @@
 
     <div class="form-group text-center" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
 
-        <button type="button" class="btn btn-lg btn-default" (click)="actionCancel()">
+        <button type="button" class="btn btn-default" (click)="actionCancel()">
             Cancel
         </button>
 
-        <button type="button" class="btn btn-lg btn-default" (click)="performTest()">
+        <button type="button" class="btn btn-default" (click)="performTest()">
             Test
         </button>
-
-        <span class="help-block">{{ errorMessage }}</span>
-        <span class="help-block">{{ successMessage }}</span>
 
     </div>
 

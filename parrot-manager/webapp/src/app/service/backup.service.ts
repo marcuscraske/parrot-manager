@@ -44,4 +44,14 @@ export class BackupService
         return result;
     }
 
+    isBackupOpen()
+    {
+        return this.backupService.isBackupOpen();
+    }
+
+    getActualDatabasePath()
+    {
+        this.backupService.getFileActualDatabase();
+    }
+
 }
