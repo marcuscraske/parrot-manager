@@ -34,13 +34,20 @@ public class AutomaticBackupComponent implements DatabaseSavedEvent, SettingsRef
     @Override
     public void eventDatabaseSaved()
     {
-        if (backupDelay > 0)
+        if (!backupService.isBackupOpen())
         {
-            queueBackup();
+            if (backupDelay > 0)
+            {
+                queueBackup();
+            }
+            else
+            {
+                createBackup();
+            }
         }
         else
         {
-            createBackup();
+            LOG.debug("skipped backup, as backup is open");
         }
     }
 

@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.remote;
 
+import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
@@ -8,11 +9,17 @@ import com.limpygnome.parrot.event.DatabaseSavedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /**
  * Performs remote sync at timed intervals, the database opens or changes occur.
+ *
+ * Notes:
+ * - The order of this service needs to be after the backup service, so that it can determine, upon changing database,
+ *   whether the new database is a backup.
  */
+@Order(20)
 @Service
 public class RemoteSyncIntervalService implements DatabaseChangingEvent, DatabaseSavedEvent, SettingsRefreshedEvent
 {
@@ -22,6 +29,8 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
     private DatabaseService databaseService;
     @Autowired
     private RemoteSyncService remoteSyncService;
+    @Autowired
+    private BackupService backupService;
 
     // Settings
     private boolean intervalSyncEnabled;
@@ -46,7 +55,11 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
 
         if (open)
         {
-            if (syncOnDatabaseOpened)
+            if (backupService.isBackupOpen())
+            {
+                LOG.debug("skipped remote sync on open, as backup is open");
+            }
+            else if (syncOnDatabaseOpened)
             {
                 forceSync();
             }
@@ -56,7 +69,7 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
     @Override
     public synchronized void eventDatabaseSaved()
     {
-        if (syncOnChange)
+        if (syncOnChange && !backupService.isBackupOpen())
         {
             forceSync();
         }

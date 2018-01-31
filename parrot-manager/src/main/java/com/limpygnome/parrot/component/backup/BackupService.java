@@ -206,6 +206,52 @@ public class BackupService
         return fileActualDatabase.getAbsolutePath();
     }
 
+    /**
+     * Used to delete a backup, when a backup is open as the current database.
+     */
+    public synchronized void deleteCurrentBackup()
+    {
+        if (fileActualDatabase == null)
+        {
+            throw new IllegalStateException("backup not open");
+        }
+
+        File current = databaseService.getFile();
+
+        // Close current database
+        databaseService.close();
+
+        // Delete current database open
+        current.delete();
+
+        LOG.info("deleted current backup and closed database");
+    }
+
+    /**
+     * Restores current backup file to become main.
+     *
+     * The old main database becomes a backup file, even if backups are disabled.
+     */
+    public synchronized void restoreCurrentBackup()
+    {
+        File current = databaseService.getFile();
+        File fileActualDatabase = this.fileActualDatabase;
+
+        // Close current database
+        databaseService.close();
+
+        // Move main as backup
+        File fileActualParent = fileActualDatabase.getParentFile();
+        String newName = "." + fileActualDatabase.getName() + "." + System.currentTimeMillis();
+        File fileActualDatabaseRenamed = new File(fileActualParent, newName);
+        fileActualDatabase.renameTo(fileActualDatabaseRenamed);
+
+        // Move current to become old main
+        current.renameTo(fileActualDatabase);
+
+        LOG.info("restored backup to main database");
+    }
+
     void updateCache()
     {
         File[] files = fetchFiles();

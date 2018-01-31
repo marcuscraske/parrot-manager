@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.remote;
 
+import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.remote.ssh.SshOptions;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
@@ -48,6 +49,8 @@ public class RemoteSyncService implements DatabaseChangingEvent
     private SshSyncService sshSyncService;
     @Autowired
     private RemoteSyncResultService resultService;
+    @Autowired
+    private BackupService backupService;
 
     // State
     private Thread thread;
@@ -197,6 +200,13 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
     private boolean canAutoSync(SshOptions options, String currentHostName)
     {
+        // check backup not open (should never happen)
+        if (backupService.isBackupOpen())
+        {
+            LOG.info("excluded from sync as backup database is open - profile: {}", options.getName());
+            return false;
+        }
+
         // check if auth is needed
         if (options.isPromptKeyPass() || options.isPromptUserPass())
         {

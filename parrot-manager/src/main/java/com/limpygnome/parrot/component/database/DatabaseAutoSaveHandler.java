@@ -1,5 +1,6 @@
 package com.limpygnome.parrot.component.database;
 
+import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.event.DatabaseDirtyEventHandler;
@@ -16,11 +17,13 @@ public class DatabaseAutoSaveHandler implements DatabaseDirtyEventHandler
     private DatabaseService databaseService;
     @Autowired
     private SettingsService settingsService;
+    @Autowired
+    private BackupService backupService;
 
     @Override
     public synchronized void eventDatabaseDirtyEventHandler(Database database, boolean dirty)
     {
-        if (dirty)
+        if (dirty && !backupService.isBackupOpen())
         {
             boolean autoSave = settingsService.getSettings().getAutoSave().getSafeBoolean(true);
 

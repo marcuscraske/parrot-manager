@@ -2,6 +2,7 @@ import { Component, Renderer } from '@angular/core';
 import { Router, RouterLinkActive } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
+import { BackupService } from 'app/service/backup.service'
 import { DatabaseService } from 'app/service/database.service'
 import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { SettingsService } from 'app/service/settings.service'
@@ -20,6 +21,7 @@ export class TopBarComponent
 
     constructor(
         public runtimeService: RuntimeService,
+        public backupService: BackupService,
         public databaseService: DatabaseService,
         public remoteSyncService: RemoteSyncService,
         public settingsService: SettingsService,

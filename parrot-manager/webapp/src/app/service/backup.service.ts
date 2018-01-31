@@ -51,7 +51,17 @@ export class BackupService
 
     getActualDatabasePath()
     {
-        this.backupService.getFileActualDatabase();
+        return this.backupService.getActualDatabasePath();
+    }
+
+    deleteCurrentBackup()
+    {
+        this.backupService.deleteCurrentBackup();
+    }
+
+    restoreCurrentBackup()
+    {
+        this.backupService.restoreCurrentBackup();
     }
 
 }

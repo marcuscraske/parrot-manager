@@ -1,15 +1,15 @@
 <div *ngIf="backupService.isBackupOpen()" class="banner">
 
     <div class="options">
-        <button class="btn btn-danger">
-            <span class="icon icon-bin2"></span>
+        <button class="btn btn-danger" (click)="delete()">
+            <span class="icon icon-bin"></span>
             Delete
         </button>
-        <button class="btn btn-default">
+        <button class="btn btn-default" (click)="restore()">
             <span class="icon icon-undo2"></span>
             Restore
         </button>
-        <button class="btn btn-default">
+        <button class="btn btn-default" (click)="backToMain()">
             <span class="icon icon-folder-upload"></span>
             Back to Main
         </button>

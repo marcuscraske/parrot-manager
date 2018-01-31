@@ -65,19 +65,7 @@ export class BackupsComponent {
     open(file)
     {
         var path = file.getPath();
-        this.databaseService.openWithPrompt(path, (message) => {
-            // Check if failure message
-            if (message == null)
-            {
-                console.log("successfully opened database, redirecting to navigator...");
-                this.router.navigate(["/viewer"]);
-            }
-            else
-            {
-                this.errorMessage = message;
-                console.log("failed to open database - " + message);
-            }
-        });
+        this.openMain(path);
     }
 
     restore(file)
@@ -96,13 +84,30 @@ export class BackupsComponent {
             this.router.navigate(["/"]);
 
             // prompt for database
-            this.databaseService.openWithPrompt(path, null);
+            this.openMain(path);
         }
     }
 
     delete(file)
     {
         this.errorMessage = this.backupService.delete(file);
+    }
+
+    private openMain(path)
+    {
+        this.databaseService.openWithPrompt(path, (message) => {
+            // Check if failure message
+            if (message == null)
+            {
+                console.log("successfully opened database, redirecting to navigator...");
+                this.router.navigate(["/viewer"]);
+            }
+            else
+            {
+                this.errorMessage = message;
+                console.log("failed to open database - " + message);
+            }
+        });
     }
 
 }
