@@ -1,16 +1,22 @@
 package com.limpygnome.parrot.component.remote.ssh;
 
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 import java.io.File;
 
-public class SshFile
+public class SshFile implements Comparable<SshFile>
 {
     private String directory;
     private String fileName;
 
-    public SshFile(SshSession sshSession, String remotePath) throws SftpException
+    public SshFile(SshSession sshSession, SshFile parent, String fileName) throws SftpException, JSchException
+    {
+        this(sshSession, parent.getFullPath() + "/" + fileName);
+    }
+
+    public SshFile(SshSession sshSession, String remotePath) throws SftpException, JSchException
     {
         // fully resolve remote path
         ChannelSftp channelSftp = sshSession.getChannelSftp();
@@ -55,6 +61,12 @@ public class SshFile
         this.fileName = fileName;
     }
 
+    public SshFile preFixFileName(String prefix)
+    {
+        this.fileName = prefix + fileName;
+        return this;
+    }
+
     public SshFile postFixFileName(String postFix)
     {
         this.fileName += postFix;
@@ -66,9 +78,20 @@ public class SshFile
         return new SshFile(directory, fileName);
     }
 
+    public SshFile getParent(SshSession sshSession) throws JSchException, SftpException
+    {
+        return new SshFile(sshSession, directory);
+    }
+
     public String getFullPath()
     {
         return directory + "/" + fileName;
+    }
+
+    @Override
+    public int compareTo(SshFile o)
+    {
+        return fileName.compareTo(o.fileName);
     }
 
 }

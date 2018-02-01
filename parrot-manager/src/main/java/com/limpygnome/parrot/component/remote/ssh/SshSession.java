@@ -1,6 +1,8 @@
 package com.limpygnome.parrot.component.remote.ssh;
 
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 /**
@@ -8,13 +10,15 @@ import com.jcraft.jsch.Session;
  */
 public class SshSession
 {
+    public static final int CONNECTION_TIMEOUT = 10000;
+
     private Session session;
     private ChannelSftp channelSftp;
+    private ChannelExec channelExec;
 
-    public SshSession(Session session, ChannelSftp channelSftp)
+    public SshSession(Session session)
     {
         this.session = session;
-        this.channelSftp = channelSftp;
     }
 
     public Session getSession()
@@ -22,9 +26,25 @@ public class SshSession
         return session;
     }
 
-    public ChannelSftp getChannelSftp()
+    public synchronized ChannelSftp getChannelSftp() throws JSchException
     {
+        if (channelSftp == null)
+        {
+            // Start sftp in session
+            channelSftp = (ChannelSftp) session.openChannel("sftp");
+            channelSftp.connect(CONNECTION_TIMEOUT);
+        }
         return channelSftp;
+    }
+
+    public synchronized ChannelExec getChannelExec() throws JSchException
+    {
+        if (channelExec == null)
+        {
+            channelExec = (ChannelExec) session.openChannel("exec");
+            channelExec.connect(CONNECTION_TIMEOUT);
+        }
+        return channelExec;
     }
 
     public void dispose()
@@ -32,6 +52,11 @@ public class SshSession
         if (channelSftp != null)
         {
             channelSftp.disconnect();
+        }
+
+        if (channelExec != null)
+        {
+            channelExec.disconnect();
         }
 
         if (session != null)

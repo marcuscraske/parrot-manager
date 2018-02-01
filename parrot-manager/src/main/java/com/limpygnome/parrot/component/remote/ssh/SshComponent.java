@@ -10,7 +10,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * Common functionality and wrapper around using SSH.
@@ -20,8 +24,6 @@ public class SshComponent
 {
     private static final Logger LOG = LoggerFactory.getLogger(SshComponent.class);
 
-    private static final int CONNECTION_TIMEOUT = 10000;
-
     @Autowired
     private FileComponent fileComponent;
 
@@ -29,6 +31,143 @@ public class SshComponent
     {
         LOG.info("opening connection - options: {}", options);
 
+        // Setup session
+        Session session = setupSession(options);
+
+        // Create agnostic wrapper
+        SshSession sshSession = new SshSession(session);
+        return sshSession;
+    }
+
+    public String download(SshSession sshSession, SshFile source, String destination) throws JSchException, SftpException, SyncFailureException
+    {
+        String result = null;
+
+        ChannelSftp channelSftp = sshSession.getChannelSftp();
+
+        // Ensure path fully resolved
+        destination = fileComponent.resolvePath(destination);
+
+        // Check file exists
+        if (checkRemotePathExists(sshSession, source))
+        {
+            LOG.info("downloading file - full path: {}", source.getFullPath());
+
+            // Start the download...
+            channelSftp.get(source.getFullPath(), destination);
+        }
+        else
+        {
+            result = "Remote file does not exist - path: " + source.getFullPath();
+        }
+
+        return result;
+    }
+
+    public void upload(SshSession sshSession, String source, SshFile destination) throws JSchException, SftpException
+    {
+        ChannelSftp channelSftp = sshSession.getChannelSftp();
+
+        // Resolve full path
+        source = fileComponent.resolvePath(source);
+
+        // Upload file
+        channelSftp.put(source, destination.getFullPath());
+    }
+
+    public void rename(SshSession sshSession, SshFile source, SshFile destination) throws JSchException, SftpException
+    {
+        ChannelSftp channelSftp = sshSession.getChannelSftp();
+        channelSftp.rename(source.getFullPath(), destination.getFullPath());
+    }
+
+    public void remove(SshSession sshSession, SshFile file) throws JSchException, SftpException
+    {
+        ChannelSftp channelSftp = sshSession.getChannelSftp();
+        channelSftp.rm(file.getFullPath());
+    }
+
+    public List<SshFile> list(SshSession sshSession, SshFile parent) throws JSchException, SftpException
+    {
+        ChannelSftp channelSftp = sshSession.getChannelSftp();
+
+        String directory = parent.getFullPath();
+        Vector<ChannelSftp.LsEntry> entries = channelSftp.ls(directory);
+
+        List<SshFile> files = entries.stream()
+                .map(lsEntry -> {
+                    try
+                    {
+                        return new SshFile(sshSession, parent, lsEntry.getLongname());
+                    }
+                    catch (SftpException | JSchException e)
+                    {
+                        return null;
+                    }
+
+                })
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
+
+        return files;
+    }
+
+    public boolean checkRemotePathExists(SshSession session, SshFile sshFile) throws JSchException, SftpException, SyncFailureException
+    {
+        ChannelSftp channelSftp = session.getChannelSftp();
+
+        boolean exists;
+
+        try
+        {
+            exists = !channelSftp.ls(sshFile.getFullPath()).isEmpty();
+        }
+        catch (SftpException e)
+        {
+            LOG.debug("Remote database file does not exist?", e);
+            exists = false;
+        }
+
+        return exists;
+    }
+
+    /**
+     * Translates an exception into a more friendly message.
+     *
+     * @param e the exception; can be null
+     * @return the translate message; null if exception is null
+     */
+    public String getExceptionMessage(Exception e)
+    {
+        String message;
+
+        if (e != null)
+        {
+            message = e.getMessage();
+
+            // Improved error messages
+            if (e instanceof JSchException)
+            {
+                if ("Auth fail".equals(message))
+                {
+                    message = "Auth failed - unable to connect using specified credentials";
+                }
+                else if ("No such file".equals(message))
+                {
+                    message = "Remote file could not be found";
+                }
+            }
+        }
+        else
+        {
+            message = e.getMessage();
+        }
+
+        return message;
+    }
+
+    private Session setupSession(SshOptions options) throws JSchException
+    {
         JSch jsch = new JSch();
 
         // Setup key
@@ -92,7 +231,7 @@ public class SshComponent
 
         try
         {
-            session.connect(CONNECTION_TIMEOUT);
+            session.connect(SshSession.CONNECTION_TIMEOUT);
         }
         catch (JSchException e)
         {
@@ -106,147 +245,7 @@ public class SshComponent
             throw e;
         }
 
-        // Start sftp in session
-        Channel channel = session.openChannel("sftp");
-        channel.connect(CONNECTION_TIMEOUT);
-
-        ChannelSftp channelSftp = (ChannelSftp) channel;
-
-        // Create agnostic wrapper
-        SshSession sshSession = new SshSession(session, channelSftp);
-        return sshSession;
-    }
-
-    public String download(SshSession sshSession, SshFile source, String destination) throws SftpException, SyncFailureException
-    {
-        String result = null;
-
-        ChannelSftp channelSftp = sshSession.getChannelSftp();
-
-        // Ensure path fully resolved
-        destination = fileComponent.resolvePath(destination);
-
-        // Check file exists
-        if (checkRemotePathExists(sshSession, source))
-        {
-            LOG.info("downloading file - full path: {}", source.getFullPath());
-
-            // Start the download...
-            changeRemoteDirectory(channelSftp, source);
-            channelSftp.get(source.getFullPath(), destination);
-        }
-        else
-        {
-            result = "Remote file does not exist - path: " + source.getFullPath();
-        }
-
-        return result;
-    }
-
-    public void upload(SshSession sshSession, String source, SshFile destination) throws SftpException
-    {
-        ChannelSftp channelSftp = sshSession.getChannelSftp();
-
-        // Resolve full path
-        source = fileComponent.resolvePath(source);
-
-        // Upload file
-        channelSftp.put(source, destination.getFullPath());
-    }
-
-    public void rename(SshSession sshSession, SshFile source, SshFile destination) throws SftpException
-    {
-        ChannelSftp channelSftp = sshSession.getChannelSftp();
-        channelSftp.rename(source.getFullPath(), destination.getFullPath());
-
-    }
-
-    public void remove(SshSession sshSession, SshFile file) throws SftpException, SyncFailureException
-    {
-        ChannelSftp channelSftp = sshSession.getChannelSftp();
-
-        // change directory
-        changeRemoteDirectory(channelSftp, file);
-
-        // remove file
-        channelSftp.rm(file.getFullPath());
-    }
-
-    public boolean checkRemotePathExists(SshSession session, SshFile sshFile) throws SftpException, SyncFailureException
-    {
-        ChannelSftp channelSftp = session.getChannelSftp();
-
-        // Change to the remote path
-        changeRemoteDirectory(channelSftp, sshFile);
-
-        boolean exists;
-
-        try
-        {
-            exists = !channelSftp.ls(sshFile.getFullPath()).isEmpty();
-        }
-        catch (SftpException e)
-        {
-            LOG.debug("Remote database file does not exist?", e);
-            exists = false;
-        }
-
-        return exists;
-    }
-
-    /**
-     * Translates an exception into a more friendly message.
-     *
-     * @param e the exception; can be null
-     * @return the translate message; null if exception is null
-     */
-    public String getExceptionMessage(Exception e)
-    {
-        String message;
-
-        if (e != null)
-        {
-            message = e.getMessage();
-
-            // Improved error messages
-            if (e instanceof JSchException)
-            {
-                if ("Auth fail".equals(message))
-                {
-                    message = "Auth failed - unable to connect using specified credentials";
-                }
-                else if ("No such file".equals(message))
-                {
-                    message = "Remote file could not be found";
-                }
-            }
-        }
-        else
-        {
-            message = e.getMessage();
-        }
-
-        return message;
-    }
-
-
-    /* Changes the current remote directory to the parent of the remote path (if it has a parent) */
-    // TODO remove
-    private void changeRemoteDirectory(ChannelSftp channelSftp, SshFile sshFile) throws SyncFailureException
-    {
-//        String directory = sshFile.getDirectory();
-//
-//        if (directory != null && !directory.isEmpty())
-//        {
-//            try
-//            {
-//                channelSftp.cd(directory);
-//            }
-//            catch (SftpException e)
-//            {
-//                throw new SyncFailureException("Remote path does not exist - " + directory);
-//            }
-//        }
+        return session;
     }
 
 }

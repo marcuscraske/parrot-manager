@@ -36,7 +36,8 @@ export class SettingsService {
             "wipeClipboardDelay" : settings.getWipeClipboardDelay().getValue(),
             "autoSave" : settings.getAutoSave().getValue(),
             "mergeLogShowDetail" : settings.getMergeLogShowDetail().getValue(),
-            "keyboardLayout" : settings.getKeyboardLayout().getValue()
+            "keyboardLayout" : settings.getKeyboardLayout().getValue(),
+            "remoteBackupsRetained" : settings.getRemoteBackupsRetained().getValue()
         };
 
         this.settingsCache = json;
@@ -110,6 +111,9 @@ export class SettingsService {
         );
         settings.getKeyboardLayout().setValue(
             json.keyboardLayout
+        );
+        settings.getRemoteBackupsRetained().setValue(
+            json.remoteBackupsRetained
         );
 
         // Save

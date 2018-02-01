@@ -1,11 +1,14 @@
 package com.limpygnome.parrot.component.remote;
 
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.remote.ssh.SshComponent;
 import com.limpygnome.parrot.component.remote.ssh.SshFile;
 import com.limpygnome.parrot.component.remote.ssh.SshOptions;
 import com.limpygnome.parrot.component.remote.ssh.SshSession;
+import com.limpygnome.parrot.component.settings.Settings;
+import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.log.LogItem;
@@ -19,12 +22,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Currently only supports SSH, but this could be split into multiple services for different remote sync options.
  */
 @Service
-public class SshSyncService
+public class SshSyncService implements SettingsRefreshedEvent
 {
     private static final Logger LOG = LoggerFactory.getLogger(SshSyncService.class);
 
@@ -39,6 +43,14 @@ public class SshSyncService
 
     private SshSession sshSession;
     private SshOptions options;
+
+    private long remoteBackupsRetained;
+
+    @Override
+    public void eventSettingsRefreshed(Settings settings)
+    {
+        remoteBackupsRetained = settings.getRemoteBackupsRetained().getSafeLong(30L);
+    }
 
     synchronized String download(SshOptions options)
     {
@@ -74,6 +86,7 @@ public class SshSyncService
     {
         String result = null;
         sshSession = null;
+        boolean createdLock = false;
 
         try
         {
@@ -82,7 +95,8 @@ public class SshSyncService
             this.options = options;
 
             // create lock
-            createLock(options);
+            createLock(null, options);
+            createdLock = true;
 
             // check remote connection works and file exists
             SshFile file = new SshFile(sshSession, options.getRemotePath());
@@ -99,9 +113,78 @@ public class SshSyncService
         }
         finally
         {
+            if (createdLock)
+            {
+                cleanupLock(null, options);
+            }
             cleanup();
         }
 
+        return result;
+    }
+
+    synchronized SyncResult overwrite(SshOptions options)
+    {
+        MergeLog mergeLog = new MergeLog();
+        boolean createdLock = false;
+        boolean success = true;
+
+        try
+        {
+            // connect
+            sshSession = sshComponent.connect(options);
+            this.options = options;
+
+            // create lock
+            createLock(mergeLog, options);
+            createdLock = true;
+
+            String localPath = databaseService.getPath();
+            SshFile fileRemote = new SshFile(sshSession, options.getRemotePath());
+            SshFile fileRemoteSyncBackup = fileRemote.postFixFileName(".sync");
+            SshFile fileRemoteBackup = fileRemote.preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
+
+            // check if database exists
+            if (!sshComponent.checkRemotePathExists(sshSession, fileRemote))
+            {
+                mergeLog.add(new LogItem(LogLevel.ERROR, "Remote file does not exist - ignore if expected"));
+            }
+            else
+            {
+                // move current database as sync backup (in case upload fails)
+                sshComponent.rename(sshSession, fileRemote, fileRemoteSyncBackup);
+
+                // upload current database
+                sshComponent.upload(sshSession, localPath, fileRemote);
+
+                // delete or convert to backup
+                convertToRemoteBackupOrDelete(mergeLog, fileRemoteSyncBackup, fileRemoteBackup);
+            }
+        }
+        catch (Exception e)
+        {
+            success = false;
+
+            String message = sshComponent.getExceptionMessage(e);
+            mergeLog.add(new LogItem(LogLevel.ERROR, message));
+
+            LOG.error("failed to overwrite remote database", e);
+        }
+        finally
+        {
+            // cleanup lock
+            if (createdLock)
+            {
+                cleanupLock(mergeLog, options);
+            }
+
+            // disconnect
+            cleanup();
+        }
+
+        SyncResult result = new SyncResult(
+            options.getName(), mergeLog, success, false
+        );
         return result;
     }
 
@@ -110,6 +193,7 @@ public class SshSyncService
         MergeLog mergeLog = new MergeLog();
         boolean success = true;
         boolean dirty = false;
+        boolean createdLock = false;
 
         Database database = databaseService.getDatabase();
 
@@ -133,7 +217,8 @@ public class SshSyncService
             SshFile fileSyncBackup = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".sync");
 
             // create lock file
-            createLock(options);
+            createLock(mergeLog, options);
+            createdLock = true;
 
             // check whether an old renamed file exists; if so, restore it
             if (sshComponent.checkRemotePathExists(sshSession, fileSyncBackup))
@@ -191,9 +276,9 @@ public class SshSyncService
                     sshComponent.upload(sshSession, currentPath, source);
                     mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database"));
 
-                    // delete old renamed file
-                    sshComponent.remove(sshSession, fileSyncBackup);
-                    mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed sync backup file"));
+                    // delete or create backup out of sync file
+                    SshFile fileBackup = source.preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
+                    convertToRemoteBackupOrDelete(mergeLog, fileSyncBackup, fileBackup);
                 }
                 else
                 {
@@ -228,6 +313,12 @@ public class SshSyncService
         }
         finally
         {
+            // remove remote lock
+            if (createdLock)
+            {
+                cleanupLock(mergeLog, options);
+            }
+
             // cleanup sync file
             File syncFile = new File(syncPath);
 
@@ -239,8 +330,6 @@ public class SshSyncService
             // disconnect
             try
             {
-                // destroys lock, even if DB currently locked; means slow connections could write at the same time
-                // TODO whether this should be changed
                 cleanup();
             }
             catch (Exception e)
@@ -260,16 +349,6 @@ public class SshSyncService
     {
         if (sshSession != null)
         {
-            // destroy lock file (if it exists)
-            if (options != null)
-            {
-                cleanupLock(options);
-            }
-            else
-            {
-                LOG.warn("unable to cleanup database lock file as options is null");
-            }
-
             // destroy session
             sshSession.dispose();
             sshSession = null;
@@ -278,7 +357,7 @@ public class SshSyncService
         }
     }
 
-    private void createLock(SshOptions options) throws SyncFailureException
+    private void createLock(MergeLog mergeLog, SshOptions options) throws SyncFailureException
     {
         try
         {
@@ -302,6 +381,10 @@ public class SshSyncService
 
                 if (isLocked)
                 {
+                    if (mergeLog != null)
+                    {
+                        mergeLog.add(new LogItem(LogLevel.DEBUG, "Remote lock exists - attempt " + attempts));
+                    }
                     LOG.info("remote database lock exists, sleeping...");
                     Thread.sleep(1000);
                 }
@@ -315,7 +398,17 @@ public class SshSyncService
 
             // upload
             sshComponent.upload(sshSession, fileLocalLock.getAbsolutePath(), fileLock);
+
+            if (mergeLog != null)
+            {
+                mergeLog.add(new LogItem(LogLevel.DEBUG, "Created remote lock"));
+            }
             LOG.info("remote database lock file created");
+        }
+        catch (JSchException e)
+        {
+            String message = sshComponent.getExceptionMessage(e);
+            throw new SyncFailureException(message, e);
         }
         catch (IOException e)
         {
@@ -327,17 +420,64 @@ public class SshSyncService
         }
     }
 
-    private void cleanupLock(SshOptions options)
+    private void cleanupLock(MergeLog mergeLog, SshOptions options)
     {
         try
         {
             SshFile fileLock = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".lock");
             sshComponent.remove(sshSession, fileLock);
+
+            if (mergeLog != null)
+            {
+                mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed lock file"));
+            }
             LOG.info("remote database lock file removed");
         }
-        catch (SftpException | SyncFailureException e)
+        catch (SftpException | JSchException e)
         {
+            if (mergeLog != null)
+            {
+                mergeLog.add(new LogItem(LogLevel.ERROR, "Failed to remove remote lock"));
+            }
             LOG.error("failed to cleanup database lock", e);
+        }
+    }
+
+    private void convertToRemoteBackupOrDelete(MergeLog mergeLog, SshFile currentFile, SshFile backupFile) throws SftpException, JSchException
+    {
+        // convert if backups enabled, otherwise just delete it
+        if (remoteBackupsRetained > 0)
+        {
+            // rename as backup
+            sshComponent.rename(sshSession, currentFile, backupFile);
+            mergeLog.add(new LogItem(LogLevel.DEBUG, "Created new backup - " + backupFile.getFileName()));
+
+            // fetch list of files
+            SshFile parent = backupFile.getParent(sshSession);
+            List<SshFile> files = sshComponent.list(sshSession, parent);
+
+            // drop those outside retained limit
+            if (files.size() > remoteBackupsRetained)
+            {
+                mergeLog.add(new LogItem(LogLevel.DEBUG, "Too many remote backups - " + files.size() + " / " + remoteBackupsRetained));
+
+                for (int i = (int) remoteBackupsRetained; i < files.size(); i++)
+                {
+                    SshFile file = files.get(i);
+                    sshComponent.remove(sshSession, file);
+                    mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed file " + file.getFileName()));
+                }
+            }
+            else
+            {
+                mergeLog.add(new LogItem(LogLevel.DEBUG, "No remote backups culled - " + files.size() + " / " + remoteBackupsRetained));
+            }
+        }
+        else
+        {
+            // remove file
+            sshComponent.remove(sshSession, backupFile);
+            mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed file " + backupFile.getFileName()));
         }
     }
 

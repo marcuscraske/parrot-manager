@@ -138,6 +138,20 @@ public class RemoteSyncService implements DatabaseChangingEvent
     }
 
     /**
+     * Overwrites the remote database with the current database.
+     *
+     * @param options options
+     * @return error message, or null if successful
+     */
+    public synchronized void overwrite(SshOptions options)
+    {
+        SyncResult syncResult = sshSyncService.overwrite(options);
+
+        // pass result
+        resultService.add(syncResult);
+    }
+
+    /**
      * Synchronizes all the hosts.
      */
     public synchronized void syncAll()
