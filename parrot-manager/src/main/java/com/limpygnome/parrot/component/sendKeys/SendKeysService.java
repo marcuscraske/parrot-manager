@@ -51,6 +51,9 @@ public class SendKeysService implements SettingsRefreshedEvent
     // -- Cache of available keyboards
     private KeyboardLayout[] keyboardLayoutsCache = new KeyboardLayout[0];
 
+    // Settings
+    private String keyboardName;
+
     /**
      * Reloads the keyboard layouts.
      *
@@ -64,21 +67,6 @@ public class SendKeysService implements SettingsRefreshedEvent
         updateKeyboardLayoutsCache();
 
         return messages;
-    }
-
-    /**
-     * Triggers service to refresh the current keyboard layout to be used for sending keys.
-     */
-    @PostConstruct
-    public void refreshKeyboardLayout()
-    {
-        // update current keyboard to use
-        keyboardLayout = keyboardLayoutRepository.determineBest();
-
-        // initialise/update cache
-        updateKeyboardLayoutsCache();
-
-        LOG.info("keyboard layout: {}", keyboardLayout.getName());
     }
 
     /**
@@ -161,9 +149,25 @@ public class SendKeysService implements SettingsRefreshedEvent
         openDirectory(keyboardLayoutRepository.getWorkingDirectory());
     }
 
+    /**
+     * Triggers service to refresh the current keyboard layout to be used for sending keys.
+     */
+    @PostConstruct
+    public void refreshKeyboardLayout()
+    {
+        // update current keyboard to use
+        keyboardLayout = keyboardLayoutRepository.determineBest(keyboardName);
+
+        // initialise/update cache
+        updateKeyboardLayoutsCache();
+
+        LOG.info("keyboard layout: {}", keyboardLayout.getName());
+    }
+
     @Override
     public void eventSettingsRefreshed(Settings settings)
     {
+        keyboardName = settings.getKeyboardLayout().getValue();
         refreshKeyboardLayout();
     }
 

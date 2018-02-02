@@ -29,12 +29,14 @@ public class RemoteSyncResultService implements DatabaseChangingEvent
         this.results = new SyncResult[0];
     }
 
-    public synchronized void add(SyncResult result)
+    public synchronized void add(SyncResult syncResult)
     {
-        resultMap.put(result.getHostName(), result);
-        updateCache();
-        raiseEventFinished(result);
-        raiseEventChanged();
+        if (syncResult != null)
+        {
+            resultMap.put(syncResult.getHostName(), syncResult);
+            updateCache();
+            raiseEventChanged();
+        }
     }
 
     public synchronized void clear()
@@ -65,11 +67,6 @@ public class RemoteSyncResultService implements DatabaseChangingEvent
     {
         // Wipe data when database changing
         clear();
-    }
-
-    private void raiseEventFinished(SyncResult result)
-    {
-        webStageInitService.triggerEvent("document", "remoteSyncFinish", result);
     }
 
     private void raiseEventChanged()

@@ -3,6 +3,7 @@ package com.limpygnome.parrot.component.sendKeys;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
+import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +28,6 @@ public class KeyboardLayoutRepository
     private static final Logger LOG = LoggerFactory.getLogger(KeyboardLayoutRepository.class);
 
     // Components
-    @Autowired
-    private SettingsService settingsService;
     @Autowired
     private FileComponent fileComponent;
     @Autowired
@@ -65,16 +64,14 @@ public class KeyboardLayoutRepository
     }
 
     /**
+     * @param keyboardName the name of the selected keyboard
      * @return keyboard layout to be used; determined based on settings, otherwise based on locale and operating system
      */
-    public synchronized KeyboardLayout determineBest()
+    public synchronized KeyboardLayout determineBest(String keyboardName)
     {
         KeyboardLayout result = null;
 
         // determine by settings override
-        Settings settings = settingsService.getSettings();
-        String keyboardName = settings.getKeyboardLayout().getValue();
-
         if (keyboardName != null)
         {
             result = layoutMap.get(keyboardName);

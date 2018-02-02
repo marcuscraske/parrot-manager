@@ -141,8 +141,8 @@ public class SshSyncService implements SettingsRefreshedEvent
 
             String localPath = databaseService.getPath();
             SshFile fileRemote = new SshFile(sshSession, options.getRemotePath());
-            SshFile fileRemoteSyncBackup = fileRemote.postFixFileName(".sync");
-            SshFile fileRemoteBackup = fileRemote.preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
+            SshFile fileRemoteSyncBackup = fileRemote.clone().postFixFileName(".sync");
+            SshFile fileRemoteBackup = fileRemote.clone().preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
 
             // check if database exists
             if (!sshComponent.checkRemotePathExists(sshSession, fileRemote))
@@ -186,6 +186,37 @@ public class SshSyncService implements SettingsRefreshedEvent
             options.getName(), mergeLog, success, false
         );
         return result;
+    }
+
+    synchronized SyncResult unlock(SshOptions options)
+    {
+        MergeLog mergeLog = new MergeLog();
+        boolean success;
+
+        try
+        {
+            // connect
+            sshSession = sshComponent.connect(options);
+
+            // remove lock file
+            SshFile fileLock = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".lock");
+            sshComponent.remove(sshSession, fileLock);
+            success = true;
+
+            mergeLog.add(new LogItem(LogLevel.INFO, "Removed remote database lock file"));
+        }
+        catch (JSchException | SftpException e)
+        {
+            LOG.error("failed to remove database lock", e);
+            success = false;
+            mergeLog.add(new LogItem(LogLevel.ERROR, "Failed to remove remote database lock file - " + e.getMessage()));
+        }
+        finally
+        {
+            cleanup();
+        }
+
+        return new SyncResult(options.getName(), mergeLog, success, false);
     }
 
     synchronized SyncResult sync(SshOptions options, String remotePassword)
@@ -277,7 +308,7 @@ public class SshSyncService implements SettingsRefreshedEvent
                     mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database"));
 
                     // delete or create backup out of sync file
-                    SshFile fileBackup = source.preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
+                    SshFile fileBackup = source.clone().preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
                     convertToRemoteBackupOrDelete(mergeLog, fileSyncBackup, fileBackup);
                 }
                 else
@@ -393,7 +424,7 @@ public class SshSyncService implements SettingsRefreshedEvent
 
             if (isLocked)
             {
-                throw new RuntimeException("Remote database lock file exists and timed-out waiting for it to disappear. You may need to manually removve it.");
+                throw new RuntimeException("Remote database lock file exists and timed-out waiting for it to disappear. Use unlock database button, or manually remove lock file.");
             }
 
             // upload

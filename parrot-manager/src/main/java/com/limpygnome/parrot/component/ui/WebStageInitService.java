@@ -8,7 +8,6 @@ import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.importExport.ImportExportService;
 import com.limpygnome.parrot.component.remote.RemoteSyncResultService;
-import com.limpygnome.parrot.component.ui.preferences.WindowPreferences;
 import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;

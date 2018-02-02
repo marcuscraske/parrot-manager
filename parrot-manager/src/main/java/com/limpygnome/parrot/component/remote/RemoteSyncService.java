@@ -6,7 +6,6 @@ import com.limpygnome.parrot.component.remote.ssh.SshOptions;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
-import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
@@ -44,17 +43,13 @@ public class RemoteSyncService implements DatabaseChangingEvent
     @Autowired
     private SessionService sessionService;
     @Autowired
-    private WebStageInitService webStageInitService;
-    @Autowired
     private SshSyncService sshSyncService;
     @Autowired
-    private RemoteSyncResultService resultService;
-    @Autowired
     private BackupService backupService;
+    @Autowired
+    private RemoteSyncThreadService threadService;
 
     // State
-    private Thread thread;
-    private boolean aborted;
     private long lastSync;
 
     /**
@@ -141,14 +136,34 @@ public class RemoteSyncService implements DatabaseChangingEvent
      * Overwrites the remote database with the current database.
      *
      * @param options options
-     * @return error message, or null if successful
      */
     public synchronized void overwrite(SshOptions options)
     {
-        SyncResult syncResult = sshSyncService.overwrite(options);
+        threadService.launchAsync(new RemoteSyncThread()
+        {
+            @Override
+            public SyncResult execute(SshOptions options)
+            {
+                return sshSyncService.overwrite(options);
+            }
+        }, options);
+    }
 
-        // pass result
-        resultService.add(syncResult);
+    /**
+     * Unlocks the remote database, by removing the associated lock file.
+     *
+     * @param options options
+     */
+    public synchronized void unlock(SshOptions options)
+    {
+        threadService.launchAsync(new RemoteSyncThread()
+        {
+            @Override
+            public SyncResult execute(SshOptions options)
+            {
+                return sshSyncService.unlock(options);
+            }
+        }, options);
     }
 
     /**
@@ -170,7 +185,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
             String destinationPath = databaseService.getPath();
 
             // Fetch remote password (current DB password)
-            String remotePassword = databaseService.getPassword();
+            String databasePassword = databaseService.getPassword();
 
             // Check and convert each node/host
             String currentHostName = getCurrentHostName();
@@ -185,6 +200,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
                     if (canAutoSync(options, currentHostName))
                     {
                         options.setDestinationPath(destinationPath);
+                        options.setDatabasePassword(databasePassword);
                         optionsList.add(options);
                     }
                 }
@@ -200,7 +216,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
                 LOG.debug("{} available hosts for sync", optionsList.size());
 
                 SshOptions[] optionsArray = optionsList.toArray(new SshOptions[optionsList.size()]);
-                syncLaunchAsyncThread(remotePassword, optionsArray);
+                launchAsyncSync(optionsArray);
             }
             else
             {
@@ -210,6 +226,29 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
         // update last sync time
         lastSync = System.currentTimeMillis();
+    }
+
+    /**
+     * Syncs a host.
+     *
+     * @param options host options
+     */
+    public synchronized void sync(SshOptions options)
+    {
+        String remotePassword = databaseService.getPassword();
+        syncWithAuth(options, remotePassword);
+    }
+
+    /**
+     * Invokes sync using password.
+     *
+     * @param options host options
+     * @param remotePassword remote database's password
+     */
+    public synchronized void syncWithAuth(SshOptions options, String remotePassword)
+    {
+        options.setDatabasePassword(remotePassword);
+        launchAsyncSync(options);
     }
 
     private boolean canAutoSync(SshOptions options, String currentHostName)
@@ -280,95 +319,47 @@ public class RemoteSyncService implements DatabaseChangingEvent
         return result;
     }
 
-    public synchronized void sync(SshOptions options)
+    private void launchAsyncSync(SshOptions... optionsArray)
     {
-        String remotePassword = databaseService.getPassword();
-        syncWithAuth(options, remotePassword);
-    }
-
-    public synchronized void syncWithAuth(SshOptions options, String remotePassword)
-    {
-        syncLaunchAsyncThread(remotePassword, options);
-    }
-
-    private synchronized void syncLaunchAsyncThread(String remotePassword, SshOptions... optionsArray)
-    {
-        if (thread == null)
+        threadService.launchAsync(new RemoteSyncThread()
         {
-            LOG.info("launching separate thread for sync");
-
-            // Reset abort flag
-            aborted = false;
-
-            // Start separate thread for sync to prevent blocking
-            thread = new Thread(() ->
+            @Override
+            public SyncResult execute(SshOptions options)
             {
-                try
-                {
-                    syncAsyncThreadList(remotePassword, optionsArray);
-                }
-                finally
-                {
-                    synchronized (this)
-                    {
-                        thread = null;
-                    }
-                }
-            });
-            thread.start();
-        }
-        else
-        {
-            LOG.error("attempted to sync whilst sync already in progress");
-        }
+                return asyncSync(options);
+            }
+        }, optionsArray);
     }
 
-    private void syncAsyncThreadList(String remotePassword, SshOptions... optionsArray)
+    private SyncResult asyncSync(SshOptions options)
     {
-        // Reset results
-        resultService.clear();
+        SyncResult syncResult;
+        MergeLog mergeLog = new MergeLog();
 
-        for (int i = 0; !aborted && i < optionsArray.length; i++)
-        {
-            SshOptions options = optionsArray[i];
-            syncAsyncThreadSync(options, remotePassword);
-        }
-    }
-
-    private void syncAsyncThreadSync(SshOptions options, String remotePassword)
-    {
         // check there isn't unsaved database changes
         if (databaseService.isDirty())
         {
             LOG.warn("skipped sync due to unsaved database changes");
+            mergeLog.add(new LogItem(LogLevel.ERROR, "Skipped sync due to unsaved database changes"));
+            syncResult = new SyncResult(options.getName(), mergeLog, false, false);
         }
         else
         {
-            // trigger sync is starting...
-            webStageInitService.triggerEvent("document", "remoteSyncStart", options);
-
             // validate destination path
-            SyncResult syncResult;
-
             String message = checkDestinationPath(options);
             if (message != null)
             {
-                MergeLog mergeLog = new MergeLog();
                 mergeLog.add(new LogItem(LogLevel.ERROR, message));
                 syncResult = new SyncResult(options.getName(), mergeLog, false, false);
             }
             else
             {
                 // sync...
-                syncResult = sshSyncService.sync(options, remotePassword);
+                syncResult = sshSyncService.sync(options, options.getDatabasePassword());
             }
-
-            // pass result
-            resultService.add(syncResult);
-
-            // Reset thread, as this one is now done
-            thread = null;
         }
+
+        return syncResult;
     }
 
     private String checkDestinationPath(SshOptions options)
@@ -400,18 +391,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
      */
     public synchronized void abort()
     {
-        if (thread != null)
-        {
-            aborted = true;
-
-            // interrupt thread, this will cause it to abort
-            thread.interrupt();
-
-            // cleanup session
-            sshSyncService.cleanup();
-
-            LOG.info("thread aborted");
-        }
+        threadService.abort();
     }
 
     @Override

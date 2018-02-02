@@ -45,6 +45,16 @@ export class RemoteSyncService {
         return result;
     }
 
+    overwrite(options)
+    {
+        this.remoteSyncService.overwrite(options);
+    }
+
+    unlock(options)
+    {
+        this.remoteSyncService.unlock(options);
+    }
+
     syncAll()
     {
         if (this.canContinue())

@@ -50,6 +50,9 @@ public class SshOptions implements Serializable, Cloneable
     private boolean promptKeyPass;
     private boolean strictHostChecking;
 
+    // Sync only
+    private transient String databasePassword;
+
     public SshOptions() { }
 
     public SshOptions(String name, String host, int port, String user, String remotePath, String destinationPath)
@@ -256,6 +259,17 @@ public class SshOptions implements Serializable, Cloneable
     public void setMachineFilter(String machineFilter)
     {
         this.machineFilter = machineFilter;
+    }
+
+    @JsonIgnore
+    public String getDatabasePassword()
+    {
+        return databasePassword;
+    }
+
+    public void setDatabasePassword(String databasePassword)
+    {
+        this.databasePassword = databasePassword;
     }
 
     /**

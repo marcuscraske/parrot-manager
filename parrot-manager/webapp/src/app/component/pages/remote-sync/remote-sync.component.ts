@@ -108,61 +108,44 @@ export class RemoteSyncComponent implements AfterViewChecked {
         return result;
     }
 
+    overwrite(nodeId)
+    {
+        var options = this.convertNodeIdToOptions(nodeId);
+
+        if (options != null)
+        {
+            this.remoteSyncService.overwrite(options);
+        }
+    }
+
+    unlock(nodeId)
+    {
+        var options = this.convertNodeIdToOptions(nodeId);
+
+        if (options != null)
+        {
+            this.remoteSyncService.unlock(options);
+        }
+    }
+
     sync(nodeId, askForPassword)
     {
         console.log("syncing node - id: " + nodeId);
 
-        // Create SSH options and invoke sync
-        var database = this.databaseService.getDatabase();
-        var node = this.databaseService.getNode(nodeId);
+        var options = this.convertNodeIdToOptions(nodeId);
 
-        if (node != null)
+        if (options != null)
         {
-            console.log("creating initial ssh options for host...");
-            var options = null;
-
-            try
+            if (askForPassword)
             {
-                // Read existing options
-                options = this.remoteSyncService.createOptionsFromNode(database, node);
-
-                if (options == null)
-                {
-                    throw "no options returned";
-                }
-
-                // Set destination path to current file open
-                var currentPath = this.databaseService.getPath();
-                options.setDestinationPath(currentPath);
-            }
-            catch (e)
-            {
-                console.log("failed to create options for host");
-                console.error(e);
-                options = null;
-            }
-
-            if (options != null)
-            {
-                if (askForPassword)
-                {
-                    console.log("starting sync chain for host...");
-                    this.syncChainPromptDatabasePass(options);
-                }
-                else
-                {
-                    console.log("syncing host...");
-                    this.syncHost(options, null);
-                }
+                console.log("starting sync chain for host...");
+                this.syncChainPromptDatabasePass(options);
             }
             else
             {
-                toastr.error(node.getName() + " - failed to read host options; delete and re-create the sync host...");
+                console.log("syncing host...");
+                this.syncHost(options, null);
             }
-        }
-        else
-        {
-            console.log("node not found for sync - id: " + nodeId);
         }
     }
 
@@ -274,6 +257,51 @@ export class RemoteSyncComponent implements AfterViewChecked {
 
         // Update clipboard
         this.clipboardService.setText(text);
+    }
+
+    private convertNodeIdToOptions(nodeId)
+    {
+        var options = null;
+
+        try
+        {
+            var database = this.databaseService.getDatabase();
+            var node = this.databaseService.getNode(nodeId);
+
+            if (node != null)
+            {
+                console.log("creating initial ssh options for host...");
+                options = this.remoteSyncService.createOptionsFromNode(database, node);
+
+                if (options == null)
+                {
+                    throw "no options returned";
+                }
+
+                // Set destination path to current file open
+                // TODO should be in backend
+                var currentPath = this.databaseService.getPath();
+                options.setDestinationPath(currentPath);
+            }
+            else
+            {
+                console.log("node not found for sync - id: " + nodeId);
+            }
+        }
+        catch (e)
+        {
+            console.log("failed to create options for host");
+            console.error(e);
+            options = null;
+        }
+
+        // show error if failed
+        if (options == null)
+        {
+            toastr.error(node.getName() + " - failed to read host options; delete and re-create the sync host...");
+        }
+
+        return options;
     }
 
 }

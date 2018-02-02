@@ -18,6 +18,9 @@ import java.util.List;
 
 /**
  * Manages global application settings, saved under the user's config directory.
+ *
+ * WARNING: you should never auto-wire this service to read settings, implement {@link SettingsRefreshedEvent}
+ * instead.
  */
 @Service
 public class SettingsService
@@ -30,7 +33,7 @@ public class SettingsService
     @Lazy
     @Autowired
     private BackupService backupService;
-
+    @Lazy
     @Autowired
     private FileComponent fileComponent;
 

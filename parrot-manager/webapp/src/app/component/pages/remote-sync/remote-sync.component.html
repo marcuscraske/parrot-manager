@@ -39,7 +39,11 @@
                     </button>
                 </div>
                 <div class="mt-2">
-                    <button class="btn btn-primary" title="Overwrites remote database with this current database">
+                    <button class="btn btn-primary" (click)="unlock(node.getId())" title="Removes remote lock file, use with caution">
+                        <span class="icon icon-hammer"></span>
+                        Delete Lock
+                    </button>
+                    <button class="btn btn-primary" (click)="overwrite(node.getId())" title="Overwrites remote database with this current database">
                         <span class="icon icon-upload"></span>
                         Overwrite
                     </button>

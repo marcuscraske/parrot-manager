@@ -40,28 +40,34 @@ export class NotificationsComponent
         this.syncFinishEvent = this.renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
             console.log("received remote sync finish event");
 
-            var hostName = event.data.getHostName();
-            var isSuccess = event.data.isSuccess();
-            var isChanges = event.data.isChanges();
-
             // Switch state to not syncing
             this.remoteSyncService.setSyncing(false);
 
-            // Show notification
-            if (isSuccess)
+            // Check we have sync result (optional)
+            var syncResult = event.data;
+
+            if (syncResult != null)
             {
-                if (isChanges)
+                var hostName = event.data.getHostName();
+                var isSuccess = event.data.isSuccess();
+                var isChanges = event.data.isChanges();
+
+                // Show notification
+                if (isSuccess)
                 {
-                    toastr.success(hostName + " has changes");
+                    if (isChanges)
+                    {
+                        toastr.success(hostName + " has changes");
+                    }
+                    else
+                    {
+                        toastr.info(hostName + " has no changes");
+                    }
                 }
                 else
                 {
-                    toastr.info(hostName + " has no changes");
+                    toastr.error("Failed to synchronize " + hostName);
                 }
-            }
-            else
-            {
-                toastr.error("Failed to synchronize " + hostName);
             }
         });
     }

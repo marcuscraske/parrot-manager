@@ -4,6 +4,7 @@ import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.SettingsService;
+import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
@@ -21,12 +22,10 @@ import java.util.Arrays;
  * Used to create backups of a database.
  */
 @Service
-public class BackupService
+public class BackupService implements SettingsRefreshedEvent
 {
     private static final Logger LOG = LoggerFactory.getLogger(BackupService.class);
 
-    @Autowired
-    private SettingsService settingsService;
     @Autowired
     private DatabaseService databaseService;
     @Autowired
@@ -41,6 +40,17 @@ public class BackupService
 
     // Cache of available backup files
     private BackupFile[] cachedBackupFiles;
+
+    // Settings
+    private long automaticBackupsRetained;
+    private boolean automaticBackupOnSave;
+
+    @Override
+    public void eventSettingsRefreshed(Settings settings)
+    {
+        automaticBackupsRetained = settings.getAutomaticBackupsRetained().getSafeLong(0);
+        automaticBackupOnSave = settings.getAutomaticBackupsOnSave().getSafeBoolean(false);
+    }
 
     /**
      * Creates a new backup.
@@ -58,11 +68,9 @@ public class BackupService
         String errorMessage = null;
 
         // Check database open and backups are enabled
-        Settings settings = settingsService.getSettings();
-        boolean isEnabled = settings.getAutomaticBackupsOnSave().getSafeBoolean(false);
         File currentFile = databaseService.getFile();
 
-        if (currentFile != null && isEnabled)
+        if (currentFile != null && automaticBackupOnSave)
         {
             LOG.info("creating backup...");
 
@@ -290,16 +298,14 @@ public class BackupService
 
     private void checkRetainedDatabases()
     {
-        long maxRetained = settingsService.getSettings().getAutomaticBackupsRetained().getSafeLong(0);
-
-        if (maxRetained > 0)
+        if (automaticBackupsRetained > 0)
         {
             File[] backupFiles = fetchFiles();
 
-            if (backupFiles.length >= maxRetained)
+            if (backupFiles.length >= automaticBackupsRetained)
             {
                 // Subtract one as we're now making a new backup, hence we only want n backups afterwards
-                deleteOldestRetainedBackups(backupFiles, maxRetained - 1);
+                deleteOldestRetainedBackups(backupFiles, automaticBackupsRetained - 1);
             }
         }
     }
