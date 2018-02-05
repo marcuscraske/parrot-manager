@@ -6,6 +6,7 @@ import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.event.DatabaseSavedEvent;
+import com.limpygnome.parrot.lib.threading.DelayedThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,18 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
     private long intervalMs;
     private boolean syncOnDatabaseOpened;
     private boolean syncOnChange;
+    private long syncOnChangeDelay;
 
     // Thread data
     private boolean continueToExecute;
     private Thread thread;
+    private DelayedThread delayedThread;
 
     public RemoteSyncIntervalService()
     {
         this.continueToExecute = false;
         this.thread = null;
+        this.delayedThread = new DelayedThread();
     }
 
     @Override
@@ -71,7 +75,14 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
     {
         if (syncOnChange && !backupService.isBackupOpen())
         {
-            forceSync();
+            if (syncOnChangeDelay > 0)
+            {
+                delayedThread.start(() -> forceSync(), syncOnChangeDelay * 1000L);
+            }
+            else
+            {
+                forceSync();
+            }
         }
     }
 
@@ -83,6 +94,7 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
         intervalMs = settings.getRemoteSyncInterval().getSafeLong(0L);
         syncOnDatabaseOpened = settings.getRemoteSyncOnOpeningDatabase().getSafeBoolean(false);
         syncOnChange = settings.getRemoteSyncOnChange().getSafeBoolean(false);
+        syncOnChangeDelay = settings.getRemoteSyncOnChangeDelay().getSafeLong(0L);
 
         // Refresh context (automatic syncing)
         refreshContext();
@@ -176,7 +188,7 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
         LOG.debug("thread has stopped");
     }
 
-    private void forceSync()
+    private synchronized void forceSync()
     {
         LOG.debug("forcing sync...");
 

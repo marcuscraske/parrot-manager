@@ -24,6 +24,7 @@ export class SettingsComponent
         remoteSyncIntervalEnabled: [false],
         remoteSyncOnOpeningDatabase: [false],
         remoteSyncOnChange: [false],
+        remoteSyncOnChangeDelay: [""],
         theme: [""],
         saveWindowState: [""],
         inactivityTimeout: [""],

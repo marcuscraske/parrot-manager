@@ -30,6 +30,7 @@ export class SettingsService {
             "remoteSyncIntervalEnabled" : settings.getRemoteSyncIntervalEnabled().getValue(),
             "remoteSyncOnOpeningDatabase" : settings.getRemoteSyncOnOpeningDatabase().getValue(),
             "remoteSyncOnChange" : settings.getRemoteSyncOnChange().getValue(),
+            "remoteSyncOnChangeDelay" : settings.getRemoteSyncOnChangeDelay().getValue(),
             "theme" : settings.getTheme().getValue(),
             "saveWindowState" : settings.getSaveWindowState().getValue(),
             "inactivityTimeout" : (inactivityTimeout != null ? inactivityTimeout / 60 / 1000 : null),
@@ -90,6 +91,9 @@ export class SettingsService {
         );
         settings.getRemoteSyncOnChange().setValue(
             json.remoteSyncOnChange
+        );
+        settings.getRemoteSyncOnChangeDelay().setValueLong(
+            json.remoteSyncOnChangeDelay
         );
         settings.getTheme().setValue(
             json.theme

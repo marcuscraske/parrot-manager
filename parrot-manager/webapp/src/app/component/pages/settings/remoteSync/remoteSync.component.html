@@ -44,4 +44,19 @@
             Sync on save
         </label>
     </div>
+    <div class="form-group">
+        <label class="form-control-label" for="remoteSyncOnChangeDelay">
+            Delay after save (before sync)
+        </label>
+        <input id="remoteSyncOnChangeDelay"
+               type="number"
+               class="form-control"
+               placeholder="Number of minutes"
+               formControlName="remoteSyncOnChangeDelay"
+               [(ngModel)]="globalSettingsForm.value['remoteSyncOnChangeDelay']"
+        />
+        <small class="form-text text-muted">
+            Leave as zero for no delay.
+        </small>
+    </div>
 </div>

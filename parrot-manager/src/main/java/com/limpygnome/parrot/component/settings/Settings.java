@@ -18,6 +18,7 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> remoteSyncIntervalEnabled;
     private SettingsValue<Boolean> remoteSyncOnOpeningDatabase;
     private SettingsValue<Boolean> remoteSyncOnChange;
+    private SettingsValue<Long> remoteSyncOnChangeDelay;
     private SettingsValue<String> theme;
     private SettingsValue<Boolean> saveWindowState;
     private SettingsValue<Long> inactivityTimeout;
@@ -38,6 +39,7 @@ public class Settings implements Serializable
         this.remoteSyncIntervalEnabled = new SettingsValue<>(true);
         this.remoteSyncOnOpeningDatabase = new SettingsValue<>(true);
         this.remoteSyncOnChange = new SettingsValue<>(true);
+        this.remoteSyncOnChangeDelay = new SettingsValue<>(30L);
         this.theme = new SettingsValue<>("light");
         this.saveWindowState = new SettingsValue<>(true);
         this.inactivityTimeout = new SettingsValue<>(0L);
@@ -93,6 +95,11 @@ public class Settings implements Serializable
         return remoteSyncOnChange;
     }
 
+    public SettingsValue<Long> getRemoteSyncOnChangeDelay()
+    {
+        return remoteSyncOnChangeDelay;
+    }
+
     public SettingsValue<String> getTheme() {
         return theme;
     }
@@ -146,6 +153,7 @@ public class Settings implements Serializable
                 ", remoteSyncIntervalEnabled=" + remoteSyncIntervalEnabled +
                 ", remoteSyncOnOpeningDatabase=" + remoteSyncOnOpeningDatabase +
                 ", remoteSyncOnChange=" + remoteSyncOnChange +
+                ", remoteSyncOnChangeDelay=" + remoteSyncOnChangeDelay +
                 ", theme=" + theme +
                 ", saveWindowState=" + saveWindowState +
                 ", inactivityTimeout=" + inactivityTimeout +
