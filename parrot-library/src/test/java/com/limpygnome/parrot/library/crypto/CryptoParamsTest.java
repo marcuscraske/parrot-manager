@@ -1,15 +1,18 @@
 package com.limpygnome.parrot.library.crypto;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.crypto.SecretKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,6 +93,21 @@ public class CryptoParamsTest
 
         // When/Then
         assertFalse("Should be false as different values", instance.equals(cryptoParams));
+    }
+
+    @Test
+    public void cloned()
+    {
+        // When
+        CryptoParams clone = cryptoParams.clone();
+
+        // THen
+        assertEquals("Salt should be same", SALT, clone.getSalt());
+        assertEquals("Rounds should be same", ROUNDS, clone.getRounds());
+        assertEquals("Last modified should be same", LAST_MODIFIED, clone.getLastModified());
+        assertEquals("Secret key should be same", secretKey, clone.getSecretKey());
+
+        assertThat("Should be different object", clone, not(sameInstance(cryptoParams)));
     }
 
 }
