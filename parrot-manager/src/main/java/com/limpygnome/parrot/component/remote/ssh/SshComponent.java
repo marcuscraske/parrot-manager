@@ -14,7 +14,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Common functionality and wrapper around using SSH.
@@ -87,18 +89,18 @@ public class SshComponent
         channelSftp.rm(file.getFullPath());
     }
 
-    public List<SshFile> list(SshSession sshSession, SshFile parent) throws JSchException, SftpException
+    public List<SshFile> list(SshSession sshSession, SshFile parent, Predicate<SshFile> filter) throws JSchException, SftpException
     {
         ChannelSftp channelSftp = sshSession.getChannelSftp();
 
         String directory = parent.getFullPath();
         Vector<ChannelSftp.LsEntry> entries = channelSftp.ls(directory);
 
-        List<SshFile> files = entries.stream()
+        Stream<SshFile> stream = entries.stream()
                 .map(lsEntry -> {
                     try
                     {
-                        return new SshFile(sshSession, parent, lsEntry.getLongname());
+                        return new SshFile(sshSession, parent, lsEntry.getFilename());
                     }
                     catch (SftpException | JSchException e)
                     {
@@ -106,8 +108,14 @@ public class SshComponent
                     }
 
                 })
-                .sorted(Comparator.naturalOrder())
-                .collect(Collectors.toList());
+                .sorted(Comparator.naturalOrder());
+
+        if (filter != null)
+        {
+            stream = stream.filter(filter);
+        }
+
+        List<SshFile> files = stream.collect(Collectors.toList());
 
         return files;
     }

@@ -30,7 +30,8 @@ export class SettingsComponent
         wipeClipboardDelay: [""],
         autoSave: [true],
         mergeLogShowDetail: [false],
-        keyboardLayout: [""]
+        keyboardLayout: [""],
+        remoteBackupsRetained: [""]
     });
 
     constructor(

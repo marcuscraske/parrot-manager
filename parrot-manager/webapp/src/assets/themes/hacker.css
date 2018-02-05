@@ -100,7 +100,9 @@ header div a.selected
 .btn.btn-default:active,
 .btn.btn-primary:hover,
 .btn.btn-primary:focus,
-.btn.btn-primary:active
+.btn.btn-primary:active,
+.btn.btn-danger:hover,
+.btn.btn-danger:focus
 {
     background: none !important;
     color: #0f0 !important;
@@ -110,14 +112,12 @@ header div a.selected
 .list-group-item-danger
 {
     background: #0f0 !important;
-    border: solid 1px #0f0;
-    color: #000;
+    color: #000 !important;
 }
-.btn.btn-danger:hover,
-.btn.btn-danger:focus,
-.btn.btn-danger:active
+
+.list-group-item-danger
 {
-    color: #f00;
+    border: solid 1px #0f0 !important;
 }
 
 .form-control
@@ -190,9 +190,13 @@ header div a.selected
     color: #000;
 }
 
-.list-group-item.active
+.list-group-item:hover,
+.list-group-item:focus,
+.list-group-item.active,
+.list-group-item-danger:hover,
+.list-group-item-danger:focus
 {
-    background: #000;
-    color: #0f0;
-    border-color: #000;
+    background: #000 !important;
+    color: #0f0 !important;
+    border-color: #000 !important;
 }

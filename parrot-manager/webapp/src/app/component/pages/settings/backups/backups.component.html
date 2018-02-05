@@ -40,4 +40,24 @@
             change. Leave empty for no delay.
         </small>
     </div>
+    <div class="form-group">
+        <label class="form-control-label">
+            Remote backups retained
+        </label>
+        <input id="remoteBackupsRetained"
+               type="number"
+               class="form-control"
+               placeholder="Leave empty to disable"
+               formControlName="remoteBackupsRetained"
+               [(ngModel)]="globalSettingsForm.value['remoteBackupsRetained']"
+        />
+        <small class="form-text text-muted">
+            Leave as zero or empty to disable.
+        </small>
+        <small class="form-text text-muted">
+            When uploading a new merged version of the database, the old version will be kept as a backup on the
+            remote server. The file name will be renamed from e.g. example to .example.12345, where
+            the number is a time-stamp.
+        </small>
+    </div>
 </div>

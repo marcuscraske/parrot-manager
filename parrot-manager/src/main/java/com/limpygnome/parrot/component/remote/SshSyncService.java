@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Currently only supports SSH, but this could be split into multiple services for different remote sync options.
@@ -142,7 +143,6 @@ public class SshSyncService implements SettingsRefreshedEvent
             String localPath = databaseService.getPath();
             SshFile fileRemote = new SshFile(sshSession, options.getRemotePath());
             SshFile fileRemoteSyncBackup = fileRemote.clone().postFixFileName(".sync");
-            SshFile fileRemoteBackup = fileRemote.clone().preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
 
             // check if database exists
             if (!sshComponent.checkRemotePathExists(sshSession, fileRemote))
@@ -158,7 +158,7 @@ public class SshSyncService implements SettingsRefreshedEvent
                 sshComponent.upload(sshSession, localPath, fileRemote);
 
                 // delete or convert to backup
-                convertToRemoteBackupOrDelete(mergeLog, fileRemoteSyncBackup, fileRemoteBackup);
+                convertToRemoteBackupOrDelete(mergeLog, fileRemote, fileRemoteSyncBackup);
             }
         }
         catch (Exception e)
@@ -308,8 +308,7 @@ public class SshSyncService implements SettingsRefreshedEvent
                     mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database"));
 
                     // delete or create backup out of sync file
-                    SshFile fileBackup = source.clone().preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
-                    convertToRemoteBackupOrDelete(mergeLog, fileSyncBackup, fileBackup);
+                    convertToRemoteBackupOrDelete(mergeLog, source, fileSyncBackup);
                 }
                 else
                 {
@@ -474,8 +473,10 @@ public class SshSyncService implements SettingsRefreshedEvent
         }
     }
 
-    private void convertToRemoteBackupOrDelete(MergeLog mergeLog, SshFile currentFile, SshFile backupFile) throws SftpException, JSchException
+    private void convertToRemoteBackupOrDelete(MergeLog mergeLog, SshFile databaseFile, SshFile currentFile) throws SftpException, JSchException
     {
+        SshFile backupFile = databaseFile.clone().preFixFileName(".").postFixFileName("." + System.currentTimeMillis());
+
         // convert if backups enabled, otherwise just delete it
         if (remoteBackupsRetained > 0)
         {
@@ -485,14 +486,18 @@ public class SshSyncService implements SettingsRefreshedEvent
 
             // fetch list of files
             SshFile parent = backupFile.getParent(sshSession);
-            List<SshFile> files = sshComponent.list(sshSession, parent);
+            String escapedFileName = Pattern.quote("." + databaseFile.getFileName() + ".");
+            List<SshFile> files = sshComponent.list(
+                    sshSession, parent, sshFile -> sshFile.getFileName().matches(escapedFileName + ".[0-9]+")
+            );
 
             // drop those outside retained limit
             if (files.size() > remoteBackupsRetained)
             {
                 mergeLog.add(new LogItem(LogLevel.DEBUG, "Too many remote backups - " + files.size() + " / " + remoteBackupsRetained));
 
-                for (int i = (int) remoteBackupsRetained; i < files.size(); i++)
+                int culled = files.size() - (int) remoteBackupsRetained;
+                for (int i = 0; i < culled; i++)
                 {
                     SshFile file = files.get(i);
                     sshComponent.remove(sshSession, file);

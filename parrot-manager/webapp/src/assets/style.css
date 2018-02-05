@@ -121,15 +121,18 @@ a
 .list-group-item-danger:hover,
 .list-group-item-danger:focus
 {
-    background: #c1443e;
+    background: #c1443e !important;
 }
 
+.list-group-item:hover,
+.list-group-item:focus,
 .list-group-item.active
 {
     background: #eee;
     border-color: #ccc;
     color: inherit;
 }
+
 
 /*
     toastr theme overrides

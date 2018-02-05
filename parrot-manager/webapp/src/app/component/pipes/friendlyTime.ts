@@ -90,7 +90,7 @@ export class FriendlyTime implements PipeTransform, OnDestroy
 
     createTimer()
     {
-        // abort if timer alread
+        // abort if timer already
         if (this.timer)
         {
             return;

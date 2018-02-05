@@ -112,7 +112,7 @@ export class SettingsService {
         settings.getKeyboardLayout().setValue(
             json.keyboardLayout
         );
-        settings.getRemoteBackupsRetained().setValue(
+        settings.getRemoteBackupsRetained().setValueLong(
             json.remoteBackupsRetained
         );
 

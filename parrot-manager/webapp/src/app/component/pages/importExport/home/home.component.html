@@ -10,16 +10,11 @@
 <h2 class="text-center">
     Select Format
 </h2>
-<div class="text-center">
-    <select class="form-control" size="8" id="format">
-        <option value="json" selected>
-            JSON
-        </option>
-        <option value="csv">
-            CSV
-        </option>
-    </select>
-</div>
+
+<ul class="list-group text-center mt-3">
+    <li class="list-group-item" [ngClass]="{ 'active' : format == 'json' }" (click)="format = 'json'">JSON</li>
+    <li class="list-group-item" [ngClass]="{ 'active' : format == 'csv' }" (click)="format = 'csv'">CSV</li>
+</ul>
 
 <h2 class="text-center mt-4">
     Options

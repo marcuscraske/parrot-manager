@@ -3,3 +3,14 @@ select
     margin: auto;
     width: 25em;
 }
+
+.list-group
+{
+    margin: auto;
+    width: 20em;
+}
+
+.list-group-item
+{
+    cursor: pointer;
+}

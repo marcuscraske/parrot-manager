@@ -106,6 +106,8 @@ textarea
     background: #333;
 }
 
+.list-group-item:hover,
+.list-group-item:focus,
 .list-group-item.active
 {
     background: #000;

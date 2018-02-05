@@ -13,6 +13,7 @@ export class HomeComponent {
 
     // state/flags
     public importText: boolean;
+    public format: string = "json";
 
     // result
     public success: string;
@@ -111,10 +112,9 @@ export class HomeComponent {
 
     private createOptions()
     {
-        var format = $("#format").val();
         var remoteSync = $("#remoteSync").val();
 
-        var options = this.importExportService.createOptions(format, remoteSync);
+        var options = this.importExportService.createOptions(this.format, remoteSync);
         return options;
     }
 
