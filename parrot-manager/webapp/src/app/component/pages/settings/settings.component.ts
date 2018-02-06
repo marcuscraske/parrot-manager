@@ -32,7 +32,8 @@ export class SettingsComponent
         autoSave: [true],
         mergeLogShowDetail: [false],
         keyboardLayout: [""],
-        remoteBackupsRetained: [""]
+        remoteBackupsRetained: [""],
+        ignoreJavaVersion: [""]
     });
 
     constructor(
@@ -64,6 +65,13 @@ export class SettingsComponent
 
                 // Save changes
                 this.settingsService.save(form);
+
+                // Update last settings
+                this.refreshLastSettings();
+            }
+            else
+            {
+                console.log("settings unchanged, ignored");
             }
         });
     }
@@ -73,11 +81,17 @@ export class SettingsComponent
         console.log("populating form with settings...");
 
         // Read existing settings
-        var settings = this.settingsService.fetchAll();
-        this.lastSettings = settings;
+        this.refreshLastSettings();
 
         // Apply to form
-        this.globalSettingsForm.patchValue(settings);
+        this.globalSettingsForm.patchValue(this.lastSettings);
+    }
+
+    refreshLastSettings()
+    {
+        // Read existing settings
+        var settings = this.settingsService.fetchAll();
+        this.lastSettings = settings;
     }
 
     save()

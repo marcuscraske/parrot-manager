@@ -30,6 +30,7 @@ public class BrowserService
         URL_MAP = new HashMap<>();
         URL_MAP.put("github", "https://github.com/limpygnome/parrot-manager");
         URL_MAP.put("keyboardLayoutDocs", "https://github.com/limpygnome/parrot-manager/blob/develop/docs/keyboard-layouts.md");
+        URL_MAP.put("jre", "https://www.oracle.com/technetwork/java/javase/downloads");
     }
 
     /**
@@ -43,6 +44,10 @@ public class BrowserService
         if (url != null)
         {
             openLink(url);
+        }
+        else
+        {
+            LOG.error("URL key not found - key: {}", key);
         }
     }
 

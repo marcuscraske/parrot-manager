@@ -38,7 +38,8 @@ export class SettingsService {
             "autoSave" : settings.getAutoSave().getValue(),
             "mergeLogShowDetail" : settings.getMergeLogShowDetail().getValue(),
             "keyboardLayout" : settings.getKeyboardLayout().getValue(),
-            "remoteBackupsRetained" : settings.getRemoteBackupsRetained().getValue()
+            "remoteBackupsRetained" : settings.getRemoteBackupsRetained().getValue(),
+            "ignoreJavaVersion" : settings.getIgnoreJavaVersion().getValue()
         };
 
         this.settingsCache = json;
@@ -58,6 +59,16 @@ export class SettingsService {
     {
         var json = this.fetchAll();
         return json[name];
+    }
+
+    setBoolean(name: string, value: boolean)
+    {
+        // Update settings
+        var settings = this.fetchAll();
+        settings[name] = value;
+
+        // Persist settings
+        this.save(settings);
     }
 
     save(json)
@@ -118,6 +129,9 @@ export class SettingsService {
         );
         settings.getRemoteBackupsRetained().setValueLong(
             json.remoteBackupsRetained
+        );
+        settings.getIgnoreJavaVersion().setValue(
+            json.ignoreJavaVersion
         );
 
         // Save

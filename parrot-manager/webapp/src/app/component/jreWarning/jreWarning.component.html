@@ -1,0 +1,23 @@
+<div *ngIf="buildInfoService.isJavaOutdated() && !isIgnored()" class="banner">
+
+    <div class="iconc">
+        <span class="icon icon-warning"></span>
+    </div>
+
+    <div class="text">
+        The Java runtime version being used may cause stability issues, please consider upgrading to the latest
+        version (or least Java Runtime 9).
+    </div>
+
+    <div class="options">
+        <button class="btn btn-default" (click)="browserService.open('jre')">
+            <span class="icon icon-earth"></span>
+            Latest Java Runtime (JRE)
+        </button>
+        <button class="btn btn-danger" (click)="ignore()">
+            <span class="icon icon-cross"></span>
+            Ignore
+        </button>
+    </div>
+
+</div>

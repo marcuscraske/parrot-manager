@@ -89,8 +89,9 @@ public class SettingsService
         }
         catch (IOException e)
         {
-            LOG.error("failed to load or create settings", e);
+            LOG.error("failed to load or create settings, using defaults", e);
             result = "Failed to load or create settings";
+            settings = new Settings();
         }
 
         return result;

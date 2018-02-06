@@ -1,5 +1,15 @@
 <div [formGroup]="globalSettingsForm" #form="ngForm">
     <div class="form-group">
+        <label class="checkbox-inline">
+            <input type="checkbox"
+                   id="ignoreJavaVersion"
+                   formControlName="ignoreJavaVersion"
+                   [(ngModel)]="globalSettingsForm.value['ignoreJavaVersion']"
+            />
+            Ignore outdated and incompatible Java runtime version (hides warning banner)
+        </label>
+    </div>
+    <div class="form-group">
         <label class="form-control-label" for="inactivityTimeout">
             Minutes of inactivity to trigger database close
         </label>

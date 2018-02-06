@@ -1,0 +1,36 @@
+/*
+    Banner used by jreWarning and backupWarning components.
+
+    Allows displaying warning banners at the top of the app.
+*/
+
+.banner
+{
+    display: table;
+    position: relative;
+    left: 12em;
+    width: calc(100% - 12em);
+    background: #fff3b5;
+    color: #874c00;
+    padding: 0 0.5em;
+}
+
+.banner .options,
+.banner .iconc,
+.banner .text
+{
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0.6em;
+}
+
+.banner .iconc .icon
+{
+    font-size: 1.5em;
+}
+
+.banner .options
+{
+    text-align: right;
+    white-space: nowrap;
+}

@@ -10,6 +10,11 @@ export class BuildInfoService {
         this.buildInfoService = (window as any).buildInfoService;
     }
 
+    isJavaOutdated() : boolean
+    {
+        return this.buildInfoService.isJavaOutdated();
+    }
+
     getBuildInfo() : string
     {
         var result = this.buildInfoService.getBuildInfo();

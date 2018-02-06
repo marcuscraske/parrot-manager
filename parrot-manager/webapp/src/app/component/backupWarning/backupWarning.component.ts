@@ -6,8 +6,7 @@ import { BackupService } from 'app/service/backup.service'
 
 @Component({
   selector: 'backupWarning',
-  templateUrl: 'backupWarning.component.html',
-  styleUrls: ['backupWarning.component.css']
+  templateUrl: 'backupWarning.component.html'
 })
 export class BackupWarningComponent
 {

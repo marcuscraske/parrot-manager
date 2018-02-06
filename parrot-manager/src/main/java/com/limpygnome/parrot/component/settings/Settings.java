@@ -27,6 +27,7 @@ public class Settings implements Serializable
     private SettingsValue<Boolean> mergeLogShowDetail;
     private SettingsValue<String> keyboardLayout;
     private SettingsValue<Long> remoteBackupsRetained;
+    private SettingsValue<Boolean> ignoreJavaVersion;
 
     public Settings()
     {
@@ -48,6 +49,7 @@ public class Settings implements Serializable
         this.mergeLogShowDetail = new SettingsValue<>(false);
         this.keyboardLayout = new SettingsValue<>(null);
         this.remoteBackupsRetained = new SettingsValue<>(30L);
+        this.ignoreJavaVersion = new SettingsValue<>(false);
     }
 
     public SettingsValue<Boolean> getRecentFilesEnabled()
@@ -139,6 +141,11 @@ public class Settings implements Serializable
         return remoteBackupsRetained;
     }
 
+    public SettingsValue<Boolean> getIgnoreJavaVersion()
+    {
+        return ignoreJavaVersion;
+    }
+
     @JsonIgnore
     @Override
     public String toString()
@@ -162,6 +169,7 @@ public class Settings implements Serializable
                 ", mergeLogShowDetail=" + mergeLogShowDetail +
                 ", keyboardLayout=" + keyboardLayout +
                 ", remoteBackupsRetained=" + remoteBackupsRetained +
+                ", ignoreJavaVersion=" + ignoreJavaVersion +
                 '}';
     }
 

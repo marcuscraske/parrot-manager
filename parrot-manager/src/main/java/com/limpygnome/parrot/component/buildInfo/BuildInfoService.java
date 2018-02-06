@@ -14,6 +14,27 @@ public class BuildInfoService
     @Autowired
     private StandAloneComponent standAloneComponent;
 
+    // Flag to indicate whether Java runtime is considered outdated
+    private boolean javaOutdated;
+
+    public BuildInfoService()
+    {
+        // Check whether Java runtime is outdated
+        String version = System.getProperty("java.version");
+        if (version.startsWith("1.") || version.startsWith("8."))
+        {
+            javaOutdated = true;
+        }
+    }
+
+    /**
+     * @return indicates whether Java is outdated
+     */
+    public boolean isJavaOutdated()
+    {
+        return javaOutdated;
+    }
+
     /**
      * @return string with lots of build information
      */

@@ -24,6 +24,7 @@
                 "assets/style.css",
                 "assets/animations.css",
                 "assets/loading-box.css",
+                "assets/banner.css",
                 "assets/fonts/icomoon/style.css"
             ],
             "scripts": [

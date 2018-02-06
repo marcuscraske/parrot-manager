@@ -10,6 +10,7 @@ import { AppComponent }             from 'app/app.component';
 import { TopBarComponent }          from 'app/component/topbar/topbar.component'
 import { NotificationsComponent }   from 'app/component/notifications/notifications.component'
 import { BackupWarningComponent }   from 'app/component/backupWarning/backupWarning.component'
+import { JreWarningComponent }      from 'app/component/jreWarning/jreWarning.component'
 
 // Modules
 import { PipesModule }              from 'app/component/pipes/pipes.module'
@@ -69,7 +70,7 @@ const appRoutes: Routes = [
   declarations: [
 
     // Global
-    AppComponent, BackupWarningComponent, TopBarComponent, NotificationsComponent,
+    AppComponent, BackupWarningComponent, JreWarningComponent, TopBarComponent, NotificationsComponent,
 
     // Pages
     ErrorComponent,
