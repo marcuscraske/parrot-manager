@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.limpygnome</groupId>
         <artifactId>parrot</artifactId>
-        <version>6.0</version>
+        <version>7.0</version>
     </parent>
     <groupId>com.limpygnome.parrot</groupId>
     <artifactId>parrot-converter</artifactId>

@@ -61,7 +61,7 @@ public class WebViewStage extends Stage
 
         // initialize webview (load page)
         WebViewInit webViewInit = webStageInitService.getWebViewInit();
-        webViewInit.init(webView);
+        webViewInit.init(this, webView);
 
         // build scene for web view
         scene = new Scene(webView, Color.valueOf("#333333"));

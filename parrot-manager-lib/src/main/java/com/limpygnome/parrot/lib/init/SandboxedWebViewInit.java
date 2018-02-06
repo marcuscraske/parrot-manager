@@ -2,6 +2,7 @@ package com.limpygnome.parrot.lib.init;
 
 import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class SandboxedWebViewInit implements WebViewInit
     private UrlStreamOverrideService urlStreamOverrideService;
 
     @Override
-    public void init(WebView webView)
+    public void init(Stage stage, WebView webView)
     {
         // enable sandboxing
         urlStreamOverrideService.enable();

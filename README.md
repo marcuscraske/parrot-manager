@@ -40,6 +40,8 @@ Supports Linux, Windows and Mac.
 - Modern UI
 - Standalone mode - useful for memory sticks and restrictive environments
 
+Screenshots can be found in [docs/screenshots](here).
+
 Upcoming features can be seen on the [roadmap](ROADMAP.md).
 
 
