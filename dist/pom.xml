@@ -39,7 +39,8 @@
         <profile>
             <id>linux</id>
             <modules>
-                <module>debian</module>
+                <module>linux-deb</module>
+                <module>linux-rpm</module>
             </modules>
         </profile>
         <profile>

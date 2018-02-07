@@ -10,7 +10,7 @@
         <version>7.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
-    <artifactId>windows</artifactId>
+    <artifactId>linux-deb</artifactId>
     <packaging>pom</packaging>
 
     <scm>
@@ -39,17 +39,23 @@
                     <workingDirectory>${project.build.directory}</workingDirectory>
                     <arguments>
                         <argument>-deploy</argument>
-                        <argument>-Bicon=${project.build.directory}\..\..\..\parrot-manager\src\main\resources\icons\parrot.ico</argument>
+                        <argument>-Bicon=${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot-icon.png</argument>
                         <argument>-BappVersion=${project.version}</argument>
                         <argument>-Bruntime=${JAVA_HOME}/jre</argument>
+                        <argument>-Bcategory=web</argument>
+                        <argument>-BlicenseFile=${project.build.directory}/../../../LICENSE</argument>
+                        <argument>-BlicenseType=MIT License (Open Source)</argument>
+                        <argument>-Bvendor=limpygnome</argument>
+                        <argument>-Bcopyright=MIT License (Open Source)</argument>
+                        <argument>-Bemail=limpygnome@gmail.com</argument>
                         <argument>-native</argument>
-                        <argument>exe</argument>
+                        <argument>deb</argument>
                         <argument>-srcdir</argument>
-                        <argument>${project.build.directory}\..\..\..\parrot-manager\target</argument>
+                        <argument>${project.build.directory}/../../../parrot-manager/target</argument>
                         <argument>-srcfiles</argument>
                         <argument>parrot.jar</argument>
                         <argument>-outdir</argument>
-                        <argument>.</argument>
+                        <argument>${project.build.directory}</argument>
                         <argument>-outfile</argument>
                         <argument>parrot-manager-${project.version}</argument>
                         <argument>-appclass</argument>
@@ -76,9 +82,9 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <tasks>
-                                <mkdir dir="target\package\windows"/>
-                                <copy file="${project.build.directory}\..\..\..\parrot-manager\src\main\resources\icons\parrot-icon-512.png" tofile="target\package\windows\parrot-manager-background.png" />
-                                <copy file="${project.build.directory}\..\..\..\parrot-manager\src\main\resources\icons\parrot.bmp" tofile="target\package\windows\parrot-manager-setup-icon.bmp" />
+                                <mkdir dir="target/package/deb"/>
+                                <copy file="${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot-icon-512.png" tofile="target/package/deb/parrot-manager-background.png" />
+                                <copy file="${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot.bmp" tofile="target/package/deb/parrot-manager-setup-icon.bmp" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -96,18 +102,18 @@
                             <target>
 
                                 <!-- some runtime's / JDKs where exe is actually in target/bundles sub-dir -->
-                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.exe"
-                                      tofile="${project.build.directory}/parrot-manager-${project.version}.exe"
+                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.deb"
+                                      tofile="${project.build.directory}/parrot-manager-${project.version}.deb"
                                       failonerror="false"
                                 />
 
-                                <!-- rename exe -->
-                                <move file="${project.build.directory}\parrot-manager-${project.version}.exe"
-                                      tofile="${project.build.directory}\parrot-manager-windows-${project.version}.exe" />
+                                <!-- rename -->
+                                <move file="${project.build.directory}/parrot-manager-${project.version}.deb"
+                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}.deb" />
 
                                 <!-- generate md5 checksum -->
-                                <checksum file="${project.build.directory}\parrot-manager-windows-${project.version}.exe" property="dist.windows.md5" />
-                                <echo message="parrot-manager-windows-${project.version}.exe checksum: ${dist.windows.md5}" />
+                                <checksum file="${project.build.directory}/parrot-manager-linux-${project.version}.deb" property="dist.deb.md5" />
+                                <echo message="parrot-manager-linux-${project.version}.deb checksum: ${dist.deb.md5}" />
 
                             </target>
                         </configuration>
@@ -135,7 +141,7 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-manager-windows-${project.version}.exe</include>
+                                <include>parrot-manager-linux-${project.version}.deb</include>
                             </includes>
                         </fileSet>
                     </fileSets>
