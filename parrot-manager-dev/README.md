@@ -71,5 +71,13 @@ with the following argument:
 ````
 
 
+## Stand-Alone Mode
+Launch with this argument:
+
+````
+--standalone=true
+````
+
+
 ## Docs
 More documentation can be found within each module.

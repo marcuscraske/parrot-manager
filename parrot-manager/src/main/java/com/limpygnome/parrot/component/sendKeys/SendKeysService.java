@@ -161,7 +161,7 @@ public class SendKeysService implements SettingsRefreshedEvent
         // initialise/update cache
         updateKeyboardLayoutsCache();
 
-        LOG.info("keyboard layout: {}", keyboardLayout.getName());
+        LOG.info("keyboard layout: {}", (keyboardLayout != null ? keyboardLayout.getName() : "none"));
     }
 
     @Override

@@ -26,6 +26,12 @@ public class KeyboardLayout
         keys = new HashMap<>();
     }
 
+    KeyboardLayout(String name)
+    {
+        this();
+        this.name = name;
+    }
+
     public int[] convert(char character)
     {
         // attempt to find in map first
@@ -41,7 +47,7 @@ public class KeyboardLayout
             }
             else
             {
-                result = new int[] { KeyEvent.VK_SHIFT };
+                result = new int[] { key };
             }
         }
 

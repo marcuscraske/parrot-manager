@@ -17,7 +17,7 @@ public class StandAloneComponent
     // Flag indicating whether app is running in stand-alone mode
     private boolean standalone;
 
-    // Allow --standalone as arg to override behaviour (good for dev / temp scenario etc)
+    // Allow --standalone=true as arg to override behaviour (good for dev / temp scenario etc)
     @Value("${standalone:false}")
     private boolean standAloneOverride;
 

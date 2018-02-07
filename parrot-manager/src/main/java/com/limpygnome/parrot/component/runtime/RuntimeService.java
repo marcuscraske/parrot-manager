@@ -4,6 +4,8 @@ import com.limpygnome.parrot.component.settings.StandAloneComponent;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.lib.urlStream.UrlStreamOverrideService;
+import java.io.File;
+import java.io.IOException;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -11,11 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * A archive for runtime state and functionality.
@@ -151,6 +148,7 @@ public class RuntimeService
      */
     public void setReady(boolean ready)
     {
+        LOG.debug("runtime set as ready");
         this.ready = ready;
     }
 

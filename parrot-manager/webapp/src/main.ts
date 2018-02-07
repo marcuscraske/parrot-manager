@@ -22,28 +22,12 @@ else
     console.log("running in dev mode");
 }
 
-// wait for global services to be injected variable
-var handle = setInterval(() => {
-
-    console.log("checking if runtime ready...");
-
-    var win = (window as any);
-    if (win.runtimeService != null && win.runtimeService.isReady())
-    {
-        console.log("runtime ready, bootstrapping app");
-
-        // load application
-        try
-        {
-            platformBrowserDynamic().bootstrapModule(AppModule);
-        }
-        catch (e)
-        {
-            console.error(e);
-        }
-
-        // stop interval
-        clearInterval(handle);
-    }
-
-}, 100);
+// startup app
+try
+{
+    platformBrowserDynamic().bootstrapModule(AppModule);
+}
+catch (e)
+{
+    console.error(e);
+}

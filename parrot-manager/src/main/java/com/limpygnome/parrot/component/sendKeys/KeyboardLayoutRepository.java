@@ -1,20 +1,23 @@
 package com.limpygnome.parrot.component.sendKeys;
 
 import com.limpygnome.parrot.component.file.FileComponent;
-import com.limpygnome.parrot.component.settings.Settings;
-import com.limpygnome.parrot.component.settings.SettingsService;
-import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.lib.io.StringStreamOperations;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Repository;
-
-import javax.annotation.PostConstruct;
-import java.io.*;
-import java.util.*;
 
 /**
  * Repository of keyboard layouts.
@@ -92,6 +95,13 @@ public class KeyboardLayoutRepository
             }
         }
 
+        // Check whether something has seriously gone wrong
+        if (result == null)
+        {
+            LOG.error("No keyboard layouts on classpath");
+            result = new KeyboardLayout("Broken");
+        }
+
         return result;
     }
 
@@ -161,6 +171,11 @@ public class KeyboardLayoutRepository
         {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource[] resources = resolver.getResources("/keyboard-layout/**");
+
+            if (resources == null || resources.length == 0)
+            {
+                LOG.error("No keyboard layouts on classpath");
+            }
 
             for (Resource resource : resources)
             {

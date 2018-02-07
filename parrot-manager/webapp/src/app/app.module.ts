@@ -1,5 +1,7 @@
+import { initApp } from './initApp'
+
 // AngularJS
-import { NgModule, ErrorHandler }   from '@angular/core';
+import { NgModule, ErrorHandler, APP_INITIALIZER }   from '@angular/core';
 import { BrowserModule }            from '@angular/platform-browser';
 import { ReactiveFormsModule }      from '@angular/forms';
 import { RouterModule, Routes }     from '@angular/router';
@@ -56,7 +58,8 @@ const appRoutes: Routes = [
 
 @NgModule({
   providers: [
-    { provide: ErrorHandler, useClass: ErrorWatcherHandler }
+    { provide: ErrorHandler, useClass: ErrorWatcherHandler },
+    { provide: APP_INITIALIZER, useFactory: initApp, multi: true, deps: [] }
   ],
   imports: [
     BrowserModule,

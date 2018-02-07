@@ -50,7 +50,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <java.compiler.version>1.8</java.compiler.version>
+                <java.compiler.version>1.9</java.compiler.version>
             </properties>
             <modules>
                 <module>dist</module>

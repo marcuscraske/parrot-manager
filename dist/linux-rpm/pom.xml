@@ -43,7 +43,6 @@
                         <argument>-BappVersion=${project.version}</argument>
                         <argument>-Bruntime=${JAVA_HOME}/jre</argument>
                         <argument>-Bcategory=web</argument>
-                        <argument>-BlicenseFile=${project.build.directory}/../../../LICENSE</argument>
                         <argument>-BlicenseType=MIT License (Open Source)</argument>
                         <argument>-Bvendor=limpygnome</argument>
                         <argument>-native</argument>
@@ -100,13 +99,13 @@
                             <target>
 
                                 <!-- some runtime's / JDKs where exe is actually in target/bundles sub-dir -->
-                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.rpm"
+                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}-1.x86_64.rpm"
                                       tofile="${project.build.directory}/parrot-manager-${project.version}.rpm"
                                       failonerror="false"
                                 />
 
                                 <!-- rename -->
-                                <move file="${project.build.directory}/parrot-manager-${project.version}.rpm"
+                                <move file="${project.build.directory}/parrot-manager-${project.version}-1.x86_64.rpm"
                                       tofile="${project.build.directory}/parrot-manager-linux-${project.version}.rpm" />
 
                                 <!-- generate md5 checksum -->

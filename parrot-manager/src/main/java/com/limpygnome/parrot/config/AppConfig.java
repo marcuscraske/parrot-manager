@@ -20,7 +20,7 @@ public class AppConfig
      * @return property source config to allow optional injected values, using @Value annotation
      */
     @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer()
     {
         PropertySourcesPlaceholderConfigurer config = new PropertySourcesPlaceholderConfigurer();
         config.setIgnoreResourceNotFound(true);

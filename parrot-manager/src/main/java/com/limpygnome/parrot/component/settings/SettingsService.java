@@ -45,6 +45,11 @@ public class SettingsService
     // Current settings
     private Settings settings;
 
+    public SettingsService()
+    {
+        settings = new Settings();
+    }
+
     @PostConstruct
     public void initialLoad()
     {

@@ -43,7 +43,6 @@
                         <argument>-BappVersion=${project.version}</argument>
                         <argument>-Bruntime=${JAVA_HOME}/jre</argument>
                         <argument>-Bcategory=web</argument>
-                        <argument>-BlicenseFile=${project.build.directory}/../../../LICENSE</argument>
                         <argument>-BlicenseType=MIT License (Open Source)</argument>
                         <argument>-Bvendor=limpygnome</argument>
                         <argument>-Bcopyright=MIT License (Open Source)</argument>
