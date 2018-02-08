@@ -322,12 +322,15 @@ export class ViewerComponent
             {
                 var targetNodeId = this.currentNode.getId();
 
+                // Check node exists in tree
+                var exists = ($("#tree").find("#" + targetNodeId).length > 0);
+
                 // Check the node is not already selected
-                if (currentSelected == null || targetNodeId != currentSelected)
+                if (exists && (currentSelected == null || targetNodeId != currentSelected))
                 {
                     $("#tree").jstree("deselect_all");
                     $("#tree").jstree("select_node", "#" + targetNodeId);
-                    console.log("updated tree selection - id: " + targetNodeId);
+                    console.log("updated tree selection #2 - id: " + targetNodeId);
                 }
             }
             else

@@ -9,7 +9,7 @@ export function initApp() : () => Promise<any>
                 console.log("checking if runtime ready...");
 
                 var win = (window as any);
-                if (win.runtimeService != null && win.runtimeService.isReady())
+                if (win.runtimeService != null && win.runtimeService.isReady() == true)
                 {
                     console.log("runtime ready, bootstrapping app");
 
@@ -20,7 +20,7 @@ export function initApp() : () => Promise<any>
                     resolve();
                 }
 
-            }, 10);
+            }, 100);
         });
     }
 }

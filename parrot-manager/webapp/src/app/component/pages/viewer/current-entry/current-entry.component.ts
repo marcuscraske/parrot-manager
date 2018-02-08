@@ -121,6 +121,7 @@ export class CurrentEntryComponent
     {
         this.saveValue.emit();
         console.log("current value hidden");
+        this.resizeValueTextAreaToFitContent();
     }
 
     // Resets edit mode when leaving text box of current value

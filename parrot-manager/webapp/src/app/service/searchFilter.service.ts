@@ -14,6 +14,7 @@ export class SearchFilterService
         // rebuild new single-level tree with discovered items
         var result = [];
         this.filterByNameRecursive(result, name, json);
+        console.log(JSON.stringify(result));
         return result;
     }
 

@@ -56,6 +56,12 @@
                 <module>dist</module>
             </modules>
         </profile>
+        <profile>
+            <id>java8</id>
+            <properties>
+                <java.compiler.version>1.8</java.compiler.version>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencyManagement>

@@ -63,6 +63,7 @@
                       formControlName="currentValue"
                       (click)="displayValue()"
                       (blur)="hideValue()"
+                      (keyup)="resizeValueTextAreaToFitContent()"
             ></textarea>
         </div>
     </form>
