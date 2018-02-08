@@ -103,6 +103,10 @@
                                       tofile="${project.build.directory}/parrot-manager-${project.version}.rpm"
                                       failonerror="false"
                                 />
+                                <move file="${project.build.directory}/parrot-manager-${project.version}.rpm"
+                                      tofile="${project.build.directory}/parrot-manager-${project.version}.rpm"
+                                      failonerror="false"
+                                />
 
                                 <!-- rename -->
                                 <move file="${project.build.directory}/parrot-manager-${project.version}-1.x86_64.rpm"
