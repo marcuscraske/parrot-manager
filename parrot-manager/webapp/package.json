@@ -2,13 +2,14 @@
   "name": "parrot-manager",
   "version": "1.0.0",
   "scripts": {
-    "pre-install": "npm i -g @angular/cli",
+    "pre-install": "npm i -g @angular/cli npm-check-updates",
     "start": "ng serve --sourcemaps=false",
     "start-prod": "ng serve --prod --sourcemaps=false",
     "build": "ng build --sourcemaps=false",
     "build-prod": "ng build --prod --sourcemaps=false",
     "tsc": "tsc",
-    "tsc:w": "tsc -w"
+    "tsc:w": "tsc -w",
+    "updates": "ncu"
   },
   "licenses": [
     {
@@ -17,35 +18,35 @@
     }
   ],
   "dependencies": {
-    "@angular/common": "5.1.2",
-    "@angular/compiler": "5.1.2",
-    "@angular/core": "5.1.2",
-    "@angular/forms": "5.1.2",
-    "@angular/http": "5.1.2",
-    "@angular/platform-browser": "5.1.2",
-    "@angular/platform-browser-dynamic": "5.1.2",
-    "@angular/router": "5.1.2",
-    "@angular/upgrade": "5.1.2",
-    "angular-in-memory-web-api": "0.5.2",
+    "@angular/common": "5.2.10",
+    "@angular/compiler": "5.2.10",
+    "@angular/core": "5.2.10",
+    "@angular/forms": "5.2.10",
+    "@angular/http": "5.2.10",
+    "@angular/platform-browser": "5.2.10",
+    "@angular/platform-browser-dynamic": "5.2.10",
+    "@angular/router": "5.2.10",
+    "@angular/upgrade": "5.2.10",
+    "angular-in-memory-web-api": "0.6.0",
     "bootbox": "4.4.0",
-    "bootstrap": "4.0.0",
-    "core-js": "2.5.3",
+    "bootstrap": "4.1.0",
+    "core-js": "2.5.5",
     "cuint": "0.2.2",
     "jquery": "3.3.1",
     "jstree": "3.3.5",
     "reflect-metadata": "0.1.12",
-    "rxjs": "5.5.6",
-    "systemjs": "0.20.19",
+    "rxjs": "5.5.10",
+    "systemjs": "0.21.3",
     "toastr": "2.1.4",
-    "zone.js": "0.8.20"
+    "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@angular/cli": "1.7.0-beta.1",
-    "@angular/compiler-cli": "5.1.2",
-    "@types/core-js": "0.9.43",
-    "@types/node": "8.0.53",
+    "@angular/cli": "1.7.4",
+    "@angular/compiler-cli": "5.2.10",
+    "@types/core-js": "0.9.46",
+    "@types/node": "9.6.6",
     "concurrently": "3.5.1",
     "lite-server": "2.3.0",
-    "typescript": "2.6.2"
+    "typescript": "2.8.3"
   }
 }
