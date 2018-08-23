@@ -31,6 +31,7 @@
 
         <module>parrot-manager-lib</module>
         <module>parrot-converter</module>
+        <module>parrot-manager-frontend</module>
         <module>parrot-manager</module>
     </modules>
 

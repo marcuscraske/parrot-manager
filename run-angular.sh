@@ -1,1 +1,1 @@
-npm run start --prefix parrot-manager/webapp
+npm run start --prefix parrot-manager-frontend

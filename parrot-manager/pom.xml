@@ -114,46 +114,6 @@
         <plugins>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-
-                    <!-- retrieve dependencies -->
-                    <execution>
-                        <id>exec-npm-install</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <workingDirectory>${project.basedir}/webapp</workingDirectory>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>install</argument>
-                            </arguments>
-                        </configuration>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-
-                    <!-- build app -->
-                    <execution>
-                        <id>exec-npm-run-build-prod</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <workingDirectory>${project.basedir}/webapp</workingDirectory>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>build-prod</argument>
-                            </arguments>
-                        </configuration>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
 
@@ -168,7 +128,7 @@
                             <outputDirectory>${project.build.directory}/classes/webapp</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/webapp/dist</directory>
+                                    <directory>${project.basedir}/../parrot-manager-frontend/dist</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
