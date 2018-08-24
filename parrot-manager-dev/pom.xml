@@ -41,9 +41,9 @@
 
         <!-- webview debugging -->
         <dependency>
-            <groupId>com.github.mohamnag</groupId>
-            <artifactId>javafx_webview_debugger</artifactId>
-            <version>-SNAPSHOT</version>
+            <groupId>com.vladsch.javafx-webview-debugger</groupId>
+            <artifactId>javafx-webview-debugger</artifactId>
+            <version>0.5.12</version>
         </dependency>
 
         <!-- logging -->

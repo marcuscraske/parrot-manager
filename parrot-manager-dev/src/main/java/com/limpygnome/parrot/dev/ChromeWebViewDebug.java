@@ -1,8 +1,9 @@
 package com.limpygnome.parrot.dev;
 
 import com.limpygnome.parrot.lib.WebViewDebug;
-import com.mohamnag.fxwebview_debugger.DevToolsDebuggerServer;
 import com.sun.javafx.scene.web.Debugger;
+import com.vladsch.javafx.webview.debugger.DevToolsDebuggerJsBridge;
+import com.vladsch.javafx.webview.debugger.DevToolsDebuggerServer;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ public class ChromeWebViewDebug implements WebViewDebug
 
     private static final Logger LOG = LoggerFactory.getLogger(ChromeWebViewDebug.class);
 
+    private DevToolsDebuggerServer bridge;
+
     @Override
     public void start(WebView webView)
     {
@@ -35,7 +38,7 @@ public class ChromeWebViewDebug implements WebViewDebug
             debuggerField.setAccessible(true);
 
             Debugger debugger = (Debugger) debuggerField.get(webView.getEngine());
-            DevToolsDebuggerServer.startDebugServer(debugger, WEBVIEW_DEBUG_PORT);
+            bridge = new DevToolsDebuggerServer(debugger, WEBVIEW_DEBUG_PORT, 0, null, null);
 
             LOG.debug("Debugging available: chrome-devtools://devtools/bundled/inspector.html?ws=localhost:51742/");
         }
@@ -50,7 +53,7 @@ public class ChromeWebViewDebug implements WebViewDebug
     {
         try
         {
-            DevToolsDebuggerServer.stopDebugServer();
+            bridge.stopDebugServer(null);
         }
         catch (Exception e)
         {

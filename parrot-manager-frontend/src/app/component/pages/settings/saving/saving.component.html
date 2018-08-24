@@ -1,22 +1,31 @@
 <div [formGroup]="globalSettingsForm" #form="ngForm">
+
     <div class="form-group">
-        <label class="checkbox-inline">
+        <div class="form-check">
             <input type="checkbox"
+                   class="form-check-input"
                    id="autoSave"
                    formControlName="autoSave"
                    [(ngModel)]="globalSettingsForm.value['autoSave']"
             />
-            Save on any changes
-        </label>
+            <label class="form-check-label">
+                Save on any changes
+            </label>
+        </div>
     </div>
+
     <div class="form-group">
-        <label class="checkbox-inline">
+        <div class="form-check">
             <input type="checkbox"
+                   class="form-check-input"
                    id="mergeLogShowDetail"
                    formControlName="mergeLogShowDetail"
                    [(ngModel)]="globalSettingsForm.value['mergeLogShowDetail']"
             />
-            Show debug details on merge logs
-        </label>
+            <label class="form-check-label">
+                Show debug details on merge logs
+            </label>
+        </div>
     </div>
+
 </div>

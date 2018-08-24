@@ -78,6 +78,7 @@ a
 .btn
 {
     border: none !important;
+    margin: 0 0.25em;
 }
 
 .btn .icon
@@ -175,4 +176,15 @@ a
 .modal-dialog
 {
     box-shadow: 0 0 2em #444;
+}
+
+/*
+    form rows with checkboxes
+*/
+
+/* fixes for bootstrap */
+.form-check-label
+{
+    margin-top: 0.2em;
+    margin-left: 0.25em;
 }

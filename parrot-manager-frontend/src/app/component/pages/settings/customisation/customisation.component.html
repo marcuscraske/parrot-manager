@@ -1,4 +1,5 @@
 <div [formGroup]="globalSettingsForm" #form="ngForm">
+
     <div class="form-group">
         <label class="form-control-label" for="theme">
             Theme
@@ -6,7 +7,6 @@
         <select id="theme" class="form-control"
                 (change)="themeService.set($event.target.value)"
                 formControlName="theme"  [(ngModel)]="globalSettingsForm.value['theme']">
-
             <option>light</option>
             <option>dark</option>
             <option>hacker</option>
@@ -14,13 +14,17 @@
     </div>
 
     <div class="form-group">
-        <label class="checkbox-inline">
+        <div class="form-check">
             <input type="checkbox"
+                   class="form-check-input"
                    id="saveWindowState"
                    formControlName="saveWindowState"
                    [(ngModel)]="globalSettingsForm.value['saveWindowState']"
             />
-            Save window state (size, location, etc)
-        </label>
+            <label class="form-check-label">
+                Save window state (size, location, etc)
+            </label>
+        </div>
     </div>
+
 </div>

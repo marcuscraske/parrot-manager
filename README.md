@@ -62,4 +62,3 @@ This project is open to [contributions](CONTRIBUTING.md).
 
 Donations can be sent to:
 * PayPal: limpygnome@gmail.com
-* Bitcoin: 1CwSZwBT5qVbuKABUj2ruz5VyHhY23E6bY

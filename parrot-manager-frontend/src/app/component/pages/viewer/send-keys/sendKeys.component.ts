@@ -1,6 +1,5 @@
 import { Component, Input, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Subscription } from "rxjs";
-import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { Subscription, timer } from "rxjs";
 
 import { SendKeysService } from 'app/service/sendKeys.service'
 
@@ -44,7 +43,7 @@ export class SendKeysComponent
             }
 
             // Subscribe for queue changes
-            var timer = TimerObservable.create(0, 100);
+            var timer = timer(0, 100);
             this.queueSubscription = timer.subscribe(() => this.updateIsQueued());
         }
         else
