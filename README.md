@@ -15,6 +15,7 @@
 [![Github Issues](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/issues.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/issues)
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/pulls.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/pulls)
 [![Join the chat at https://gitter.im/parrot-manager/Lobby](https://badges.gitter.im/parrot-manager/chat.svg)](https://gitter.im/parrot-manager/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+[![Known Vulnerabilities](https://snyk.io/test/github/limpygnome/parrot-manager/badge.svg)](https://snyk.io/test/github/limpygnome/parrot-manager)
 
 A simple password manager with a modern interface, with ability to synchronize databases using SSH.
 
