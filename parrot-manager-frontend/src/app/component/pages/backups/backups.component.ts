@@ -32,11 +32,11 @@ export class BackupsComponent {
     ngOnInit()
     {
         // Fetch backups for initial view
-        this.backupFiles = this.backupService.fetch();
+        this.updateFiles();
 
         // Setup event to listen for changes to backups
         this.backupChangeEvent = this.renderer.listenGlobal("document", "backupChange", (event) => {
-            this.backupFiles = event.data;
+            this.updateFiles();
             this.changeDetectorRef.markForCheck();
         });
     }
@@ -44,6 +44,11 @@ export class BackupsComponent {
     ngOnDestroy()
     {
         this.backupChangeEvent();
+    }
+
+    updateFiles()
+    {
+        this.backupFiles = this.backupService.fetch();
     }
 
     create()
@@ -59,18 +64,17 @@ export class BackupsComponent {
 
     trackChildren(index, file)
     {
-        return file ? file.getName() : null;
+        return file ? file.name : null;
     }
 
     open(file)
     {
-        var path = file.getPath();
-        this.openMain(path);
+        this.openMain(file.path);
     }
 
     restore(file)
     {
-        this.errorMessage = this.backupService.restore(file);
+        this.errorMessage = this.backupService.restore(file.path);
 
         // re-open database if no errors occurred
         if (this.errorMessage == null)
@@ -90,7 +94,7 @@ export class BackupsComponent {
 
     delete(file)
     {
-        this.errorMessage = this.backupService.delete(file);
+        this.errorMessage = this.backupService.delete(file.path);
     }
 
     private openMain(path)

@@ -4,7 +4,7 @@
 </h1>
 
 <p>
-    You can configure the destination and automatic backups in <a href="/settings" routerLink="/settings">settings</a>.
+    You can configure the destination and automatic backups in <a href="/settings" routerLink="/settings/backups">settings</a>.
 </p>
 
 <p class="text-center mb-4">
@@ -28,9 +28,9 @@
                 Options
             </th>
         </tr>
-        <tr *ngFor="let file of (backupFiles | orderBy: ['-getName()']); trackBy: trackChildren">
-            <td title="{{ file.getLastModified() | formattedDate }}">
-                {{ file.getLastModified() | friendlyTime }}
+        <tr *ngFor="let file of (backupFiles | orderBy: ['-name']); trackBy: trackChildren">
+            <td title="{{ file.lastModified | formattedDate }}">
+                {{ file.lastModified | friendlyTime }}
             </td>
             <td>
                 <button class="btn btn-default" (click)="open(file)">

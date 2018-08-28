@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router'
 
 import { SettingsService } from 'app/service/settings.service'
 import { DatabaseService } from 'app/service/database.service'
@@ -13,6 +14,7 @@ export class SettingsComponent
 {
     public currentTab: string;
     public lastSettings;
+    public paramsObserver: any;
 
     public globalSettingsForm = this.fb.group({
         recentFilesEnabled: [false],
@@ -40,15 +42,23 @@ export class SettingsComponent
         public settingsService: SettingsService,
         public databaseService: DatabaseService,
         public themeService: ThemeService,
-        public fb: FormBuilder
-    ) {
-
-    }
+        public fb: FormBuilder,
+        private route: ActivatedRoute
+    ) { }
 
     ngOnInit()
     {
         // Check which page to show by default
         this.currentTab = (this.databaseService.isOpen() ? "changePassword" : "recentFiles");
+
+        // Subscribe for params
+        this.paramsObserver = this.route.params.subscribe(params => {
+            var tab = params.tab;
+            if (tab != null)
+            {
+                this.currentTab = tab;
+            }
+        });
 
         // Load settings
         this.populateSettings();
@@ -74,6 +84,11 @@ export class SettingsComponent
                 console.log("settings unchanged, ignored");
             }
         });
+    }
+
+    ngOnDestroy()
+    {
+        this.paramsObserver.unsubscribe();
     }
 
     populateSettings()

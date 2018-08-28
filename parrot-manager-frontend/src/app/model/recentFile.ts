@@ -1,7 +1,7 @@
 export class RecentFile
 {
-    name: string,
-    path: string
+    name: string;
+    path: string;
 
     constructor(name, path)
     {

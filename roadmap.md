@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Upcoming
+- Reduce CPU usage
 - Document database format
 - Database version marker, for future format changes
 - Closing database after inactivity moved out of front-end.

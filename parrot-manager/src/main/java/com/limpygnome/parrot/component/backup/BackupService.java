@@ -3,7 +3,6 @@ package com.limpygnome.parrot.component.backup;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.session.SessionService;
 import com.limpygnome.parrot.component.settings.Settings;
-import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.library.db.Database;
@@ -57,13 +56,13 @@ public class BackupService implements SettingsRefreshedEvent
      *
      * @return error, null if successful
      */
-    public String create()
+    public synchronized String create()
     {
         String errorMessage = createBackup(true);
         return errorMessage;
     }
 
-    private String createBackup(boolean deleteOldFiles)
+    private synchronized String createBackup(boolean deleteOldFiles)
     {
         String errorMessage = null;
 
@@ -114,7 +113,7 @@ public class BackupService implements SettingsRefreshedEvent
      *
      * @return array of backup file-names
      */
-    public BackupFile[] fetch()
+    public synchronized BackupFile[] fetch()
     {
         return cachedBackupFiles;
     }
@@ -122,40 +121,51 @@ public class BackupService implements SettingsRefreshedEvent
     /**
      * Restores a backup.
      *
-     * @param backupFile the instance to be restored
+     * This file will replace the current database.
+     *
+     * @param path the path of the file to be restored
      * @return error message; null if successful
      */
-    public String restore(BackupFile backupFile)
+    public synchronized String restore(String path)
     {
-        // create backup of current database first
-        String errorMessage = createBackup(false);
+        String errorMessage = null;
 
-        if (errorMessage == null)
+        // check file is a backup file
+        if (!isBackupFile(path))
         {
-            String pathSrc = backupFile.getPath();
-            File fileSrc = new File(pathSrc);
+            errorMessage = "Backup file is not valid";
+        }
+        else
+        {
+            // create backup of current database first
+            errorMessage = createBackup(false);
 
-            String pathDest = databaseService.getPath();
-            File fileDest = new File(pathDest);
+            if (errorMessage == null)
+            {
+                File fileSrc = new File(path);
 
-            if (!fileSrc.exists())
-            {
-                errorMessage = "Backup no longer exists?";
-            }
-            else if (!fileDest.exists())
-            {
-                errorMessage = "Current database no longer exists?";
-            }
-            else
-            {
-                // overwrite file
-                try
+                String pathDest = databaseService.getPath();
+                File fileDest = new File(pathDest);
+
+                if (!fileSrc.exists())
                 {
-                    Files.copy(fileSrc.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    errorMessage = "Backup no longer exists?";
                 }
-                catch (Exception e)
+                else if (!fileDest.exists())
                 {
-                    errorMessage = e.getMessage();
+                    errorMessage = "Current database no longer exists?";
+                }
+                else
+                {
+                    // overwrite file
+                    try
+                    {
+                        Files.copy(fileSrc.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.getMessage();
+                    }
                 }
             }
         }
@@ -166,23 +176,54 @@ public class BackupService implements SettingsRefreshedEvent
     /**
      * Deletes a backup.
      *
-     * @param backupFile the instance to be deleted
+     * @param path the path of the backup file to be deleted
      * @return error message; null if successful
      */
-    public String delete(BackupFile backupFile)
+    public synchronized String delete(String path)
     {
         String result = null;
-        File file = new File(backupFile.getPath());
 
-        if (!file.delete())
+        // Check path is actually a backup (prevent any file being deleted)
+        boolean found = isBackupFile(path);
+
+        if (!found)
         {
-            result = "Unable to delete file (unknown reason)";
+            result = "Backup no longer exists";
+        }
+        else
+        {
+            File file = new File(path);
+
+            if (!file.delete())
+            {
+                result = "Unable to delete file (unknown reason)";
+            }
+
+            // Refresh files
+            updateCache();
         }
 
-        // Refresh files
-        updateCache();
-
         return result;
+    }
+
+    // Layer of protection against front-end playing with non-backup files
+    private boolean isBackupFile(String path)
+    {
+        boolean found = false;
+
+        if (path != null && path.length() > 0)
+        {
+            for (int i = 0; !found && i < cachedBackupFiles.length; i++)
+            {
+                BackupFile backupFile = cachedBackupFiles[i];
+                if (path.equals(backupFile.getPath()))
+                {
+                    found = true;
+                }
+            }
+        }
+
+        return found;
     }
 
     /**
@@ -269,7 +310,7 @@ public class BackupService implements SettingsRefreshedEvent
         this.cachedBackupFiles = backupFiles;
 
         // Raise change event
-        webStageInitService.triggerEvent("document", "backupChange", backupFiles);
+        webStageInitService.triggerEvent("document", "backupChange", null);
 
         LOG.debug("updated cache and triggered change event");
     }

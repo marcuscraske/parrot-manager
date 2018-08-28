@@ -19,7 +19,8 @@ import { CustomisationComponent } from "app/component/pages/settings/customisati
 import { KeyboardLayoutsComponent } from "app/component/pages/settings/keyboardLayouts/keyboardLayouts.component"
 
 const routes: Routes = [
-    { path: "settings", component: SettingsComponent }
+    { path: "settings", component: SettingsComponent },
+    { path: "settings/:tab", component: SettingsComponent }
 ];
 
 @NgModule({
