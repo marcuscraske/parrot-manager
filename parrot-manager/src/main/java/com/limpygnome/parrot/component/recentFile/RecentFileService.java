@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -79,8 +80,10 @@ public class RecentFileService
         return cacheRecentFiles;
     }
 
-    public synchronized void add(RecentFile recentFile) throws IOException
+    public synchronized void add(File file) throws IOException
     {
+        RecentFile recentFile = new RecentFile(file);
+
         // Only update the list if the first/most recent item was not already this item. As a lot of users
         // will most likely open the same file, it's best to not change anything and reduce I/O...
         if (recentFiles.isEmpty() || !recentFiles.getFirst().equals(recentFile))
@@ -103,16 +106,30 @@ public class RecentFileService
         }
     }
 
-    public synchronized void delete(RecentFile recentFile) throws IOException
+    public synchronized void delete(String fullPath) throws IOException
     {
-        if (recentFile != null)
+        if (fullPath != null)
         {
-            // drop item
-            recentFiles.remove(recentFile);
-            LOG.debug("deleted recent file - {}", recentFile);
+            boolean changed = false;
 
-            // persist collection
-            saveToFile();
+            // drop item
+            Iterator<RecentFile> it = recentFiles.iterator();
+            while (it.hasNext())
+            {
+                RecentFile recentFile = it.next();
+                if (fullPath.equals(recentFile.getFullPath()))
+                {
+                    it.remove();
+                    changed = true;
+                    LOG.debug("deleted recent file - {}", recentFile);
+                }
+            }
+
+            // persist changes
+            if (changed)
+            {
+                saveToFile();
+            }
         }
         else
         {

@@ -40,7 +40,7 @@ public class RecentFileChangeComponent implements DatabaseChangingEvent
             try
             {
                 File fileDatabase = databaseService.getFile();
-                recentFileService.add(new RecentFile(fileDatabase));
+                recentFileService.add(fileDatabase);
             }
             catch (IOException e)
             {

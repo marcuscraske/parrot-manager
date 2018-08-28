@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { RecentFile } from 'app/model/recentFile'
 
 @Injectable()
 export class RecentFileService {
@@ -10,10 +11,20 @@ export class RecentFileService {
         this.recentFileService = (window as any).recentFileService;
     }
 
-    fetch() : any
+    fetch() : RecentFile[]
     {
-        var result = this.recentFileService.fetch();
-        return result;
+        var results = [];
+        var files = this.recentFileService.fetch();
+        if (files != null && files.length > 0)
+        {
+            for (var i = 0; i < files.length; i++)
+            {
+                var file = files[i];
+                var result = new RecentFile(file.getFileName(), file.getFullPath());
+                results.push(result);
+            }
+        }
+        return results;
     }
 
     isAny() : boolean
@@ -22,9 +33,9 @@ export class RecentFileService {
         return recentFiles.length > 0;
     }
 
-    delete(recentFile)
+    delete(path)
     {
-        this.recentFileService.delete(recentFile);
+        this.recentFileService.delete(path);
     }
 
     clear()

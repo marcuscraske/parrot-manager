@@ -45,7 +45,7 @@ export class OpenComponent {
 
                 if (isEnabled)
                 {
-                    this.openFile(this.recentFiles[0].getFullPath());
+                    this.openFile(this.recentFiles[0].path);
                 }
             }
 
@@ -86,10 +86,11 @@ export class OpenComponent {
         });
     }
 
+    // TODO pass path
     deleteRecentFile(recentFile)
     {
         // delete it...
-        this.recentFileService.delete(recentFile);
+        this.recentFileService.delete(recentFile.path);
 
         // refresh list
         this.refreshRecentFiles();
@@ -97,7 +98,7 @@ export class OpenComponent {
 
     trackChildren(index, recentFile)
     {
-        return recentFile ? recentFile.getFileName() : null;
+        return recentFile ? recentFile.name : null;
     }
 
 }

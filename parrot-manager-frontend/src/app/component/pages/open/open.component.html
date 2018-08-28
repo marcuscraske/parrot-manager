@@ -41,7 +41,7 @@
     Recent Files
 </h2>
 
-<div *ngIf="recentFiles == null || recentFiles.length == 0" class="no-recent-files">
+<div *ngIf="recentFiles.length == 0" class="no-recent-files">
     <p class="text-center">
         <span class="icon icon-copy"></span>
     </p>
@@ -50,7 +50,7 @@
     </p>
 </div>
 
-<div *ngIf="recentFiles != null && recentFiles.length > 0">
+<div *ngIf="recentFiles.length > 0">
     <div class="form-group">
         <span class="help-block">
             You can configure automatically opening the last recent file in <a href="/settings" routerLink="/settings">settings</a>.
@@ -58,8 +58,8 @@
     </div>
     <div *ngFor="let recentFile of recentFiles; trackBy: trackChildren">
         <p class="btn-group form-group">
-            <button class="btn btn-default btn-file" (click)="openFile(recentFile.getFullPath())">
-                {{ recentFile.getFileName() }}
+            <button class="btn btn-default btn-file" (click)="openFile(recentFile.path)">
+                {{ recentFile.name }}
             </button>
             <button class="btn btn-danger" title="Remove item from history" (click)="deleteRecentFile(recentFile)">
                 <span class="icon icon-cross"></span>

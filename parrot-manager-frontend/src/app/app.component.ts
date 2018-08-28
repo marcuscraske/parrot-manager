@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-import { KeyBindsService } from 'app/service/global/keyBinds.service'
-import { InactivityWatcherService } from 'app/service/global/inactivityWatcher.service'
+import { KeyBindsService } from 'app/service/keyBinds.service'
+import { InactivityWatcherService } from 'app/service/inactivityWatcher.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { ClipboardService } from 'app/service/clipboard.service'
 import { DatabaseService } from 'app/service/database.service'
