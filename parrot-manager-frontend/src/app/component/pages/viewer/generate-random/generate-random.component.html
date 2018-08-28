@@ -3,39 +3,67 @@
         <form [formGroup]="randomOptions" #form="ngForm">
 
             <div class="form-group">
-                <label class="checkbox-inline">
-                    <input type="checkbox" formControlName="useNumbers" /> Numbers
-                </label>
-                <label class="checkbox-inline">
-                    <input type="checkbox" formControlName="useUppercase" /> Upper-case
-                </label>
-                <label class="checkbox-inline">
-                    <input type="checkbox" formControlName="useLowercase" /> Lower-case
-                </label>
-                <label class="checkbox-inline">
-                    <input type="checkbox" formControlName="useSpecialChars" /> Special Characters
-                </label>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           formControlName="useNumbers"
+                    />
+                    <label class="form-check-label">
+                        Numbers
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           formControlName="useUppercase"
+                    />
+                    <label class="form-check-label">
+                        Upper-case
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           formControlName="useLowercase"
+                    />
+                    <label class="form-check-label">
+                        Lower-case
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           formControlName="useSpecialChars"
+                    />
+                    <label class="form-check-label">
+                        Special Characters
+                    </label>
+                </div>
             </div>
 
             <div class="form-group">
                 <div class="form-inline">
                     <div class="form-group">
-                        <label for="randomMinLength">
+                        <label class="col-sm-4 col-form-label" for="randomMinLength">
                             Min. Length
                         </label>
-                        <input type="number" id="randomMinLength"
-                               class="form-control"
-                               formControlName="minLength"
-                        />
+                        <div class="col-sm-2">
+                            <input type="number" id="randomMinLength"
+                                   class="form-control"
+                                   formControlName="minLength"
+                            />
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="randomMaxLength">
+                        <label class="col-sm-4 col-form-label" for="randomMaxLength">
                             Max. Length
                         </label>
-                        <input type="number" id="randomMaxLength"
-                               class="form-control"
-                               formControlName="maxLength"
-                        />
+                        <div class="col-sm-2">
+                            <input type="number" id="randomMaxLength"
+                                   class="form-control"
+                                   formControlName="maxLength"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

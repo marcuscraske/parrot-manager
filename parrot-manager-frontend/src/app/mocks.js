@@ -21,13 +21,16 @@
                         getRemoteSyncIntervalEnabled : function() { return { getValue : function() { return "true" } } },
                         getRemoteSyncOnOpeningDatabase : function() { return { getValue : function() { return "true" } } },
                         getRemoteSyncOnChange : function() { return { getValue : function() { return "true" } } },
+                        getRemoteSyncOnChangeDelay : function() { return { getValue : function() { return "60" } } },
                         getTheme : function() { return { getValue : function() { return "" } } },
                         getSaveWindowState : function() { return { getValue : function() { return "true" } } },
                         getInactivityTimeout : function() { return { getValue : function() { return "0" } } },
                         getWipeClipboardDelay : function() { return { getValue : function() { return "0" } } },
                         getAutoSave : function() { return { getValue : function() { return "false" } } },
                         getMergeLogShowDetail : function() { return { getValue : function() { return "false" } } },
-                        getKeyboardLayout : function() { return { getValue : function() { return "" } } }
+                        getKeyboardLayout : function() { return { getValue : function() { return "" } } },
+                        getRemoteBackupsRetained : function() { return { getValue : function() { return "true" } } },
+                        getIgnoreJavaVersion : function() { return { getValue : function() { return "false" } } }
                     }
                 }
             }
@@ -54,7 +57,7 @@
         window.databaseService = (function(){
 
             return {
-                isOpen: function() { return true; },
+                isOpen: function() { return false; },
                 isDirty: function() { return true; },
                 getFileName: function() { return "test.parrot"; },
                 create: function() { return true; },
@@ -171,7 +174,8 @@
             return {
 
                create : function() { return true },
-               fetch : function() { return [] }
+               fetch : function() { return [] },
+               isBackupOpen: function() { return true; }
 
             }
 
@@ -184,7 +188,8 @@
 
             return {
 
-               getBuildInfo : function() { return "fake build info" }
+               getBuildInfo : function() { return "fake build info" },
+               isJavaOutdated: function() { return true; }
 
             }
 
@@ -201,7 +206,8 @@
                 pickFile: function() { return "test.parrot" },
                 isDevelopmentMode: function() { return true; },
                 refreshPage: function() { location.reload(); },
-                isReady: function() { return "false" }
+                isReady: function() { return true },
+                isStandalone: function() { return true }
             }
         })();
     }

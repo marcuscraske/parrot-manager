@@ -163,7 +163,7 @@ export class DatabaseService
     {
         // Note: this JSON is based upon the expected format for JSTree (module for displaying trees)
 
-        // -- Translate from database to JSON
+        // -- Translate from database (serialized Java object) to JSON
         var name = databaseNode.getName();
 
         // Ignore if remote-sync node

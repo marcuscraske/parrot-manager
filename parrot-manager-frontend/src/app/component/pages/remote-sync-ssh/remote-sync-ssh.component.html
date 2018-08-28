@@ -262,30 +262,41 @@
     </div>
 
     <div class="form-group">
-        <label class="checkbox-inline">
+
+        <div class="form-check form-check-inline">
             <input type="checkbox"
                    id="promptUserPass"
+                   class="form-check-input"
                    formControlName="promptUserPass"
                    [(ngModel)]="openForm.value['promptUserPass']"
             />
-            Prompt for user password
-        </label>
-        <label class="checkbox-inline">
+            <label class="form-check-label">
+                Prompt for user password
+            </label>
+        </div>
+        <div class="form-check form-check-inline">
             <input type="checkbox"
                    id="promptKeyPass"
+                   class="form-check-input"
                    formControlName="promptKeyPass"
                    [(ngModel)]="openForm.value['promptKeyPass']"
             />
-            Prompt for key password
-        </label>
-        <label class="checkbox-inline">
+            <label class="form-check-label">
+                Prompt for key password
+            </label>
+        </div>
+        <div class="form-check form-check-inline">
             <input type="checkbox"
                    id="strictHostChecking"
+                   class="form-check-input"
                    formControlName="strictHostChecking"
                    [(ngModel)]="openForm.value['strictHostChecking']"
-                    />
-            Strict host key checking
-        </label>
+            />
+            <label class="form-check-label">
+                Strict host key checking
+            </label>
+        </div>
+
     </div>
 
     <div class="form-group">

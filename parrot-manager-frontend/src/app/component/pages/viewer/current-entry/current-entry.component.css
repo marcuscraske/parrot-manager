@@ -24,6 +24,11 @@
     color: #666;
 }
 
+.header .btn .icon
+{
+    margin: 0;
+}
+
 p
 {
     margin-left: 0.5em;
