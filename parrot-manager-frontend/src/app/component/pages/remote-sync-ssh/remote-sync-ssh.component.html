@@ -1,28 +1,22 @@
 <!--
     Heading for when opening new host
 -->
-<h1 *ngIf="currentMode == 'open'" routerLink="/open">
+
+<h1 *ngIf="currentMode == 'open'">
     <span class="icon icon-folder"></span>
-    Open
+    Remote File - SSH
 </h1>
-<h2 *ngIf="currentMode == 'open'">
-    Remote Database (SSH)
-</h2>
 <p *ngIf="currentMode == 'open'">
-    This will copy a remote database to your local filesystem and add the host as a remote-sync target. This means
-    you will be able to easily keep both databases synchronized.
+    This will download a copy of a remote database, and allow you to synchronize changes - all using SSH.
 </p>
 
 <!--
     Heading for when creating new host for an open database
 -->
-<h1 *ngIf="currentMode == 'new'" routerLink="/remote-sync">
+<h1 *ngIf="currentMode == 'new'">
     <span class="icon icon-earth"></span>
-    Sync
-</h1>
-<h2 *ngIf="currentMode == 'new'">
     New Host
-</h2>
+</h1>
 <p *ngIf="currentMode == 'new'">
     This will add a new host to which your current database will be synchronized. If a different database exists,
     the two will be merged. If no database exists, the current one is uploaded.
@@ -33,148 +27,115 @@
 -->
 <h1 *ngIf="currentMode == 'edit'" routerLink="/remote-sync">
     <span class="icon icon-earth"></span>
-    Sync
-</h1>
-<h2 *ngIf="currentMode == 'edit'">
     Edit Host
-</h2>
+</h1>
 
-<form id="openRemoteSsh" [formGroup]="openForm" #form="ngForm">
+<form id="openRemoteSsh" [formGroup]="openForm" #form="ngForm" [ngClass]="{ 'was-validated' : form.submitted && form.valid }" novalidate>
 
-    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['name'].valid }">
+    <div class="form-group">
         <label class="form-control-label" for="name">
             Profile Name
         </label>
-
         <input id="name"
                formControlName="name"
-               [(ngModel)]="openForm.value['name']"
                type="text"
                class="form-control"
                placeholder="The name of this remote sync configuration..."
-               minlength="1" maxlength="128"
+               [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['name'].valid }"
         />
+        <p *ngIf="!openForm.controls['name'].valid">
+            Must be between 1 to 128 characters in length.
+        </p>
     </div>
 
-    <label class="form-control-label">
-        Host
-    </label>
+    <div class="card">
+        <div class="card-header">
+            Connection Details
+        </div>
+        <div class="card-body">
 
-    <div class="form-inline">
-        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['host'].valid }">
-            <label class="sr-only" for="host">
+            <label class="form-control-label">
                 Host
             </label>
-            <input id="host"
-                   formControlName="host"
-                   [(ngModel)]="openForm.value['host']"
-                   type="text"
-                   class="form-control"
-                   placeholder="Hostname..."
-                   minlength="1" maxlength="128"
-            />
-        </div>
-        <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['port'].valid }">
-            <label class="sr-only" for="port">
-                Port
-            </label>
-            <input id="port"
-                   formControlName="port"
-                   [(ngModel)]="openForm.value['port']"
-                   type="number"
-                   class="form-control"
-                   placeholder="Port..."
-                   min="1" max="65535"
-            />
-        </div>
-    </div>
 
-    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['user'].valid }">
-        <label class="form-control-label" for="user">
-            User
-        </label>
+            <div class="form-inline">
+                <label class="sr-only" for="host">
+                    Host
+                </label>
+                <input id="host"
+                       formControlName="host"
+                       type="text"
+                       class="form-control mb-2 mr-sm-1"
+                       placeholder="Hostname..."
+                       [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['host'].valid }"
+                />
+                <label class="sr-only" for="port">
+                    Port
+                </label>
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            Port
+                        </div>
+                    </div>
+                    <input id="port"
+                           formControlName="port"
+                           type="number"
+                           class="form-control"
+                           placeholder="Port..."
+                           [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['port'].valid }"
+                    />
+                </div>
+            </div>
 
-        <input id="user"
-               formControlName="user"
-               [(ngModel)]="openForm.value['user']"
-               type="text"
-               class="form-control"
-               placeholder="Username..."
-               minlength="1" maxlength="128"
-        />
-    </div>
+            <div class="form-group">
+                <label class="form-control-label" for="user">
+                    User
+                </label>
+                <input id="user"
+                       formControlName="user"
+                       type="text"
+                       class="form-control"
+                       placeholder="Username..."
+                       [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['user'].valid }"
+                />
+            </div>
 
-    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['userPass'].valid }">
-        <label class="form-control-label" for="userPass">
-            Pass
-        </label>
+            <div class="form-group">
+                <label class="form-control-label" for="userPass">
+                    Pass
+                </label>
+                <input id="userPass"
+                       formControlName="userPass"
+                       type="password"
+                       class="form-control"
+                       placeholder="Only required for password authentication"
+                       minlength="1" maxlength="128"
+                       [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['userPass'].valid }"
+                />
+            </div>
 
-        <input id="userPass"
-               formControlName="userPass"
-               [(ngModel)]="openForm.value['userPass']"
-               type="password"
-               class="form-control"
-               placeholder="Only required for password authentication"
-               minlength="1" maxlength="128"
-        />
-    </div>
-
-    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['remotePath'].valid }">
-        <label class="form-label" for="remotePath">
-            Remote Path
-        </label>
-        <input id="remotePath"
-               formControlName="remotePath"
-               [(ngModel)]="openForm.value['remotePath']"
-               type="text"
-               class="form-control"
-               placeholder="The remote path to the database file..."
-        />
-    </div>
-
-    <div class="form-group" *ngIf="this.currentMode == 'open'" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['destinationPath'].valid }">
-        <label class="form-label" for="destinationPath">
-            Destination Path
-        </label>
-        <div class="input-group">
-            <input id="destinationPath"
-                   formControlName="destinationPath"
-                   [(ngModel)]="openForm.value['destinationPath']"
-                   type="text"
-                   class="form-control"
-                   placeholder="The path of where the local instance will be saved..."
-            />
-            <span class="input-group-btn">
-                <button class="btn btn-default form-control" type="button">
-                    Choose
-                </button>
-            </span>
-        </div>
-    </div>
-
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['privateKeyPath'].valid }">
+            <div class="form-group">
                 <label class="form-label" for="privateKeyPath">
                     Private Key
                 </label>
                 <div class="input-group">
                     <input id="privateKeyPath"
                            formControlName="privateKeyPath"
-                           [(ngModel)]="openForm.value['privateKeyPath']"
                            type="text"
                            class="form-control"
                            placeholder="Only required for key file auth..."
+                           [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['privateKeyPath'].valid }"
                     />
                     <span class="input-group-btn">
-                    <button class="btn btn-default form-control" type="button" (click)="selectPrivateKey()">
-                        Choose
-                    </button>
-            </span>
+                        <button class="btn btn-default form-control" type="button" (click)="selectPrivateKey()">
+                            Choose
+                        </button>
+                    </span>
                 </div>
             </div>
 
-            <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['privateKeyPass'].valid }">
+            <div class="form-group">
                 <label class="form-label" for="privateKeyPass">
                     Password
                 </label>
@@ -183,127 +144,174 @@
                        type="password"
                        class="form-control"
                        placeholder="The password for your private key..."
+                       [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['privateKeyPass'].valid }"
                 />
             </div>
+
+            <div class="form-group">
+                <div class="form-check form-check-inline">
+                    <input type="checkbox"
+                           id="promptUserPass"
+                           class="form-check-input"
+                           formControlName="promptUserPass"
+                    />
+                    <label class="form-check-label">
+                        Prompt for user password
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox"
+                           id="promptKeyPass"
+                           class="form-check-input"
+                           formControlName="promptKeyPass"
+                    />
+                    <label class="form-check-label">
+                        Prompt for private key password
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox"
+                           id="strictHostChecking"
+                           class="form-check-input"
+                           formControlName="strictHostChecking"
+                    />
+                    <label class="form-check-label">
+                        Strict host public key checking
+                    </label>
+                </div>
+                <p>
+                    <small class="form-text text-muted">
+                        When prompt is enabled for user or/and private key password, automatic synchronizing is not available.
+                    </small>
+                </p>
+            </div>
+
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="form-control-label">
-                    Proxy
-                </label>
+    <div class="card mt-4">
+        <div class="card-header">
+            Paths
+        </div>
+        <div class="card-body">
 
-                <div class="form-inline">
-                    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['proxyHost'].valid }">
-                        <label class="sr-only" for="host">
-                            Proxy Host
-                        </label>
-                        <input id="proxyHost"
-                               formControlName="proxyHost"
-                               [(ngModel)]="openForm.value['proxyHost']"
-                               type="text"
-                               class="form-control"
-                               placeholder="Proxy hostname..."
-                               minlength="1" maxlength="128"
-                        />
-                    </div>
-                    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['proxyPort'].valid }">
-                        <label class="sr-only" for="port">
-                            Proxy Port
-                        </label>
-                        <input id="proxyPort"
-                               formControlName="proxyPort"
-                               [(ngModel)]="openForm.value['proxyPort']"
-                               type="number"
-                               class="form-control"
-                               placeholder="Proxy port..."
-                               min="1" max="65535"
-                        />
-                    </div>
-                    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !openForm.controls['proxyType'].valid }">
-                        <label class="sr-only" for="port">
-                            Proxy Type
-                        </label>
-                        <select id="proxyType"
-                                formControlName="proxyType"
-                                [(ngModel)]="openForm.value['proxyType']"
-                                type="number"
-                                class="form-control"
-                                minlength="1" maxlength="5"
-                        >
-                            <option>None</option>
-                            <option>SOCKS4</option>
-                            <option>SOCKS5</option>
-                            <option>HTTP</option>
-                        </select>
-                    </div>
+            <div class="form-group">
+                <label class="form-label" for="remotePath">
+                    Remote Path
+                </label>
+                <input id="remotePath"
+                       formControlName="remotePath"
+                       type="text"
+                       class="form-control"
+                       placeholder="The remote path to the database file..."
+                       [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['remotePath'].valid }"
+                />
+            </div>
+
+            <div class="form-group" *ngIf="this.currentMode == 'open'">
+                <label class="form-label" for="destinationPath">
+                    Destination Path
+                </label>
+                <div class="input-group">
+                    <input id="destinationPath"
+                           formControlName="destinationPath"
+                           type="text"
+                           class="form-control"
+                           placeholder="The path of where the local instance will be saved..."
+                           [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['destinationPath'].valid }"
+                    />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default form-control" type="button">
+                            Choose
+                        </button>
+                    </span>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <div class="form-group">
-        <label class="form-control-label">
-            Machine Filter
-        </label>
-        <input id="machineFilter"
-               formControlName="machineFilter"
-               [(ngModel)]="openForm.value['machineFilter']"
-               type="text"
-               class="form-control"
-               placeholder="Leave empty to disable filter"
-        />
-        <small class="form-text text-muted">
-            Restrict the machines able to automatically sync using this profile. Enter a list of hostnames, comma or space
-            separated.
-        </small>
+    <div class="card mt-4">
+        <div class="card-header">
+            Proxy
+        </div>
+        <div class="card-body">
+
+            <div class="form-inline">
+                <label class="sr-only" for="host">
+                    Proxy Host
+                </label>
+                <input id="proxyHost"
+                       formControlName="proxyHost"
+                       type="text"
+                       class="form-control mb-2 mr-sm-2"
+                       placeholder="Proxy hostname..."
+                       [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['proxyHost'].valid }"
+                />
+                <label class="sr-only" for="proxyHost">
+                    Proxy Port
+                </label>
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            Port
+                        </div>
+                    </div>
+                    <input id="proxyPort"
+                           formControlName="proxyPort"
+                           type="number"
+                           class="form-control"
+                           placeholder="Proxy port..."
+                           [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['proxyPort'].valid }"
+                    />
+                </div>
+                <label class="sr-only" for="proxyType">
+                    Proxy Type
+                </label>
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            Type
+                        </div>
+                    </div>
+                    <select id="proxyType"
+                            formControlName="proxyType"
+                            class="form-control">
+                        <option>None</option>
+                        <option>SOCKS4</option>
+                        <option>SOCKS5</option>
+                        <option>HTTP</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <div class="form-group">
-
-        <div class="form-check form-check-inline">
-            <input type="checkbox"
-                   id="promptUserPass"
-                   class="form-check-input"
-                   formControlName="promptUserPass"
-                   [(ngModel)]="openForm.value['promptUserPass']"
-            />
-            <label class="form-check-label">
-                Prompt for user password
-            </label>
+    <div class="card mt-4">
+        <div class="card-header">
+            Synchronizing
         </div>
-        <div class="form-check form-check-inline">
-            <input type="checkbox"
-                   id="promptKeyPass"
-                   class="form-check-input"
-                   formControlName="promptKeyPass"
-                   [(ngModel)]="openForm.value['promptKeyPass']"
-            />
-            <label class="form-check-label">
-                Prompt for key password
-            </label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input type="checkbox"
-                   id="strictHostChecking"
-                   class="form-check-input"
-                   formControlName="strictHostChecking"
-                   [(ngModel)]="openForm.value['strictHostChecking']"
-            />
-            <label class="form-check-label">
-                Strict host key checking
-            </label>
-        </div>
+        <div class="card-body">
 
-    </div>
+            <div class="form-group">
+                <label class="form-control-label">
+                    Machine Filter
+                </label>
+                <input id="machineFilter"
+                       formControlName="machineFilter"
+                       type="text"
+                       class="form-control"
+                       placeholder="Leave empty to disable filter"
+                       [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['machineFilter'].valid }"
+                />
+                <small class="form-text text-muted">
+                    Restricts which machines will automatically synchronize using this profile. You can enter a single
+                    hostname, or a comma/space separated list.
+                </small>
+            </div>
 
-    <div class="form-group">
-        <small class="form-text text-muted">
-            Note: when prompt is enabled for user or/and key pass, syncing will only be available for those hosts when
-            using the Sync Auth button.
-        </small>
+        </div>
     </div>
 
     <p class="text-center">
@@ -314,7 +322,7 @@
     </p>
 
     <div class="form-group text-center">
-        <button type="button" class="btn btn-lg btn-primary" (click)="persist()">
+        <button type="submit" class="btn btn-lg btn-primary" (click)="persist()">
             <span class="icon icon-floppy-disk"></span>
             {{ currentMode == 'open' ? 'Open' : currentMode == 'edit' ? 'Save' : 'Add' }}
         </button>

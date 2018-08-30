@@ -14,18 +14,18 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
 export class RemoteSyncSshComponent {
 
     public openForm = this.fb.group({
-       name: ["", Validators.required],
-       host: ["", Validators.required],
-       port: [22, Validators.required],
+       name: ["", [Validators.required, Validators.minLength(1), Validators.maxLength(128)]],
+       host: ["", [Validators.required, Validators.minLength(1), Validators.maxLength(128)]],
+       port: [22, [Validators.required, Validators.min(1), Validators.max(65535)]],
        strictHostChecking : [false],
-       user : ["", Validators.required],
+       user : ["", [Validators.required, Validators.minLength(1), Validators.maxLength(128)]],
        userPass : [""],
        remotePath : ["", Validators.required],
        destinationPath : [""],                      // Validator is dynamic based on mode (required only for open)
        privateKeyPath : ["~/.ssh/id_rsa"],
        privateKeyPass : [""],
-       proxyHost : [""],
-       proxyPort : [0],
+       proxyHost : ["", [Validators.minLength(1), Validators.maxLength(128)]],
+       proxyPort : ["", [Validators.min(1), Validators.max(65535)]],
        proxyType : ["None"],
        promptUserPass : [false],
        promptKeyPass : [false],
@@ -92,7 +92,7 @@ export class RemoteSyncSshComponent {
             if (populateMachineName)
             {
                 // populate machine filter with current hostname
-                var currentHostname = this.remoteSyncService.getCurrentHostname();
+                var currentHostname = this.remoteSyncService.getCurrentHostName();
                 this.openForm.patchValue({
                     "name" : currentHostname,
                     "machineFilter" : currentHostname

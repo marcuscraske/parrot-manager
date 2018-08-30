@@ -106,8 +106,8 @@ export class RemoteSyncService {
         this.remoteSyncService.abort();
     }
 
-    // This is the actual host-name of the current box / machine / physical host
-    getCurrentHostname() : string
+    // This is the actual host-cname of the current box / machine / physical host
+    getCurrentHostName() : string
     {
         return this.remoteSyncService.getCurrentHostName();
     }

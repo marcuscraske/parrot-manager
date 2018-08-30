@@ -244,4 +244,13 @@
         })();
     }
 
+    if (window.remoteSyncService == null)
+    {
+        window.remoteSyncService = (function(){
+            return {
+                getCurrentHostName: function() { return "test-hostname" }
+            }
+        })();
+    }
+
 }

@@ -33,6 +33,7 @@ Supports Linux, Windows and Mac.
 - Sync databases using SSH
     - Multiple hosts
     - Automatic merge to avoid conflicts and losing data
+    - Works in hostile environments
 - Copy values to clipboard
     - Automatically clear after period
 - Send values as keys to other applications
