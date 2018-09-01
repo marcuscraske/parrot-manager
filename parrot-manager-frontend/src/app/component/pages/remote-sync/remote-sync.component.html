@@ -10,7 +10,7 @@
 <div *ngIf="!isSyncing()">
 
     <table class="table remote-sync" *ngIf="isTargets()" id="remoteSyncTargets">
-        <tr *ngFor="let node of remoteSyncNode.getChildren(); trackBy: trackChildren">
+        <tr *ngFor="let profile of remoteSyncNode.getChildren(); trackBy: trackChildren">
             <td>
                 <button class="btn btn-primary" (click)="sync(node.getId(), false)">
                     <span class="icon icon-download"></span>
@@ -18,18 +18,15 @@
                 </button>
             </td>
             <td>
-                {{ node.getName() }}
-            </td>
-            <td>
-                {{ getHostName(node) }}
+                {{ profile.name }}
             </td>
             <td class="text-right">
                 <div>
-                    <button class="btn btn-primary" (click)="sync(node.getId(), true)" title="Asks for any required auth (database password, user pass, key pass)">
+                    <button class="btn btn-primary" (click)="sync(profile.id, true)" title="Asks for any required auth (database password, user pass, key pass)">
                         <span class="icon icon-lock"></span>
                         Auth Sync
                     </button>
-                    <button class="btn btn-primary" routerLink="/remote-sync/ssh/{{ node.getId() }}" title="Edit host">
+                    <button class="btn btn-primary" routerLink="/remote-sync/ssh/{{ profile.id }}" title="Edit host">
                         <span class="icon icon-pencil"></span>
                         Edit
                     </button>
@@ -39,11 +36,11 @@
                     </button>
                 </div>
                 <div class="mt-2">
-                    <button class="btn btn-primary" (click)="unlock(node.getId())" title="Removes remote lock file, use with caution">
+                    <button class="btn btn-primary" (click)="unlock(profile.id)" title="Removes remote lock file, use with caution">
                         <span class="icon icon-hammer"></span>
                         Delete Lock
                     </button>
-                    <button class="btn btn-primary" (click)="overwrite(node.getId())" title="Overwrites remote database with this current database">
+                    <button class="btn btn-primary" (click)="overwrite(profile.id)" title="Overwrites remote database with this current database">
                         <span class="icon icon-upload"></span>
                         Overwrite
                     </button>

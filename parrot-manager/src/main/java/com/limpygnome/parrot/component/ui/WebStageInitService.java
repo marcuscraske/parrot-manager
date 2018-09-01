@@ -7,12 +7,12 @@ import com.limpygnome.parrot.component.clipboard.ClipboardService;
 import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.importExport.ImportExportService;
-import com.limpygnome.parrot.component.remote.RemoteSyncResultService;
+import com.limpygnome.parrot.component.sync.SyncResultService;
 import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
 import com.limpygnome.parrot.component.recentFile.RecentFileService;
-import com.limpygnome.parrot.component.remote.RemoteSyncService;
+import com.limpygnome.parrot.component.sync.SyncService;
 import com.limpygnome.parrot.component.runtime.RuntimeService;
 import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
@@ -36,9 +36,9 @@ public class WebStageInitService
     @Autowired
     private RandomGeneratorService randomGeneratorService;
     @Autowired
-    private RemoteSyncService remoteSyncService;
+    private SyncService syncService;
     @Autowired
-    private RemoteSyncResultService remoteSyncResultService;
+    private SyncResultService syncResultService;
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
@@ -90,8 +90,8 @@ public class WebStageInitService
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);
         stage.exposeJsObject("randomGeneratorService", randomGeneratorService);
-        stage.exposeJsObject("remoteSyncService", remoteSyncService);
-        stage.exposeJsObject("remoteSyncResultService", remoteSyncResultService);
+        stage.exposeJsObject("remoteSyncService", syncService);
+        stage.exposeJsObject("remoteSyncResultService", syncResultService);
         stage.exposeJsObject("backupService", backupService);
         stage.exposeJsObject("recentFileService", recentFileService);
         stage.exposeJsObject("encryptedValueService", encryptedValueService);

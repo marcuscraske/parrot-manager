@@ -1,12 +1,10 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.sync.ssh;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.limpygnome.parrot.component.database.DatabaseService;
-import com.limpygnome.parrot.component.remote.ssh.SshComponent;
-import com.limpygnome.parrot.component.remote.ssh.SshFile;
-import com.limpygnome.parrot.component.remote.ssh.SshOptions;
-import com.limpygnome.parrot.component.remote.ssh.SshSession;
+import com.limpygnome.parrot.component.sync.SyncFailureException;
+import com.limpygnome.parrot.component.sync.SyncResult;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import com.limpygnome.parrot.library.db.Database;
@@ -29,9 +27,11 @@ import java.util.regex.Pattern;
  * Currently only supports SSH, but this could be split into multiple services for different remote sync options.
  */
 @Service
-public class SshSyncService implements SettingsRefreshedEvent
+public class SshRemoteSyncHandler implements SettingsRefreshedEvent
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SshSyncService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SshRemoteSyncHandler.class);
+
+    private static final long DEFAULT_REMOTE_BACKUPS_RETAINED = 30L;
 
     @Autowired
     private SshComponent sshComponent;
@@ -43,17 +43,16 @@ public class SshSyncService implements SettingsRefreshedEvent
     private DatabaseMerger databaseMerger;
 
     private SshSession sshSession;
-    private SshOptions options;
 
     private long remoteBackupsRetained;
 
     @Override
     public void eventSettingsRefreshed(Settings settings)
     {
-        remoteBackupsRetained = settings.getRemoteBackupsRetained().getSafeLong(30L);
+        remoteBackupsRetained = settings.getRemoteBackupsRetained().getSafeLong(DEFAULT_REMOTE_BACKUPS_RETAINED);
     }
 
-    synchronized String download(SshOptions options)
+    public synchronized String download(SshOptions options)
     {
         String result = null;
         sshSession = null;
@@ -62,7 +61,6 @@ public class SshSyncService implements SettingsRefreshedEvent
         {
             // Connect
             sshSession = sshComponent.connect(options);
-            this.options = options;
 
             // Start download...
             SshFile source = new SshFile(sshSession, options.getRemotePath());
@@ -83,7 +81,7 @@ public class SshSyncService implements SettingsRefreshedEvent
         return result;
     }
 
-    synchronized String test(SshOptions options)
+    public synchronized String test(SshOptions options)
     {
         String result = null;
         sshSession = null;
@@ -93,7 +91,6 @@ public class SshSyncService implements SettingsRefreshedEvent
         {
             // connect
             sshSession = sshComponent.connect(options);
-            this.options = options;
 
             // create lock
             createLock(null, options);
@@ -124,7 +121,7 @@ public class SshSyncService implements SettingsRefreshedEvent
         return result;
     }
 
-    synchronized SyncResult overwrite(SshOptions options)
+    public synchronized SyncResult overwrite(SshOptions options)
     {
         MergeLog mergeLog = new MergeLog();
         boolean createdLock = false;
@@ -134,7 +131,6 @@ public class SshSyncService implements SettingsRefreshedEvent
         {
             // connect
             sshSession = sshComponent.connect(options);
-            this.options = options;
 
             // create lock
             createLock(mergeLog, options);
@@ -188,7 +184,7 @@ public class SshSyncService implements SettingsRefreshedEvent
         return result;
     }
 
-    synchronized SyncResult unlock(SshOptions options)
+    public synchronized SyncResult unlock(SshOptions options)
     {
         MergeLog mergeLog = new MergeLog();
         boolean success;
@@ -219,7 +215,7 @@ public class SshSyncService implements SettingsRefreshedEvent
         return new SyncResult(options.getName(), mergeLog, success, false);
     }
 
-    synchronized SyncResult sync(SshOptions options, String remotePassword)
+    public synchronized SyncResult sync(SshOptions options, String remotePassword)
     {
         MergeLog mergeLog = new MergeLog();
         boolean success = true;
@@ -242,7 +238,6 @@ public class SshSyncService implements SettingsRefreshedEvent
             // connect
             LOG.info("sync - connecting");
             sshSession = sshComponent.connect(options);
-            this.options = options;
 
             SshFile source = new SshFile(sshSession, options.getRemotePath());
             SshFile fileSyncBackup = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".sync");
@@ -375,7 +370,7 @@ public class SshSyncService implements SettingsRefreshedEvent
         return syncResult;
     }
 
-    synchronized void cleanup()
+    private synchronized void cleanup()
     {
         if (sshSession != null)
         {

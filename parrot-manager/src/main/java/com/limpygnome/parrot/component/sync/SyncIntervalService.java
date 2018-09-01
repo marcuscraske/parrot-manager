@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.database.DatabaseService;
@@ -22,14 +22,14 @@ import org.springframework.stereotype.Service;
  */
 @Order(20)
 @Service
-public class RemoteSyncIntervalService implements DatabaseChangingEvent, DatabaseSavedEvent, SettingsRefreshedEvent
+public class SyncIntervalService implements DatabaseChangingEvent, DatabaseSavedEvent, SettingsRefreshedEvent
 {
-    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncIntervalService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyncIntervalService.class);
 
     @Autowired
     private DatabaseService databaseService;
     @Autowired
-    private RemoteSyncService remoteSyncService;
+    private SyncService syncService;
     @Autowired
     private BackupService backupService;
 
@@ -45,7 +45,7 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
     private Thread thread;
     private DelayedThread delayedThread;
 
-    public RemoteSyncIntervalService()
+    public SyncIntervalService()
     {
         this.continueToExecute = false;
         this.thread = null;
@@ -176,7 +176,7 @@ public class RemoteSyncIntervalService implements DatabaseChangingEvent, Databas
             {
                 // Sync all the hosts...
                 LOG.info("invoking sync all");
-                remoteSyncService.syncAll();
+                syncService.syncAll();
                 LOG.info("finished sync");
             }
             else

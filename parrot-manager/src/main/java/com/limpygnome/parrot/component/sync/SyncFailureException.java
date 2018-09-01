@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.sync;
 
 public class SyncFailureException extends Exception
 {

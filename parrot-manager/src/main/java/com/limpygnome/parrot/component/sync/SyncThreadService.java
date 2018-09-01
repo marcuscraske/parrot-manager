@@ -1,6 +1,7 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.sync;
 
-import com.limpygnome.parrot.component.remote.ssh.SshOptions;
+import com.limpygnome.parrot.component.sync.ssh.SshOptions;
+import com.limpygnome.parrot.component.sync.ssh.SshRemoteSyncHandler;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +12,14 @@ import org.springframework.stereotype.Service;
  * Manages executing sync-related threads.
  */
 @Service
-public class RemoteSyncThreadService
+public class SyncThreadService
 {
-    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncThreadService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyncThreadService.class);
 
     @Autowired
-    private SshSyncService sshSyncService;
+    private SshRemoteSyncHandler sshRemoteSyncHandler;
     @Autowired
-    private RemoteSyncResultService resultService;
+    private SyncResultService resultService;
     @Autowired
     private WebStageInitService webStageInitService;
 
@@ -26,7 +27,7 @@ public class RemoteSyncThreadService
     private boolean aborted;
     private Thread thread;
 
-    public RemoteSyncThreadService()
+    public SyncThreadService()
     {
         aborted = false;
         thread = null;
@@ -37,10 +38,10 @@ public class RemoteSyncThreadService
      *
      * If anything is running, the request is ignored.
      *
-     * @param remoteSyncThread thread to be executed
+     * @param syncThread thread to be executed
      * @param optionsArray host options
      */
-    public synchronized void launchAsync(RemoteSyncThread remoteSyncThread, SshOptions... optionsArray)
+    public synchronized void launchAsync(SyncThread syncThread, SshOptions... optionsArray)
     {
         if (thread == null)
         {
@@ -54,7 +55,7 @@ public class RemoteSyncThreadService
             {
                 try
                 {
-                    execute(remoteSyncThread, optionsArray);
+                    execute(syncThread, optionsArray);
                 }
                 finally
                 {
@@ -84,7 +85,7 @@ public class RemoteSyncThreadService
         }
     }
 
-    private void execute(RemoteSyncThread remoteSyncThread, SshOptions... optionsArray)
+    private void execute(SyncThread syncThread, SshOptions... optionsArray)
     {
         // Reset results
         resultService.clear();
@@ -92,11 +93,11 @@ public class RemoteSyncThreadService
         for (int i = 0; !aborted && i < optionsArray.length; i++)
         {
             SshOptions options = optionsArray[i];
-            executeForHost(remoteSyncThread, options);
+            executeForHost(syncThread, options);
         }
     }
 
-    private void executeForHost(RemoteSyncThread remoteSyncThread, SshOptions options)
+    private void executeForHost(SyncThread syncThread, SshOptions options)
     {
         // raise event for work started
         webStageInitService.triggerEvent("document", "remoteSyncStart", options);
@@ -106,7 +107,7 @@ public class RemoteSyncThreadService
         try
         {
             // execute work
-            syncResult = remoteSyncThread.execute(options);
+            syncResult = syncThread.execute(options);
 
             // add to results
             resultService.add(syncResult);

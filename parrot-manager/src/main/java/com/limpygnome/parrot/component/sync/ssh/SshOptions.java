@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.remote.ssh;
+package com.limpygnome.parrot.component.sync.ssh;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

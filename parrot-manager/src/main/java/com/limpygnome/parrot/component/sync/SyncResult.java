@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.library.db.log.MergeLog;
 

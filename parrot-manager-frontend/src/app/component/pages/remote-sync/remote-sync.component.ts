@@ -66,39 +66,9 @@ export class RemoteSyncComponent implements AfterViewChecked {
         }
     }
 
-    trackChildren(index, node)
+    trackChildren(index, profile)
     {
-        return node ? node.getId() : null;
-    }
-
-    /* Retrieves the hostname behind a host/target, improves UI. */
-    getHostName(node) : string
-    {
-        var result = "unknown";
-
-        // Decrypt node value
-        var json = this.encryptedValueService.getString(node);
-        var config = json != null ? JSON.parse(json) : null;
-
-        if (config != null)
-        {
-            var host = config.host;
-            var port = config.port;
-
-            result = host + ":" + port;
-        }
-        else
-        {
-            console.log("unable to load host config - id: " + node.getId());
-        }
-
-        // If the name is the same as the host, then don't bother...
-        if (result == node.getName())
-        {
-            result = "";
-        }
-
-        return result;
+        return profile ? profile.id : null;
     }
 
     /* Determines if there are any remote-sync targets/hosts. */
@@ -108,6 +78,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         return result;
     }
 
+    // TODO cleanup
     overwrite(nodeId)
     {
         var options = this.convertNodeIdToOptions(nodeId);
@@ -118,6 +89,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         }
     }
 
+    // TODO cleanup
     unlock(nodeId)
     {
         var options = this.convertNodeIdToOptions(nodeId);
@@ -128,6 +100,7 @@ export class RemoteSyncComponent implements AfterViewChecked {
         }
     }
 
+    // TODO cleanup
     sync(nodeId, askForPassword)
     {
         console.log("syncing node - id: " + nodeId);

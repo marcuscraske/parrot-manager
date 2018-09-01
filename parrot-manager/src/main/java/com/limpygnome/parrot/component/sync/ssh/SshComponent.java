@@ -1,8 +1,8 @@
-package com.limpygnome.parrot.component.remote.ssh;
+package com.limpygnome.parrot.component.sync.ssh;
 
 import com.jcraft.jsch.*;
 import com.limpygnome.parrot.component.file.FileComponent;
-import com.limpygnome.parrot.component.remote.SyncFailureException;
+import com.limpygnome.parrot.component.sync.SyncFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

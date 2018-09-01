@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
@@ -12,7 +12,7 @@ import java.util.Map;
  * Used to hold sync result data (to prevent GC) and pass it to the front-end through events.
  */
 @Service
-public class RemoteSyncResultService implements DatabaseChangingEvent
+public class SyncResultService implements DatabaseChangingEvent
 {
     @Autowired
     private WebStageInitService webStageInitService;
@@ -23,7 +23,7 @@ public class RemoteSyncResultService implements DatabaseChangingEvent
     // Cache of results; again, prevents GC and also improves performance
     private SyncResult[] results;
 
-    public RemoteSyncResultService()
+    public SyncResultService()
     {
         this.resultMap = new HashMap<>();
         this.results = new SyncResult[0];

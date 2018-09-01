@@ -309,6 +309,29 @@ public class DatabaseNode
         return result;
     }
 
+    /**
+     * Retrieves node by id.
+     *
+     * @param id the id of the node
+     * @return the node, or null
+     */
+    public synchronized DatabaseNode getById(UUID id)
+    {
+        // TODO unit test
+        DatabaseNode result = null;
+
+        if (id != null)
+        {
+            result = children
+                    .stream()
+                    .filter(node -> id.equals(node.id))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        return result;
+    }
+
     /*
         Use #add from parent node :)
      */
@@ -396,6 +419,14 @@ public class DatabaseNode
      */
     public synchronized DatabaseNode add(DatabaseNode node)
     {
+        // Remove node if it already exists; this will become an update (thus don't use normal remove procedure)
+        // TODO unit test
+        DatabaseNode existing = node.getById(node.id);
+        if (existing != null)
+        {
+            children.remove(existing);
+        }
+
         // Add as child
         children.add(node);
 

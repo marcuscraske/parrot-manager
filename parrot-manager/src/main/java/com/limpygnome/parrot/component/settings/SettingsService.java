@@ -2,7 +2,7 @@ package com.limpygnome.parrot.component.settings;
 
 import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.file.FileComponent;
-import com.limpygnome.parrot.component.remote.RemoteSyncIntervalService;
+import com.limpygnome.parrot.component.sync.SyncIntervalService;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class SettingsService
 
     @Lazy
     @Autowired
-    private RemoteSyncIntervalService remoteSyncIntervalService;
+    private SyncIntervalService syncIntervalService;
     @Lazy
     @Autowired
     private BackupService backupService;

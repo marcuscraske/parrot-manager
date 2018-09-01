@@ -21,6 +21,14 @@
                 <span class="icon icon-earth"></span>
                 Sync
             </a>
+            <a tabindex="6" title="Syncs all hosts (which don't require passwords to be entered)" (click)="remoteSyncService.syncAll()" *ngIf="!backupService.isBackupOpen() && !remoteSyncService.isSyncing()">
+                <span class="icon icon-download3"></span>
+                Sync Now
+            </a>
+            <a tabindex="6" title="Syncing" routerLink="/remote-sync" *ngIf="!backupService.isBackupOpen() && remoteSyncService.isSyncing()">
+                <span class="icon icon-loop2 syncing"></span>
+                Syncing...
+            </a>
             <a tabindex="2" title="Backups of database" routerLink="/backups" routerLinkActive="selected" *ngIf="!backupService.isBackupOpen()">
                 <span class="icon icon-database"></span>
                 Backups
@@ -35,14 +43,6 @@
             <a *ngIf="isSaveButtonNeeded()" tabindex="5" title="Save Database" (click)="saveDatabase(false)" [ngClass]="{ 'dirty' : databaseService.isDirty() }">
                 <span class="icon icon-floppy-disk"></span>
                 Save
-            </a>
-            <a tabindex="6" title="Syncs all hosts (which don't require passwords to be entered)" (click)="remoteSyncService.syncAll()" *ngIf="!backupService.isBackupOpen() && !remoteSyncService.isSyncing()">
-                <span class="icon icon-download3"></span>
-                Sync Now
-            </a>
-            <a tabindex="6" title="Syncing" routerLink="/remote-sync" *ngIf="!backupService.isBackupOpen() && remoteSyncService.isSyncing()">
-                <span class="icon icon-loop2 syncing"></span>
-                Syncing...
             </a>
             <a tabindex="7" title="Close current database" (click)="attemptToCloseDatabase(false)">
                 <span class="icon icon-exit"></span>

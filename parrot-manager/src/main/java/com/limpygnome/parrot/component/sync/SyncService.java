@@ -1,8 +1,9 @@
-package com.limpygnome.parrot.component.remote;
+package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.database.DatabaseService;
-import com.limpygnome.parrot.component.remote.ssh.SshOptions;
+import com.limpygnome.parrot.component.sync.ssh.SshOptions;
+import com.limpygnome.parrot.component.sync.ssh.SshRemoteSyncHandler;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
@@ -27,9 +28,9 @@ import java.util.List;
  * Service for synchronizing database files remotely.
  */
 @Service
-public class RemoteSyncService implements DatabaseChangingEvent
+public class SyncService implements DatabaseChangingEvent
 {
-    private static final Logger LOG = LoggerFactory.getLogger(RemoteSyncService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyncService.class);
 
     private static final String SESSION_KEY_OPTIONS = "remoteSshOptions";
 
@@ -43,11 +44,11 @@ public class RemoteSyncService implements DatabaseChangingEvent
     @Autowired
     private SessionService sessionService;
     @Autowired
-    private SshSyncService sshSyncService;
+    private SshRemoteSyncHandler sshRemoteSyncHandler;
     @Autowired
     private BackupService backupService;
     @Autowired
-    private RemoteSyncThreadService threadService;
+    private SyncThreadService threadService;
 
     // State
     private long lastSync;
@@ -96,6 +97,15 @@ public class RemoteSyncService implements DatabaseChangingEvent
         return options;
     }
 
+
+
+
+
+
+
+
+
+
     /**
      * Begins downloading a file from host.
      *
@@ -108,7 +118,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
         if (result == null)
         {
-            result = sshSyncService.download(options);
+            result = sshRemoteSyncHandler.download(options);
         }
 
         return result;
@@ -126,7 +136,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
         if (result == null)
         {
-            result = sshSyncService.test(options);
+            result = sshRemoteSyncHandler.test(options);
         }
 
         return result;
@@ -139,12 +149,12 @@ public class RemoteSyncService implements DatabaseChangingEvent
      */
     public synchronized void overwrite(SshOptions options)
     {
-        threadService.launchAsync(new RemoteSyncThread()
+        threadService.launchAsync(new SyncThread()
         {
             @Override
             public SyncResult execute(SshOptions options)
             {
-                return sshSyncService.overwrite(options);
+                return sshRemoteSyncHandler.overwrite(options);
             }
         }, options);
     }
@@ -156,12 +166,12 @@ public class RemoteSyncService implements DatabaseChangingEvent
      */
     public synchronized void unlock(SshOptions options)
     {
-        threadService.launchAsync(new RemoteSyncThread()
+        threadService.launchAsync(new SyncThread()
         {
             @Override
             public SyncResult execute(SshOptions options)
             {
-                return sshSyncService.unlock(options);
+                return sshRemoteSyncHandler.unlock(options);
             }
         }, options);
     }
@@ -321,7 +331,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
 
     private void launchAsyncSync(SshOptions... optionsArray)
     {
-        threadService.launchAsync(new RemoteSyncThread()
+        threadService.launchAsync(new SyncThread()
         {
             @Override
             public SyncResult execute(SshOptions options)
@@ -355,7 +365,7 @@ public class RemoteSyncService implements DatabaseChangingEvent
             else
             {
                 // sync...
-                syncResult = sshSyncService.sync(options, options.getDatabasePassword());
+                syncResult = sshRemoteSyncHandler.sync(options, options.getDatabasePassword());
             }
         }
 
