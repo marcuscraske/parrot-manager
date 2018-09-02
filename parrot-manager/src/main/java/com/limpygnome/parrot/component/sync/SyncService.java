@@ -2,8 +2,8 @@ package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.database.DatabaseService;
-import com.limpygnome.parrot.component.sync.ssh.SshOptions;
-import com.limpygnome.parrot.component.sync.ssh.SshRemoteSyncHandler;
+import com.limpygnome.parrot.component.sync.ssh.SshSyncProfile;
+import com.limpygnome.parrot.component.sync.ssh.SshSyncHandler;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
@@ -32,8 +32,6 @@ public class SyncService implements DatabaseChangingEvent
 {
     private static final Logger LOG = LoggerFactory.getLogger(SyncService.class);
 
-    private static final String SESSION_KEY_OPTIONS = "remoteSshOptions";
-
     // Components
     @Autowired
     private FileComponent fileComponent;
@@ -44,81 +42,31 @@ public class SyncService implements DatabaseChangingEvent
     @Autowired
     private SessionService sessionService;
     @Autowired
-    private SshRemoteSyncHandler sshRemoteSyncHandler;
-    @Autowired
     private BackupService backupService;
+    @Autowired
+    private SyncProfileService syncProfileService;
     @Autowired
     private SyncThreadService threadService;
 
     // State
     private long lastSync;
-
-    /**
-     * Creates options from a set of mandatory values.
-     *
-     * @param name the name of the options, used later for persistence
-     * @param host the remote host
-     * @param port the remote port
-     * @param user the remote logon user
-     * @param remotePath the remote path of the database
-     * @param destinationPath the local path of where to save a local copy of the database
-     * @return a new instance
-     */
-    public SshOptions createOptions(String name, String host, int port, String user, String remotePath, String destinationPath)
-    {
-        // Create new instance
-        SshOptions options = new SshOptions(name, host, port, user, remotePath, destinationPath);
-
-        // Persist to session to avoid gc; it's possible multiple options could be made and this won't work, but it'll
-        // do for now
-        sessionService.put(SESSION_KEY_OPTIONS, options);
-
-        return options;
-    }
-
-    /**
-     * Creates options from a database node, which is under the standard remote-sync key and saved in the standard
-     * JSON format.
-     *
-     * WARNING: do not remove, used by front-end.
-     *
-     * @param database database
-     * @param node the node with remote-sync config saved as its value
-     * @return the options
-     * @throws Exception {@see SshOptions}
-     */
-    public SshOptions createOptionsFromNode(Database database, DatabaseNode node) throws Exception
-    {
-        SshOptions options = SshOptions.read(encryptedValueService, database, node);
-
-        // Persist to session to avoid gc
-        sessionService.put(SESSION_KEY_OPTIONS, options);
-
-        return options;
-    }
-
-
-
-
-
-
-
-
-
+    private SyncOptions defaultSyncOptions;
 
     /**
      * Begins downloading a file from host.
      *
-     * @param options the config for a download
+     * @param options options
+     * @param profile sync profile
      * @return error message, otherwise null if successful
      */
-    public synchronized String download(SshOptions options)
+    public synchronized String download(SyncOptions options, SyncProfile profile)
     {
+        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
         String result = checkDestinationPath(options);
 
         if (result == null)
         {
-            result = sshRemoteSyncHandler.download(options);
+            result = handler.download(options, profile);
         }
 
         return result;
@@ -127,16 +75,18 @@ public class SyncService implements DatabaseChangingEvent
     /**
      * Tests the given host options.
      *
-     * @param options SSH options to be tested
+     * @param options options
+     * @param profile sync profile
      * @return error message; or null if successful/no issues encountered
      */
-    public synchronized String test(SshOptions options)
+    public synchronized String test(SyncOptions options, SyncProfile profile)
     {
+        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
         String result = checkDestinationPath(options);
 
         if (result == null)
         {
-            result = sshRemoteSyncHandler.test(options);
+            result = handler.test(options, profile);
         }
 
         return result;
@@ -146,34 +96,38 @@ public class SyncService implements DatabaseChangingEvent
      * Overwrites the remote database with the current database.
      *
      * @param options options
+     * @param profile sync profile
      */
-    public synchronized void overwrite(SshOptions options)
+    public synchronized void overwrite(SyncOptions options, SyncProfile profile)
     {
+        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
         threadService.launchAsync(new SyncThread()
         {
             @Override
-            public SyncResult execute(SshOptions options)
+            public SyncResult execute(SyncOptions options, SyncProfile profile)
             {
-                return sshRemoteSyncHandler.overwrite(options);
+                return handler.overwrite(options, profile);
             }
-        }, options);
+        }, options, profile);
     }
 
     /**
      * Unlocks the remote database, by removing the associated lock file.
      *
      * @param options options
+     * @param profile sync profile
      */
-    public synchronized void unlock(SshOptions options)
+    public synchronized void unlock(SyncOptions options, SyncProfile profile)
     {
+        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
         threadService.launchAsync(new SyncThread()
         {
             @Override
-            public SyncResult execute(SshOptions options)
+            public SyncResult execute(SyncOptions options, SyncProfile profile)
             {
-                return sshRemoteSyncHandler.unlock(options);
+                return handler.unlock(options, profile);
             }
-        }, options);
+        }, options, profile);
     }
 
     /**
@@ -183,7 +137,7 @@ public class SyncService implements DatabaseChangingEvent
     {
         LOG.info("syncing all hosts...");
 
-        List<SshOptions> optionsList = new LinkedList<>();
+        List<SyncProfile> profileList = new LinkedList<>();
 
         // Add all applicable hosts
         Database database = databaseService.getDatabase();
@@ -191,42 +145,24 @@ public class SyncService implements DatabaseChangingEvent
 
         if (remoteSync != null)
         {
-            // Read destination path to be same as current database
-            String destinationPath = databaseService.getPath();
-
-            // Fetch remote password (current DB password)
-            String databasePassword = databaseService.getPassword();
-
             // Check and convert each node/host
             String currentHostName = getCurrentHostName();
 
-            SshOptions options;
-            for (DatabaseNode node : remoteSync.getChildren())
+            for (SyncProfile profile : syncProfileService.fetch())
             {
-                try
+                if (canAutoSync(defaultSyncOptions, profile, currentHostName))
                 {
-                    options = SshOptions.read(encryptedValueService, database, node);
-
-                    if (canAutoSync(options, currentHostName))
-                    {
-                        options.setDestinationPath(destinationPath);
-                        options.setDatabasePassword(databasePassword);
-                        optionsList.add(options);
-                    }
-                }
-                catch (Exception e)
-                {
-                    LOG.warn("failed to parse remote sync node - id: {}", node.getId(), e);
+                    profileList.add(profile);
                 }
             }
 
             // Perform sync if we have anything
-            if (!optionsList.isEmpty())
+            if (!profileList.isEmpty())
             {
-                LOG.debug("{} available hosts for sync", optionsList.size());
+                LOG.debug("{} available hosts for sync", profileList.size());
 
-                SshOptions[] optionsArray = optionsList.toArray(new SshOptions[optionsList.size()]);
-                launchAsyncSync(optionsArray);
+                SyncProfile[] profileArray = profileList.toArray(new SshSyncProfile[profileList.size()]);
+                launchAsyncSync(defaultSyncOptions, profileArray);
             }
             else
             {
@@ -243,42 +179,31 @@ public class SyncService implements DatabaseChangingEvent
      *
      * @param options host options
      */
-    public synchronized void sync(SshOptions options)
+    public synchronized void sync(SyncOptions options, SyncProfile profile)
     {
-        String remotePassword = databaseService.getPassword();
-        syncWithAuth(options, remotePassword);
+        launchAsyncSync(options, profile);
     }
 
-    /**
-     * Invokes sync using password.
-     *
-     * @param options host options
-     * @param remotePassword remote database's password
-     */
-    public synchronized void syncWithAuth(SshOptions options, String remotePassword)
+    private boolean canAutoSync(SyncOptions options, SyncProfile profile, String currentHostName)
     {
-        options.setDatabasePassword(remotePassword);
-        launchAsyncSync(options);
-    }
+        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
 
-    private boolean canAutoSync(SshOptions options, String currentHostName)
-    {
         // check backup not open (should never happen)
         if (backupService.isBackupOpen())
         {
-            LOG.info("excluded from sync as backup database is open - profile: {}", options.getName());
+            LOG.info("excluded from sync as backup database is open - profile: {}", profile.getName());
             return false;
         }
 
         // check if auth is needed
-        if (options.isPromptKeyPass() || options.isPromptUserPass())
+        if (!handler.canAutoSync(options, profile))
         {
-            LOG.info("excluded from sync as auth is needed - profile: {}", options.getName());
+            LOG.info("excluded from auto-sync due to handler - profile: {}", profile.getName());
             return false;
         }
 
         // check machine filter
-        String machineFilter = options.getMachineFilter();
+        String machineFilter = profile.getMachineFilter();
 
         if (machineFilter != null && currentHostName != null)
         {
@@ -301,7 +226,7 @@ public class SyncService implements DatabaseChangingEvent
 
                 if (!found)
                 {
-                    LOG.info("excluded from sync current host not matched in machine filter - profile: {}, hostName: {}", options.getName(), currentHostName);
+                    LOG.info("excluded from sync current host not matched in machine filter - profile: {}, hostName: {}", profile.getName(), currentHostName);
                     return false;
                 }
             }
@@ -329,19 +254,19 @@ public class SyncService implements DatabaseChangingEvent
         return result;
     }
 
-    private void launchAsyncSync(SshOptions... optionsArray)
+    private void launchAsyncSync(SyncOptions options, SyncProfile... profileArray)
     {
         threadService.launchAsync(new SyncThread()
         {
             @Override
-            public SyncResult execute(SshOptions options)
+            public SyncResult execute(SyncOptions options, SyncProfile profile)
             {
-                return asyncSync(options);
+                return asyncSync(options, profile);
             }
-        }, optionsArray);
+        }, options, profileArray);
     }
 
-    private SyncResult asyncSync(SshOptions options)
+    private SyncResult asyncSync(SyncOptions options, SyncProfile profile)
     {
         SyncResult syncResult;
         MergeLog mergeLog = new MergeLog();
@@ -351,7 +276,7 @@ public class SyncService implements DatabaseChangingEvent
         {
             LOG.warn("skipped sync due to unsaved database changes");
             mergeLog.add(new LogItem(LogLevel.ERROR, "Skipped sync due to unsaved database changes"));
-            syncResult = new SyncResult(options.getName(), mergeLog, false, false);
+            syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
         }
         else
         {
@@ -360,19 +285,20 @@ public class SyncService implements DatabaseChangingEvent
             if (message != null)
             {
                 mergeLog.add(new LogItem(LogLevel.ERROR, message));
-                syncResult = new SyncResult(options.getName(), mergeLog, false, false);
+                syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
             }
             else
             {
                 // sync...
-                syncResult = sshRemoteSyncHandler.sync(options, options.getDatabasePassword());
+                SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
+                syncResult = handler.sync(options, profile);
             }
         }
 
         return syncResult;
     }
 
-    private String checkDestinationPath(SshOptions options)
+    private String checkDestinationPath(SyncOptions options)
     {
         String result = null;
 
@@ -407,6 +333,19 @@ public class SyncService implements DatabaseChangingEvent
     @Override
     public synchronized void eventDatabaseChanged(boolean open)
     {
+        if (open)
+        {
+            // Setup default sync options for current database
+            String databasePassword = databaseService.getPassword();
+            String destinationPath = databaseService.getPath();
+            defaultSyncOptions = new SyncOptions(databasePassword, destinationPath);
+        }
+        else
+        {
+            // Reset default sync options
+            defaultSyncOptions = null;
+        }
+
         abort();
     }
 
@@ -416,6 +355,32 @@ public class SyncService implements DatabaseChangingEvent
     public long getLastSync()
     {
         return lastSync;
+    }
+
+    /**
+     * @return the default auto-sync options for the current database open
+     */
+    public SyncOptions getDefaultSyncOptions()
+    {
+        return defaultSyncOptions;
+    }
+
+    /**
+     * Creates a temporary instance of sync options.
+     *
+     * Used primarily for when creating new databases, or manually syncing with a different password.
+     *
+     * Invoking this method another time will likely cause the original object ot be garbage collected.
+     *
+     * @param databasePassword database password
+     * @param destinationPath destination path
+     * @return an instance
+     */
+    public SyncOptions createTemproaryOptions(String databasePassword, String destinationPath)
+    {
+        SyncOptions options = new SyncOptions(databasePassword, destinationPath);
+        sessionService.put("syncService.temproaryOptions", options);
+        return options;
     }
 
 }

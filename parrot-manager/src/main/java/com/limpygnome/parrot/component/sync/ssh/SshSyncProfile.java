@@ -6,6 +6,7 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
+import com.limpygnome.parrot.component.sync.SyncProfile;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
@@ -21,7 +22,7 @@ import java.io.Serializable;
  * WARNING: this class is serialized using Jackson, hence be careful when adding new getters/setters, ensure
  * jsonignore annotation is set appropriately.
  */
-public class SshOptions implements Serializable, Cloneable
+public class SshSyncProfile extends SyncProfile implements Serializable, Cloneable
 {
     // Mandatory
     private String name;
@@ -45,7 +46,6 @@ public class SshOptions implements Serializable, Cloneable
     private String proxyType;
 
     // Options
-    private String machineFilter;
     private boolean promptUserPass;
     private boolean promptKeyPass;
     private boolean strictHostChecking;
@@ -53,16 +53,24 @@ public class SshOptions implements Serializable, Cloneable
     // Sync only
     private transient String databasePassword;
 
-    public SshOptions() { }
+    public SshSyncProfile() { }
 
-    public SshOptions(String name, String host, int port, String user, String remotePath, String destinationPath)
+    public SshSyncProfile(String name, String host, int port, String user, String remotePath, String destinationPath)
     {
+        super(null, name);
+
         this.name = name;
         this.host = host;
         this.port = port;
         this.user = user;
         this.remotePath = remotePath;
         this.destinationPath = destinationPath;
+    }
+
+    @Override
+    public String getType()
+    {
+        return "ssh";
     }
 
     public String getName()
@@ -251,16 +259,6 @@ public class SshOptions implements Serializable, Cloneable
         return result;
     }
 
-    public String getMachineFilter()
-    {
-        return machineFilter;
-    }
-
-    public void setMachineFilter(String machineFilter)
-    {
-        this.machineFilter = machineFilter;
-    }
-
     @JsonIgnore
     public String getDatabasePassword()
     {
@@ -272,70 +270,10 @@ public class SshOptions implements Serializable, Cloneable
         this.databasePassword = databasePassword;
     }
 
-    /**
-     * Deserializes a JSON string into a new instance of this class.
-     *
-     * @param encryptedValueService used to decrypt value stored in node
-     * @param database database
-     * @param node a standard child node
-     * @return an instance
-     * @throws Exception when cannot be deserialized or crypto problem
-     */
-    public static SshOptions read(EncryptedValueService encryptedValueService, Database database, DatabaseNode node) throws Exception
-    {
-        // Fetch value as string
-        String value = encryptedValueService.asString(database, node.getValue());
-
-        // Deserialize into object
-        ObjectMapper mapper = new ObjectMapper();
-        SshOptions options =  mapper.readValue(value, SshOptions.class);
-
-        return options;
-    }
-
-    /**
-     * Persists the current configuration to a database in the standard remote-sync format.
-     *
-     * @param database the current database
-     * @throws Exception when cannot persist
-     */
-    public void persist(EncryptedValueService encryptedValueService, Database database) throws Exception
-    {
-        // Should be saved to /remote-sync/<name> - overwrite by default
-        DatabaseNode root = database.getRoot();
-        DatabaseNode remoteSyncNode = root.getByName("remote-sync");
-
-        // Add node for remote-sync if it does not exist
-        if (remoteSyncNode == null)
-        {
-            remoteSyncNode = new DatabaseNode(database, "remote-sync");
-            root.add(remoteSyncNode);
-        }
-
-        // Create new instance
-        SshOptions clone = (SshOptions) this.clone();
-
-        // Serialize as JSON string
-        ObjectMapper mapper = new ObjectMapper();
-        String rawJson = mapper.writeValueAsString(clone);
-
-        // Parse as JSON for sanity
-        JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(rawJson).getAsJsonObject();
-
-        // Create encrypted JSON object
-        EncryptedValue encryptedValue = encryptedValueService.fromJson(database, json);
-
-        // Store in new node
-        DatabaseNode newNode = new DatabaseNode(database, name);
-        newNode.setValue(encryptedValue);
-        remoteSyncNode.add(newNode);
-    }
-
     @Override
     public String toString()
     {
-        return "SshOptions{" +
+        return "SshSyncProfile{" +
                 "name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
@@ -348,7 +286,6 @@ public class SshOptions implements Serializable, Cloneable
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 ", proxyType='" + proxyType + '\'' +
-                ", machineFilter='" + machineFilter + '\'' +
                 ", promptUserPass=" + promptUserPass +
                 ", promptKeyPass=" + promptKeyPass +
                 ", strictHostChecking=" + strictHostChecking +

@@ -1,7 +1,6 @@
 package com.limpygnome.parrot.component.sync;
 
-import com.limpygnome.parrot.component.sync.ssh.SshOptions;
-import com.limpygnome.parrot.component.sync.ssh.SshRemoteSyncHandler;
+import com.limpygnome.parrot.component.sync.ssh.SshSyncHandler;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ public class SyncThreadService
     private static final Logger LOG = LoggerFactory.getLogger(SyncThreadService.class);
 
     @Autowired
-    private SshRemoteSyncHandler sshRemoteSyncHandler;
+    private SshSyncHandler sshSyncHandler;
     @Autowired
     private SyncResultService resultService;
     @Autowired
@@ -39,9 +38,9 @@ public class SyncThreadService
      * If anything is running, the request is ignored.
      *
      * @param syncThread thread to be executed
-     * @param optionsArray host options
+     * @param profileArray sync profiles
      */
-    public synchronized void launchAsync(SyncThread syncThread, SshOptions... optionsArray)
+    public synchronized void launchAsync(SyncThread syncThread, SyncOptions options, SyncProfile... profileArray)
     {
         if (thread == null)
         {
@@ -55,7 +54,7 @@ public class SyncThreadService
             {
                 try
                 {
-                    execute(syncThread, optionsArray);
+                    execute(syncThread, options, profileArray);
                 }
                 finally
                 {
@@ -85,29 +84,29 @@ public class SyncThreadService
         }
     }
 
-    private void execute(SyncThread syncThread, SshOptions... optionsArray)
+    private void execute(SyncThread syncThread, SyncOptions options, SyncProfile... profileArray)
     {
         // Reset results
         resultService.clear();
 
-        for (int i = 0; !aborted && i < optionsArray.length; i++)
+        for (int i = 0; !aborted && i < profileArray.length; i++)
         {
-            SshOptions options = optionsArray[i];
-            executeForHost(syncThread, options);
+            SyncProfile profile = profileArray[i];
+            executeForHost(syncThread, options, profile);
         }
     }
 
-    private void executeForHost(SyncThread syncThread, SshOptions options)
+    private void executeForHost(SyncThread syncThread, SyncOptions options, SyncProfile profile)
     {
         // raise event for work started
-        webStageInitService.triggerEvent("document", "remoteSyncStart", options);
+        webStageInitService.triggerEvent("document", "remoteSyncStart", profile);
 
         SyncResult syncResult = null;
 
         try
         {
             // execute work
-            syncResult = syncThread.execute(options);
+            syncResult = syncThread.execute(options, profile);
 
             // add to results
             resultService.add(syncResult);

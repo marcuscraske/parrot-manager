@@ -14,14 +14,18 @@ public interface SyncHandler
 
     SyncProfile deserialize(DatabaseNode node);
 
-    void sync(SyncProfile profile, SyncOptions options);
+    boolean handles(SyncProfile profile);
 
-    void download(SyncProfile profile);
+    SyncResult sync(SyncOptions options, SyncProfile profile);
 
-    void test(SyncProfile profile);
+    boolean canAutoSync(SyncOptions options, SyncProfile profile);
 
-    void overwrite(SyncProfile profile);
+    String download(SyncOptions options, SyncProfile profile);
 
-    void unlock(SyncProfile profile);
+    String test(SyncOptions options, SyncProfile profile);
+
+    SyncResult overwrite(SyncOptions options, SyncProfile profile);
+
+    SyncResult unlock(SyncOptions options, SyncProfile profile);
 
 }

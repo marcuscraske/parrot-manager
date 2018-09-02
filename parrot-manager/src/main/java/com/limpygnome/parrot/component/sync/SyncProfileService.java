@@ -11,23 +11,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 /**
  * Manages remote sync profiles.
  */
-//@Service
+@Service
 public class SyncProfileService implements DatabaseChangingEvent
 {
     private static final Logger LOG = LoggerFactory.getLogger(SyncProfileService.class);
 
+    // Components
     @Autowired
     private DatabaseService databaseService;
     @Autowired
     private Map<String, SyncHandler> handlers;
 
+    // State
     private Map<UUID, SyncProfile> profiles;
     private SyncProfile[] cachedProfiles;
 
@@ -51,6 +52,49 @@ public class SyncProfileService implements DatabaseChangingEvent
     }
 
     /**
+     * Throws an exception if not found.
+     *
+     * @param name the name of the handler
+     * @return the handler
+     */
+    public SyncHandler getHandler(String name)
+    {
+        SyncHandler handler = handlers.get(name);
+        if (handler == null)
+        {
+            throw new IllegalStateException("Could not find handler with name: " + name);
+        }
+        return handler;
+    }
+
+    /**
+     * Throws an exception if not found.
+     *
+     * @param profile profile
+     * @return handler, or null
+     */
+    public SyncHandler getHandlerForProfile(SyncProfile profile)
+    {
+        SyncHandler result = null;
+        Iterator<SyncHandler> it = handlers.values().iterator();
+        while (result == null && it.hasNext())
+        {
+            SyncHandler handler = it.next();
+            if (handler.handles(profile))
+            {
+                result = handler;
+            }
+        }
+
+        if (result == null)
+        {
+            throw new IllegalStateException("Could not find handler for profile - id: " + profile.getId() + ", name: " + profile.getName());
+        }
+
+        return result;
+    }
+
+    /**
      * Refreshes available profiles by reading raw data from persistence/database.
      */
     public synchronized void refresh()
@@ -58,7 +102,7 @@ public class SyncProfileService implements DatabaseChangingEvent
         // Wipe old
         profiles.clear();
 
-        // Deserialize and add nodes
+        // Deserialize and add nodes from database
         DatabaseNode remoteSyncNode = remoteSyncNode();
         for (DatabaseNode node : remoteSyncNode.getChildren())
         {
@@ -78,6 +122,9 @@ public class SyncProfileService implements DatabaseChangingEvent
                 LOG.warn("could not load remote sync profile - id: {}, name: {}", node.getId(), node.getName());
             }
         }
+
+        // Update cache
+        refreshCache();
     }
 
     /**
@@ -93,6 +140,11 @@ public class SyncProfileService implements DatabaseChangingEvent
      */
     public synchronized void save(SyncProfile profile)
     {
+        if (profile == null)
+        {
+            throw new IllegalArgumentException("Cannot save null profile");
+        }
+
         // Serialize into database node
         DatabaseNode node = null;
         Iterator<SyncHandler> handler = handlers.values().iterator();
@@ -101,8 +153,16 @@ public class SyncProfileService implements DatabaseChangingEvent
             node = handler.next().serialize(profile);
         }
 
+        if (node == null)
+        {
+            throw new IllegalStateException("No handler to serialize sync profile - type: " + profile.getClass().getName());
+        }
+
         // Save to hidden rmeote sync node
         remoteSyncNode().add(node);
+
+        // Update cache
+        refreshCache();
     }
 
     /**
@@ -126,8 +186,14 @@ public class SyncProfileService implements DatabaseChangingEvent
         {
             LOG.warn("unable to remote remote sync node, not found - id: {}", id);
         }
+
+        // Refresh cache
+        refreshCache();
     }
 
+    /*
+        Cache items to prevent GC of objects and speed-up retrieval for front-end.
+     */
     private synchronized void refreshCache()
     {
         this.cachedProfiles = profiles.values().toArray(new SyncProfile[profiles.size()]);
@@ -136,8 +202,16 @@ public class SyncProfileService implements DatabaseChangingEvent
     private DatabaseNode remoteSyncNode()
     {
         Database database = databaseService.getDatabase();
-        DatabaseNode remoteSync = database.getRoot().getByName("remote-sync");
-        return remoteSync;
+        DatabaseNode root = database.getRoot();
+        DatabaseNode remoteSyncNode = root.getByName("remote-sync");
+
+        if (remoteSyncNode == null)
+        {
+            remoteSyncNode = new DatabaseNode(database, "remote-sync");
+            root.add(remoteSyncNode);
+        }
+
+        return remoteSyncNode;
     }
 
 }

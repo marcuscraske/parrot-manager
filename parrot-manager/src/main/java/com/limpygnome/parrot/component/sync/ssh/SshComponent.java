@@ -29,7 +29,7 @@ public class SshComponent
     @Autowired
     private FileComponent fileComponent;
 
-    public SshSession connect(SshOptions options) throws JSchException
+    public SshSession connect(SshSyncProfile options) throws JSchException
     {
         LOG.info("opening connection - options: {}", options);
 
@@ -174,7 +174,7 @@ public class SshComponent
         return message;
     }
 
-    private Session setupSession(SshOptions options) throws JSchException
+    private Session setupSession(SshSyncProfile options) throws JSchException
     {
         JSch jsch = new JSch();
 

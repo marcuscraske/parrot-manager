@@ -1,18 +1,27 @@
 package com.limpygnome.parrot.component.sync.ssh;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.limpygnome.parrot.component.database.DatabaseService;
-import com.limpygnome.parrot.component.sync.SyncFailureException;
-import com.limpygnome.parrot.component.sync.SyncResult;
 import com.limpygnome.parrot.component.settings.Settings;
 import com.limpygnome.parrot.component.settings.event.SettingsRefreshedEvent;
+import com.limpygnome.parrot.component.sync.SyncFailureException;
+import com.limpygnome.parrot.component.sync.SyncHandler;
+import com.limpygnome.parrot.component.sync.SyncOptions;
+import com.limpygnome.parrot.component.sync.SyncProfile;
+import com.limpygnome.parrot.component.sync.SyncResult;
+import com.limpygnome.parrot.lib.database.EncryptedValueService;
+import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
+import com.limpygnome.parrot.library.db.DatabaseNode;
 import com.limpygnome.parrot.library.db.log.LogItem;
 import com.limpygnome.parrot.library.db.log.LogLevel;
 import com.limpygnome.parrot.library.db.log.MergeLog;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +35,10 @@ import java.util.regex.Pattern;
 /**
  * Currently only supports SSH, but this could be split into multiple services for different remote sync options.
  */
-@Service
-public class SshRemoteSyncHandler implements SettingsRefreshedEvent
+@Service("ssh")
+public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SshRemoteSyncHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SshSyncHandler.class);
 
     private static final long DEFAULT_REMOTE_BACKUPS_RETAINED = 30L;
 
@@ -41,6 +50,8 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
     private DatabaseReaderWriter databaseReaderWriter;
     @Autowired
     private DatabaseMerger databaseMerger;
+    @Autowired
+    private EncryptedValueService encryptedValueService;
 
     private SshSession sshSession;
 
@@ -52,19 +63,85 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         remoteBackupsRetained = settings.getRemoteBackupsRetained().getSafeLong(DEFAULT_REMOTE_BACKUPS_RETAINED);
     }
 
-    public synchronized String download(SshOptions options)
+    @Override
+    public SyncProfile createProfile()
+    {
+        return new SshSyncProfile();
+    }
+
+    @Override
+    public DatabaseNode serialize(SyncProfile profile)
+    {
+        Database database = databaseService.getDatabase();
+        SshSyncProfile syncProfile = (SshSyncProfile) profile;
+
+        try
+        {
+            // Serialize as JSON string
+            ObjectMapper mapper = new ObjectMapper();
+            String rawJson = mapper.writeValueAsString(syncProfile);
+
+            // Parse as JSON for sanity
+            JsonParser parser = new JsonParser();
+            JsonObject json = parser.parse(rawJson).getAsJsonObject();
+
+            // Create encrypted JSON object
+            EncryptedValue encryptedValue = encryptedValueService.fromJson(database, json);
+
+            // Store in new node
+            DatabaseNode newNode = new DatabaseNode(database, profile.getName());
+            newNode.setValue(encryptedValue);
+            return newNode;
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Unable to serialize profile", e);
+        }
+    }
+
+    @Override
+    public SyncProfile deserialize(DatabaseNode node)
+    {
+        Database database = databaseService.getDatabase();
+
+        try
+        {
+            // Fetch value as string
+            String value = encryptedValueService.asString(database, node.getValue());
+
+            // Deserialize into object
+            ObjectMapper mapper = new ObjectMapper();
+            SshSyncProfile profile =  mapper.readValue(value, SshSyncProfile.class);
+            return profile;
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Unable to deserialize database node to profile", e);
+        }
+    }
+
+    @Override
+    public boolean handles(SyncProfile profile)
+    {
+        return profile instanceof SshSyncProfile;
+    }
+
+    @Override
+    public synchronized String download(SyncOptions options, SyncProfile profile)
     {
         String result = null;
         sshSession = null;
 
+        SshSyncProfile sshProfile = (SshSyncProfile) profile;
+
         try
         {
             // Connect
-            sshSession = sshComponent.connect(options);
+            sshSession = sshComponent.connect(sshProfile);
 
             // Start download...
-            SshFile source = new SshFile(sshSession, options.getRemotePath());
-            String destionation = options.getDestinationPath();
+            SshFile source = new SshFile(sshSession, sshProfile.getRemotePath());
+            String destionation = sshProfile.getDestinationPath();
 
             sshComponent.download(sshSession, source, destionation);
         }
@@ -81,23 +158,26 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         return result;
     }
 
-    public synchronized String test(SshOptions options)
+    @Override
+    public synchronized String test(SyncOptions options, SyncProfile profile)
     {
         String result = null;
         sshSession = null;
         boolean createdLock = false;
 
+        SshSyncProfile sshProfile = (SshSyncProfile) profile;
+
         try
         {
             // connect
-            sshSession = sshComponent.connect(options);
+            sshSession = sshComponent.connect(sshProfile);
 
             // create lock
-            createLock(null, options);
+            createLock(null, sshProfile);
             createdLock = true;
 
             // check remote connection works and file exists
-            SshFile file = new SshFile(sshSession, options.getRemotePath());
+            SshFile file = new SshFile(sshSession, sshProfile.getRemotePath());
 
             if (!sshComponent.checkRemotePathExists(sshSession, file))
             {
@@ -113,7 +193,7 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         {
             if (createdLock)
             {
-                cleanupLock(null, options);
+                cleanupLock(null, sshProfile);
             }
             cleanup();
         }
@@ -121,23 +201,26 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         return result;
     }
 
-    public synchronized SyncResult overwrite(SshOptions options)
+    @Override
+    public synchronized SyncResult overwrite(SyncOptions options, SyncProfile profile)
     {
         MergeLog mergeLog = new MergeLog();
         boolean createdLock = false;
         boolean success = true;
 
+        SshSyncProfile sshProfile = (SshSyncProfile) profile;
+
         try
         {
             // connect
-            sshSession = sshComponent.connect(options);
+            sshSession = sshComponent.connect(sshProfile);
 
             // create lock
-            createLock(mergeLog, options);
+            createLock(mergeLog, sshProfile);
             createdLock = true;
 
             String localPath = databaseService.getPath();
-            SshFile fileRemote = new SshFile(sshSession, options.getRemotePath());
+            SshFile fileRemote = new SshFile(sshSession, sshProfile.getRemotePath());
             SshFile fileRemoteSyncBackup = fileRemote.clone().postFixFileName(".sync");
 
             // check if database exists
@@ -171,7 +254,7 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
             // cleanup lock
             if (createdLock)
             {
-                cleanupLock(mergeLog, options);
+                cleanupLock(mergeLog, sshProfile);
             }
 
             // disconnect
@@ -179,23 +262,26 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         }
 
         SyncResult result = new SyncResult(
-            options.getName(), mergeLog, success, false
+            profile.getName(), mergeLog, success, false
         );
         return result;
     }
 
-    public synchronized SyncResult unlock(SshOptions options)
+    @Override
+    public synchronized SyncResult unlock(SyncOptions options, SyncProfile profile)
     {
         MergeLog mergeLog = new MergeLog();
         boolean success;
 
+        SshSyncProfile sshProfile = (SshSyncProfile) profile;
+
         try
         {
             // connect
-            sshSession = sshComponent.connect(options);
+            sshSession = sshComponent.connect(sshProfile);
 
             // remove lock file
-            SshFile fileLock = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".lock");
+            SshFile fileLock = new SshFile(sshSession, sshProfile.getRemotePath()).postFixFileName(".lock");
             sshComponent.remove(sshSession, fileLock);
             success = true;
 
@@ -212,21 +298,24 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
             cleanup();
         }
 
-        return new SyncResult(options.getName(), mergeLog, success, false);
+        return new SyncResult(sshProfile.getName(), mergeLog, success, false);
     }
 
-    public synchronized SyncResult sync(SshOptions options, String remotePassword)
+    @Override
+    public synchronized SyncResult sync(SyncOptions options, SyncProfile profile)
     {
         MergeLog mergeLog = new MergeLog();
         boolean success = true;
         boolean dirty = false;
         boolean createdLock = false;
 
+        SshSyncProfile sshProfile = (SshSyncProfile) profile;
+
         Database database = databaseService.getDatabase();
 
         // alter destination path for this host
-        int fullHostNameHash = (options.getHost() + options.getPort()).hashCode();
-        String syncPath = options.getDestinationPath();
+        int fullHostNameHash = (sshProfile.getHost() + sshProfile.getPort()).hashCode();
+        String syncPath = sshProfile.getDestinationPath();
         syncPath = syncPath + "." + fullHostNameHash + "." + System.currentTimeMillis() + ".sync";
 
         // fetch current path to database
@@ -237,13 +326,13 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         {
             // connect
             LOG.info("sync - connecting");
-            sshSession = sshComponent.connect(options);
+            sshSession = sshComponent.connect(sshProfile);
 
-            SshFile source = new SshFile(sshSession, options.getRemotePath());
-            SshFile fileSyncBackup = new SshFile(sshSession, options.getRemotePath()).postFixFileName(".sync");
+            SshFile source = new SshFile(sshSession, sshProfile.getRemotePath());
+            SshFile fileSyncBackup = new SshFile(sshSession, sshProfile.getRemotePath()).postFixFileName(".sync");
 
             // create lock file
-            createLock(mergeLog, options);
+            createLock(mergeLog, sshProfile);
             createdLock = true;
 
             // check whether an old renamed file exists; if so, restore it
@@ -268,6 +357,8 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
 
             if (error == null)
             {
+                String remotePassword = options.getDatabasePassword();
+
                 // load remote database
                 LOG.info("sync - loading remote database");
                 Database remoteDatabase = databaseReaderWriter.open(syncPath, remotePassword.toCharArray());
@@ -341,7 +432,7 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
             // remove remote lock
             if (createdLock)
             {
-                cleanupLock(mergeLog, options);
+                cleanupLock(mergeLog, sshProfile);
             }
 
             // cleanup sync file
@@ -365,9 +456,16 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
 
         // raise event with result
         SyncResult syncResult = new SyncResult(
-                options.getName(), mergeLog, success, dirty
+                profile.getName(), mergeLog, success, dirty
         );
         return syncResult;
+    }
+
+    @Override
+    public boolean canAutoSync(SyncOptions options, SyncProfile profile)
+    {
+        SshSyncProfile syncProfile = (SshSyncProfile) profile;
+        return !syncProfile.isPromptKeyPass() && !syncProfile.isPromptUserPass();
     }
 
     private synchronized void cleanup()
@@ -382,7 +480,7 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         }
     }
 
-    private void createLock(MergeLog mergeLog, SshOptions options) throws SyncFailureException
+    private void createLock(MergeLog mergeLog, SshSyncProfile options) throws SyncFailureException
     {
         try
         {
@@ -445,7 +543,7 @@ public class SshRemoteSyncHandler implements SettingsRefreshedEvent
         }
     }
 
-    private void cleanupLock(MergeLog mergeLog, SshOptions options)
+    private void cleanupLock(MergeLog mergeLog, SshSyncProfile options)
     {
         try
         {
