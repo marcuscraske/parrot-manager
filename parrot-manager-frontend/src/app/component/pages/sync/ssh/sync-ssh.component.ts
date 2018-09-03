@@ -3,15 +3,13 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
-import { RemoteSyncService } from 'app/service/remoteSyncService.service'
-import { DatabaseService } from 'app/service/database.service'
-import { EncryptedValueService } from 'app/service/encryptedValue.service'
+import { SyncService } from 'app/service/sync.service'
+import { SyncProfileService } from 'app/service/syncProfile.service'
 
 @Component({
-    templateUrl: 'remote-sync-ssh.component.html',
-    providers: [RemoteSyncService]
+    templateUrl: 'sync-ssh.component.html'
 })
-export class RemoteSyncSshComponent {
+export class SyncSshComponent {
 
     public openForm = this.fb.group({
        name: ["", [Validators.required, Validators.minLength(1), Validators.maxLength(128)]],
@@ -47,7 +45,8 @@ export class RemoteSyncSshComponent {
 
     constructor(
         private runtimeService: RuntimeService,
-        private remoteSyncService: RemoteSyncService,
+        private syncService: SyncService,
+        private syncProfileService: SyncProfileService,
         private databaseService: DatabaseService,
         private encryptedValueService: EncryptedValueService,
         private router: Router,
@@ -109,21 +108,19 @@ export class RemoteSyncSshComponent {
     /* Populates form using a specific node of remote-sync. */
     populate(nodeId)
     {
-        // Fetch actual JSON for node
-        var node = this.databaseService.getNode(nodeId);
-        var json = node != null ? this.encryptedValueService.getString(node) : null;
-        var config = json != null ? JSON.parse(json) : null;
+        // Fetch profile and populate form
+        var profile = this.syncProfileService.fetchById(nodeId);
 
-        if (config != null)
+        if (profile != null)
         {
             // Populate form with data
             var form = this.openForm;
-            form.patchValue(config);
+            form.patchValue(profile);
             console.log("form populated - node id: " + nodeId);
         }
         else
         {
-            console.log("no config found - node id: " + nodeId);
+            console.log("no profile found - node id: " + nodeId);
         }
     }
 
@@ -134,17 +131,17 @@ export class RemoteSyncSshComponent {
         if (form.valid)
         {
             // Create download options
-            var options = this.createOptions();
+            var profile = this.createProfile();
 
             if (this.currentMode == "open")
             {
                 // Perform download and save config...
-                this.performOpen(options);
+                this.performOpen(profile);
             }
             else if (this.currentMode == "edit" || this.currentMode == "new")
             {
                 // Update existing
-                this.persistOptions(options);
+                this.persistOptions(profile);
                 this.router.navigate(["/remote-sync"]);
             }
             else
@@ -163,10 +160,11 @@ export class RemoteSyncSshComponent {
         $("#openRemoteSsh :input").prop("disabled", isDisabled);
     }
 
-    performOpen(options)
+    performOpen(profile)
     {
         // Begin async chain to prompt for passwords etc
-        this.chainDisableAndPrompt(options, (options) => { this.performDownloadAndOpen(options) });
+        // TODO drop chain, move to service
+        this.chainDisableAndPrompt(profile, (profile) => { this.performDownloadAndOpen(profile) });
     }
 
     performTest()
@@ -176,10 +174,11 @@ export class RemoteSyncSshComponent {
             console.log("testing...");
 
             // Create download options
-            var options = this.createOptions();
+            var profile = this.createProfile();
 
             // Begin async chain to prompt for passwords etc
-            this.chainDisableAndPrompt(options, (options) => { this.performTestWithAuth(options); });
+            // TODO drop chain, move to service
+            this.chainDisableAndPrompt(profile, (profile) => { this.performTestWithAuth(profile); });
         }
         else
         {
@@ -311,7 +310,7 @@ export class RemoteSyncSshComponent {
     }
 
     /* Converts the current form into SshOptions instance */
-    createOptions() : any
+    private createProfile() : any
     {
         var form = this.openForm;
 
@@ -325,6 +324,8 @@ export class RemoteSyncSshComponent {
         }
 
         // Create actual instance
+        var profile = this.syncProfileService.createTemporaryProfile("ssh");
+
         var options = this.remoteSyncService.createOptions(
             form.value["name"],
             form.value["host"],
@@ -334,27 +335,33 @@ export class RemoteSyncSshComponent {
             form.value["destinationPath"]
         );
 
-        options.setStrictHostChecking(form.value["strictHostChecking"]);
-        options.setUserPass(form.value["userPass"]);
-        options.setPrivateKeyPath(form.value["privateKeyPath"]);
-        options.setPrivateKeyPass(form.value["privateKeyPass"]);
-        options.setProxyHost(form.value["proxyHost"]);
-        options.setProxyPort(form.value["proxyPort"]);
-        options.setProxyType(form.value["proxyType"]);
-        options.setPromptUserPass(form.value["promptUserPass"]);
-        options.setPromptKeyPass(form.value["promptKeyPass"]);
-        options.setMachineFilter(form.value["machineFilter"]);
+        profile.setName(form.value["name"]);
+        profile.setHost(form.value["host"]);
+        profile.setPort(form.value["port"]);
+        profile.setUser(form.value["user"]);
+        profile.setRemotePath(form.value["remotePath"]);
+        profile.setDestinationPath(form.value["destinationPath"]);
+        profile.setStrictHostChecking(form.value["strictHostChecking"]);
+        profile.setUserPass(form.value["userPass"]);
+        profile.setPrivateKeyPath(form.value["privateKeyPath"]);
+        profile.setPrivateKeyPass(form.value["privateKeyPass"]);
+        profile.setProxyHost(form.value["proxyHost"]);
+        profile.setProxyPort(form.value["proxyPort"]);
+        profile.setProxyType(form.value["proxyType"]);
+        profile.setPromptUserPass(form.value["promptUserPass"]);
+        profile.setPromptKeyPass(form.value["promptKeyPass"]);
+        profile.setMachineFilter(form.value["machineFilter"]);
 
         // Non-serialized data used for just test/downloading in edit mode
         if (this.currentMode == "edit" || this.currentMode == "new")
         {
-            options.setDestinationPath(this.databaseService.getPath());
+            profile.setDestinationPath(this.databaseService.getPath());
         }
 
         // Handle options based on mode
         console.log("download options: " + options.toString());
 
-        return options;
+        return profile;
     }
 
     /* Saves currently configuration to database */

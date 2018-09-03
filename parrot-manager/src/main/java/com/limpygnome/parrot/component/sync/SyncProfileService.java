@@ -1,6 +1,7 @@
 package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.component.database.DatabaseService;
+import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
@@ -27,10 +28,13 @@ public class SyncProfileService implements DatabaseChangingEvent
     private DatabaseService databaseService;
     @Autowired
     private Map<String, SyncHandler> handlers;
+    @Autowired
+    private WebStageInitService webStageInitService;
 
     // State
     private Map<UUID, SyncProfile> profiles;
     private SyncProfile[] cachedProfiles;
+    private SyncProfile temporaryProfile;
 
     public SyncProfileService()
     {
@@ -52,19 +56,20 @@ public class SyncProfileService implements DatabaseChangingEvent
     }
 
     /**
-     * Throws an exception if not found.
+     * Creates a temporary profile for the given type.
      *
-     * @param name the name of the handler
-     * @return the handler
+     * Throws an exception if the type is not found.
+     *
+     * The profile returned is stored on heap to prevent garbage collection, thus the next call may wipe the
+     * object returned.
+     *
+     * @param type the type / handler name
+     * @return an instance
      */
-    public SyncHandler getHandler(String name)
-    {
-        SyncHandler handler = handlers.get(name);
-        if (handler == null)
-        {
-            throw new IllegalStateException("Could not find handler with name: " + name);
-        }
-        return handler;
+    public SyncProfile createTemporaryProfile(String type) {
+        SyncHandler handler = handlers.get(type);
+        temporaryProfile = handler.createProfile();
+        return temporaryProfile;
     }
 
     /**
@@ -124,7 +129,7 @@ public class SyncProfileService implements DatabaseChangingEvent
         }
 
         // Update cache
-        refreshCache();
+        raiseChangeEvent();
     }
 
     /**
@@ -133,6 +138,17 @@ public class SyncProfileService implements DatabaseChangingEvent
     public synchronized SyncProfile[] fetch()
     {
         return cachedProfiles;
+    }
+
+    /**
+     * @param nodeId the ID of the profile
+     * @return the profile, or null
+     */
+    public synchronized SyncProfile fetchById(String nodeId)
+    {
+        UUID uuid = UUID.fromString(nodeId);
+        SyncProfile profile = profiles.get(uuid);
+        return profile;
     }
 
     /**
@@ -162,7 +178,7 @@ public class SyncProfileService implements DatabaseChangingEvent
         remoteSyncNode().add(node);
 
         // Update cache
-        refreshCache();
+        raiseChangeEvent();
     }
 
     /**
@@ -188,7 +204,13 @@ public class SyncProfileService implements DatabaseChangingEvent
         }
 
         // Refresh cache
+        raiseChangeEvent();
+    }
+
+    private synchronized void raiseChangeEvent()
+    {
         refreshCache();
+        this.webStageInitService.triggerEvent("document", "syncProfiles.change", cachedProfiles);
     }
 
     /*

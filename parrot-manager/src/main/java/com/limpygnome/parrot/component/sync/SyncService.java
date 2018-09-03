@@ -366,19 +366,17 @@ public class SyncService implements DatabaseChangingEvent
     }
 
     /**
-     * Creates a temporary instance of sync options.
+     * Creates a temporary instance of sync options. This will inherit the default options.
      *
      * Used primarily for when creating new databases, or manually syncing with a different password.
      *
      * Invoking this method another time will likely cause the original object ot be garbage collected.
      *
-     * @param databasePassword database password
-     * @param destinationPath destination path
      * @return an instance
      */
-    public SyncOptions createTemproaryOptions(String databasePassword, String destinationPath)
+    public SyncOptions createTemporaryOptions()
     {
-        SyncOptions options = new SyncOptions(databasePassword, destinationPath);
+        SyncOptions options = new SyncOptions(defaultSyncOptions);
         sessionService.put("syncService.temproaryOptions", options);
         return options;
     }

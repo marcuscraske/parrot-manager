@@ -7,6 +7,7 @@ import com.limpygnome.parrot.component.clipboard.ClipboardService;
 import com.limpygnome.parrot.component.database.DatabaseOptimizerService;
 import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.importExport.ImportExportService;
+import com.limpygnome.parrot.component.sync.SyncProfileService;
 import com.limpygnome.parrot.component.sync.SyncResultService;
 import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
@@ -36,10 +37,6 @@ public class WebStageInitService
     @Autowired
     private RandomGeneratorService randomGeneratorService;
     @Autowired
-    private SyncService syncService;
-    @Autowired
-    private SyncResultService syncResultService;
-    @Autowired
     private RuntimeService runtimeService;
     @Autowired
     private BackupService backupService;
@@ -59,6 +56,12 @@ public class WebStageInitService
     private ClipboardService clipboardService;
     @Autowired
     private BrowserService browserService;
+    @Autowired
+    private SyncService syncService;
+    @Autowired
+    private SyncProfileService syncProfileService;
+    @Autowired
+    private SyncResultService syncResultService;
 
     @Autowired(required = false)
     private WebViewDebug webViewDebug;
@@ -90,8 +93,6 @@ public class WebStageInitService
         stage.exposeJsObject("runtimeService", runtimeService);
         stage.exposeJsObject("databaseService", databaseService);
         stage.exposeJsObject("randomGeneratorService", randomGeneratorService);
-        stage.exposeJsObject("remoteSyncService", syncService);
-        stage.exposeJsObject("remoteSyncResultService", syncResultService);
         stage.exposeJsObject("backupService", backupService);
         stage.exposeJsObject("recentFileService", recentFileService);
         stage.exposeJsObject("encryptedValueService", encryptedValueService);
@@ -101,6 +102,9 @@ public class WebStageInitService
         stage.exposeJsObject("importExportService", importExportService);
         stage.exposeJsObject("clipboardService", clipboardService);
         stage.exposeJsObject("browserService", browserService);
+        stage.exposeJsObject("syncService", syncService);
+        stage.exposeJsObject("syncProfileService", syncProfileService);
+        stage.exposeJsObject("syncResultService", syncResultService);
 
         // Runtime is now ready
         runtimeService.setReady(true);

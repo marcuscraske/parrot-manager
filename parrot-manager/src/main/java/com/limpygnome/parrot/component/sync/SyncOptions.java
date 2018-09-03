@@ -7,6 +7,15 @@ public class SyncOptions
 
     public SyncOptions() { }
 
+    public SyncOptions(SyncOptions options)
+    {
+        if (options != null)
+        {
+            this.databasePassword = options.databasePassword;
+            this.destinationPath = options.destinationPath;
+        }
+    }
+
     public SyncOptions(String databasePassword, String destinationPath)
     {
         this.databasePassword = databasePassword;
@@ -18,9 +27,19 @@ public class SyncOptions
         return databasePassword;
     }
 
+    public void setDatabasePassword(String databasePassword)
+    {
+        this.databasePassword = databasePassword;
+    }
+
     public String getDestinationPath()
     {
         return destinationPath;
+    }
+
+    public void setDestinationPath(String destinationPath)
+    {
+        this.destinationPath = destinationPath;
     }
 
 }

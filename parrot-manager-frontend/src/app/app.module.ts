@@ -19,6 +19,7 @@ import { PipesModule }              from 'app/component/pipes/pipes.module'
 import { SettingsModule }           from 'app/component/pages/settings/settings.module'
 import { ImportExportModule }       from 'app/component/pages/importExport/importExport.module'
 import { ControlsModule }           from 'app/component/controls/controls.module'
+import { SyncModule }               from 'app/component/pages/sync/sync.module'
 
 // Pages
 import { ErrorComponent }           from 'app/component/pages/error/error.component'
@@ -36,9 +37,6 @@ import { ToggleValueComponent }     from 'app/component/pages/viewer/toggle-valu
 import { CopyClipboardComponent }   from 'app/component/pages/viewer/copy-clipboard/copyClipboard.component'
 import { SendKeysComponent }        from 'app/component/pages/viewer/send-keys/sendKeys.component'
 import { HistoryComponent }         from 'app/component/pages/viewer/history/history.component'
-
-import { RemoteSyncComponent }      from 'app/component/pages/remote-sync/remote-sync.component'
-import { RemoteSyncSshComponent }   from 'app/component/pages/remote-sync-ssh/remote-sync-ssh.component'
 import { BackupsComponent }         from 'app/component/pages/backups/backups.component'
 
 const appRoutes: Routes = [
@@ -47,9 +45,6 @@ const appRoutes: Routes = [
   { path: 'create',                                 component: CreateComponent },
 
   { path: 'viewer',                                 component: ViewerComponent },
-  { path: 'remote-sync',                            component: RemoteSyncComponent },
-  { path: 'remote-sync/ssh',                        component: RemoteSyncSshComponent },
-  { path: 'remote-sync/ssh/:currentNode',           component: RemoteSyncSshComponent },
   { path: 'backups',                                component: BackupsComponent },
 
   { path: 'help',                                   component: HelpComponent },

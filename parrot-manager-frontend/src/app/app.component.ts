@@ -7,10 +7,13 @@ import { ClipboardService } from 'app/service/clipboard.service'
 import { DatabaseService } from 'app/service/database.service'
 import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
-import { RemoteSyncService } from 'app/service/remoteSyncService.service'
 import { SettingsService } from 'app/service/settings.service'
 import { ThemeService } from 'app/service/theme.service'
 import { SendKeysService } from 'app/service/sendKeys.service'
+import { SyncSshService } from 'app/service/syncssh.service'
+import { SyncService } from 'app/service/sync.service'
+import { SyncProfileService } from 'app/service/syncProfile.service'
+import { SyncResultService } from 'app/service/syncResult.service'
 
 @Component({
   selector: 'my-app',
@@ -23,10 +26,13 @@ import { SendKeysService } from 'app/service/sendKeys.service'
         DatabaseService,
         BackupService,
         EncryptedValueService,
-        RemoteSyncService,
         SettingsService,
         ThemeService,
-        SendKeysService
+        SendKeysService,
+        SyncSshService,
+        SyncService,
+        SyncProfileService,
+        SyncResultService
   ]
 })
 export class AppComponent

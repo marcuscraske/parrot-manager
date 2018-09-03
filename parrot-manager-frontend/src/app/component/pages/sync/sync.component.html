@@ -9,7 +9,7 @@
 
 <div *ngIf="!isSyncing()">
 
-    <table class="table remote-sync" *ngIf="isTargets()" id="remoteSyncTargets">
+    <table class="table sync" *ngIf="profiles.length > 0" id="remoteSyncTargets">
         <tr *ngFor="let profile of remoteSyncNode.getChildren(); trackBy: trackChildren">
             <td>
                 <button class="btn btn-primary" (click)="sync(node.getId(), false)">

@@ -71,7 +71,7 @@ public class SyncResultService implements DatabaseChangingEvent
 
     private void raiseEventChanged()
     {
-        webStageInitService.triggerEvent("document", "remoteSyncLogChange", results);
+        webStageInitService.triggerEvent("document", "syncResults.change", results);
     }
 
     private void updateCache()

@@ -13,18 +13,18 @@ table tr:nth-child(1) td
     border-top: none;
 }
 
-table.remote-sync tr td
+table.sync tr td
 {
     white-space: nowrap;
     vertical-align: middle;
 }
 
-table.remote-sync tr td:nth-child(2)
+table.sync tr td:nth-child(2)
 {
     width: 50%;
 }
 
-table.remote-sync tr td:nth-child(3)
+table.sync tr td:nth-child(3)
 {
     width: 50%;
 }
