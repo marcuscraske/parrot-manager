@@ -99,7 +99,7 @@ public class SyncThreadService
     private void executeForHost(SyncThread syncThread, SyncOptions options, SyncProfile profile)
     {
         // raise event for work started
-        webStageInitService.triggerEvent("document", "remoteSyncStart", profile);
+        webStageInitService.triggerEvent("document", "syncStart", profile);
 
         SyncResult syncResult = null;
 
@@ -114,7 +114,7 @@ public class SyncThreadService
         finally
         {
             // raise event for work finished
-            webStageInitService.triggerEvent("document", "remoteSyncFinish", syncResult);
+            webStageInitService.triggerEvent("document", "syncFinish", syncResult);
         }
     }
 

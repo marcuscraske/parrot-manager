@@ -3,7 +3,9 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { RuntimeService } from 'app/service/runtime.service'
+import { DatabaseService } from 'app/service/database.service'
 import { SyncService } from 'app/service/sync.service'
+import { SyncSshService } from 'app/service/syncSsh.service'
 import { SyncProfileService } from 'app/service/syncProfile.service'
 
 @Component({
@@ -45,10 +47,10 @@ export class SyncSshComponent {
 
     constructor(
         private runtimeService: RuntimeService,
-        private syncService: SyncService,
-        private syncProfileService: SyncProfileService,
         private databaseService: DatabaseService,
-        private encryptedValueService: EncryptedValueService,
+        private syncService: SyncService,
+        private syncSshService: SyncSshService,
+        private syncProfileService: SyncProfileService,
         private router: Router,
         public fb: FormBuilder,
         private route: ActivatedRoute
@@ -91,7 +93,7 @@ export class SyncSshComponent {
             if (populateMachineName)
             {
                 // populate machine filter with current hostname
-                var currentHostname = this.remoteSyncService.getCurrentHostName();
+                var currentHostname = this.syncService.getCurrentHostName();
                 this.openForm.patchValue({
                     "name" : currentHostname,
                     "machineFilter" : currentHostname
@@ -131,18 +133,19 @@ export class SyncSshComponent {
         if (form.valid)
         {
             // Create download options
+            var options = this.createOptions();
             var profile = this.createProfile();
 
             if (this.currentMode == "open")
             {
                 // Perform download and save config...
-                this.performOpen(profile);
+                this.performOpen(options, profile);
             }
             else if (this.currentMode == "edit" || this.currentMode == "new")
             {
                 // Update existing
-                this.persistOptions(profile);
-                this.router.navigate(["/remote-sync"]);
+                this.syncProfileService.save(profile);
+                this.router.navigate(["/sync"]);
             }
             else
             {
@@ -160,11 +163,10 @@ export class SyncSshComponent {
         $("#openRemoteSsh :input").prop("disabled", isDisabled);
     }
 
-    performOpen(profile)
+    performOpen(options, profile)
     {
         // Begin async chain to prompt for passwords etc
-        // TODO drop chain, move to service
-        this.chainDisableAndPrompt(profile, (profile) => { this.performDownloadAndOpen(profile) });
+        this.sshAuthChain(options, profile, (options, profile) => { this.performDownloadAndOpen(options, profile) });
     }
 
     performTest()
@@ -174,11 +176,11 @@ export class SyncSshComponent {
             console.log("testing...");
 
             // Create download options
+            var options = this.createOptions();
             var profile = this.createProfile();
 
             // Begin async chain to prompt for passwords etc
-            // TODO drop chain, move to service
-            this.chainDisableAndPrompt(profile, (profile) => { this.performTestWithAuth(profile); });
+            this.sshAuthChain(options, profile, (options, profile) => { this.performTestWithAuth(options, profile); });
         }
         else
         {
@@ -186,7 +188,7 @@ export class SyncSshComponent {
         }
     }
 
-    chainDisableAndPrompt(options, finalCallback)
+    sshAuthChain(options, profile, callback)
     {
         console.log("disabling form, wiping messages...");
 
@@ -197,68 +199,19 @@ export class SyncSshComponent {
         // Disable form
         this.setFormDisabled(true);
 
-        // Move onto asking for user pass
-        this.chainPromptUserPass(options, finalCallback);
+        this.syncSshService.authChain(options, profile, (options, profile) => {
+            // Re-enable form
+            this.setFormDisabled(false);
+            callback(options, profile);
+        });
     }
 
-    chainPromptUserPass(options, finalCallback)
-    {
-        if (options.isPromptUserPass())
-        {
-            console.log("prompting for user pass...");
-
-            bootbox.prompt({
-                title: "Enter SSH user password:",
-                inputType: "password",
-                callback: (password) => {
-                    // Update options
-                    options.setUserPass(password);
-
-                    // Continue next stage in the chain...
-                    console.log("continuing to key pass chain...");
-                    this.chainPromptKeyPass(options, finalCallback);
-                }
-            });
-        }
-        else
-        {
-            console.log("skipped user pass prompt, moving to key pass...");
-            this.chainPromptKeyPass(options, finalCallback);
-        }
-    }
-
-    chainPromptKeyPass(options, finalCallback)
-    {
-        if (options.isPromptKeyPass())
-        {
-            console.log("prompting for key pass...");
-
-            bootbox.prompt({
-                title: "Enter key password:",
-                inputType: "password",
-                callback: (password) => {
-                    // Update options
-                    options.setPrivateKeyPass(password);
-
-                    // Continue next stage in the chain...
-                    console.log("continuing to perform actual download and open...");
-                    finalCallback(options);
-                }
-            });
-        }
-        else
-        {
-            console.log("skipped prompting user pass, invoking final callback...");
-            finalCallback(options);
-        }
-    }
-
-    performDownloadAndOpen(options)
+    performDownloadAndOpen(options, profile)
     {
         console.log("going to start download of remote database...");
 
         // Request download...
-        this.errorMessage = this.remoteSyncService.download(options);
+        this.errorMessage = this.syncService.download(options, profile);
 
         // Check if download failed...
         if (this.errorMessage != null)
@@ -281,8 +234,8 @@ export class SyncSshComponent {
                 }
                 else
                 {
-                    // Persist options
-                    this.persistOptions(options);
+                    // Persist profile
+                    this.syncProfileService.save(profile);
 
                     // Navigate to viewer
                     console.log("navigating to viewer...");
@@ -293,12 +246,12 @@ export class SyncSshComponent {
         }
     }
 
-    performTestWithAuth(options)
+    performTestWithAuth(options, profile)
     {
         console.log("going to test options...");
 
         // Invoke and assign error message (successful if null)
-        this.errorMessage = this.remoteSyncService.test(options);
+        this.errorMessage = this.syncService.test(options, profile);
 
         if (this.errorMessage == null)
         {
@@ -309,7 +262,7 @@ export class SyncSshComponent {
         this.setFormDisabled(false);
     }
 
-    /* Converts the current form into SshOptions instance */
+    /* Converts the current form into SyncProfile instance */
     private createProfile() : any
     {
         var form = this.openForm;
@@ -326,21 +279,12 @@ export class SyncSshComponent {
         // Create actual instance
         var profile = this.syncProfileService.createTemporaryProfile("ssh");
 
-        var options = this.remoteSyncService.createOptions(
-            form.value["name"],
-            form.value["host"],
-            form.value["port"],
-            form.value["user"],
-            form.value["remotePath"],
-            form.value["destinationPath"]
-        );
-
         profile.setName(form.value["name"]);
         profile.setHost(form.value["host"]);
         profile.setPort(form.value["port"]);
         profile.setUser(form.value["user"]);
         profile.setRemotePath(form.value["remotePath"]);
-        profile.setDestinationPath(form.value["destinationPath"]);
+
         profile.setStrictHostChecking(form.value["strictHostChecking"]);
         profile.setUserPass(form.value["userPass"]);
         profile.setPrivateKeyPath(form.value["privateKeyPath"]);
@@ -352,32 +296,24 @@ export class SyncSshComponent {
         profile.setPromptKeyPass(form.value["promptKeyPass"]);
         profile.setMachineFilter(form.value["machineFilter"]);
 
-        // Non-serialized data used for just test/downloading in edit mode
-        if (this.currentMode == "edit" || this.currentMode == "new")
-        {
-            profile.setDestinationPath(this.databaseService.getPath());
-        }
-
         // Handle options based on mode
-        console.log("download options: " + options.toString());
+        console.log("download options: " + profile.toString());
 
         return profile;
     }
 
-    /* Saves currently configuration to database */
-    persistOptions(options)
+    /* Converts currnet form into SyncOptions instance */
+    private createOptions()
     {
-        // Delete existing node
-        if (this.currentMode == "edit")
+        var form = this.openForm;
+        var options = this.syncService.createTemporaryOptions();
+
+        if (this.currentMode == "open")
         {
-            var node = this.databaseService.getNode(this.currentNode);
-            node.remove();
-            console.log("dropped existing options node - id: " + this.currentNode);
+            options.setDestinationPath(form.value["destinationPath"]);
         }
 
-        // Create new node
-        console.log("persisting options to new node");
-        this.encryptedValueService.persistSshOptions(options);
+        return options;
     }
 
     /* Handler for cancel button (navigates to appropriate previous page in flow */
@@ -414,7 +350,7 @@ export class SyncSshComponent {
         }
         else
         {
-            this.router.navigate(["/remote-sync"]);
+            this.router.navigate(["/sync"]);
         }
     }
 

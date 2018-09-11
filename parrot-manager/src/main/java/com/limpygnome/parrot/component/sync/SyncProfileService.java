@@ -119,12 +119,13 @@ public class SyncProfileService implements DatabaseChangingEvent
                 if (profile != null)
                 {
                     profiles.put(profile.getId(), profile);
+                    found = true;
                 }
             }
 
             if (!found)
             {
-                LOG.warn("could not load remote sync profile - id: {}, name: {}", node.getId(), node.getName());
+                LOG.warn("could not load sync profile, no handler found - id: {}, name: {}", node.getId(), node.getName());
             }
         }
 
@@ -184,7 +185,7 @@ public class SyncProfileService implements DatabaseChangingEvent
     /**
      * @param id the profile to be removed
      */
-    public synchronized void remove(String id)
+    public synchronized void delete(String id)
     {
         UUID uuid = UUID.fromString(id);
 

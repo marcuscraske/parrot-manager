@@ -1,8 +1,30 @@
 import { Injectable } from '@angular/core';
+import { SshSyncProfile } from 'app/model/sshSyncProfile'
 
 @Injectable()
 export class SyncSshService
 {
+
+    toJson(nativeProfile)
+    {
+        var profile = new SshSyncProfile();
+        profile.id = nativeProfile.getId();
+        profile.name = nativeProfile.getName();
+        profile.host = nativeProfile.getHost();
+        profile.port = nativeProfile.getPort();
+        profile.user = nativeProfile.getUser();
+        profile.remotePath = nativeProfile.getRemotePath();
+        profile.userPass = nativeProfile.getUserPass();
+        profile.privateKeyPath = nativeProfile.getPrivateKeyPath();
+        profile.privateKeyPass = nativeProfile.getPrivateKeyPass();
+        profile.proxyHost = nativeProfile.getProxyHost();
+        profile.proxyPort = nativeProfile.getProxyPort();
+        profile.proxyType = nativeProfile.getProxyType();
+        profile.promptUserPass = nativeProfile.isPromptUserPass();
+        profile.promptKeyPass = nativeProfile.isPromptKeyPass();
+        profile.strictHostChecking = nativeProfile.isStrictHostChecking();
+        return profile;
+    }
 
     authChain(options, profile, callback)
     {
@@ -35,14 +57,14 @@ export class SyncSshService
 
                     // Continue next stage in the chain...
                     console.log("continuing to key pass chain...");
-                    this.callback(options, profile);
+                    callback(options, profile);
                 }
             });
         }
         else
         {
             console.log("skipped user pass prompt, moving to key pass...");
-            this.callback(options, profile);
+            callback(options, profile);
         }
     }
 

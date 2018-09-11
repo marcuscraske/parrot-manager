@@ -1,6 +1,6 @@
 import { Component, Renderer } from '@angular/core';
 
-import { RemoteSyncService } from 'app/service/remoteSyncService.service'
+import { SyncService } from 'app/service/sync.service'
 
 @Component({
   selector: 'notifications',
@@ -13,35 +13,35 @@ export class NotificationsComponent
 
     constructor(
         private renderer: Renderer,
-        private remoteSyncService: RemoteSyncService
+        private syncService: SyncService
     ) { }
 
     ngOnInit()
     {
         // Setup hook for when remote syncing starts
-        this.syncStartEvent = this.renderer.listenGlobal("document", "remoteSyncStart", (event) => {
-            console.log("received remote sync start event");
+        this.syncStartEvent = this.renderer.listenGlobal("document", "syncStart", (event) => {
+            console.log("received sync start event");
 
             // Update state
-            this.remoteSyncService.setSyncing(true);
+            this.syncService.setSyncing(true);
 
             // Update host being synchronized
             var options = event.data;
             var hostName = options.getName();
 
             // TODO deprecated
-            this.remoteSyncService.setLastHostSynchronizing(hostName);
+            this.syncService.setLastHostSynchronizing(hostName);
 
             // Show notification
             toastr.info("Syncing " + hostName);
         });
 
         // Setup hook for when remote syncing changes/finishes
-        this.syncFinishEvent = this.renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
-            console.log("received remote sync finish event");
+        this.syncFinishEvent = this.renderer.listenGlobal("document", "syncFinish", (event) => {
+            console.log("received sync finish event");
 
             // Switch state to not syncing
-            this.remoteSyncService.setSyncing(false);
+            this.syncService.setSyncing(false);
 
             // Check we have sync result (optional)
             var syncResult = event.data;

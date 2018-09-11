@@ -7,7 +7,7 @@ export class SyncResultService
 
     constructor()
     {
-        this.syncResultService = (window as any).remoteSyncResultService;
+        this.syncResultService = (window as any).syncResultService;
     }
 
     getResults()

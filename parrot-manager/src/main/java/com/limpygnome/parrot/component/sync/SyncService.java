@@ -139,35 +139,28 @@ public class SyncService implements DatabaseChangingEvent
 
         List<SyncProfile> profileList = new LinkedList<>();
 
-        // Add all applicable hosts
-        Database database = databaseService.getDatabase();
-        DatabaseNode remoteSync = database.getRoot().getByName("remote-sync");
+        // Add all the profiles that can be synchronized for this host
+        String currentHostName = getCurrentHostName();
 
-        if (remoteSync != null)
+        for (SyncProfile profile : syncProfileService.fetch())
         {
-            // Check and convert each node/host
-            String currentHostName = getCurrentHostName();
-
-            for (SyncProfile profile : syncProfileService.fetch())
+            if (canAutoSync(defaultSyncOptions, profile, currentHostName))
             {
-                if (canAutoSync(defaultSyncOptions, profile, currentHostName))
-                {
-                    profileList.add(profile);
-                }
+                profileList.add(profile);
             }
+        }
 
-            // Perform sync if we have anything
-            if (!profileList.isEmpty())
-            {
-                LOG.debug("{} available hosts for sync", profileList.size());
+        // Perform sync if we have anything
+        if (!profileList.isEmpty())
+        {
+            LOG.debug("{} available hosts for sync", profileList.size());
 
-                SyncProfile[] profileArray = profileList.toArray(new SshSyncProfile[profileList.size()]);
-                launchAsyncSync(defaultSyncOptions, profileArray);
-            }
-            else
-            {
-                LOG.debug("no hosts applicable for sync");
-            }
+            SyncProfile[] profileArray = profileList.toArray(new SshSyncProfile[profileList.size()]);
+            launchAsyncSync(defaultSyncOptions, profileArray);
+        }
+        else
+        {
+            LOG.debug("no hosts applicable for sync");
         }
 
         // update last sync time

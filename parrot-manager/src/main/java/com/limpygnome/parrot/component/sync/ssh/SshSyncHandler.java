@@ -141,7 +141,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
             // Start download...
             SshFile source = new SshFile(sshSession, sshProfile.getRemotePath());
-            String destionation = sshProfile.getDestinationPath();
+            String destionation = options.getDestinationPath();
 
             sshComponent.download(sshSession, source, destionation);
         }
@@ -315,7 +315,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
         // alter destination path for this host
         int fullHostNameHash = (sshProfile.getHost() + sshProfile.getPort()).hashCode();
-        String syncPath = sshProfile.getDestinationPath();
+        String syncPath = options.getDestinationPath();
         syncPath = syncPath + "." + fullHostNameHash + "." + System.currentTimeMillis() + ".sync";
 
         // fetch current path to database

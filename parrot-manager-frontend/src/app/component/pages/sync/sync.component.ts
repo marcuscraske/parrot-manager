@@ -72,7 +72,7 @@ export class SyncComponent implements AfterViewChecked {
 
     trackChildren(index, profile)
     {
-        return profile ? profile.getId() : null;
+        return profile ? profile.id : null;
     }
 
     overwrite(profile)
@@ -88,6 +88,11 @@ export class SyncComponent implements AfterViewChecked {
     sync(profile, promptForAuth)
     {
         this.syncService.sync(profile, promptForAuth);
+    }
+
+    delete(profile)
+    {
+        this.syncProfileService.delete(profile);
     }
 
     isSyncing() : boolean

@@ -3,7 +3,7 @@ package com.limpygnome.parrot.component.sync;
 import com.limpygnome.parrot.library.db.log.MergeLog;
 
 /**
- * Used as aggregate of results for 'remoteSyncFinish' trigger event.
+ * Used as aggregate of results for 'syncFinish' trigger event.
  */
 public class SyncResult
 {

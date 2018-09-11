@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from './database.service'
+import { SyncSshService } from './syncSsh.service'
 
 import "app/global-vars"
 
 @Injectable()
 export class SyncService {
 
-    syncService : any;
+    private syncService : any;
 
     private syncing : boolean;
     private currentHost : string;
@@ -16,9 +17,15 @@ export class SyncService {
 
     constructor(
         private databaseService: DatabaseService,
-        private sshSyncService: SshSyncService
+        private syncSshService: SyncSshService
     ) {
-        this.syncService = (window as any).remoteSyncService;
+        this.syncService = (window as any).syncService;
+    }
+
+    createTemporaryOptions()
+    {
+        var options = this.syncService.createTemporaryOptions();
+        return options;
     }
 
     download(options, profile)
@@ -104,7 +111,7 @@ export class SyncService {
 
     abort()
     {
-        this.remoteSyncService.abort();
+        this.syncService.abort();
     }
 
     // This is the actual host-cname of the current box / machine / physical host
@@ -121,11 +128,6 @@ export class SyncService {
     getDefaultSyncOptions()
     {
         return this.syncService.getDefaultSyncOptions();
-    }
-
-    createTemporaryOptions()
-    {
-        return this.syncService.createTemporaryOptions();
     }
 
     private canContinue() : boolean
@@ -148,7 +150,7 @@ export class SyncService {
     {
         console.log("starting auth chain");
         this.authChainPromptDatabasePass(options, profile, (options, profile) => {
-            this.syncSsh.authChain(options, profile, (options, profile) => {
+            this.syncSshService.authChain(options, profile, (options, profile) => {
                 this.authChainFinish(options, profile, callback);
             });
         });
@@ -166,7 +168,7 @@ export class SyncService {
                 if (password != null)
                 {
                     // Update options
-                    this.options.setDatabasePassword(password);
+                    options.setDatabasePassword(password);
 
                     // Continue next stage in the chain...
                     console.log("continuing to perform actual sync...");

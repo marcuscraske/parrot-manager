@@ -1,18 +1,11 @@
 package com.limpygnome.parrot.component.sync.ssh;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.ProxySOCKS4;
 import com.jcraft.jsch.ProxySOCKS5;
 import com.limpygnome.parrot.component.sync.SyncProfile;
-import com.limpygnome.parrot.lib.database.EncryptedValueService;
-import com.limpygnome.parrot.library.crypto.EncryptedValue;
-import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.db.DatabaseNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.Serializable;
 
@@ -29,10 +22,6 @@ public class SshSyncProfile extends SyncProfile implements Serializable, Cloneab
     private String host;
     private int port;
     private String user;
-    // -- Don't serialize the local/destination path, allow database to be dynamically moved around, as this is
-    //    stored in the database archive during runtime
-    @JsonIgnore
-    private String destinationPath;
     private String remotePath;
 
     // Optional - auth
@@ -50,22 +39,7 @@ public class SshSyncProfile extends SyncProfile implements Serializable, Cloneab
     private boolean promptKeyPass;
     private boolean strictHostChecking;
 
-    // Sync only
-    private transient String databasePassword;
-
     public SshSyncProfile() { }
-
-    public SshSyncProfile(String name, String host, int port, String user, String remotePath, String destinationPath)
-    {
-        super(null, name);
-
-        this.name = name;
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.remotePath = remotePath;
-        this.destinationPath = destinationPath;
-    }
 
     @Override
     public String getType()
@@ -214,18 +188,6 @@ public class SshSyncProfile extends SyncProfile implements Serializable, Cloneab
     }
 
     @JsonIgnore
-    public String getDestinationPath()
-    {
-        return destinationPath;
-    }
-
-    @JsonIgnore
-    public void setDestinationPath(String destinationPath)
-    {
-        this.destinationPath = destinationPath;
-    }
-
-    @JsonIgnore
     public boolean isPrivateKey()
     {
         return privateKeyPath != null && privateKeyPath.length() > 0;
@@ -259,17 +221,6 @@ public class SshSyncProfile extends SyncProfile implements Serializable, Cloneab
         return result;
     }
 
-    @JsonIgnore
-    public String getDatabasePassword()
-    {
-        return databasePassword;
-    }
-
-    public void setDatabasePassword(String databasePassword)
-    {
-        this.databasePassword = databasePassword;
-    }
-
     @Override
     public String toString()
     {
@@ -278,7 +229,6 @@ public class SshSyncProfile extends SyncProfile implements Serializable, Cloneab
                 ", host='" + host + '\'' +
                 ", port=" + port +
                 ", user='" + user + '\'' +
-                ", destinationPath='" + destinationPath + '\'' +
                 ", remotePath='" + remotePath + '\'' +
                 ", userPass='" + userPass + '\'' +
                 ", privateKeyPath='" + privateKeyPath + '\'' +

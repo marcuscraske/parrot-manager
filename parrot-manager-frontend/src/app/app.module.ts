@@ -63,7 +63,8 @@ const appRoutes: Routes = [
     SettingsModule,
     ImportExportModule,
     PipesModule,
-    ControlsModule
+    ControlsModule,
+    SyncModule
   ],
   declarations: [
 
@@ -73,7 +74,6 @@ const appRoutes: Routes = [
     // Pages
     ErrorComponent,
     CreateComponent, OpenComponent, HelpComponent,
-    RemoteSyncComponent, RemoteSyncSshComponent,
     BackupsComponent,
 
     // Pages - viewer (and components)

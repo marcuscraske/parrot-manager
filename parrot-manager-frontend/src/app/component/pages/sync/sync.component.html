@@ -10,9 +10,9 @@
 <div *ngIf="!isSyncing()">
 
     <table class="table sync" *ngIf="profiles.length > 0" id="remoteSyncTargets">
-        <tr *ngFor="let profile of remoteSyncNode.getChildren(); trackBy: trackChildren">
+        <tr *ngFor="let profile of profiles; trackBy: trackChildren">
             <td>
-                <button class="btn btn-primary" (click)="sync(node.getId(), false)">
+                <button class="btn btn-primary" (click)="sync(profile, false)">
                     <span class="icon icon-download"></span>
                     Sync
                 </button>
@@ -22,25 +22,25 @@
             </td>
             <td class="text-right">
                 <div>
-                    <button class="btn btn-primary" (click)="sync(profile.id, true)" title="Asks for any required auth (database password, user pass, key pass)">
+                    <button class="btn btn-primary" (click)="sync(profile, true)" title="Asks for any required auth (database password, user pass, key pass)">
                         <span class="icon icon-lock"></span>
                         Auth Sync
                     </button>
-                    <button class="btn btn-primary" routerLink="/remote-sync/ssh/{{ profile.id }}" title="Edit host">
+                    <button class="btn btn-primary" routerLink="/sync/ssh/{{ profile.id }}" title="Edit host">
                         <span class="icon icon-pencil"></span>
                         Edit
                     </button>
-                    <button class="btn btn-danger" (click)="node.remove();" title="Delete host">
+                    <button class="btn btn-danger" (click)="delete(profile);" title="Delete host">
                         <span class="icon icon-cross"></span>
                         Delete
                     </button>
                 </div>
                 <div class="mt-2">
-                    <button class="btn btn-primary" (click)="unlock(profile.id)" title="Removes remote lock file, use with caution">
+                    <button class="btn btn-primary" (click)="unlock(profile)" title="Removes remote lock file, use with caution">
                         <span class="icon icon-hammer"></span>
                         Delete Lock
                     </button>
-                    <button class="btn btn-primary" (click)="overwrite(profile.id)" title="Overwrites remote database with this current database">
+                    <button class="btn btn-primary" (click)="overwrite(profile)" title="Overwrites remote database with this current database">
                         <span class="icon icon-upload"></span>
                         Overwrite
                     </button>
@@ -50,7 +50,7 @@
     </table>
 
     <div class="form-group text-center">
-        <button class="btn btn-default" routerLink="/remote-sync/ssh/new">
+        <button class="btn btn-default" routerLink="/sync/ssh/new">
             <span class="icon icon-plus"></span>
             Add New
         </button>

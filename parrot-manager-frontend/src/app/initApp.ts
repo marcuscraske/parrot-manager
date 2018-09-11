@@ -11,8 +11,6 @@ export function initApp() : () => Promise<any>
                 var win = (window as any);
                 if (win.runtimeService != null && win.runtimeService.isReady() == true)
                 {
-                    console.log("runtime ready, bootstrapping app");
-
                     // stop interval
                     clearInterval(handle);
 

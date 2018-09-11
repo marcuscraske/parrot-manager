@@ -3,7 +3,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
 import { RuntimeService } from 'app/service/runtime.service'
-import { RemoteSyncService } from 'app/service/remoteSyncService.service'
+import { SyncService } from 'app/service/sync.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
 @Component({
@@ -29,7 +29,7 @@ export class CurrentEntryComponent
     constructor(
         public databaseService: DatabaseService,
         public runtimeService: RuntimeService,
-        public remoteSyncService: RemoteSyncService,
+        public syncService: SyncService,
         public encryptedValueService: EncryptedValueService,
         public renderer: Renderer,
         public fb: FormBuilder

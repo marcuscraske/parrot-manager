@@ -4,13 +4,14 @@ import { BrowserModule } from "@angular/platform-browser";
 import { ReactiveFormsModule } from "@angular/forms";
 
 import { PipesModule } from "app/component/pipes/pipes.module"
+import { ControlsModule } from 'app/component/controls/controls.module'
 
 import { SyncComponent } from "app/component/pages/sync/sync.component"
-import { SyncSshComponent } from "app/component/pages/sync/ssh/syncSsh.component"
+import { SyncSshComponent } from "app/component/pages/sync/ssh/sync-ssh.component"
 
 const routes: Routes = [
     { path: "sync",                     component: SyncComponent },
-    { path: "sync/ssh",                 component: SyncSshComponent }
+    { path: "sync/ssh",                 component: SyncSshComponent },
     { path: "sync/ssh/:currentNode",    component: SyncSshComponent }
 ];
 
@@ -19,7 +20,8 @@ const routes: Routes = [
         BrowserModule,
         RouterModule.forChild(routes),
         ReactiveFormsModule,
-        PipesModule
+        PipesModule,
+        ControlsModule
     ],
     declarations: [
         SyncComponent,

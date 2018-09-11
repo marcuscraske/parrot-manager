@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
+import { SyncSshService } from 'app/service/syncSsh.service'
 
 @Injectable()
 export class SyncProfileService
 {
     syncProfileService : any;
 
-    constructor()
-    {
+    constructor(
+        private syncSshService: SyncSshService
+    ) {
         this.syncProfileService = (window as any).syncProfileService;
     }
 
@@ -17,12 +19,29 @@ export class SyncProfileService
 
     fetch()
     {
-        return this.syncProfileService.fetch();
+        var profiles = this.syncProfileService.fetch();
+
+        // Convert to proper JSON objects
+        var result = [];
+
+        for (var i = 0; i < profiles.length; i++)
+        {
+            var profile = profiles[i];
+            var json = this.toJson(profile);
+            if (json != null)
+            {
+                result.push(json);
+            }
+        }
+
+        return result;
     }
 
     fetchById(nodeId)
     {
-        return this.syncProfileService.fetchById(nodeId);
+        var profile = this.syncProfileService.fetchById(nodeId);
+        var json = this.toJson(profile);
+        return json;
     }
 
     save(profile)
@@ -30,9 +49,21 @@ export class SyncProfileService
         this.syncProfileService.save(profile);
     }
 
-    remove(id)
+    delete(profile)
     {
-        this.syncProfileService.remove(id);
+        this.syncProfileService.delete(profile.getId());
+    }
+
+    private toJson(profile)
+    {
+        var json = null;
+
+        if (profile.getType() == "ssh")
+        {
+            json = this.syncSshService.toJson(profile);
+        }
+
+        return json;
     }
 
 }
