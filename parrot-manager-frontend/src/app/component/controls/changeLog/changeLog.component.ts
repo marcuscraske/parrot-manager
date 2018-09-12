@@ -14,7 +14,7 @@ export class ChangeLogComponent
 
     trackSyncResults(index, syncResult)
     {
-        return syncResult ? syncResult.getHostName() : null;
+        return syncResult ? syncResult.hostName : null;
     }
 
     trackLogItems(index, logItem)

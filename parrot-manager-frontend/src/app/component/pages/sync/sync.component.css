@@ -1,3 +1,8 @@
+table tr:nth-child(1) td
+{
+    border-top: none;
+}
+
 table tr td:first-child
 {
     padding-left: 0;
@@ -8,25 +13,22 @@ table tr td:last-child
     padding-right: 0;
 }
 
-table tr:nth-child(1) td
-{
-    border-top: none;
-}
-
 table.sync tr td
 {
     white-space: nowrap;
     vertical-align: middle;
 }
 
-table.sync tr td:nth-child(2)
+table.sync tr td:nth-child(1) .icon
 {
-    width: 50%;
+    font-size: 1.5em;
+    margin: 0 !important;
 }
 
-table.sync tr td:nth-child(3)
+table.sync tr td:nth-child(2)
 {
-    width: 50%;
+    width: 100%;
+    cursor: pointer;
 }
 
 #changeLog

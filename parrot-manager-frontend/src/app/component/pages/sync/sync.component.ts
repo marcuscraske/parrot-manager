@@ -36,12 +36,12 @@ export class SyncComponent implements AfterViewChecked {
     {
         // Hook for sync result changes
         this.syncResultChangeEvent = this.renderer.listenGlobal("document", "syncResults.change", (event) => {
-            this.syncResults = event.data;
+            this.syncResults = this.syncResultService.getResults();
         });
 
         // Hook for sync profile changes
         this.syncProfileChangeEvent = this.renderer.listenGlobal("document", "syncProfiles.change", (event) => {
-            this.profiles = event.data;
+            this.profiles = this.syncProfileService.fetch();
          });
 
         // Fetch last results
@@ -75,24 +75,9 @@ export class SyncComponent implements AfterViewChecked {
         return profile ? profile.id : null;
     }
 
-    overwrite(profile)
-    {
-        this.syncService.overwrite(profile);
-    }
-
-    unlock(profile)
-    {
-        this.syncService.unlock(profile);
-    }
-
     sync(profile, promptForAuth)
     {
         this.syncService.sync(profile, promptForAuth);
-    }
-
-    delete(profile)
-    {
-        this.syncProfileService.delete(profile);
     }
 
     isSyncing() : boolean

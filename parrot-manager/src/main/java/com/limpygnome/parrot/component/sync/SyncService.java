@@ -53,6 +53,29 @@ public class SyncService implements DatabaseChangingEvent
     private SyncOptions defaultSyncOptions;
 
     /**
+     * Checks whether the specified profile and options are enough to automatically synchronize, without
+     * prompting for further credentials.
+     *
+     * @param options sync options
+     * @param profile sync profile
+     * @return true = sufficient details to sync, false = needs more details
+     */
+    public synchronized boolean canAutoSync(SyncOptions options, SyncProfile profile)
+    {
+        boolean result = false;
+
+        // Fetch handler
+        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
+
+        if (handler != null)
+        {
+            result = handler.canAutoSync(options, profile);
+        }
+
+        return result;
+    }
+
+    /**
      * Begins downloading a file from host.
      *
      * @param options options

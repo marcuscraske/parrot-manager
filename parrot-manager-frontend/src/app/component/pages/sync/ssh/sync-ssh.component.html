@@ -48,6 +48,29 @@
         </p>
     </div>
 
+    <p *ngIf="currentMode == 'edit'">
+        <button class="btn btn-primary" (click)="syncService.sync(profile, false)">
+            <span class="icon icon-download"></span>
+            Sync
+        </button>
+        <button class="btn btn-primary" (click)="syncService.sync(profile, true)" title="Asks for any required auth (database password, user pass, key pass)">
+            <span class="icon icon-lock"></span>
+            Prompt for Auth &amp; Sync
+        </button>
+        <button class="btn btn-primary" (click)="syncService.unlock(profile)" title="Removes remote lock file, use with caution">
+            <span class="icon icon-hammer"></span>
+            Delete Lock
+        </button>
+        <button class="btn btn-primary" (click)="syncService.overwrite(profile)" title="Overwrites remote database with this current database">
+            <span class="icon icon-upload"></span>
+            Overwrite
+        </button>
+        <button class="btn btn-danger" (click)="syncService.delete(profile);" title="Delete host">
+            <span class="icon icon-cross"></span>
+            Delete
+        </button>
+    </p>
+
     <div class="card">
         <div class="card-header">
             Connection Details

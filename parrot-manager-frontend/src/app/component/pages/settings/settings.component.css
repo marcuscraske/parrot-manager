@@ -12,3 +12,8 @@
 {
     cursor: pointer;
 }
+
+.list-group-item .icon
+{
+    margin-right: 0.5em;
+}

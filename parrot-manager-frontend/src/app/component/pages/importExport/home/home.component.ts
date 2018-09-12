@@ -44,7 +44,8 @@ export class HomeComponent {
                 {
                     this.success = "Imported database changes successfully";
                 }
-                this.mergeLog = result.getMergeLog();
+
+                this.mergeLog = result.mergeLog;
             }
             else
             {
@@ -71,7 +72,7 @@ export class HomeComponent {
             {
                 this.success = "Imported database changes successfully";
             }
-            this.mergeLog = result.getMergeLog();
+            this.mergeLog = result.mergeLog;
         }
     }
 
@@ -84,7 +85,7 @@ export class HomeComponent {
 
         if (this.isSuccess(result))
         {
-            this.exportText = result.getText();
+            this.exportText = result.text;
         }
     }
 
@@ -120,7 +121,7 @@ export class HomeComponent {
 
     private isSuccess(result) : boolean
     {
-        var error = result.getError();
+        var error = result.error;
         this.error = error;
         return error == null;
     }

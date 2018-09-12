@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from './database.service'
+import { SyncProfileService } from './syncProfile.service'
 import { SyncSshService } from './syncSsh.service'
 
 import "app/global-vars"
@@ -17,6 +18,7 @@ export class SyncService {
 
     constructor(
         private databaseService: DatabaseService,
+        private syncProfileService: SyncProfileService,
         private syncSshService: SyncSshService
     ) {
         this.syncService = (window as any).syncService;
@@ -28,28 +30,32 @@ export class SyncService {
         return options;
     }
 
-    download(options, profile)
+    download(options, jsonProfile)
     {
+        var profile = this.jsonToProfile(jsonProfile);
         var result = this.syncService.download(options, profile);
         return result;
     }
 
-    test(options, profile)
+    test(options, jsonProfile)
     {
+        var profile = this.jsonToProfile(jsonProfile);
         var result = this.syncService.test(options, profile);
         return result;
     }
 
-    overwrite(profile)
+    overwrite(jsonProfile)
     {
+        var profile = this.jsonToProfile(jsonProfile);
         var options = this.syncService.createTemporaryOptions();
         this.authChain(options, profile, (options, profile) => {
             this.syncService.overwrite(options, profile);
         });
     }
 
-    unlock(profile)
+    unlock(jsonProfile)
     {
+        var profile = this.jsonToProfile(jsonProfile);
         var options = this.syncService.createTemporaryOptions();
         this.authChain(options, profile, (options, profile) => {
             this.syncService.unlock(options, profile);
@@ -64,11 +70,15 @@ export class SyncService {
         }
     }
 
-    sync(profile, promptForAuth)
+    sync(jsonProfile, promptForAuth)
     {
         if (this.canContinue())
         {
-            if (promptForAuth)
+            var profile = this.jsonToProfile(jsonProfile);
+            var options = this.syncService.getDefaultSyncOptions();
+            var canAutoSync = this.syncService.canAutoSync(options, profile);
+
+            if (promptForAuth || !canAutoSync)
             {
                 console.log("sync using auth chain");
 
@@ -186,6 +196,13 @@ export class SyncService {
     {
         console.log("auth chain finished, invoking callback");
         callback(options, profile);
+    }
+
+    /* Converts JSON profile used by front-end to actual profile. */
+    private jsonToProfile(jsonProfile)
+    {
+        var profile = this.syncProfileService.fetchById(jsonProfile.id);
+        return profile;
     }
 
 }

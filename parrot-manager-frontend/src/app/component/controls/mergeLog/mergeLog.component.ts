@@ -26,7 +26,7 @@ export class MergeLogComponent
             for (var i = 0; i < logItems.length; i++)
             {
                 var logItem = logItems[i];
-                if (logItem.getLevel() != "DEBUG")
+                if (logItem.level != "DEBUG")
                 {
                     result.push(logItem);
                 }
@@ -42,12 +42,12 @@ export class MergeLogComponent
 
     trackLogItems(index, logItem)
     {
-        return logItem ? logItem.hashCode() : null;
+        return logItem ? logItem.message : null;
     }
 
     getLogItemIcon(logItem)
     {
-        var level = logItem.getLevel().toString();
+        var level = logItem.level;
         var icon;
 
         switch (level)

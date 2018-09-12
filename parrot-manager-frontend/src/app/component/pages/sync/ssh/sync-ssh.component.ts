@@ -48,7 +48,7 @@ export class SyncSshComponent {
     constructor(
         private runtimeService: RuntimeService,
         private databaseService: DatabaseService,
-        private syncService: SyncService,
+        public syncService: SyncService,
         private syncSshService: SyncSshService,
         private syncProfileService: SyncProfileService,
         private router: Router,
