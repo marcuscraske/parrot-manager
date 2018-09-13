@@ -291,7 +291,7 @@ public class SyncService implements DatabaseChangingEvent
         if (databaseService.isDirty())
         {
             LOG.warn("skipped sync due to unsaved database changes");
-            mergeLog.add(new LogItem(LogLevel.ERROR, "Skipped sync due to unsaved database changes"));
+            mergeLog.add(new LogItem(LogLevel.ERROR, true, "Skipped sync due to unsaved database changes"));
             syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
         }
         else
@@ -300,7 +300,7 @@ public class SyncService implements DatabaseChangingEvent
             String message = checkDestinationPath(options);
             if (message != null)
             {
-                mergeLog.add(new LogItem(LogLevel.ERROR, message));
+                mergeLog.add(new LogItem(LogLevel.ERROR, true, message));
                 syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
             }
             else

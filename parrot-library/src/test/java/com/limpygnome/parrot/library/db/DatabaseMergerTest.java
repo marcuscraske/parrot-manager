@@ -12,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -124,10 +125,9 @@ public class DatabaseMergerTest
         merger.merge(source, destination, PASSWORD);
 
         // then
-        verify(destination).setDirty(true);
+        verify(source).setDirty(true);
+        verify(destination, never()).setDirty(anyBoolean());
     }
-
-
 
     @Test
     public void mergeDatabaseMemoryCryptoParams_destOlder_isUpdated()  throws Exception
@@ -147,14 +147,15 @@ public class DatabaseMergerTest
     public void mergeDatabaseMemoryCryptoParams_destNewer_setsDirty()  throws Exception
     {
         // given
-        given(sourceFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
-        given(destFileCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
+        given(sourceMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_OLDER);
+        given(destMemoryCryptoParams.getLastModified()).willReturn(LAST_MODIFIED_NEWER);
 
         // when
         merger.merge(source, destination, PASSWORD);
 
         // then
-        verify(destination).setDirty(true);
+        verify(source).setDirty(true);
+        verify(destination, never()).setDirty(anyBoolean());
     }
 
     @Test

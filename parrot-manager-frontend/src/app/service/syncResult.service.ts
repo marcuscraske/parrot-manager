@@ -37,6 +37,7 @@ export class SyncResultService
                 var logItem = logItems[j];
                 var item = new LogItem();
                 item.level = logItem.getLevel();
+                item.local = logItem.isLocal();
                 item.text = logItem.getText();
                 items.push(item);
             }

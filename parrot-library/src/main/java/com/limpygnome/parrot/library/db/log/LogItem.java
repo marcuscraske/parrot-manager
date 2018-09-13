@@ -8,37 +8,42 @@ import com.limpygnome.parrot.library.db.DatabaseNode;
 public class LogItem
 {
     private LogLevel level;
+    private boolean local;
     private String text;
 
-    public LogItem(LogLevel level, String text)
+    public LogItem(LogLevel level, boolean local, String text)
     {
         this.level = level;
         this.text = text;
     }
 
-    public LogItem(LogLevel level, DatabaseNode node, String text)
+    public LogItem(LogLevel level, boolean local, DatabaseNode node, String text)
     {
-        this(level, node.getPath() + " - " + text);
+        this(level, local, node.getPath() + " - " + text);
     }
 
+    /**
+     * @return the severity / level of message; used for filtering details
+     */
     public LogLevel getLevel()
     {
         return level;
     }
 
-    public void setLevel(LogLevel level)
+    /**
+     * @return true = local database node, false = remote database node
+     */
+    public boolean isLocal()
     {
-        this.level = level;
+        return local;
     }
 
+    /**
+     * @return log message / text; not currently a localisation string
+     */
     public String getText()
     {
         return text;
-    }
-
-    public void setText(String text)
-    {
-        this.text = text;
     }
 
     @Override

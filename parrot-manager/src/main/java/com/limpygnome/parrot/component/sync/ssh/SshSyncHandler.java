@@ -226,7 +226,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             // check if database exists
             if (!sshComponent.checkRemotePathExists(sshSession, fileRemote))
             {
-                mergeLog.add(new LogItem(LogLevel.ERROR, "Remote file does not exist - ignore if expected"));
+                mergeLog.add(new LogItem(LogLevel.ERROR, false, "Remote file does not exist - ignore if expected"));
             }
             else
             {
@@ -245,7 +245,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             success = false;
 
             String message = sshComponent.getExceptionMessage(e);
-            mergeLog.add(new LogItem(LogLevel.ERROR, message));
+            mergeLog.add(new LogItem(LogLevel.ERROR, true, message));
 
             LOG.error("failed to overwrite remote database", e);
         }
@@ -285,13 +285,13 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             sshComponent.remove(sshSession, fileLock);
             success = true;
 
-            mergeLog.add(new LogItem(LogLevel.INFO, "Removed remote database lock file"));
+            mergeLog.add(new LogItem(LogLevel.INFO, false, "Removed remote database lock file"));
         }
         catch (JSchException | SftpException e)
         {
             LOG.error("failed to remove database lock", e);
             success = false;
-            mergeLog.add(new LogItem(LogLevel.ERROR, "Failed to remove remote database lock file - " + e.getMessage()));
+            mergeLog.add(new LogItem(LogLevel.ERROR, false, "Failed to remove remote database lock file - " + e.getMessage()));
         }
         finally
         {
@@ -338,16 +338,16 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             // check whether an old renamed file exists; if so, restore it
             if (sshComponent.checkRemotePathExists(sshSession, fileSyncBackup))
             {
-                mergeLog.add(new LogItem(LogLevel.ERROR, "Old file from previous failed sync found"));
+                mergeLog.add(new LogItem(LogLevel.ERROR, true, "Old file from previous failed sync found"));
 
                 // move current file to corrupted
                 SshFile fileCorrupted = source.clone().postFixFileName(".corrupted." + System.currentTimeMillis());
                 sshComponent.rename(sshSession, source, fileCorrupted);
-                mergeLog.add(new LogItem(LogLevel.INFO, "Corrupted file moved to " + fileCorrupted.getFileName()));
+                mergeLog.add(new LogItem(LogLevel.INFO, true, "Corrupted file moved to " + fileCorrupted.getFileName()));
 
                 // restore backup file
                 sshComponent.rename(sshSession, fileSyncBackup, source);
-                mergeLog.add(new LogItem(LogLevel.INFO, "Sync backup file restored"));
+                mergeLog.add(new LogItem(LogLevel.INFO, true, "Sync backup file restored"));
             }
 
             // start download...
@@ -387,11 +387,11 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
                     // move current file as backup in case upload fails
                     sshComponent.rename(sshSession, source, fileSyncBackup);
-                    mergeLog.add(new LogItem(LogLevel.DEBUG, "Renamed remote database in case sync fails"));
+                    mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Renamed remote database in case sync fails"));
 
                     // upload new file
                     sshComponent.upload(sshSession, currentPath, source);
-                    mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database"));
+                    mergeLog.add(new LogItem(LogLevel.INFO, false, "Uploaded database"));
 
                     // delete or create backup out of sync file
                     convertToRemoteBackupOrDelete(mergeLog, source, fileSyncBackup);
@@ -405,11 +405,11 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             {
                 LOG.info("sync - uploading current database");
 
-                mergeLog.add(new LogItem(LogLevel.DEBUG, "Uploading current database, as does not exist remotely"));
+                mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Uploading current database, as does not exist remotely"));
 
                 sshComponent.upload(sshSession, currentPath, source);
 
-                mergeLog.add(new LogItem(LogLevel.INFO, "Uploaded database for first time"));
+                mergeLog.add(new LogItem(LogLevel.INFO, false, "Uploaded database for first time"));
             }
         }
         catch (Exception e)
@@ -422,7 +422,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             // Convert to failed merge
             String message = sshComponent.getExceptionMessage(e);
             mergeLog = new MergeLog();
-            mergeLog.add(new LogItem(LogLevel.ERROR, e.getClass().getSimpleName() + " - " + message));
+            mergeLog.add(new LogItem(LogLevel.ERROR, true, message));
 
             success = false;
             LOG.error("sync - exception", e);
@@ -506,7 +506,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
                 {
                     if (mergeLog != null)
                     {
-                        mergeLog.add(new LogItem(LogLevel.DEBUG, "Remote lock exists - attempt " + attempts));
+                        mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Remote lock exists - attempt " + attempts));
                     }
                     LOG.info("remote database lock exists, sleeping...");
                     Thread.sleep(1000);
@@ -524,7 +524,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
             if (mergeLog != null)
             {
-                mergeLog.add(new LogItem(LogLevel.DEBUG, "Created remote lock"));
+                mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Created remote lock"));
             }
             LOG.info("remote database lock file created");
         }
@@ -552,7 +552,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
             if (mergeLog != null)
             {
-                mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed lock file"));
+                mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Removed remote lock file"));
             }
             LOG.info("remote database lock file removed");
         }
@@ -560,7 +560,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
         {
             if (mergeLog != null)
             {
-                mergeLog.add(new LogItem(LogLevel.ERROR, "Failed to remove remote lock"));
+                mergeLog.add(new LogItem(LogLevel.ERROR, false, "Failed to remove remote lock"));
             }
             LOG.error("failed to cleanup database lock", e);
         }
@@ -575,7 +575,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
         {
             // rename as backup
             sshComponent.rename(sshSession, currentFile, backupFile);
-            mergeLog.add(new LogItem(LogLevel.DEBUG, "Created new backup - " + backupFile.getFileName()));
+            mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Created new backup - " + backupFile.getFileName()));
 
             // fetch list of files
             SshFile parent = backupFile.getParent(sshSession);
@@ -587,26 +587,26 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             // drop those outside retained limit
             if (files.size() > remoteBackupsRetained)
             {
-                mergeLog.add(new LogItem(LogLevel.DEBUG, "Too many remote backups - " + files.size() + " / " + remoteBackupsRetained));
+                mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Too many remote backups - " + files.size() + " / " + remoteBackupsRetained));
 
                 int culled = files.size() - (int) remoteBackupsRetained;
                 for (int i = 0; i < culled; i++)
                 {
                     SshFile file = files.get(i);
                     sshComponent.remove(sshSession, file);
-                    mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed file " + file.getFileName()));
+                    mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Removed remote file " + file.getFileName()));
                 }
             }
             else
             {
-                mergeLog.add(new LogItem(LogLevel.DEBUG, "No remote backups culled - " + files.size() + " / " + remoteBackupsRetained));
+                mergeLog.add(new LogItem(LogLevel.DEBUG, false, "No remote backups culled - " + files.size() + " / " + remoteBackupsRetained));
             }
         }
         else
         {
             // remove file
             sshComponent.remove(sshSession, backupFile);
-            mergeLog.add(new LogItem(LogLevel.DEBUG, "Removed file " + backupFile.getFileName()));
+            mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Removed remote file " + backupFile.getFileName()));
         }
     }
 

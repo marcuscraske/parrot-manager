@@ -66,8 +66,9 @@ export class ImportExportService
             {
                 var logItem = logItems[i];
                 var jsonItem = new LogItem();
-                jsonItem.text = logItem.getText();
                 jsonItem.level = logItem.getLevel();
+                jsonItem.local = logItem.isLocal();
+                jsonItem.text = logItem.getText();
                 jsonItems.push(jsonItem);
             }
             jsonMergeLog.items = jsonItems;
