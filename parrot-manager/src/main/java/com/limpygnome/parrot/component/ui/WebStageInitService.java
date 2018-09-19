@@ -9,6 +9,7 @@ import com.limpygnome.parrot.component.database.DatabaseService;
 import com.limpygnome.parrot.component.importExport.ImportExportService;
 import com.limpygnome.parrot.component.sync.SyncProfileService;
 import com.limpygnome.parrot.component.sync.SyncResultService;
+import com.limpygnome.parrot.component.sync.SyncThreadService;
 import com.limpygnome.parrot.component.ui.preferences.WindowPreferencesInitService;
 import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.randomGenerator.RandomGeneratorService;
@@ -19,6 +20,8 @@ import com.limpygnome.parrot.component.sendKeys.SendKeysService;
 import com.limpygnome.parrot.component.settings.SettingsService;
 import com.limpygnome.parrot.lib.WebViewDebug;
 import com.limpygnome.parrot.lib.init.WebViewInit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class WebStageInitService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(WebStageInitService.class);
+
     // Services
     @Autowired
     private SettingsService settingsService;
@@ -157,7 +162,12 @@ public class WebStageInitService
     {
         if (stage != null)
         {
+            LOG.debug("triggering web event - domElement={} eventName={} objectData={}", domElement, eventName, eventData);
             stage.triggerEvent(domElement, eventName, eventData);
+        }
+        else
+        {
+            LOG.warn("not triggering event as stage is not setup - eventName={}", eventName);
         }
     }
 

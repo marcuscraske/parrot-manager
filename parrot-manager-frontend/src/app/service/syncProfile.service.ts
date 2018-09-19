@@ -54,7 +54,8 @@ export class SyncProfileService
         this.syncProfileService.delete(profile.getId());
     }
 
-    private toJson(profile)
+    // Converts provided profile into JSON object
+    toJson(profile)
     {
         var json = null;
 
@@ -64,6 +65,33 @@ export class SyncProfileService
         }
 
         return json;
+    }
+
+    // Converts JSON object into profile
+    toProfile(json, type)
+    {
+        var profile = this.createTemporaryProfile(type);
+
+        console.log("#### profile : " + json);
+
+        profile.setName(json["name"]);
+        profile.setHost(json["host"]);
+        profile.setPort(json["port"]);
+        profile.setUser(json["user"]);
+        profile.setRemotePath(json["remotePath"]);
+
+        profile.setStrictHostChecking(json["strictHostChecking"]);
+        profile.setUserPass(json["userPass"]);
+        profile.setPrivateKeyPath(json["privateKeyPath"]);
+        profile.setPrivateKeyPass(json["privateKeyPass"]);
+        profile.setProxyHost(json["proxyHost"]);
+        profile.setProxyPort(json["proxyPort"]);
+        profile.setProxyType(json["proxyType"]);
+        profile.setPromptUserPass(json["promptUserPass"]);
+        profile.setPromptKeyPass(json["promptKeyPass"]);
+        profile.setMachineFilter(json["machineFilter"]);
+
+        return profile;
     }
 
 }

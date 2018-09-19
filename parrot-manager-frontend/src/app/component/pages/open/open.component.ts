@@ -27,6 +27,9 @@ export class OpenComponent {
 
     ngOnInit()
     {
+        // Fetch recently opened files
+        this.refreshRecentFiles();
+
         // Check whether database open, if so redirect to viewer (mainly for development)
         if (this.databaseService.isOpen())
         {
@@ -35,9 +38,6 @@ export class OpenComponent {
         }
         else
         {
-            // Fetch recently opened files
-            this.refreshRecentFiles();
-
             // Open database on startup if there's recent files and enabled...
             if (OpenComponent.isStartup && this.recentFiles.length > 0)
             {

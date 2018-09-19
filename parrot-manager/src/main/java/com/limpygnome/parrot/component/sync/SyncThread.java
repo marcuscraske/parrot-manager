@@ -1,8 +1,15 @@
 package com.limpygnome.parrot.component.sync;
 
-public abstract class SyncThread
+public interface SyncThread
 {
 
-    public abstract SyncResult execute(SyncOptions options, SyncProfile profile);
+    /**
+     * Executes the async operation.
+     *
+     * @param options options
+     * @param profile profile
+     * @return the result of the operation
+     */
+    SyncResult execute(SyncOptions options, SyncProfile profile);
 
 }

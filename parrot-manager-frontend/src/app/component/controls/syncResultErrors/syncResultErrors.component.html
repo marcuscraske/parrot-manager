@@ -1,0 +1,7 @@
+<div *ngIf="syncResults != null && syncResults.length > 0">
+    <div *ngFor="let syncResult of syncResults; trackBy: trackSyncResults">
+        <div class="alert alert-danger" *ngIf="syncResult.error != null">
+            {{ syncResult.hostName }}: {{ syncResult.error }}
+        </div>
+    </div>
+</div>

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
@@ -156,7 +157,11 @@ public class SshComponent
             // Improved error messages
             if (e instanceof JSchException)
             {
-                if ("Auth fail".equals(message))
+                if (e.getCause() instanceof UnknownHostException)
+                {
+                    message = "Unable to resolve host";
+                }
+                else if ("Auth fail".equals(message))
                 {
                     message = "Auth failed - unable to connect using specified credentials";
                 }

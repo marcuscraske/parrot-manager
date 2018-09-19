@@ -19,7 +19,7 @@ export class NotificationsComponent
     ngOnInit()
     {
         // Setup hook for when remote syncing starts
-        this.syncStartEvent = this.renderer.listenGlobal("document", "syncStart", (event) => {
+        this.syncStartEvent = this.renderer.listenGlobal("document", "sync.start", (event) => {
             console.log("received sync start event");
 
             // Update state
@@ -37,7 +37,7 @@ export class NotificationsComponent
         });
 
         // Setup hook for when remote syncing changes/finishes
-        this.syncFinishEvent = this.renderer.listenGlobal("document", "syncFinish", (event) => {
+        this.syncFinishEvent = this.renderer.listenGlobal("document", "sync.finish", (event) => {
             console.log("received sync finish event");
 
             // Switch state to not syncing

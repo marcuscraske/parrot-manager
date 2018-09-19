@@ -11,7 +11,15 @@ public class SyncResult
     private MergeLog mergeLog;
     private boolean success;
     private boolean changes;
+    private String error;
     private long timestamp;
+
+    public SyncResult(String hostName, boolean success, String error)
+    {
+        this.hostName = hostName;
+        this.success = success;
+        this.error = error;
+    }
 
     public SyncResult(String hostName, MergeLog mergeLog, boolean success, boolean changes)
     {
@@ -45,6 +53,11 @@ public class SyncResult
     public long getTimestamp()
     {
         return timestamp;
+    }
+
+    public String getError()
+    {
+        return error;
     }
 
     public String asText()

@@ -30,33 +30,36 @@ export class SyncService {
         return options;
     }
 
-    download(options, jsonProfile)
+    test(options, profile, type)
     {
-        var profile = this.jsonToProfile(jsonProfile);
-        var result = this.syncService.download(options, profile);
-        return result;
-    }
-
-    test(options, jsonProfile)
-    {
-        var profile = this.jsonToProfile(jsonProfile);
-        var result = this.syncService.test(options, profile);
-        return result;
-    }
-
-    overwrite(jsonProfile)
-    {
-        var profile = this.jsonToProfile(jsonProfile);
-        var options = this.syncService.createTemporaryOptions();
         this.authChain(options, profile, (options, profile) => {
-            this.syncService.overwrite(options, profile);
+            this.syncService.test(options, profile);
         });
     }
 
-    unlock(jsonProfile)
+    download(options, profileId)
     {
-        var profile = this.jsonToProfile(jsonProfile);
-        var options = this.syncService.createTemporaryOptions();
+        // TODO what if DB open already? how is this used?
+        var profile = this.syncProfileService.fetchById(profileId);
+        this.authChain(options, profile, (options, profile) => {
+            this.syncService.download(options, profile);
+        });
+    }
+
+    overwrite(options, profileId)
+    {
+        if (this.canContinue())
+        {
+            var profile = this.syncProfileService.fetchById(profileId);
+            this.authChain(options, profile, (options, profile) => {
+                this.syncService.overwrite(options, profile);
+            });
+        }
+    }
+
+    unlock(options, profileId)
+    {
+        var profile = this.syncProfileService.fetchById(profileId);
         this.authChain(options, profile, (options, profile) => {
             this.syncService.unlock(options, profile);
         });
@@ -70,30 +73,14 @@ export class SyncService {
         }
     }
 
-    sync(jsonProfile, promptForAuth)
+    sync(options, profileId)
     {
         if (this.canContinue())
         {
-            var profile = this.jsonToProfile(jsonProfile);
-            var options = this.syncService.getDefaultSyncOptions();
-            var canAutoSync = this.syncService.canAutoSync(options, profile);
-
-            if (promptForAuth || !canAutoSync)
-            {
-                console.log("sync using auth chain");
-
-                var options = this.syncService.createTemporaryOptions();
-                this.authChain(options, profile, (options, profile) => {
-                    this.syncService.sync(options, profile);
-                });
-            }
-            else
-            {
-                console.log("invoking sync");
-
-                var options = this.syncService.getDefaultSyncOptions();
+            var profile = this.syncProfileService.fetchById(profileId);
+            this.authChain(options, profile, (options, profile) => {
                 this.syncService.sync(options, profile);
-            }
+            });
         }
     }
 
@@ -156,11 +143,21 @@ export class SyncService {
 
         This may involve prompting the user for passwords.
     */
-    authChain(options, profile, callback)
+    private authChain(options, profile, callback)
     {
         console.log("starting auth chain");
-        this.authChainPromptDatabasePass(options, profile, (options, profile) => {
-            this.syncSshService.authChain(options, profile, (options, profile) => {
+
+        if (options == null)
+        {
+            throw "Auth chain cannot be invoked with null options";
+        }
+        else if (profile == null)
+        {
+            throw "Auth chain cannot be invoked with null profile";
+        }
+
+        this.syncSshService.authChain(options, profile, (options, profile) => {
+            this.authChainPromptDatabasePass(options, profile, (options, profile) => {
                 this.authChainFinish(options, profile, callback);
             });
         });
@@ -170,39 +167,41 @@ export class SyncService {
     {
         console.log("prompting for remote db pass...");
 
-        bootbox.prompt({
-            title: options.getName() + " - enter database password:",
-            inputType: "password",
-            callback: (password) => {
+        var promptDbPass = !options.isDatabasePassword();
+        if (promptDbPass)
+        {
+            bootbox.prompt({
+                title: options.getName() + " - enter database password:",
+                inputType: "password",
+                callback: (password) => {
 
-                if (password != null)
-                {
-                    // Update options
-                    options.setDatabasePassword(password);
+                    if (password != null)
+                    {
+                        // Update options
+                        options.setDatabasePassword(password);
 
-                    // Continue next stage in the chain...
-                    console.log("continuing to perform actual sync...");
-                    callback(options, profile);
+                        // Continue next stage in the chain...
+                        console.log("continuing to perform actual sync...");
+                        callback(options, profile);
+                    }
+                    else
+                    {
+                        console.log("no password specified, user has cancelled entering remote db password");
+                    }
                 }
-                else
-                {
-                    console.log("no password specified, user has cancelled entering remote db password");
-                }
-            }
-        });
+            });
+        }
+        else
+        {
+            console.log("skipped prompting for database password, as present");
+            callback(options, profile);
+        }
     }
 
     private authChainFinish(options, profile, callback)
     {
         console.log("auth chain finished, invoking callback");
         callback(options, profile);
-    }
-
-    /* Converts JSON profile used by front-end to actual profile. */
-    private jsonToProfile(jsonProfile)
-    {
-        var profile = this.syncProfileService.fetchById(jsonProfile.id);
-        return profile;
     }
 
 }

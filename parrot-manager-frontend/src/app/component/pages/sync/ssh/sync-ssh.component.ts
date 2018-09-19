@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -7,6 +7,7 @@ import { DatabaseService } from 'app/service/database.service'
 import { SyncService } from 'app/service/sync.service'
 import { SyncSshService } from 'app/service/syncSsh.service'
 import { SyncProfileService } from 'app/service/syncProfile.service'
+import { SyncResultService } from 'app/service/syncResult.service'
 
 @Component({
     templateUrl: 'sync-ssh.component.html'
@@ -36,6 +37,9 @@ export class SyncSshComponent {
     errorMessage : string;
     successMessage : string;
 
+    // Sync results
+    syncResults = null;
+
     // Observable subscription for params
     subParams : any;
 
@@ -45,15 +49,23 @@ export class SyncSshComponent {
     // The ID (key stored under remote-sync) of the current node being changed; passed by routing config
     currentNode : string;
 
+    // Event for listening to DB opening
+    databaseOpenEvent: any;
+
+    // Event for sync result changes
+    syncResultChanges: any;
+
     constructor(
         private runtimeService: RuntimeService,
         private databaseService: DatabaseService,
         public syncService: SyncService,
         private syncSshService: SyncSshService,
         private syncProfileService: SyncProfileService,
+        private syncResultService: SyncResultService,
         private router: Router,
         public fb: FormBuilder,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private renderer: Renderer
     ) { }
 
     ngOnInit()
@@ -100,11 +112,25 @@ export class SyncSshComponent {
                 });
             }
         });
+
+        // Listen for when DB opens (opening existing remote DB)
+        this.databaseOpenEvent = this.renderer.listenGlobal("document", "database.open", (event) => {
+            console.log("database open event, navigating to view entries page...");
+            this.router.navigate(["/viewer"]);
+        });
+
+        // Listen for sync changes, so we can populate any error results
+        this.syncResultChanges = this.renderer.listenGlobal("document", "syncResults.change", (event) => {
+            this.syncResults = this.syncResultService.getResults();
+        });
     }
 
     ngOnDestroy()
     {
         this.subParams.unsubscribe();
+
+        // Reset results service
+        this.syncResultService.clear();
     }
 
     /* Populates form using a specific node of remote-sync. */
@@ -161,16 +187,23 @@ export class SyncSshComponent {
     setFormDisabled(isDisabled)
     {
         $("#openRemoteSsh :input").prop("disabled", isDisabled);
+        console.log("form " + (isDisabled ? "disabled" : "enabled"));
     }
 
     performOpen(options, profile)
     {
+        // TODO disable form
         // Begin async chain to prompt for passwords etc
-        this.sshAuthChain(options, profile, (options, profile) => { this.performDownloadAndOpen(options, profile) });
+        this.sshAuthChain(options, profile, (options, profile) => {
+            console.log("performing ssh sync download");
+            this.syncService.download(options, profile);
+        });
     }
 
     performTest()
     {
+        // TODO disable form
+        // TODO success message
         if (this.openForm.valid)
         {
             console.log("testing...");
@@ -179,8 +212,8 @@ export class SyncSshComponent {
             var options = this.createOptions();
             var profile = this.createProfile();
 
-            // Begin async chain to prompt for passwords etc
-            this.sshAuthChain(options, profile, (options, profile) => { this.performTestWithAuth(options, profile); });
+            console.log("performing ssh sync test");
+            this.syncService.test(options, profile, "ssh");
         }
         else
         {
@@ -206,63 +239,7 @@ export class SyncSshComponent {
         });
     }
 
-    performDownloadAndOpen(options, profile)
-    {
-        console.log("going to start download of remote database...");
-
-        // Request download...
-        this.errorMessage = this.syncService.download(options, profile);
-
-        // Check if download failed...
-        if (this.errorMessage != null)
-        {
-            this.setFormDisabled(false);
-            console.log("download failed - " + this.errorMessage);
-        }
-        else
-        {
-            console.log("downloaded file, now performing async prompt for database password...");
-
-            // Attempt to open file
-            this.databaseService.openWithPrompt(options.getDestinationPath(), (message) => {
-
-                if (message != null)
-                {
-                    console.log("failed to open database - " + message);
-                    this.errorMessage = message;
-                    this.setFormDisabled(false);
-                }
-                else
-                {
-                    // Persist profile
-                    this.syncProfileService.save(profile);
-
-                    // Navigate to viewer
-                    console.log("navigating to viewer...");
-                    this.router.navigate(["/viewer"]);
-                }
-
-            });
-        }
-    }
-
-    performTestWithAuth(options, profile)
-    {
-        console.log("going to test options...");
-
-        // Invoke and assign error message (successful if null)
-        this.errorMessage = this.syncService.test(options, profile);
-
-        if (this.errorMessage == null)
-        {
-            this.successMessage = "Working!";
-        }
-
-        // Re-enable form
-        this.setFormDisabled(false);
-    }
-
-    /* Converts the current form into SyncProfile instance */
+    // Ensures form has required values, even if not specified
     private createProfile() : any
     {
         var form = this.openForm;
@@ -277,32 +254,13 @@ export class SyncSshComponent {
         }
 
         // Create actual instance
-        var profile = this.syncProfileService.createTemporaryProfile("ssh");
-
-        profile.setName(form.value["name"]);
-        profile.setHost(form.value["host"]);
-        profile.setPort(form.value["port"]);
-        profile.setUser(form.value["user"]);
-        profile.setRemotePath(form.value["remotePath"]);
-
-        profile.setStrictHostChecking(form.value["strictHostChecking"]);
-        profile.setUserPass(form.value["userPass"]);
-        profile.setPrivateKeyPath(form.value["privateKeyPath"]);
-        profile.setPrivateKeyPass(form.value["privateKeyPass"]);
-        profile.setProxyHost(form.value["proxyHost"]);
-        profile.setProxyPort(form.value["proxyPort"]);
-        profile.setProxyType(form.value["proxyType"]);
-        profile.setPromptUserPass(form.value["promptUserPass"]);
-        profile.setPromptKeyPass(form.value["promptKeyPass"]);
-        profile.setMachineFilter(form.value["machineFilter"]);
-
-        // Handle options based on mode
-        console.log("download options: " + profile.toString());
+        var json = form.value;
+        var profile = this.syncProfileService.toProfile(json, "ssh");
 
         return profile;
     }
 
-    /* Converts currnet form into SyncOptions instance */
+    // Converts current form into SyncOptions instance
     private createOptions()
     {
         var form = this.openForm;

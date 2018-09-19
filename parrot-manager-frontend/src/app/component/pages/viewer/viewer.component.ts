@@ -138,7 +138,7 @@ export class ViewerComponent
             this.updateTree();
         });
 
-        this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "remoteSyncFinish", (event) => {
+        this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "sync.finish", (event) => {
             this.updateTree();
         });
     }

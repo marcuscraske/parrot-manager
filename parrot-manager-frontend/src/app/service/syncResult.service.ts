@@ -13,6 +13,31 @@ export class SyncResultService
         this.syncResultService = (window as any).syncResultService;
     }
 
+    // TODO cache
+    // TODO should be ab
+    isSuccess() : boolean
+    {
+        var success;
+
+        var syncResults = this.syncResultService.getResults();
+        if (syncResults.length > 0)
+        {
+            success = true;
+            for (var i = 0; i < syncResults.length; i++)
+            {
+                var syncResult = syncResults[i];
+                success &= syncResult.success;
+            }
+        }
+        else
+        {
+            success = false;
+        }
+
+        return success;
+    }
+
+    // TODO cache
     getResults() : SyncResult[]
     {
         var results = [];
@@ -23,26 +48,32 @@ export class SyncResultService
         for (var i = 0; i < syncResults.length; i++)
         {
             var syncResult = syncResults[i];
-            var mergeLog = syncResult.getMergeLog();
-            var logItems = mergeLog.getLogItems();
 
             var result = new SyncResult();
             result.hostName = syncResult.getHostName();
+            result.error = syncResult.getError();
 
-            // Translate log items of each result
-            var log = new MergeLog();
-            var items = [];
-            for (var j = 0; j < logItems.length; j++)
+            // Translate merge log
+            var mergeLog = syncResult.getMergeLog();
+            if (mergeLog != null)
             {
-                var logItem = logItems[j];
-                var item = new LogItem();
-                item.level = logItem.getLevel();
-                item.local = logItem.isLocal();
-                item.text = logItem.getText();
-                items.push(item);
+                var logItems = mergeLog.getLogItems();
+
+                // Translate log items of each result
+                var log = new MergeLog();
+                var items = [];
+                for (var j = 0; j < logItems.length; j++)
+                {
+                    var logItem = logItems[j];
+                    var item = new LogItem();
+                    item.level = logItem.getLevel();
+                    item.local = logItem.isLocal();
+                    item.text = logItem.getText();
+                    items.push(item);
+                }
+                log.items = items;
+                result.mergeLog = log;
             }
-            log.items = items;
-            result.mergeLog = log;
             results.push(result);
         }
 

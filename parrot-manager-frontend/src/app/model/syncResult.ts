@@ -4,4 +4,6 @@ export class SyncResult
 {
     hostName: string;
     mergeLog: MergeLog;
+    success: boolean;
+    error: string;
 }

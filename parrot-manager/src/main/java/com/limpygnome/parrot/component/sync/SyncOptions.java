@@ -22,6 +22,11 @@ public class SyncOptions
         this.destinationPath = destinationPath;
     }
 
+    public boolean isDatabasePassword()
+    {
+        return databasePassword != null && databasePassword.length() > 0;
+    }
+
     public String getDatabasePassword()
     {
         return databasePassword;

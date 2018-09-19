@@ -2,23 +2,21 @@ package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.component.backup.BackupService;
 import com.limpygnome.parrot.component.database.DatabaseService;
-import com.limpygnome.parrot.component.sync.ssh.SshSyncProfile;
-import com.limpygnome.parrot.component.sync.ssh.SshSyncHandler;
-import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import com.limpygnome.parrot.component.file.FileComponent;
 import com.limpygnome.parrot.component.session.SessionService;
+import com.limpygnome.parrot.component.sync.ssh.SshSyncProfile;
+import com.limpygnome.parrot.component.sync.thread.AsyncSyncThread;
+import com.limpygnome.parrot.component.sync.thread.DownloadSyncThread;
+import com.limpygnome.parrot.component.sync.thread.OverwriteSyncThread;
+import com.limpygnome.parrot.component.sync.thread.TestSyncThread;
+import com.limpygnome.parrot.component.sync.thread.UnlockSyncThread;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
-import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.log.LogItem;
-import com.limpygnome.parrot.library.db.log.LogLevel;
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.lib.database.EncryptedValueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
@@ -48,51 +46,30 @@ public class SyncService implements DatabaseChangingEvent
     @Autowired
     private SyncThreadService threadService;
 
+    @Autowired
+    private AsyncSyncThread asyncSyncThread;
+    @Autowired
+    private DownloadSyncThread downloadSyncThread;
+    @Autowired
+    private OverwriteSyncThread overwriteSyncThread;
+    @Autowired
+    private TestSyncThread testSyncThread;
+    @Autowired
+    private UnlockSyncThread unlockSyncThread;
+
     // State
     private long lastSync;
     private SyncOptions defaultSyncOptions;
 
     /**
-     * Checks whether the specified profile and options are enough to automatically synchronize, without
-     * prompting for further credentials.
-     *
-     * @param options sync options
-     * @param profile sync profile
-     * @return true = sufficient details to sync, false = needs more details
-     */
-    public synchronized boolean canAutoSync(SyncOptions options, SyncProfile profile)
-    {
-        boolean result = false;
-
-        // Fetch handler
-        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
-
-        if (handler != null)
-        {
-            result = handler.canAutoSync(options, profile);
-        }
-
-        return result;
-    }
-
-    /**
-     * Begins downloading a file from host.
+     * Downloads and opens a database for the first time.
      *
      * @param options options
      * @param profile sync profile
-     * @return error message, otherwise null if successful
      */
-    public synchronized String download(SyncOptions options, SyncProfile profile)
+    public synchronized void download(SyncOptions options, SyncProfile profile)
     {
-        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
-        String result = checkDestinationPath(options);
-
-        if (result == null)
-        {
-            result = handler.download(options, profile);
-        }
-
-        return result;
+        threadService.launchAsync(downloadSyncThread, options, profile);
     }
 
     /**
@@ -102,17 +79,9 @@ public class SyncService implements DatabaseChangingEvent
      * @param profile sync profile
      * @return error message; or null if successful/no issues encountered
      */
-    public synchronized String test(SyncOptions options, SyncProfile profile)
+    public synchronized void test(SyncOptions options, SyncProfile profile)
     {
-        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
-        String result = checkDestinationPath(options);
-
-        if (result == null)
-        {
-            result = handler.test(options, profile);
-        }
-
-        return result;
+        threadService.launchAsync(testSyncThread, options, profile);
     }
 
     /**
@@ -123,15 +92,7 @@ public class SyncService implements DatabaseChangingEvent
      */
     public synchronized void overwrite(SyncOptions options, SyncProfile profile)
     {
-        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
-        threadService.launchAsync(new SyncThread()
-        {
-            @Override
-            public SyncResult execute(SyncOptions options, SyncProfile profile)
-            {
-                return handler.overwrite(options, profile);
-            }
-        }, options, profile);
+        threadService.launchAsync(overwriteSyncThread, options, profile);
     }
 
     /**
@@ -142,15 +103,7 @@ public class SyncService implements DatabaseChangingEvent
      */
     public synchronized void unlock(SyncOptions options, SyncProfile profile)
     {
-        SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
-        threadService.launchAsync(new SyncThread()
-        {
-            @Override
-            public SyncResult execute(SyncOptions options, SyncProfile profile)
-            {
-                return handler.unlock(options, profile);
-            }
-        }, options, profile);
+        threadService.launchAsync(unlockSyncThread, options, profile);
     }
 
     /**
@@ -179,7 +132,7 @@ public class SyncService implements DatabaseChangingEvent
             LOG.debug("{} available hosts for sync", profileList.size());
 
             SyncProfile[] profileArray = profileList.toArray(new SshSyncProfile[profileList.size()]);
-            launchAsyncSync(defaultSyncOptions, profileArray);
+            threadService.launchAsync(asyncSyncThread, defaultSyncOptions, profileArray);
         }
         else
         {
@@ -197,7 +150,7 @@ public class SyncService implements DatabaseChangingEvent
      */
     public synchronized void sync(SyncOptions options, SyncProfile profile)
     {
-        launchAsyncSync(options, profile);
+        threadService.launchAsync(asyncSyncThread, options, profile);
     }
 
     private boolean canAutoSync(SyncOptions options, SyncProfile profile, String currentHostName)
@@ -265,72 +218,6 @@ public class SyncService implements DatabaseChangingEvent
         catch (UnknownHostException e)
         {
             LOG.warn("unable to determine hostname of current machine", e);
-        }
-
-        return result;
-    }
-
-    private void launchAsyncSync(SyncOptions options, SyncProfile... profileArray)
-    {
-        threadService.launchAsync(new SyncThread()
-        {
-            @Override
-            public SyncResult execute(SyncOptions options, SyncProfile profile)
-            {
-                return asyncSync(options, profile);
-            }
-        }, options, profileArray);
-    }
-
-    private SyncResult asyncSync(SyncOptions options, SyncProfile profile)
-    {
-        SyncResult syncResult;
-        MergeLog mergeLog = new MergeLog();
-
-        // check there isn't unsaved database changes
-        if (databaseService.isDirty())
-        {
-            LOG.warn("skipped sync due to unsaved database changes");
-            mergeLog.add(new LogItem(LogLevel.ERROR, true, "Skipped sync due to unsaved database changes"));
-            syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
-        }
-        else
-        {
-            // validate destination path
-            String message = checkDestinationPath(options);
-            if (message != null)
-            {
-                mergeLog.add(new LogItem(LogLevel.ERROR, true, message));
-                syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
-            }
-            else
-            {
-                // sync...
-                SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
-                syncResult = handler.sync(options, profile);
-            }
-        }
-
-        return syncResult;
-    }
-
-    private String checkDestinationPath(SyncOptions options)
-    {
-        String result = null;
-
-        // Check directory exists of local path
-        String localPath = fileComponent.resolvePath(options.getDestinationPath());
-
-        File localFile = new File(localPath);
-        File parentLocalFile = localFile.getParentFile();
-
-        if (parentLocalFile == null || !parentLocalFile.exists())
-        {
-            result = "Destination directory does not exist";
-        }
-        else if (localFile.exists() && (!localFile.canWrite() || !localFile.canRead()))
-        {
-            result = "Cannot read/write to existing destination path file";
         }
 
         return result;

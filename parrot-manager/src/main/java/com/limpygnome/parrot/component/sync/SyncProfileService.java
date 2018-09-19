@@ -68,6 +68,10 @@ public class SyncProfileService implements DatabaseChangingEvent
      */
     public SyncProfile createTemporaryProfile(String type) {
         SyncHandler handler = handlers.get(type);
+        if (handler == null)
+        {
+            throw new IllegalStateException("Unable to create temporary profile, unknown handler type: " + type);
+        }
         temporaryProfile = handler.createProfile();
         return temporaryProfile;
     }

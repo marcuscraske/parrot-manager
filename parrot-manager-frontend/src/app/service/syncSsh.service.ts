@@ -63,7 +63,7 @@ export class SyncSshService
         }
         else
         {
-            console.log("skipped user pass prompt, moving to key pass...");
+            console.log("skipped ssh user pass prompt, moving to key pass...");
             callback(options, profile);
         }
     }
@@ -82,14 +82,14 @@ export class SyncSshService
                     profile.setPrivateKeyPass(password);
 
                     // Continue next stage in the chain...
-                    console.log("auth chain finished, invoking callback");
+                    console.log("ssh auth chain finished, invoking callback");
                     callback(options, profile);
                 }
             });
         }
         else
         {
-            console.log("skipped prompting user pass, invoking final callback...");
+            console.log("skipped prompting ssh user pass, invoking final callback...");
             callback(options, profile);
         }
     }

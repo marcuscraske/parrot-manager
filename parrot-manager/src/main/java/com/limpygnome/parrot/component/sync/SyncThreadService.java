@@ -18,7 +18,7 @@ public class SyncThreadService
     @Autowired
     private SshSyncHandler sshSyncHandler;
     @Autowired
-    private SyncResultService resultService;
+    private SyncResultService syncResultService;
     @Autowired
     private WebStageInitService webStageInitService;
 
@@ -44,7 +44,7 @@ public class SyncThreadService
     {
         if (thread == null)
         {
-            LOG.info("launching separate thread for sync");
+            LOG.info("launching separate thread for sync operation");
 
             // Reset abort flag
             aborted = false;
@@ -87,7 +87,7 @@ public class SyncThreadService
     private void execute(SyncThread syncThread, SyncOptions options, SyncProfile... profileArray)
     {
         // Reset results
-        resultService.clear();
+        syncResultService.clear();
 
         for (int i = 0; !aborted && i < profileArray.length; i++)
         {
@@ -98,23 +98,27 @@ public class SyncThreadService
 
     private void executeForHost(SyncThread syncThread, SyncOptions options, SyncProfile profile)
     {
-        // raise event for work started
-        webStageInitService.triggerEvent("document", "syncStart", profile);
-
-        SyncResult syncResult = null;
+        SyncResult result = null;
 
         try
         {
-            // execute work
-            syncResult = syncThread.execute(options, profile);
+            // Raise start event
+            webStageInitService.triggerEvent("document", "sync.start", profile);
 
-            // add to results
-            resultService.add(syncResult);
+            // Perform execution
+            result = syncThread.execute(options, profile);
+        }
+        catch (Exception e)
+        {
+            result = new SyncResult(profile.getName(), false, e.getMessage());
         }
         finally
         {
-            // raise event for work finished
-            webStageInitService.triggerEvent("document", "syncFinish", syncResult);
+            // Raise end event
+            webStageInitService.triggerEvent("document", "sync.finish", result);
+
+            // Add result to result service
+            syncResultService.add(result);
         }
     }
 

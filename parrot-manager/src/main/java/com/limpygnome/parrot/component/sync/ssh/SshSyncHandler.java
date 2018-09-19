@@ -77,6 +77,16 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
         try
         {
+            // Wipe sensitive passwords if set to prompt
+            if (syncProfile.isPromptUserPass())
+            {
+                syncProfile.setUserPass(null);
+            }
+            if (syncProfile.isPromptKeyPass())
+            {
+                syncProfile.setPrivateKeyPass(null);
+            }
+
             // Serialize as JSON string
             ObjectMapper mapper = new ObjectMapper();
             String rawJson = mapper.writeValueAsString(syncProfile);
