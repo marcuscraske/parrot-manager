@@ -1,9 +1,11 @@
-package com.limpygnome.parrot.library.db.log;
+package com.limpygnome.parrot.library.log;
 
 import com.limpygnome.parrot.library.db.DatabaseNode;
 
 /**
  * Represents a merge change, or detail.
+ *
+ * TODO text should be replaced by enum with actions
  */
 public class LogItem
 {
@@ -15,6 +17,7 @@ public class LogItem
     {
         this.level = level;
         this.text = text;
+        this.local = local;
     }
 
     public LogItem(LogLevel level, boolean local, DatabaseNode node, String text)

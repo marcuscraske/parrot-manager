@@ -7,6 +7,9 @@ import com.limpygnome.parrot.component.sync.SyncProfileService;
 import com.limpygnome.parrot.component.sync.SyncResult;
 import com.limpygnome.parrot.component.sync.SyncThread;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
+import com.limpygnome.parrot.library.log.Log;
+import com.limpygnome.parrot.library.log.LogItem;
+import com.limpygnome.parrot.library.log.LogLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +26,9 @@ public class OverwriteSyncThread implements SyncThread
     {
         SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
         handler.overwrite(options, profile);
-        return new SyncResult(profile.getName(), true, null);
+        Log log = new Log();
+        log.add(new LogItem(LogLevel.INFO, false, "Remote database overwritten"));
+        return new SyncResult(profile.getName(), log, true, false);
     }
 
 }

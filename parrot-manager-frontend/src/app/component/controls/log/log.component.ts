@@ -2,14 +2,14 @@ import { Component, Input } from '@angular/core';
 import { SettingsService } from 'app/service/settings.service'
 
 @Component({
-    selector: 'mergeLog',
-    templateUrl: 'mergeLog.component.html',
-    styleUrls: ['mergeLog.component.css']
+    selector: 'log',
+    templateUrl: 'log.component.html',
+    styleUrls: ['log.component.css']
 })
-export class MergeLogComponent
+export class LogComponent
 {
     @Input()
-    mergeLog: any;
+    log: any;
 
     constructor(
         private settingsService: SettingsService
@@ -65,6 +65,7 @@ export class MergeLogComponent
                 icon="icon-share2";
                 break;
             case "ERROR":
+            case "WARNING":
             default:
                 icon="icon-warning";
                 break;

@@ -67,6 +67,8 @@
     </button>
 </p>
 
-<syncResultErrors [syncResults]="syncResults"></syncResultErrors>
+<p *ngIf="syncResults == null || syncResults.length == 0">
+    After syncing with a remote host, a list of changes will be displayed here.
+</p>
 
 <changeLog [syncResults]="syncResults"></changeLog>

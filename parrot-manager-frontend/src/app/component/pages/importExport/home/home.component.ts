@@ -4,6 +4,8 @@ import { ImportExportService } from 'app/service/importExport.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { ClipboardService } from 'app/service/clipboard.service'
 
+import { Log } from 'app/model/log'
+
 @Component({
     templateUrl: 'home.component.html',
     styleUrls: ['home.component.css'],
@@ -19,7 +21,7 @@ export class HomeComponent {
     public success: string;
     public error: string;
     public exportText: string;
-    public mergeLog: any;
+    public log: Log;
 
     constructor(
         private importExportService: ImportExportService,
@@ -45,7 +47,7 @@ export class HomeComponent {
                     this.success = "Imported database changes successfully";
                 }
 
-                this.mergeLog = result.mergeLog;
+                this.log = result.log;
             }
             else
             {
@@ -72,7 +74,7 @@ export class HomeComponent {
             {
                 this.success = "Imported database changes successfully";
             }
-            this.mergeLog = result.mergeLog;
+            this.log = result.log;
         }
     }
 

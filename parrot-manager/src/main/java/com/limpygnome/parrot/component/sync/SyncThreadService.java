@@ -2,6 +2,9 @@ package com.limpygnome.parrot.component.sync;
 
 import com.limpygnome.parrot.component.sync.ssh.SshSyncHandler;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
+import com.limpygnome.parrot.library.log.Log;
+import com.limpygnome.parrot.library.log.LogItem;
+import com.limpygnome.parrot.library.log.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +113,9 @@ public class SyncThreadService
         }
         catch (Exception e)
         {
-            result = new SyncResult(profile.getName(), false, e.getMessage());
+            Log log = new Log();
+            log.add(new LogItem(LogLevel.ERROR, false, e.getMessage()));
+            result = new SyncResult(profile.getName(), log, false, false);
         }
         finally
         {

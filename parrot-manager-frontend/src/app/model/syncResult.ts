@@ -1,9 +1,8 @@
-import { MergeLog } from 'app/model/mergeLog'
+import { Log } from 'app/model/log'
 
 export class SyncResult
 {
     hostName: string;
-    mergeLog: MergeLog;
+    log: Log;
     success: boolean;
-    error: string;
 }

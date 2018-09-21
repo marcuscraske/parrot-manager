@@ -2,9 +2,9 @@ package com.limpygnome.parrot.library.db;
 
 import com.limpygnome.parrot.library.crypto.CryptoParams;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
-import com.limpygnome.parrot.library.db.log.LogItem;
-import com.limpygnome.parrot.library.db.log.LogLevel;
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.library.log.Log;
+import com.limpygnome.parrot.library.log.LogItem;
+import com.limpygnome.parrot.library.log.LogLevel;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,9 +32,9 @@ public class DatabaseMerger
      * @return a log of actions performed on the database
      * @throws Exception if a crypto operation fails
      */
-    public synchronized MergeLog merge(Database remote, Database local, char[] password) throws Exception
+    public synchronized Log merge(Database remote, Database local, char[] password) throws Exception
     {
-        MergeLog mergeLog = new MergeLog();
+        Log log = new Log();
 
         synchronized (remote)
         {
@@ -52,33 +52,33 @@ public class DatabaseMerger
                     // merge crypto params
                     if (password != null && password.length > 0)
                     {
-                        Changed changedFileCrypto = mergeDatabaseFileCryptoParams(mergeLog, remote, local, password);
-                        Changed changedMemoryCrypto = mergeDatabaseMemoryCryptoParams(mergeLog, remote, local, password);
+                        Changed changedFileCrypto = mergeDatabaseFileCryptoParams(log, remote, local, password);
+                        Changed changedMemoryCrypto = mergeDatabaseMemoryCryptoParams(log, remote, local, password);
                         changed.merge(changedFileCrypto, changedMemoryCrypto);
                     }
 
                     // merge nodes
-                    Changed changedNodes = mergeNode(mergeLog, local, remote.getRoot(), local.getRoot());
+                    Changed changedNodes = mergeNode(log, local, remote.getRoot(), local.getRoot());
                     changed.merge(changedNodes);
 
                     if (changed.isLocal())
                     {
-                        mergeLog.add(new LogItem(LogLevel.INFO, true, "Database has changed"));
+                        log.add(new LogItem(LogLevel.INFO, true, "Database has changed"));
                         local.setDirty(true);
                     }
                     if (changed.isRemote())
                     {
-                        mergeLog.add(new LogItem(LogLevel.INFO, false, "Remote database has changes"));
+                        log.add(new LogItem(LogLevel.INFO, false, "Remote database has changes"));
                         remote.setDirty(true);
 
                         // set flag that remote needs syncing
-                        mergeLog.setRemoteOutOfDate(true);
+                        log.setRemoteOutOfDate(true);
                     }
                 }
 
                 if (!changed.isAnyChange())
                 {
-                    mergeLog.add(new LogItem(LogLevel.INFO, true, "No changes"));
+                    log.add(new LogItem(LogLevel.INFO, true, "No changes"));
                 }
 
                 // Enable events
@@ -87,10 +87,10 @@ public class DatabaseMerger
             }
         }
 
-        return mergeLog;
+        return log;
     }
 
-    Changed mergeDatabaseFileCryptoParams(MergeLog mergeLog, Database source, Database destination, char[] password) throws Exception
+    Changed mergeDatabaseFileCryptoParams(Log log, Database source, Database destination, char[] password) throws Exception
     {
         Changed changed = new Changed();
 
@@ -100,19 +100,19 @@ public class DatabaseMerger
         if (destFileCryptoParams.getLastModified() < srcFileCryptoParams.getLastModified())
         {
             destination.updateFileCryptoParams(srcFileCryptoParams, password);
-            mergeLog.add(new LogItem(LogLevel.DEBUG, true, "Updated file crypto parameters"));
+            log.add(new LogItem(LogLevel.DEBUG, true, "Updated file crypto parameters"));
             changed.localChanged();
         }
         else if (destFileCryptoParams.getLastModified() > srcFileCryptoParams.getLastModified())
         {
-            mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Local file params are newer"));
+            log.add(new LogItem(LogLevel.DEBUG, false, "Local file params are newer"));
             changed.remoteChanged();
         }
 
         return changed;
     }
 
-    Changed mergeDatabaseMemoryCryptoParams(MergeLog mergeLog, Database source, Database destination, char[] password) throws Exception
+    Changed mergeDatabaseMemoryCryptoParams(Log log, Database source, Database destination, char[] password) throws Exception
     {
         Changed changed = new Changed();
 
@@ -122,12 +122,12 @@ public class DatabaseMerger
         if (destMemoryCryptoParams.getLastModified() < srcMemoryCryptoParams.getLastModified())
         {
             destination.updateMemoryCryptoParams(srcMemoryCryptoParams, password);
-            mergeLog.add(new LogItem(LogLevel.DEBUG, true, "Updated memory crypto parameters"));
+            log.add(new LogItem(LogLevel.DEBUG, true, "Updated memory crypto parameters"));
             changed.localChanged();
         }
         else if (destMemoryCryptoParams.getLastModified() > srcMemoryCryptoParams.getLastModified())
         {
-            mergeLog.add(new LogItem(LogLevel.DEBUG, false, "Local memory crypto parameters are newer"));
+            log.add(new LogItem(LogLevel.DEBUG, false, "Local memory crypto parameters are newer"));
             changed.remoteChanged();
         }
 
@@ -141,19 +141,19 @@ public class DatabaseMerger
 
         Both nodes should be at the same level in their respected databases.
      */
-    Changed mergeNode(MergeLog mergeLog, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
+    Changed mergeNode(Log log, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
     {
         Changed changed = new Changed();
 
-        Changed changedNodeProperties = mergeNodeProperties(mergeLog, remoteNode, localNode);
-        Changed changedLocalAgainstRemote = checkLocalChildrenAgainstRemote(mergeLog, local, remoteNode, localNode);
-        Changed changedRemote = mergeRemoteNodeChildren(mergeLog, local, remoteNode, localNode);
+        Changed changedNodeProperties = mergeNodeProperties(log, remoteNode, localNode);
+        Changed changedLocalAgainstRemote = checkLocalChildrenAgainstRemote(log, local, remoteNode, localNode);
+        Changed changedRemote = mergeRemoteNodeChildren(log, local, remoteNode, localNode);
 
         changed.merge(changedNodeProperties, changedLocalAgainstRemote, changedRemote);
         return changed;
     }
 
-    Changed mergeNodeProperties(MergeLog mergeLog, DatabaseNode remoteNode, DatabaseNode localNode)
+    Changed mergeNodeProperties(Log log, DatabaseNode remoteNode, DatabaseNode localNode)
     {
         Changed changed = new Changed();
 
@@ -165,7 +165,7 @@ public class DatabaseMerger
             if (isDifferent(localNode.getName(), remoteNode.getName()))
             {
                 localNode.setName(remoteNode.getName());
-                mergeLog.add(new LogItem(LogLevel.DEBUG, true, localNode, "Updated name"));
+                log.add(new LogItem(LogLevel.DEBUG, true, localNode, "Updated name"));
             }
 
             // -- Value
@@ -181,14 +181,14 @@ public class DatabaseMerger
                     localNode.setValue(null);
                 }
 
-                mergeLog.add(new LogItem(LogLevel.DEBUG, true, localNode, "Updated value"));
+                log.add(new LogItem(LogLevel.DEBUG, true, localNode, "Updated value"));
             }
 
             // -- History
             if (isDifferent(localNode.getHistory(), remoteNode.getHistory()))
             {
                 localNode.getHistory().merge(remoteNode.getHistory());
-                mergeLog.add(new LogItem(LogLevel.DEBUG, true, localNode, "History updated"));
+                log.add(new LogItem(LogLevel.DEBUG, true, localNode, "History updated"));
             }
 
             // Copy last modified
@@ -199,7 +199,7 @@ public class DatabaseMerger
         }
         else if (remoteNode.getLastModified() < localNode.getLastModified())
         {
-            mergeLog.add(new LogItem(LogLevel.DEBUG, true, localNode, "Remote version is older"));
+            log.add(new LogItem(LogLevel.DEBUG, true, localNode, "Remote version is older"));
             changed.remoteChanged();
         }
 
@@ -209,7 +209,7 @@ public class DatabaseMerger
         // Set dirty flag
         if (localDeletedChildrenChanged)
         {
-            mergeLog.add(new LogItem(LogLevel.DEBUG, true, localNode, "Updated list of deleted nodes"));
+            log.add(new LogItem(LogLevel.DEBUG, true, localNode, "Updated list of deleted nodes"));
             changed.localChanged();
         }
 
@@ -219,7 +219,7 @@ public class DatabaseMerger
     /*
         Updates all nodes in the current database, so they're in sync with the remote database.
      */
-    Changed checkLocalChildrenAgainstRemote(MergeLog mergeLog, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
+    Changed checkLocalChildrenAgainstRemote(Log log, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
     {
         Changed changed = new Changed();
 
@@ -242,7 +242,7 @@ public class DatabaseMerger
             // remote not missing node - recursively update src and dest nodes at same level
             if (remoteChild != null)
             {
-                Changed childChanged = mergeNode(mergeLog, local, remoteChild, localChild);
+                Changed childChanged = mergeNode(log, local, remoteChild, localChild);
                 changed.merge(childChanged);
             }
 
@@ -255,14 +255,14 @@ public class DatabaseMerger
                 // Remove node from our database as it has been removed remotely
                 localChild.remove();
 
-                mergeLog.add(new LogItem(LogLevel.REMOVED, true, localChild, "Removed"));
+                log.add(new LogItem(LogLevel.REMOVED, true, localChild, "Removed"));
                 changed.localChanged();
             }
 
             // remote database is missing this local node
             else
             {
-                mergeLog.add(new LogItem(LogLevel.DEBUG, false, localChild, "Remote database missing node"));
+                log.add(new LogItem(LogLevel.DEBUG, false, localChild, "Remote database missing node"));
                 changed.remoteChanged();
             }
         }
@@ -273,7 +273,7 @@ public class DatabaseMerger
     /*
         Adds any new nodes in the remote database.
      */
-    Changed mergeRemoteNodeChildren(MergeLog mergeLog, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
+    Changed mergeRemoteNodeChildren(Log log, Database local, DatabaseNode remoteNode, DatabaseNode localNode)
     {
         Changed changed = new Changed();
 
@@ -295,13 +295,13 @@ public class DatabaseMerger
             {
                 newNode = remoteChild.clone(local);
                 localNode.add(newNode);
-                mergeLog.add(new LogItem(LogLevel.ADDED, true, newNode, "Added"));
+                log.add(new LogItem(LogLevel.ADDED, true, newNode, "Added"));
                 changed.localChanged();
             }
             else if (isDeleted)
             {
                 // Looks like we deleted the current node on our side...
-                mergeLog.add(new LogItem(LogLevel.DEBUG, false, remoteChild, "Node already deleted in local database"));
+                log.add(new LogItem(LogLevel.DEBUG, false, remoteChild, "Node already deleted in local database"));
                 changed.remoteChanged();
             }
         }

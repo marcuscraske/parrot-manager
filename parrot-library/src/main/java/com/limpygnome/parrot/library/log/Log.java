@@ -1,14 +1,14 @@
-package com.limpygnome.parrot.library.db.log;
+package com.limpygnome.parrot.library.log;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to hold a log of actions performed on the database.
+ * Generic log.
  *
- * THis is currently used for merging, and not intended to be general.
+ * Primarily used for tracking changes applied whilst merging databases.
  */
-public class MergeLog
+public class Log
 {
     private boolean remoteOutOfDate;
     private List<LogItem> logItems;
@@ -17,7 +17,7 @@ public class MergeLog
     /**
      * Creates a new instance.
      */
-    public MergeLog()
+    public Log()
     {
         this.logItems = new LinkedList<>();
         this.remoteOutOfDate = false;

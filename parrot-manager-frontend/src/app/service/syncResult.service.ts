@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SyncResult } from 'app/model/syncResult'
-import { MergeLog } from 'app/model/mergeLog'
+import { Log } from 'app/model/log'
 import { LogItem } from 'app/model/logItem'
 
 @Injectable()
@@ -15,6 +15,7 @@ export class SyncResultService
 
     // TODO cache
     // TODO should be ab
+    // TODO shouldnt be needed, drop
     isSuccess() : boolean
     {
         var success;
@@ -38,6 +39,7 @@ export class SyncResultService
     }
 
     // TODO cache
+    // TODO move translation into shared service
     getResults() : SyncResult[]
     {
         var results = [];
@@ -51,16 +53,15 @@ export class SyncResultService
 
             var result = new SyncResult();
             result.hostName = syncResult.getHostName();
-            result.error = syncResult.getError();
 
             // Translate merge log
-            var mergeLog = syncResult.getMergeLog();
-            if (mergeLog != null)
+            var log = syncResult.getLog();
+            if (log != null)
             {
-                var logItems = mergeLog.getLogItems();
+                var logItems = log.getLogItems();
 
                 // Translate log items of each result
-                var log = new MergeLog();
+                var jsonLog = new Log();
                 var items = [];
                 for (var j = 0; j < logItems.length; j++)
                 {
@@ -71,8 +72,8 @@ export class SyncResultService
                     item.text = logItem.getText();
                     items.push(item);
                 }
-                log.items = items;
-                result.mergeLog = log;
+                jsonLog.items = items;
+                result.log = jsonLog;
             }
             results.push(result);
         }

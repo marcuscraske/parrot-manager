@@ -1,8 +1,8 @@
-import { MergeLog } from 'app/model/mergeLog'
+import { Log } from 'app/model/log'
 
 export class ImportExportResult
 {
     text: string;
-    mergeLog: MergeLog;
+    log: Log;
     error: string;
 }

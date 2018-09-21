@@ -6,7 +6,7 @@ import com.limpygnome.parrot.converter.api.MalformedInputException;
 import com.limpygnome.parrot.converter.api.Options;
 import com.limpygnome.parrot.event.DatabaseChangingEvent;
 import com.limpygnome.parrot.library.db.Database;
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.library.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +55,8 @@ public class ImportExportService implements DatabaseChangingEvent
 
         try
         {
-            MergeLog mergeLog = converter.databaseImportText(database, options, text);
-            this.result = new Result(mergeLog);
+            Log log = converter.databaseImportText(database, options, text);
+            this.result = new Result(log);
             return this.result;
         }
         catch (MalformedInputException e)
@@ -94,8 +94,8 @@ public class ImportExportService implements DatabaseChangingEvent
         try
         {
             FileInputStream fis = new FileInputStream(path);
-            MergeLog mergeLog = converter.databaseImport(database, options, fis);
-            this.result = new Result(mergeLog);
+            Log log = converter.databaseImport(database, options, fis);
+            this.result = new Result(log);
             return this.result;
         }
         catch (MalformedInputException e)

@@ -9,6 +9,9 @@ import com.limpygnome.parrot.component.sync.SyncProfileService;
 import com.limpygnome.parrot.component.sync.SyncResult;
 import com.limpygnome.parrot.component.sync.SyncThread;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
+import com.limpygnome.parrot.library.log.Log;
+import com.limpygnome.parrot.library.log.LogItem;
+import com.limpygnome.parrot.library.log.LogLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,43 +30,40 @@ public class DownloadSyncThread implements SyncThread
     @Override
     public SyncResult execute(SyncOptions options, SyncProfile profile)
     {
-        SyncResult syncResult;
+        SyncResult result;
 
         // Check destination path for database is valid
-        String result = syncFileComponent.checkDestinationPath(options);
-
-        if (result == null)
+        Log log = new Log();
+        if (syncFileComponent.isDestinationPathValid(options, log))
         {
             // Start downloading the file...
             SyncHandler handler = syncProfileService.getHandlerForProfile(profile);
             result = handler.download(options, profile);
 
-            if (result == null)
+            if (result.isSuccess())
             {
                 // Open the database...
                 String path = options.getDestinationPath();
                 String password = options.getDatabasePassword();
-                result = databaseService.open(path, password);
+                String message = databaseService.open(path, password);
 
-                if (result == null)
+                if (message == null)
                 {
                     // Persist the profile to the newly opened database
                     syncProfileService.save(profile);
                 }
+                else
+                {
+                    result.getLog().add(new LogItem(LogLevel.ERROR, false, message));
+                }
             }
-        }
-
-        // Wrap up the result
-        if (result != null)
-        {
-            syncResult = new SyncResult(profile.getName(), false, result);
         }
         else
         {
-            syncResult = new SyncResult(profile.getName(), true, null);
+            result = new SyncResult(profile.getName(), log, false, false);
         }
 
-        return syncResult;
+        return result;
     }
 
 }

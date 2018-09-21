@@ -1,6 +1,6 @@
 import { LogItem } from 'app/model/logItem'
 
-export class MergeLog
+export class Log
 {
     items: LogItem[];
 }

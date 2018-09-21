@@ -1,4 +1,4 @@
-package com.limpygnome.parrot.library.db.log;
+package com.limpygnome.parrot.library.log;
 
 public enum LogLevel
 {
@@ -6,5 +6,6 @@ public enum LogLevel
     ADDED,
     REMOVED,
     ERROR,
+    WARN,
     INFO
 }

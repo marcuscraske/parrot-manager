@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from 'app/service/database.service'
-import { MergeLog } from 'app/model/mergeLog'
+import { Log } from 'app/model/log'
 import { LogItem } from 'app/model/logItem'
 import { ImportExportResult } from 'app/model/importExportResult'
 
@@ -55,12 +55,12 @@ export class ImportExportService
         jsonResult.error = result.getError();
 
         // Translate merge log
-        var mergeLog = result.getMergeLog();
-        if (mergeLog != null)
+        var log = result.getLog();
+        if (log != null)
         {
-            var logItems = mergeLog.getLogItems();
+            var logItems = log.getLogItems();
 
-            var jsonMergeLog = new MergeLog();
+            var jsonLog = new Log();
             var jsonItems = [];
             for (var i = 0; i < logItems.length; i++)
             {
@@ -71,8 +71,8 @@ export class ImportExportService
                 jsonItem.text = logItem.getText();
                 jsonItems.push(jsonItem);
             }
-            jsonMergeLog.items = jsonItems;
-            jsonResult.mergeLog = jsonMergeLog;
+            jsonLog.items = jsonItems;
+            jsonResult.log = jsonLog;
         }
         return jsonResult;
     }

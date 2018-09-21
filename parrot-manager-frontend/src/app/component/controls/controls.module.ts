@@ -6,8 +6,7 @@ import { PipesModule } from "app/component/pipes/pipes.module"
 
 import { MessageBoxComponent } from "app/component/controls/messageBox/messageBox.component"
 import { ChangeLogComponent } from "app/component/controls/changeLog/changeLog.component"
-import { MergeLogComponent } from "app/component/controls/mergeLog/mergeLog.component"
-import { SyncResultErrorsComponent } from "app/component/controls/syncResultErrors/syncResultErrors.component"
+import { LogComponent } from "app/component/controls/log/log.component"
 
 @NgModule({
     imports: [
@@ -17,15 +16,13 @@ import { SyncResultErrorsComponent } from "app/component/controls/syncResultErro
     ],
     declarations: [
         ChangeLogComponent,
-        MergeLogComponent,
-        MessageBoxComponent,
-        SyncResultErrorsComponent
+        LogComponent,
+        MessageBoxComponent
     ],
     exports: [
         ChangeLogComponent,
-        MergeLogComponent,
-        MessageBoxComponent,
-        SyncResultErrorsComponent
+        LogComponent,
+        MessageBoxComponent
     ]
 })
 export class ControlsModule { }

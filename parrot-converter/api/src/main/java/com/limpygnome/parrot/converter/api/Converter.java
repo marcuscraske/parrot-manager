@@ -3,14 +3,13 @@ package com.limpygnome.parrot.converter.api;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseMerger;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.library.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Used to convert between input-stream/text and database.
@@ -28,7 +27,7 @@ public abstract class Converter
      * @throws ConversionException
      * @throws MalformedInputException
      */
-    public abstract MergeLog databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
+    public abstract Log databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException;
 
     /**
      *
@@ -40,7 +39,7 @@ public abstract class Converter
      * @throws MalformedInputException
      * @throws IOException
      */
-    public abstract MergeLog databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
+    public abstract Log databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException;
 
     public abstract String databaseExportText(Database database, Options options) throws ConversionException;
 
@@ -48,14 +47,14 @@ public abstract class Converter
 
 
 
-    protected MergeLog merge(Database database, Database databaseParsed) throws ConversionException
+    protected Log merge(Database database, Database databaseParsed) throws ConversionException
     {
         // merge with current database
         try
         {
             DatabaseMerger merger = new DatabaseMerger();
-            MergeLog mergeLog = merger.merge(databaseParsed, database, null);
-            return mergeLog;
+            Log log = merger.merge(databaseParsed, database, null);
+            return log;
         }
         catch (Exception e)
         {

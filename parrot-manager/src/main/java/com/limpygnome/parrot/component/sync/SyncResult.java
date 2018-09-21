@@ -1,6 +1,6 @@
 package com.limpygnome.parrot.component.sync;
 
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.library.log.Log;
 
 /**
  * Used as aggregate of results for 'syncFinish' trigger event.
@@ -8,23 +8,15 @@ import com.limpygnome.parrot.library.db.log.MergeLog;
 public class SyncResult
 {
     private String hostName;
-    private MergeLog mergeLog;
+    private Log log;
     private boolean success;
     private boolean changes;
-    private String error;
     private long timestamp;
 
-    public SyncResult(String hostName, boolean success, String error)
+    public SyncResult(String hostName, Log log, boolean success, boolean changes)
     {
         this.hostName = hostName;
-        this.success = success;
-        this.error = error;
-    }
-
-    public SyncResult(String hostName, MergeLog mergeLog, boolean success, boolean changes)
-    {
-        this.hostName = hostName;
-        this.mergeLog = mergeLog;
+        this.log = log;
         this.success = success;
         this.changes = changes;
         this.timestamp = System.currentTimeMillis();
@@ -35,9 +27,9 @@ public class SyncResult
         return hostName;
     }
 
-    public MergeLog getMergeLog()
+    public Log getLog()
     {
-        return mergeLog;
+        return log;
     }
 
     public boolean isSuccess()
@@ -55,11 +47,7 @@ public class SyncResult
         return timestamp;
     }
 
-    public String getError()
-    {
-        return error;
-    }
-
+    // TODO needs message?
     public String asText()
     {
         StringBuilder sb = new StringBuilder();
@@ -67,7 +55,7 @@ public class SyncResult
                 .append(", changes: ").append(changes)
                 .append(", timestamp: ").append(timestamp).append("]")
                 .append(System.getProperty("line.separator"))
-                .append(mergeLog.asText());
+                .append(log.asText());
         return sb.toString();
     }
 

@@ -20,9 +20,9 @@ public interface SyncHandler
 
     boolean canAutoSync(SyncOptions options, SyncProfile profile);
 
-    String download(SyncOptions options, SyncProfile profile);
+    SyncResult download(SyncOptions options, SyncProfile profile);
 
-    String test(SyncOptions options, SyncProfile profile);
+    SyncResult test(SyncOptions options, SyncProfile profile);
 
     SyncResult overwrite(SyncOptions options, SyncProfile profile);
 

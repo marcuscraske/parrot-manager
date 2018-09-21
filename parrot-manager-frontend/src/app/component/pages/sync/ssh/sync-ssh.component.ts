@@ -9,6 +9,8 @@ import { SyncSshService } from 'app/service/syncSsh.service'
 import { SyncProfileService } from 'app/service/syncProfile.service'
 import { SyncResultService } from 'app/service/syncResult.service'
 
+import { Log } from 'app/model/log'
+
 @Component({
     templateUrl: 'sync-ssh.component.html'
 })
@@ -37,8 +39,8 @@ export class SyncSshComponent {
     errorMessage : string;
     successMessage : string;
 
-    // Sync results
-    syncResults = null;
+    // Log from attempting to test settings
+    log : Log = null;
 
     // Observable subscription for params
     subParams : any;
@@ -121,7 +123,11 @@ export class SyncSshComponent {
 
         // Listen for sync changes, so we can populate any error results
         this.syncResultChanges = this.renderer.listenGlobal("document", "syncResults.change", (event) => {
-            this.syncResults = this.syncResultService.getResults();
+            var syncResults = this.syncResultService.getResults();
+            if (syncResults != null && syncResults.length == 1)
+            {
+                this.log = syncResults[0].log;
+            }
         });
     }
 

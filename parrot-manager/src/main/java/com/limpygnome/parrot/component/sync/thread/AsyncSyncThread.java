@@ -10,9 +10,9 @@ import com.limpygnome.parrot.component.sync.SyncResult;
 import com.limpygnome.parrot.component.sync.SyncResultService;
 import com.limpygnome.parrot.component.sync.SyncThread;
 import com.limpygnome.parrot.component.ui.WebStageInitService;
-import com.limpygnome.parrot.library.db.log.LogItem;
-import com.limpygnome.parrot.library.db.log.LogLevel;
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.library.log.Log;
+import com.limpygnome.parrot.library.log.LogItem;
+import com.limpygnome.parrot.library.log.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,23 +38,21 @@ public class AsyncSyncThread implements SyncThread
     public SyncResult execute(SyncOptions options, SyncProfile profile)
     {
         SyncResult syncResult;
-        MergeLog mergeLog = new MergeLog();
+        Log log = new Log();
 
         // check there isn't unsaved database changes
         if (databaseService.isDirty())
         {
             LOG.warn("skipped sync due to unsaved database changes");
-            mergeLog.add(new LogItem(LogLevel.ERROR, true, "Skipped sync due to unsaved database changes"));
-            syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
+            log.add(new LogItem(LogLevel.ERROR, true, "Skipped sync due to unsaved database changes"));
+            syncResult = new SyncResult(profile.getName(), log, false, false);
         }
         else
         {
             // validate destination path
-            String message = syncFileComponent.checkDestinationPath(options);
-            if (message != null)
+            if (!syncFileComponent.isDestinationPathValid(options, log))
             {
-                mergeLog.add(new LogItem(LogLevel.ERROR, true, message));
-                syncResult = new SyncResult(profile.getName(), mergeLog, false, false);
+                syncResult = new SyncResult(profile.getName(), log, false, false);
             }
             else
             {

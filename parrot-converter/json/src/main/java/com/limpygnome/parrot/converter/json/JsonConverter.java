@@ -15,7 +15,7 @@ import com.limpygnome.parrot.lib.io.StringStreamOperations;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
 import com.limpygnome.parrot.library.db.DatabaseNode;
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.library.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +34,7 @@ public class JsonConverter extends Converter
     private EncryptedValueService encryptedValueService;
 
     @Override
-    public MergeLog databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException
+    public Log databaseImport(Database database, Options options, InputStream inputStream) throws ConversionException, MalformedInputException, IOException
     {
         String text = stringStreamOperations.readString(inputStream);
         return databaseImportText(database, options, text);
@@ -48,7 +48,7 @@ public class JsonConverter extends Converter
     }
 
     @Override
-    public MergeLog databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException
+    public Log databaseImportText(Database database, Options options, String text) throws ConversionException, MalformedInputException
     {
         // parse to json
         JsonParser parser = new JsonParser();
@@ -77,8 +77,8 @@ public class JsonConverter extends Converter
         importAddChildren(databaseParsed, root, jsonRoot, options);
 
         // merge them
-        MergeLog mergeLog = merge(database, databaseParsed);
-        return mergeLog;
+        Log log = merge(database, databaseParsed);
+        return log;
     }
 
     @Override

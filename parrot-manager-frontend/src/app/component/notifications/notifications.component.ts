@@ -44,13 +44,14 @@ export class NotificationsComponent
             this.syncService.setSyncing(false);
 
             // Check we have sync result (optional)
+            // TODO convert to json
             var syncResult = event.data;
 
             if (syncResult != null)
             {
-                var hostName = event.data.getHostName();
-                var isSuccess = event.data.isSuccess();
-                var isChanges = event.data.isChanges();
+                var hostName = syncResult.getHostName();
+                var isSuccess = syncResult.isSuccess();
+                var isChanges = syncResult.isChanges();
 
                 // Show notification
                 if (isSuccess)

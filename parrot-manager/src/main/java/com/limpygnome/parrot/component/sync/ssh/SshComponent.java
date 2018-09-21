@@ -157,9 +157,15 @@ public class SshComponent
             // Improved error messages
             if (e instanceof JSchException)
             {
-                if (e.getCause() instanceof UnknownHostException)
+                Throwable cause = e.getCause();
+
+                if (cause instanceof UnknownHostException)
                 {
                     message = "Unable to resolve host";
+                }
+                else if ("USERAUTH fail".equals(message))
+                {
+                    message = "Private key password is incorrect";
                 }
                 else if ("Auth fail".equals(message))
                 {

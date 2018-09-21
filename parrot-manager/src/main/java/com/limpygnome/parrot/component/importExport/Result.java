@@ -1,21 +1,21 @@
 package com.limpygnome.parrot.component.importExport;
 
-import com.limpygnome.parrot.library.db.log.MergeLog;
+import com.limpygnome.parrot.library.log.Log;
 
 public class Result
 {
     // Text from exporting the database (if supported)
     private String text;
     // Result of merging imported data
-    private MergeLog mergeLog;
+    private Log log;
 
     private String error;
 
     public Result() { }
 
-    public Result(MergeLog mergeLog)
+    public Result(Log log)
     {
-        this.mergeLog = mergeLog;
+        this.log = log;
     }
 
     public Result(String text, String error)
@@ -34,14 +34,14 @@ public class Result
         this.text = text;
     }
 
-    public MergeLog getMergeLog()
+    public Log getLog()
     {
-        return mergeLog;
+        return log;
     }
 
-    public void setMergeLog(MergeLog mergeLog)
+    public void setLog(Log log)
     {
-        this.mergeLog = mergeLog;
+        this.log = log;
     }
 
     public String getError()
