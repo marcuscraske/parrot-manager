@@ -1,0 +1,16 @@
+.icon-connecting
+{
+    display: inline-block;
+    font-size: 4em;
+
+    /* shared with loading-box.css */
+    animation-name: spin;
+    animation-duration: 3000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 3000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}

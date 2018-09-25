@@ -30,7 +30,34 @@
     Edit Host
 </h1>
 
-<form id="openRemoteSsh" [formGroup]="openForm" #form="ngForm" [ngClass]="{ 'was-validated' : form.submitted && form.valid }" novalidate>
+
+<!--
+    Error messages, spinners etc
+-->
+
+<div *ngIf="showSpinner">
+    <p class="text-center">
+        <span class="icon icon-loop2 icon-connecting"></span>
+    </p>
+    <p class="text-center">
+        Synchronizing...
+    </p>
+    <p class="text-center">
+        <button class="btn btn-danger" (click)="syncService.abort()">
+            <span class="icon icon-cross"></span>
+            Abort
+        </button>
+    </p>
+</div>
+
+<log *ngIf="log != null" [log]="log"></log>
+
+
+<!--
+    Form
+-->
+
+<form id="openRemoteSsh" *ngIf="!showSpinner" [formGroup]="openForm" #form="ngForm" [ngClass]="{ 'was-validated' : form.submitted && form.valid }" novalidate>
 
     <div class="form-group">
         <label class="form-control-label" for="name">
@@ -362,7 +389,5 @@
         </button>
 
     </div>
-
-    <log *ngIf="log != null" [log]="log"></log>
 
 </form>

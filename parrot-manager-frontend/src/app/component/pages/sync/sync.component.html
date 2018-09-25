@@ -3,10 +3,6 @@
     Sync
 </h1>
 
-<p>
-    Sync your database with multiple remote hosts.
-</p>
-
 <div *ngIf="!isSyncing()">
 
     <table class="table sync" *ngIf="profiles.length > 0" id="remoteSyncTargets">
@@ -24,10 +20,14 @@
         </tr>
     </table>
 
-    <div class="form-group text-center">
+    <p *ngIf="profiles.length == 0">
+        Add a remote database to synchronize changes across multiple device.
+    </p>
+
+    <div class="form-group">
         <button class="btn btn-default" routerLink="/sync/ssh/new">
             <span class="icon icon-plus"></span>
-            Add New
+            Add
         </button>
     </div>
 
@@ -52,23 +52,25 @@
 
 </div>
 
-<h2 class="mb-3">
-    Change Log
-</h2>
+<!--
+    Changelog
+-->
 
-<p *ngIf="syncResults != null && syncResults.length > 0">
-    <button class="btn btn-default" (click)="copySyncLogToClipboard()">
-        <span class="icon icon-clipboard"></span>
-        Copy to Clipboard
-    </button>
-    <button class="btn btn-default" (click)="syncResultService.clear()">
-        <span class="icon icon-bin"></span>
-        Clear
-    </button>
-</p>
+<div *ngIf="syncResults != null && syncResults.length > 0">
+    <h2 class="mt-5 mb-3">
+        Change Log
+    </h2>
 
-<p *ngIf="syncResults == null || syncResults.length == 0">
-    After syncing with a remote host, a list of changes will be displayed here.
-</p>
+    <p>
+        <button class="btn btn-default" (click)="copySyncLogToClipboard()">
+            <span class="icon icon-clipboard"></span>
+            Copy to Clipboard
+        </button>
+        <button class="btn btn-default" (click)="syncResultService.clear()">
+            <span class="icon icon-bin"></span>
+            Clear
+        </button>
+    </p>
 
-<changeLog [syncResults]="syncResults"></changeLog>
+    <changeLog [syncResults]="syncResults"></changeLog>
+</div>

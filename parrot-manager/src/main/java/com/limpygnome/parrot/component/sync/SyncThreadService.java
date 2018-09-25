@@ -115,7 +115,7 @@ public class SyncThreadService
         {
             Log log = new Log();
             log.add(new LogItem(LogLevel.ERROR, false, e.getMessage()));
-            result = new SyncResult(profile.getName(), log, false, false);
+            result = new SyncResult(profile, log, false, false);
         }
         finally
         {

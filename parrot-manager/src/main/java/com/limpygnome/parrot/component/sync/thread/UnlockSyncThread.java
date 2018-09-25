@@ -26,7 +26,7 @@ public class UnlockSyncThread implements SyncThread
 
         Log log = new Log();
         log.add(new LogItem(LogLevel.INFO, false, "Remote database unlocked"));
-        return new SyncResult(profile.getName(), log, true, false);
+        return new SyncResult(profile, log, true, false);
     }
 
 }

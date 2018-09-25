@@ -65,7 +65,7 @@ export class LogComponent
                 icon="icon-share2";
                 break;
             case "ERROR":
-            case "WARNING":
+            case "WARN":
             default:
                 icon="icon-warning";
                 break;

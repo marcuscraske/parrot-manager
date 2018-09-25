@@ -59,9 +59,12 @@ export class SyncProfileService
     {
         var json = null;
 
-        if (profile.getType() == "ssh")
+        if (profile != null)
         {
-            json = this.syncSshService.toJson(profile);
+            if (profile.getType() == "ssh")
+            {
+                json = this.syncSshService.toJson(profile);
+            }
         }
 
         return json;

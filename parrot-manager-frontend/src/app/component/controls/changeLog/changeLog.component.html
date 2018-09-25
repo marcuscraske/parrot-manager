@@ -1,10 +1,10 @@
-<div *ngIf="syncResults != null && syncResults.length > 0">
+<div *ngIf="syncResults != null && syncResults.length > 0" class="list">
     <div *ngFor="let syncResult of syncResults; trackBy: trackSyncResults">
         <div *ngIf="syncResult.log != null">
-            <div>
+            <h3>
                 <span class="icon icon-display"></span>
                 {{ syncResult.hostName }}
-            </div>
+            </h3>
             <log [log]="syncResult.log"></log>
         </div>
     </div>

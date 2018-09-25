@@ -52,6 +52,7 @@ export class SyncResultService
             var syncResult = syncResults[i];
 
             var result = new SyncResult();
+            result.profileId = syncResult.getProfileId();
             result.hostName = syncResult.getHostName();
 
             // Translate merge log
@@ -67,7 +68,7 @@ export class SyncResultService
                 {
                     var logItem = logItems[j];
                     var item = new LogItem();
-                    item.level = logItem.getLevel();
+                    item.level = logItem.getLevel().toString();
                     item.local = logItem.isLocal();
                     item.text = logItem.getText();
                     items.push(item);

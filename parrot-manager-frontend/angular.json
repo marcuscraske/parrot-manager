@@ -28,7 +28,8 @@
               "src/assets/animations.css",
               "src/assets/loading-box.css",
               "src/assets/banner.css",
-              "src/assets/fonts/icomoon/style.css"
+              "src/assets/fonts/icomoon/style.css",
+              "src/assets/themes/default.css"
             ],
             "scripts": [
               "src/app/errorWatcher.js",

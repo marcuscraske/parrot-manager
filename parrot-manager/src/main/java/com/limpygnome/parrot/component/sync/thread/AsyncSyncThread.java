@@ -45,14 +45,14 @@ public class AsyncSyncThread implements SyncThread
         {
             LOG.warn("skipped sync due to unsaved database changes");
             log.add(new LogItem(LogLevel.ERROR, true, "Skipped sync due to unsaved database changes"));
-            syncResult = new SyncResult(profile.getName(), log, false, false);
+            syncResult = new SyncResult(profile, log, false, false);
         }
         else
         {
             // validate destination path
             if (!syncFileComponent.isDestinationPathValid(options, log))
             {
-                syncResult = new SyncResult(profile.getName(), log, false, false);
+                syncResult = new SyncResult(profile, log, false, false);
             }
             else
             {

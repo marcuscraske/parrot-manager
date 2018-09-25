@@ -32,7 +32,7 @@ public class SyncProfileService implements DatabaseChangingEvent
     private WebStageInitService webStageInitService;
 
     // State
-    private Map<UUID, SyncProfile> profiles;
+    private Map<String, SyncProfile> profiles;
     private SyncProfile[] cachedProfiles;
     private SyncProfile temporaryProfile;
 

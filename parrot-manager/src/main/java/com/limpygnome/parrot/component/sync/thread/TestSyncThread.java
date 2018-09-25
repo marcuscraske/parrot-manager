@@ -33,7 +33,7 @@ public class TestSyncThread implements SyncThread
         }
         else
         {
-            result = new SyncResult(profile.getName(), log, false, false);
+            result = new SyncResult(profile, log, false, false);
         }
 
         return result;

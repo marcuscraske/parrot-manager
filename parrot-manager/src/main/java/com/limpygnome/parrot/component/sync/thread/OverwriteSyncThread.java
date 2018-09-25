@@ -28,7 +28,7 @@ public class OverwriteSyncThread implements SyncThread
         handler.overwrite(options, profile);
         Log log = new Log();
         log.add(new LogItem(LogLevel.INFO, false, "Remote database overwritten"));
-        return new SyncResult(profile.getName(), log, true, false);
+        return new SyncResult(profile, log, true, false);
     }
 
 }

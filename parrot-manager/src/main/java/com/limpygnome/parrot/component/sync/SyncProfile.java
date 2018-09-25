@@ -28,9 +28,9 @@ public abstract class SyncProfile
      */
     public abstract String getType();
 
-    public UUID getId()
+    public String getId()
     {
-        return id;
+        return id != null ? id.toString() : null;
     }
 
     public void setId(UUID id)

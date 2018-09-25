@@ -12,7 +12,8 @@ import { SyncResultService } from 'app/service/syncResult.service'
 import { Log } from 'app/model/log'
 
 @Component({
-    templateUrl: 'sync-ssh.component.html'
+    templateUrl: 'sync-ssh.component.html',
+    styleUrls: ['sync-ssh.component.css']
 })
 export class SyncSshComponent {
 
@@ -23,7 +24,7 @@ export class SyncSshComponent {
        strictHostChecking : [false],
        user : ["", [Validators.required, Validators.minLength(1), Validators.maxLength(128)]],
        userPass : [""],
-       remotePath : ["", Validators.required],
+       remotePath : ["~/passwords.parrot", Validators.required],
        destinationPath : [""],                      // Validator is dynamic based on mode (required only for open)
        privateKeyPath : ["~/.ssh/id_rsa"],
        privateKeyPass : [""],
@@ -42,20 +43,24 @@ export class SyncSshComponent {
     // Log from attempting to test settings
     log : Log = null;
 
+    // Indicates whether to show spinner (for when syncing)
+    showSpinner: boolean = false;
+
     // Observable subscription for params
     subParams : any;
 
     // The mode: open, new, edit
     currentMode : string;
 
-    // The ID (key stored under remote-sync) of the current node being changed; passed by routing config
-    currentNode : string;
+    // The profile ID of the current sync profile being changed; passed by routing config, or populated upon test/download
+    profileId : string;
 
     // Event for listening to DB opening
     databaseOpenEvent: any;
 
-    // Event for sync result changes
-    syncResultChanges: any;
+    // Event for sync changes
+    syncResultChangesEvent: any;
+    syncStartEvent: any;
 
     constructor(
         private runtimeService: RuntimeService,
@@ -80,7 +85,7 @@ export class SyncSshComponent {
             // determine appropriate mode and if we need to populate form with existing data
             if (passedNode == null)
             {
-                this.currentNode = null;
+                this.profileId = null;
                 this.currentMode = "open";
                 populateMachineName = true;
 
@@ -88,7 +93,7 @@ export class SyncSshComponent {
             }
             else if (passedNode == "new")
             {
-                this.currentNode = null;
+                this.profileId = null;
                 this.currentMode = "new";
                 populateMachineName = true;
 
@@ -96,11 +101,11 @@ export class SyncSshComponent {
             }
             else
             {
-                this.currentNode = passedNode;
+                this.profileId = passedNode;
                 this.currentMode = "edit";
                 this.populate(passedNode);
 
-                console.log("changed to edit mode - node id: " + this.currentNode);
+                console.log("changed to edit mode - profileId=" + this.profileId);
             }
 
             // populate machine name
@@ -121,13 +126,31 @@ export class SyncSshComponent {
             this.router.navigate(["/viewer"]);
         });
 
+        // Listen for when syncing starts
+        this.syncStartEvent = this.renderer.listenGlobal("document", "sync.start", (event) => {
+            var profile = this.syncProfileService.toJson(event.data);
+            if (this.profileId == profile.id)
+            {
+                this.showSpinner = true;
+                this.log = null;
+                this.setFormDisabled(true);
+            }
+        });
+
         // Listen for sync changes, so we can populate any error results
-        this.syncResultChanges = this.renderer.listenGlobal("document", "syncResults.change", (event) => {
+        this.syncResultChangesEvent = this.renderer.listenGlobal("document", "syncResults.change", (event) => {
             var syncResults = this.syncResultService.getResults();
             if (syncResults != null && syncResults.length == 1)
             {
-                this.log = syncResults[0].log;
+                var syncResult = syncResults[0];
+                if (syncResult.profileId == this.profileId)
+                {
+                    this.log = syncResult.log;
+                    this.showSpinner = false;
+                    this.setFormDisabled(false);
+                }
             }
+
         });
     }
 
@@ -137,6 +160,10 @@ export class SyncSshComponent {
 
         // Reset results service
         this.syncResultService.clear();
+
+        // Destroy event handlers
+        this.syncStartEvent();
+        this.syncResultChangesEvent();
     }
 
     /* Populates form using a specific node of remote-sync. */
@@ -262,6 +289,10 @@ export class SyncSshComponent {
         // Create actual instance
         var json = form.value;
         var profile = this.syncProfileService.toProfile(json, "ssh");
+
+        // Populate id as current node
+        var jsonProfile = this.syncProfileService.toJson(profile);
+        this.profileId = jsonProfile.id;
 
         return profile;
     }

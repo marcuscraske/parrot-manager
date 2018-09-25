@@ -169,7 +169,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             cleanup();
         }
 
-        return new SyncResult(profile.getName(), log, success, false);
+        return new SyncResult(profile, log, success, false);
     }
 
     @Override
@@ -195,7 +195,11 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             // check remote connection works and file exists
             SshFile file = new SshFile(sshSession, sshProfile.getRemotePath());
 
-            if (!sshComponent.checkRemotePathExists(sshSession, file))
+            if (sshComponent.checkRemotePathExists(sshSession, file))
+            {
+                log.add(new LogItem(LogLevel.INFO, false, "Successfully checked remote file exists"));
+            }
+            else
             {
                 log.add(new LogItem(LogLevel.WARN, false, "Remote file does not exist - ignore if expected"));
             }
@@ -216,7 +220,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             cleanup();
         }
 
-        return new SyncResult(profile.getName(), log, success, false);
+        return new SyncResult(profile, log, success, false);
     }
 
     @Override
@@ -279,9 +283,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             cleanup();
         }
 
-        SyncResult result = new SyncResult(
-            profile.getName(), log, success, false
-        );
+        SyncResult result = new SyncResult(profile, log, success, false);
         return result;
     }
 
@@ -316,7 +318,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             cleanup();
         }
 
-        return new SyncResult(sshProfile.getName(), log, success, false);
+        return new SyncResult(sshProfile, log, success, false);
     }
 
     @Override
@@ -473,9 +475,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
         }
 
         // raise event with result
-        SyncResult syncResult = new SyncResult(
-                profile.getName(), log, success, dirty
-        );
+        SyncResult syncResult = new SyncResult(profile, log, success, dirty);
         return syncResult;
     }
 

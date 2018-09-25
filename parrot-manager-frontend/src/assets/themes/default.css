@@ -1,0 +1,35 @@
+.log .ERROR
+{
+    background: #f75047;
+    color: #fff;
+}
+
+.log .WARN
+{
+    background: #fff3b5;
+    color: #874c00;
+}
+
+.log .INFO
+{
+    background: #cce5ff;
+    color: #004085;
+}
+
+.log .DEBUG
+{
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.log .ADDED
+{
+    background: #d4edda;
+    color: #155724;
+}
+
+.log .REMOVED
+{
+    background: #f8d7da;
+    color: #721c24;
+}

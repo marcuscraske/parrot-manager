@@ -1,5 +1,5 @@
-<ul>
-    <li *ngFor="let logItem of (filterByShowDetails(log.items)); trackBy: trackLogItems">
+<ul class="log">
+    <li class="{{ logItem.level }}" *ngFor="let logItem of (filterByShowDetails(log.items)); trackBy: trackLogItems">
         <span class="icon" [ngClass]="getLogItemIcon(logItem)"></span>
         {{ logItem.text }}
     </li>

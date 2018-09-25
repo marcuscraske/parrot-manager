@@ -66,7 +66,7 @@ export class ImportExportService
             {
                 var logItem = logItems[i];
                 var jsonItem = new LogItem();
-                jsonItem.level = logItem.getLevel();
+                jsonItem.level = logItem.getLevel().toString();
                 jsonItem.local = logItem.isLocal();
                 jsonItem.text = logItem.getText();
                 jsonItems.push(jsonItem);
