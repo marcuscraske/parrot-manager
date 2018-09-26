@@ -151,8 +151,7 @@ public class SyncProfileService implements DatabaseChangingEvent
      */
     public synchronized SyncProfile fetchById(String nodeId)
     {
-        UUID uuid = UUID.fromString(nodeId);
-        SyncProfile profile = profiles.get(uuid);
+        SyncProfile profile = profiles.get(nodeId);
         return profile;
     }
 
@@ -182,8 +181,8 @@ public class SyncProfileService implements DatabaseChangingEvent
         // Save to hidden rmeote sync node
         remoteSyncNode().add(node);
 
-        // Update cache
-        raiseChangeEvent();
+        // Reload available profiles
+        refresh();
     }
 
     /**

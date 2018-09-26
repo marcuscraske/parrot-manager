@@ -10,6 +10,7 @@ import { SyncProfileService } from 'app/service/syncProfile.service'
 import { SyncResultService } from 'app/service/syncResult.service'
 
 import { Log } from 'app/model/log'
+import { SyncProfile } from 'app/model/syncProfile'
 
 @Component({
     templateUrl: 'sync-ssh.component.html',
@@ -54,6 +55,9 @@ export class SyncSshComponent {
 
     // The profile ID of the current sync profile being changed; passed by routing config, or populated upon test/download
     profileId : string;
+
+    // Copy of original profile being edited
+    profile: SyncProfile;
 
     // Event for listening to DB opening
     databaseOpenEvent: any;
@@ -123,7 +127,7 @@ export class SyncSshComponent {
         // Listen for when DB opens (opening existing remote DB)
         this.databaseOpenEvent = this.renderer.listenGlobal("document", "database.open", (event) => {
             console.log("database open event, navigating to view entries page...");
-            this.router.navigate(["/viewer"]);
+            this.router.navigate(["/sync"]);
         });
 
         // Listen for when syncing starts
@@ -174,9 +178,13 @@ export class SyncSshComponent {
 
         if (profile != null)
         {
+            // Store copy
+            this.profile = profile;
+
             // Populate form with data
             var form = this.openForm;
             form.patchValue(profile);
+
             console.log("form populated - node id: " + nodeId);
         }
         else

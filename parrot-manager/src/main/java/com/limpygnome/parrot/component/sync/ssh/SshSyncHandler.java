@@ -21,6 +21,7 @@ import com.limpygnome.parrot.library.log.Log;
 import com.limpygnome.parrot.library.log.LogItem;
 import com.limpygnome.parrot.library.log.LogLevel;
 import com.limpygnome.parrot.library.io.DatabaseReaderWriter;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,21 +114,33 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
     public SyncProfile deserialize(DatabaseNode node)
     {
         Database database = databaseService.getDatabase();
+        SyncProfile profile = null;
 
         try
         {
             // Fetch value as string
             String value = encryptedValueService.asString(database, node.getValue());
 
-            // Deserialize into object
-            ObjectMapper mapper = new ObjectMapper();
-            SshSyncProfile profile =  mapper.readValue(value, SshSyncProfile.class);
-            return profile;
+            // Check it's an SSH node
+            JsonParser parser = new JsonParser();
+            JsonObject json = (JsonObject) parser.parse(value);
+
+            boolean handled = !json.has("type") || "ssh".equals(json.get("type").getAsString());
+
+            if (handled)
+            {
+                // Deserialize into object
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.disable(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES);
+                profile = mapper.readValue(value, SshSyncProfile.class);
+            }
         }
         catch (Exception e)
         {
             throw new IllegalStateException("Unable to deserialize database node to profile", e);
         }
+
+        return profile;
     }
 
     @Override

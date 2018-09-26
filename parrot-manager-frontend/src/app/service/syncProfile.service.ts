@@ -51,7 +51,8 @@ export class SyncProfileService
 
     delete(profile)
     {
-        this.syncProfileService.delete(profile.getId());
+        var profileId = profile.id;
+        this.syncProfileService.delete(profileId);
     }
 
     // Converts provided profile into JSON object
