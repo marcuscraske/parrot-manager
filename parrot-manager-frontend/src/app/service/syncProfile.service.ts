@@ -44,9 +44,8 @@ export class SyncProfileService
         this.syncProfileService.save(profile);
     }
 
-    delete(profile)
+    delete(profileId)
     {
-        var profileId = profile.id;
         this.syncProfileService.delete(profileId);
     }
 
@@ -63,17 +62,25 @@ export class SyncProfileService
             }
         }
 
+        if (json == null)
+        {
+            console.error("toJson - unhandled profile type: " + (profile != null ? profile.type : "(null profile)"));
+        }
+
         return json;
     }
 
     // Converts JSON object into profile
-    toProfile(json, type)
+    toNative(json)
     {
         var profile = null;
 
-        if (type == "ssh")
+        if (json != null)
         {
-            profile = this.syncSshService.toProfile(json, type);
+            if (json.type == "ssh")
+            {
+                profile = this.syncSshService.toNative(json);
+            }
         }
 
         return profile;

@@ -61,7 +61,8 @@ export class SyncService {
     {
         var profile = this.syncProfileService.fetchById(profileId);
         this.authChain(options, profile, (options, profile) => {
-            this.syncService.unlock(options, profile);
+            var nativeProfile = this.syncProfileService.toNative(profile);
+            this.syncService.unlock(options, nativeProfile);
         });
     }
 
@@ -200,7 +201,7 @@ export class SyncService {
 
     private authChainFinish(options, profile, callback)
     {
-        console.log("auth chain finished, invoking callback");
+        console.log("auth chain finished, invoking callbac - profile: " + (profile != null) + ", options: " + (options != null));
         callback(options, profile);
     }
 

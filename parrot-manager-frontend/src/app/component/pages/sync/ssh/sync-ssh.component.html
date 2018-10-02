@@ -50,14 +50,49 @@
     </p>
 </div>
 
-<log *ngIf="log != null" [log]="log"></log>
-
 
 <!--
     Form
 -->
 
 <form id="openRemoteSsh" *ngIf="!showSpinner" [formGroup]="openForm" #form="ngForm" [ngClass]="{ 'was-validated' : form.submitted && form.valid }" novalidate>
+
+    <p *ngIf="currentMode == 'edit'">
+        <button type="button" class="btn btn-default" routerLink="/sync">
+            <span class="icon icon-arrow-left"></span>
+            Back
+        </button>
+        <button type="button" class="btn btn-default" (click)="persist()">
+            <span class="icon icon-floppy-disk"></span>
+            Save
+        </button>
+        <button type="button" class="btn btn-default" (click)="syncService.sync(createOptions(), createProfile())">
+            <span class="icon icon-download"></span>
+            Sync
+        </button>
+        <button type="button" class="btn btn-default" (click)="syncService.sync(createOptions(), createProfile())" title="Asks for any required auth (database password, user pass, key pass)">
+            <span class="icon icon-lock"></span>
+            Prompt for Auth &amp; Sync
+        </button>
+        <button type="button" class="btn btn-default" (click)="performTest()">
+            <span class="icon icon-power"></span>
+            Test
+        </button>
+        <button type="button" class="btn btn-default" (click)="syncService.unlock(createOptions(), profile.id)" title="Removes remote lock file, use with caution">
+            <span class="icon icon-hammer"></span>
+            Delete Lock
+        </button>
+        <button type="button" class="btn btn-default" (click)="syncService.overwrite(createOptions(), profile.id)" title="Overwrites remote database with this current database">
+            <span class="icon icon-upload"></span>
+            Overwrite
+        </button>
+        <button type="button" class="btn btn-danger" (click)="syncProfileService.delete(profile.id)" title="Delete host">
+            <span class="icon icon-cross"></span>
+            Delete
+        </button>
+    </p>
+
+    <log *ngIf="log != null" [log]="log"></log>
 
     <div class="form-group">
         <label class="form-control-label" for="name">
@@ -75,28 +110,7 @@
         </p>
     </div>
 
-    <p *ngIf="currentMode == 'edit'">
-        <button class="btn btn-primary" (click)="syncService.sync(profile, false)">
-            <span class="icon icon-download"></span>
-            Sync
-        </button>
-        <button class="btn btn-primary" (click)="syncService.sync(profile, true)" title="Asks for any required auth (database password, user pass, key pass)">
-            <span class="icon icon-lock"></span>
-            Prompt for Auth &amp; Sync
-        </button>
-        <button class="btn btn-primary" (click)="syncService.unlock(profile)" title="Removes remote lock file, use with caution">
-            <span class="icon icon-hammer"></span>
-            Delete Lock
-        </button>
-        <button class="btn btn-primary" (click)="syncService.overwrite(profile)" title="Overwrites remote database with this current database">
-            <span class="icon icon-upload"></span>
-            Overwrite
-        </button>
-        <button class="btn btn-danger" (click)="delete(profile);" title="Delete host">
-            <span class="icon icon-cross"></span>
-            Delete
-        </button>
-    </p>
+
 
     <div class="card">
         <div class="card-header">
@@ -372,22 +386,20 @@
     </p>
 
     <div class="form-group text-center">
-        <button type="submit" class="btn btn-lg btn-primary" (click)="persist()">
+        <button type="button" class="btn btn-lg btn-primary" (click)="persist()">
             <span class="icon icon-floppy-disk"></span>
             {{ currentMode == 'open' ? 'Open' : currentMode == 'edit' ? 'Save' : 'Add' }}
         </button>
     </div>
 
     <div class="form-group text-center" [ngClass]="{ 'has-error' : errorMessage != null, 'has-success' : successMessage != null }">
-
         <button type="button" class="btn btn-default" (click)="actionCancel()">
             Cancel
         </button>
-
-        <button type="button" class="btn btn-default" (click)="performTest()">
+        <button type="button" class="btn btn-default" (click)="performTest()" *ngIf="currentMode == 'new'">
+            <span class="icon icon-power"></span>
             Test
         </button>
-
     </div>
 
 </form>

@@ -1,4 +1,4 @@
-import { Component, AfterViewChecked, Renderer } from '@angular/core';
+import { Component, Renderer } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -12,7 +12,7 @@ import { SyncResultService } from 'app/service/syncResult.service'
     templateUrl: 'sync.component.html',
     styleUrls: ['sync.component.css']
 })
-export class SyncComponent implements AfterViewChecked {
+export class SyncComponent {
 
     public profiles: any;
     private oldChangeLog: string;
@@ -55,19 +55,6 @@ export class SyncComponent implements AfterViewChecked {
     {
         this.syncResultChangeEvent();
         this.syncProfileChangeEvent();
-    }
-
-    ngAfterViewChecked()
-    {
-        // Keeps changelog scrolled to bottom
-        var changeLog = $("#changeLog");
-        var newChangeLog = changeLog.val();
-
-        if (newChangeLog != this.oldChangeLog)
-        {
-            changeLog.scrollTop(changeLog[0].scrollHeight - changeLog.height());
-            this.oldChangeLog = newChangeLog;
-        }
     }
 
     trackChildren(index, profile)

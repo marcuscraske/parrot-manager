@@ -13,6 +13,7 @@ export class SyncSshService
     {
         var profile = new SshSyncProfile();
         profile.id = nativeProfile.getId();
+        profile.type = nativeProfile.getType();
         profile.name = nativeProfile.getName();
         profile.host = nativeProfile.getHost();
         profile.port = nativeProfile.getPort();
@@ -30,8 +31,9 @@ export class SyncSshService
         return profile;
     }
 
-    toProfile(json, type)
+    toNative(json)
     {
+        var type = json.type;
         var profile = this.syncTempProfileService.createTemporaryProfile(type);
 
         profile.setName(json["name"]);
@@ -54,9 +56,9 @@ export class SyncSshService
         return profile;
     }
 
-    authChain(options, profile, callback)
+    authChain(options, profile: SshSyncProfile, callback)
     {
-        if (profile.getType() == "ssh")
+        if (profile.type == "ssh")
         {
             console.log("ssh auth chain - starting");
             this.authChainPromptSshUserPass(options, profile, (options, profile) => {
@@ -70,9 +72,9 @@ export class SyncSshService
         }
     }
 
-    private authChainPromptSshUserPass(options, profile, callback)
+    private authChainPromptSshUserPass(options, profile: SshSyncProfile, callback)
     {
-        if (profile.isPromptUserPass())
+        if (profile.promptUserPass)
         {
             console.log("prompting for user pass...");
 
@@ -81,7 +83,7 @@ export class SyncSshService
                 inputType: "password",
                 callback: (password) => {
                     // Update options
-                    profile.setUserPass(password);
+                    profile.userPass = password;
 
                     // Continue next stage in the chain...
                     console.log("continuing to key pass chain...");
@@ -96,9 +98,9 @@ export class SyncSshService
         }
     }
 
-    private authChainPromptSshKeyPass(options, profile, callback)
+    private authChainPromptSshKeyPass(options, profile: SshSyncProfile, callback)
     {
-        if (profile.isPromptKeyPass())
+        if (profile.promptKeyPass)
         {
             console.log("prompting for key pass...");
 
@@ -107,7 +109,7 @@ export class SyncSshService
                 inputType: "password",
                 callback: (password) => {
                     // Update options
-                    profile.setPrivateKeyPass(password);
+                    profile.privateKeyPass = password;
 
                     // Continue next stage in the chain...
                     console.log("ssh auth chain finished, invoking callback");

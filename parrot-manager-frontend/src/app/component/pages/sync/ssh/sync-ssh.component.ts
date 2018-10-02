@@ -262,12 +262,6 @@ export class SyncSshComponent {
         }
     }
 
-    delete(profile)
-    {
-        this.syncProfileService.delete(profile);
-        this.router.navigate(["/sync"]);
-    }
-
     sshAuthChain(options, profile, callback)
     {
         console.log("disabling form, wiping messages...");
@@ -302,7 +296,8 @@ export class SyncSshComponent {
 
         // Create actual instance
         var json = form.value;
-        var profile = this.syncProfileService.toProfile(json, "ssh");
+        json.type = "ssh";
+        var profile = this.syncProfileService.toNative(json);
 
         // Populate id as current node
         var jsonProfile = this.syncProfileService.toJson(profile);
