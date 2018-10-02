@@ -88,6 +88,10 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
                 syncProfile.setPrivateKeyPass(null);
             }
 
+            // Setup new node and copy across ID
+            DatabaseNode newNode = new DatabaseNode(database, profile.getName());
+            syncProfile.setId(newNode.getUuid());
+
             // Serialize as JSON string
             ObjectMapper mapper = new ObjectMapper();
             String rawJson = mapper.writeValueAsString(syncProfile);
@@ -100,7 +104,6 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
             EncryptedValue encryptedValue = encryptedValueService.fromJson(database, json);
 
             // Store in new node
-            DatabaseNode newNode = new DatabaseNode(database, profile.getName());
             newNode.setValue(encryptedValue);
             return newNode;
         }
@@ -133,6 +136,9 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.disable(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES);
                 profile = mapper.readValue(value, SshSyncProfile.class);
+
+                // Copy node id as profile id
+                profile.setId(node.getUuid());
             }
         }
         catch (Exception e)

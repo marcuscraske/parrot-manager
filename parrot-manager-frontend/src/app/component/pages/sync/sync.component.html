@@ -5,6 +5,13 @@
 
 <div *ngIf="!isSyncing()">
 
+    <div class="form-group">
+        <button class="btn btn-default" routerLink="/sync/ssh/new">
+            <span class="icon icon-plus"></span>
+            Add
+        </button>
+    </div>
+
     <table class="table sync" *ngIf="profiles.length > 0" id="remoteSyncTargets">
         <tr *ngFor="let profile of profiles; trackBy: trackChildren">
             <td>
@@ -13,7 +20,7 @@
                 </button>
             </td>
             <td routerLink="/sync/ssh/{{ profile.id }}">
-                <a routerLink="/sync/ssh/{{ profile.id }}">
+                <a routerLink="/sync/ssh/{{ profile.id }}" title="{{ profile.id }}">
                     {{ profile.name }}
                 </a>
             </td>
@@ -23,13 +30,6 @@
     <p *ngIf="profiles.length == 0">
         Add a remote database to synchronize changes across multiple device.
     </p>
-
-    <div class="form-group">
-        <button class="btn btn-default" routerLink="/sync/ssh/new">
-            <span class="icon icon-plus"></span>
-            Add
-        </button>
-    </div>
 
 </div>
 

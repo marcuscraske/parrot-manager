@@ -1,20 +1,4 @@
-table
-{
-    margin: auto;
-    width: 36em;
-}
-table tr th,
-table tr td
-{
-    text-align: center;
-}
-
 table tr td
 {
     white-space: nowrap;
-}
-
-table tr td
-{
-    width: 18em;
 }

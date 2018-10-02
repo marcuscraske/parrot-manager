@@ -262,6 +262,12 @@ export class SyncSshComponent {
         }
     }
 
+    delete(profile)
+    {
+        this.syncProfileService.delete(profile);
+        this.router.navigate(["/sync"]);
+    }
+
     sshAuthChain(options, profile, callback)
     {
         console.log("disabling form, wiping messages...");

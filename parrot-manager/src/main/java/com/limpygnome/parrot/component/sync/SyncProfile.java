@@ -14,13 +14,6 @@ public abstract class SyncProfile
 
     public SyncProfile()
     {
-        this.id = UUID.randomUUID();
-    }
-
-    public SyncProfile(UUID id, String name)
-    {
-        this.id = id;
-        this.name = name;
     }
 
     /**
@@ -35,11 +28,6 @@ public abstract class SyncProfile
 
     public void setId(UUID id)
     {
-        if (id == null)
-        {
-            throw new IllegalArgumentException("Cannot set profile to null ID");
-        }
-
         this.id = id;
     }
 

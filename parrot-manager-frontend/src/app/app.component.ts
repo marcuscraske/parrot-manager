@@ -13,6 +13,7 @@ import { SendKeysService } from 'app/service/sendKeys.service'
 import { SyncSshService } from 'app/service/syncSsh.service'
 import { SyncService } from 'app/service/sync.service'
 import { SyncProfileService } from 'app/service/syncProfile.service'
+import { SyncTempProfileService } from 'app/service/syncTempProfile.service'
 import { SyncResultService } from 'app/service/syncResult.service'
 
 @Component({
@@ -32,6 +33,7 @@ import { SyncResultService } from 'app/service/syncResult.service'
         SyncSshService,
         SyncService,
         SyncProfileService,
+        SyncTempProfileService,
         SyncResultService
   ]
 })

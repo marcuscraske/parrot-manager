@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
+import { SyncTempProfileService } from 'app/service/syncTempProfile.service'
 import { SshSyncProfile } from 'app/model/sshSyncProfile'
 
 @Injectable()
 export class SyncSshService
 {
+    constructor(private syncTempProfileService : SyncTempProfileService)
+    {
+    }
 
     toJson(nativeProfile)
     {
@@ -18,11 +22,35 @@ export class SyncSshService
         profile.privateKeyPath = nativeProfile.getPrivateKeyPath();
         profile.privateKeyPass = nativeProfile.getPrivateKeyPass();
         profile.proxyHost = nativeProfile.getProxyHost();
-        profile.proxyPort = nativeProfile.getProxyPort();
+        profile.proxyPort = nativeProfile.getProxyPort() > 0 ? nativeProfile.getProxyPort() : null;
         profile.proxyType = nativeProfile.getProxyType();
         profile.promptUserPass = nativeProfile.isPromptUserPass();
         profile.promptKeyPass = nativeProfile.isPromptKeyPass();
         profile.strictHostChecking = nativeProfile.isStrictHostChecking();
+        return profile;
+    }
+
+    toProfile(json, type)
+    {
+        var profile = this.syncTempProfileService.createTemporaryProfile(type);
+
+        profile.setName(json["name"]);
+        profile.setHost(json["host"]);
+        profile.setPort(json["port"]);
+        profile.setUser(json["user"]);
+        profile.setRemotePath(json["remotePath"]);
+
+        profile.setStrictHostChecking(json["strictHostChecking"]);
+        profile.setUserPass(json["userPass"]);
+        profile.setPrivateKeyPath(json["privateKeyPath"]);
+        profile.setPrivateKeyPass(json["privateKeyPass"]);
+        profile.setProxyHost(json["proxyHost"]);
+        profile.setProxyPort(json["proxyPort"] != "0" ? json["proxyPort"] : null);
+        profile.setProxyType(json["proxyType"]);
+        profile.setPromptUserPass(json["promptUserPass"]);
+        profile.setPromptKeyPass(json["promptKeyPass"]);
+        profile.setMachineFilter(json["machineFilter"]);
+
         return profile;
     }
 

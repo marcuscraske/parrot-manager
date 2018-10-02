@@ -7,10 +7,14 @@
     You can configure the destination and automatic backups in <a href="/settings" routerLink="/settings/backups">settings</a>.
 </p>
 
-<p class="text-center mb-4">
-    <button class="btn btn-lg btn-primary" (click)="create()">
+<p class="mb-4">
+    <button class="btn btn-default" (click)="create()">
         <span class="icon icon-floppy-disk"></span>
         Create Backup
+    </button>
+    <button class="btn btn-danger">
+        <span class="icon icon-bin"></span>
+        Wipe All
     </button>
 </p>
 

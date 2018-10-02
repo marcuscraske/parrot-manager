@@ -178,7 +178,7 @@ public class SyncProfileService implements DatabaseChangingEvent
             throw new IllegalStateException("No handler to serialize sync profile - type: " + profile.getClass().getName());
         }
 
-        // Save to hidden rmeote sync node
+        // Save to hidden remote sync node
         remoteSyncNode().add(node);
 
         // Reload available profiles

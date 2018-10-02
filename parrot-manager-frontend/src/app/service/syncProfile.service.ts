@@ -12,11 +12,6 @@ export class SyncProfileService
         this.syncProfileService = (window as any).syncProfileService;
     }
 
-    createTemporaryProfile(type)
-    {
-        return this.syncProfileService.createTemporaryProfile(type);
-    }
-
     fetch()
     {
         var profiles = this.syncProfileService.fetch();
@@ -74,26 +69,12 @@ export class SyncProfileService
     // Converts JSON object into profile
     toProfile(json, type)
     {
-        var profile = this.createTemporaryProfile(type);
+        var profile = null;
 
-        console.log("#### profile : " + json);
-
-        profile.setName(json["name"]);
-        profile.setHost(json["host"]);
-        profile.setPort(json["port"]);
-        profile.setUser(json["user"]);
-        profile.setRemotePath(json["remotePath"]);
-
-        profile.setStrictHostChecking(json["strictHostChecking"]);
-        profile.setUserPass(json["userPass"]);
-        profile.setPrivateKeyPath(json["privateKeyPath"]);
-        profile.setPrivateKeyPass(json["privateKeyPass"]);
-        profile.setProxyHost(json["proxyHost"]);
-        profile.setProxyPort(json["proxyPort"]);
-        profile.setProxyType(json["proxyType"]);
-        profile.setPromptUserPass(json["promptUserPass"]);
-        profile.setPromptKeyPass(json["promptKeyPass"]);
-        profile.setMachineFilter(json["machineFilter"]);
+        if (type == "ssh")
+        {
+            profile = this.syncSshService.toProfile(json, type);
+        }
 
         return profile;
     }
