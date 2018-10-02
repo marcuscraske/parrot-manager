@@ -15,7 +15,7 @@
     <table class="table sync" *ngIf="profiles.length > 0" id="remoteSyncTargets">
         <tr *ngFor="let profile of profiles; trackBy: trackChildren">
             <td>
-                <button class="btn btn-primary" (click)="syncService.sync(profile, false)">
+                <button class="btn btn-primary" (click)="syncService.sync(syncService.getDefaultSyncOptions(), profile.id)">
                     <span class="icon icon-download"></span>
                 </button>
             </td>

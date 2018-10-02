@@ -33,7 +33,8 @@ export class SyncService {
     test(options, profile, type)
     {
         this.authChain(options, profile, (options, profile) => {
-            this.syncService.test(options, profile);
+            var nativeProfile = this.syncProfileService.toNative(profile);
+            this.syncService.test(options, nativeProfile);
         });
     }
 
@@ -42,7 +43,8 @@ export class SyncService {
         // TODO what if DB open already? how is this used?
         var profile = this.syncProfileService.fetchById(profileId);
         this.authChain(options, profile, (options, profile) => {
-            this.syncService.download(options, profile);
+            var nativeProfile = this.syncProfileService.toNative(profile);
+            this.syncService.download(options, nativeProfile);
         });
     }
 
@@ -52,7 +54,8 @@ export class SyncService {
         {
             var profile = this.syncProfileService.fetchById(profileId);
             this.authChain(options, profile, (options, profile) => {
-                this.syncService.overwrite(options, profile);
+                var nativeProfile = this.syncProfileService.toNative(profile);
+                this.syncService.overwrite(options, nativeProfile);
             });
         }
     }
@@ -80,7 +83,8 @@ export class SyncService {
         {
             var profile = this.syncProfileService.fetchById(profileId);
             this.authChain(options, profile, (options, profile) => {
-                this.syncService.sync(options, profile);
+                var nativeProfile = this.syncProfileService.toNative(profile);
+                this.syncService.sync(options, nativeProfile);
             });
         }
     }
@@ -172,7 +176,7 @@ export class SyncService {
         if (promptDbPass)
         {
             bootbox.prompt({
-                title: options.getName() + " - enter database password:",
+                title: "Enter database password:",
                 inputType: "password",
                 callback: (password) => {
 

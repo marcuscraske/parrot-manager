@@ -16,7 +16,7 @@ public class SyncResult
 
     public SyncResult(SyncProfile profile, Log log, boolean success, boolean changes)
     {
-        if (profile == null)
+        if (profile == null || profile.getId() == null)
         {
             throw new IllegalStateException("Profile arg is mandatory");
         }

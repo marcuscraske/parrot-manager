@@ -27,7 +27,11 @@
 -->
 <h1 *ngIf="currentMode == 'edit'" routerLink="/sync">
     <span class="icon icon-earth"></span>
-    Edit Host
+    <a routerLink="/sync">
+        Sync
+    </a>
+    -
+    {{ profile.name }}
 </h1>
 
 
@@ -66,13 +70,13 @@
             <span class="icon icon-floppy-disk"></span>
             Save
         </button>
-        <button type="button" class="btn btn-default" (click)="syncService.sync(createOptions(), createProfile())">
+        <button type="button" class="btn btn-default" (click)="syncService.sync(createOptions(), profile.id)">
             <span class="icon icon-download"></span>
             Sync
         </button>
-        <button type="button" class="btn btn-default" (click)="syncService.sync(createOptions(), createProfile())" title="Asks for any required auth (database password, user pass, key pass)">
+        <button type="button" class="btn btn-default" (click)="syncService.sync(createOptionsWithoutAuth(), profile.id)" title="Asks for database password; useful for when database passwords have changed">
             <span class="icon icon-lock"></span>
-            Prompt for Auth &amp; Sync
+            Prompt DB Password &amp; Sync
         </button>
         <button type="button" class="btn btn-default" (click)="performTest()">
             <span class="icon icon-power"></span>
@@ -86,7 +90,7 @@
             <span class="icon icon-upload"></span>
             Overwrite
         </button>
-        <button type="button" class="btn btn-danger" (click)="syncProfileService.delete(profile.id)" title="Delete host">
+        <button type="button" class="btn btn-danger" (click)="delete(profile.id)" title="Delete host">
             <span class="icon icon-cross"></span>
             Delete
         </button>
@@ -147,6 +151,8 @@
                            type="number"
                            class="form-control"
                            placeholder="Port..."
+                           min="0"
+                           max="65535"
                            [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['port'].valid }"
                     />
                 </div>
@@ -325,7 +331,9 @@
                            formControlName="proxyPort"
                            type="number"
                            class="form-control"
-                           placeholder="Proxy port..."
+                           placeholder="Port..."
+                           min="0"
+                           max="65535"
                            [ngClass]="{ 'is-invalid' : form.submitted && !openForm.controls['proxyPort'].valid }"
                     />
                 </div>

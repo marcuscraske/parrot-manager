@@ -14,3 +14,15 @@
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-timing-function: linear;
 }
+
+#host,
+#proxyHost
+{
+    width: 20em;
+}
+
+#port,
+#proxyPort
+{
+    width: 5em;
+}

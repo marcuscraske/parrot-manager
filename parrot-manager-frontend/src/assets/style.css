@@ -62,6 +62,12 @@ a
     color: #ff5733;
 }
 
+main h1 a:focus,
+main h1 a:hover
+{
+    text-decoration: none;
+}
+
 /*
     Fix for Bootbox to support Bootstrap v4
 */

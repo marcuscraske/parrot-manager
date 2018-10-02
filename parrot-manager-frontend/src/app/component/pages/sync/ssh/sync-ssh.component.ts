@@ -233,7 +233,6 @@ export class SyncSshComponent {
 
     performOpen(options, profile)
     {
-        // TODO disable form
         // Begin async chain to prompt for passwords etc
         this.sshAuthChain(options, profile, (options, profile) => {
             console.log("performing ssh sync download");
@@ -243,8 +242,6 @@ export class SyncSshComponent {
 
     performTest()
     {
-        // TODO disable form
-        // TODO success message
         if (this.openForm.valid)
         {
             console.log("testing...");
@@ -260,6 +257,12 @@ export class SyncSshComponent {
         {
             console.log("not testing, form is invalid");
         }
+    }
+
+    delete(profileId)
+    {
+        this.syncProfileService.delete(profileId);
+        this.router.navigate(["/sync"]);
     }
 
     sshAuthChain(options, profile, callback)
@@ -295,13 +298,12 @@ export class SyncSshComponent {
         }
 
         // Create actual instance
-        var json = form.value;
-        json.type = "ssh";
-        var profile = this.syncProfileService.toNative(json);
-
-        // Populate id as current node
-        var jsonProfile = this.syncProfileService.toJson(profile);
-        this.profileId = jsonProfile.id;
+        var profile = form.value;
+        profile.type = "ssh";
+        if (this.profile != null)
+        {
+            profile.id = this.profile.id;
+        }
 
         return profile;
     }
@@ -317,6 +319,13 @@ export class SyncSshComponent {
             options.setDestinationPath(form.value["destinationPath"]);
         }
 
+        return options;
+    }
+
+    private createOptionsWithoutAuth()
+    {
+        var options = this.createOptions();
+        options.setDatabasePassword(null);
         return options;
     }
 

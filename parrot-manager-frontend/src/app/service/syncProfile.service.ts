@@ -34,14 +34,15 @@ export class SyncProfileService
 
     fetchById(nodeId)
     {
-        var profile = this.syncProfileService.fetchById(nodeId);
-        var json = this.toJson(profile);
-        return json;
+        var nativeProfile = this.syncProfileService.fetchById(nodeId);
+        var profile = this.toJson(nativeProfile);
+        return profile;
     }
 
     save(profile)
     {
-        this.syncProfileService.save(profile);
+        var nativeProfile = this.toNative(profile);
+        this.syncProfileService.save(nativeProfile);
     }
 
     delete(profileId)

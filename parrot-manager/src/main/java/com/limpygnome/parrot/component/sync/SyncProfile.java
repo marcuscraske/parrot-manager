@@ -5,7 +5,7 @@ import java.util.UUID;
 public abstract class SyncProfile
 {
     // Mandatory
-    private UUID id;
+    private String id;
     private String name;
 
     // Options
@@ -23,10 +23,10 @@ public abstract class SyncProfile
 
     public String getId()
     {
-        return id != null ? id.toString() : null;
+        return id;
     }
 
-    public void setId(UUID id)
+    public void setId(String id)
     {
         this.id = id;
     }

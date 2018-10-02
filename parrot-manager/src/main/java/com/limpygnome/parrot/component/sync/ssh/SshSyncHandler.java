@@ -90,7 +90,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
             // Setup new node and copy across ID
             DatabaseNode newNode = new DatabaseNode(database, profile.getName());
-            syncProfile.setId(newNode.getUuid());
+            syncProfile.setId(newNode.getUuid().toString());
 
             // Serialize as JSON string
             ObjectMapper mapper = new ObjectMapper();
@@ -138,7 +138,7 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
                 profile = mapper.readValue(value, SshSyncProfile.class);
 
                 // Copy node id as profile id
-                profile.setId(node.getUuid());
+                profile.setId(node.getUuid().toString());
             }
         }
         catch (Exception e)
