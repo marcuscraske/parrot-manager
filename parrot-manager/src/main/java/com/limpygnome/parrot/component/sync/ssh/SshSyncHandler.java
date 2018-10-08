@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -90,7 +91,15 @@ public class SshSyncHandler implements SettingsRefreshedEvent, SyncHandler
 
             // Setup new node and copy across ID
             DatabaseNode newNode = new DatabaseNode(database, profile.getName());
-            syncProfile.setId(newNode.getUuid().toString());
+            if (profile.getId() != null)
+            {
+                UUID id = UUID.fromString(profile.getId());
+                newNode.setId(id);
+            }
+            else
+            {
+                syncProfile.setId(newNode.getUuid().toString());
+            }
 
             // Serialize as JSON string
             ObjectMapper mapper = new ObjectMapper();

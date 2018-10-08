@@ -36,7 +36,10 @@ export class SyncSshService
         var type = json.type;
         var profile = this.syncTempProfileService.createTemporaryProfile(type);
 
-        profile.setId(json["id"]);
+        if (json["id"] != null)
+        {
+            profile.setId(json["id"]);
+        }
 
         profile.setName(json["name"]);
         profile.setHost(json["host"]);

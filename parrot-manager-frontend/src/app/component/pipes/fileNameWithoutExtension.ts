@@ -7,21 +7,23 @@
 
 import {Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({name: 'formattedDate'})
-export class FormattedDate implements PipeTransform
+@Pipe({name: 'fileNameWithoutExtension'})
+export class FileNameWithoutExtension implements PipeTransform
 {
 
-    transform(input : number): any
+    transform(input : string): any
     {
         var result;
 
-        if (input == null || input == 0)
+        var index = input.lastIndexOf(".");
+
+        if (index > 0)
         {
-            result = "never";
+            result = input.substring(0, index);
         }
         else
         {
-            result = new Date(input).toISOString();
+            result = input;
         }
 
         return result;

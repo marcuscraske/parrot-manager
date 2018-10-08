@@ -1,7 +1,7 @@
 <!-- root node content -->
 <div *ngIf="currentNode.isRoot()">
     <div class="header">
-        {{ databaseService.getFileName() }}
+        {{ databaseService.getFileName() | fileNameWithoutExtension }}
     </div>
     <p>
         <span class="icon icon-folder"></span>

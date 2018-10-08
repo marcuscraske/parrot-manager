@@ -1,3 +1,9 @@
+table.entries tr th,
+table.entries tr td
+{
+    vertical-align: middle;
+}
+
 table.entries tr td
 {
     white-space: nowrap;

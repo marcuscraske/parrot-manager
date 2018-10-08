@@ -300,7 +300,7 @@ export class SyncSshComponent {
         // Create actual instance
         var profile = form.value;
         profile.type = "ssh";
-        if (this.profile != null)
+        if (this.profile != null && this.profile.id != null)
         {
             profile.id = this.profile.id;
         }

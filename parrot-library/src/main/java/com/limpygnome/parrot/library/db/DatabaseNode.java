@@ -430,17 +430,17 @@ public class DatabaseNode
         // Add as child
         children.add(node);
 
+        // Refresh cache
+        refreshChildrenCache();
+
         // Update parent
         node.setParent(this);
-
-        // Set dirty flag
-        database.setDirty(true);
 
         // Add to database lookup
         database.getLookup().add(node);
 
-        // Refresh cache
-        refreshChildrenCache();
+        // Set dirty flag
+        database.setDirty(true);
 
         return node;
     }

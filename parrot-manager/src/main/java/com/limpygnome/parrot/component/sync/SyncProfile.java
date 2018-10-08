@@ -1,7 +1,5 @@
 package com.limpygnome.parrot.component.sync;
 
-import java.util.UUID;
-
 public abstract class SyncProfile
 {
     // Mandatory

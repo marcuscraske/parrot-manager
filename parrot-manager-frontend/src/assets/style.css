@@ -2,7 +2,15 @@
 {
     font-family: "OpenSans-Regular";
     src:    local("OpenSans-Regular"),
-            url("fonts/open-sans/OpenSans-Regular.ttf");
+            url("/fonts/open-sans/OpenSans-Regular.ttf");
+}
+
+@font-face
+{
+    font-family: "OpenSans-Regular";
+    font-weight: bold;
+    src:    local("OpenSans-Regular"),
+            url("/fonts/open-sans/OpenSans-SemiBold.ttf");
 }
 
 html,
