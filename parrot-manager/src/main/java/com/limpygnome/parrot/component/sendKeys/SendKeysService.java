@@ -95,7 +95,7 @@ public class SendKeysService implements SettingsRefreshedEvent
         if (encryptedValue != null)
         {
             // Reset if same key
-            if (pendingEncryptedValueId != null && pendingEncryptedValueId.equals(encryptedValue.getId()))
+            if (pendingEncryptedValueId != null && pendingEncryptedValueId.equals(encryptedValue.getUuid()))
             {
                 pendingData = null;
                 pendingEncryptedValueId = null;
@@ -109,7 +109,7 @@ public class SendKeysService implements SettingsRefreshedEvent
                 // Fetch and store decrypted value and id
                 Database database = databaseService.getDatabase();
 
-                pendingEncryptedValueId = encryptedValue.getId();
+                pendingEncryptedValueId = encryptedValue.getUuid();
                 pendingData = encryptedValueService.asString(database, encryptedValue);
 
                 // Ensure we know when the app is minimized
@@ -282,7 +282,7 @@ public class SendKeysService implements SettingsRefreshedEvent
      */
     public synchronized boolean isQueued(EncryptedValue value)
     {
-        return pendingEncryptedValueId != null && value != null && pendingEncryptedValueId.equals(value.getId());
+        return pendingEncryptedValueId != null && value != null && pendingEncryptedValueId.equals(value.getUuid());
     }
 
     private synchronized void type(Robot robot, char key)

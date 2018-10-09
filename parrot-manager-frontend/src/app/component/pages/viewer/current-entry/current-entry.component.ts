@@ -108,7 +108,7 @@ export class CurrentEntryComponent
         var currentValue = $("#currentValue");
 
         // decrypt value for current node
-        var decryptedValue = this.encryptedValueService.getString(this.currentNode);
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode, null);
         currentValue.val(decryptedValue);
 
         console.log("current value displayed");

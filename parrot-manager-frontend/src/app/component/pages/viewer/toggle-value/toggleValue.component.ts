@@ -2,6 +2,8 @@ import { Component, Input, EventEmitter, ChangeDetectionStrategy } from '@angula
 
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
+import { EncryptedValue } from "app/model/encryptedValue"
+
 @Component({
     selector: 'toggle-value',
     templateUrl: 'toggleValue.component.html',
@@ -13,8 +15,11 @@ export class ToggleValueComponent
     // The maximum length of displayed decrypted values
     private MAX_LENGTH = 32;
 
+    // Current node ID
+    @Input() nodeId: string;
+
     // The encrypted value being displayed
-    @Input() encryptedValue : any;
+    @Input() encryptedValue : EncryptedValue;
 
     // The value currently displayed by this component; toggled between masked chars and the decrypted value
     public displayedValue : string;
@@ -27,7 +32,7 @@ export class ToggleValueComponent
     {
         if (this.displayedValue == null)
         {
-            var result = this.encryptedValueService.getStringFromValue(this.encryptedValue);
+            var result = this.encryptedValueService.getString(this.nodeId, this.encryptedValue);
 
             if (result == null)
             {

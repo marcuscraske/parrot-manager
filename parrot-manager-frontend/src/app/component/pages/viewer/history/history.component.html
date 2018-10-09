@@ -18,23 +18,23 @@
         </th>
     </tr>
 
-    <tr *ngIf="currentNode.getHistory().size() == 0">
+    <tr *ngIf="history.length == 0">
         <td colspan="3">
             None
         </td>
     </tr>
 
-    <tr *ngFor="let historicValue of (currentNode.getHistory().fetch() | orderBy: ['-getLastModified()']); trackBy: trackChildren">
-        <td title="{{ historicValue.getLastModified() | formattedDate }}">
-            {{ historicValue.getLastModified() | friendlyTime }}
+    <tr *ngFor="let historicValue of (history | orderBy: ['-lastModified']); trackBy: trackChildren">
+        <td title="{{ historicValue.lastModified | formattedDate }}">
+            {{ historicValue.lastModified | friendlyTime }}
         </td>
         <td>
-            <toggle-value [encryptedValue]="historicValue"></toggle-value>
+            <toggle-value [nodeId]="currentNode.getId()" [encryptedValue]="historicValue"></toggle-value>
         </td>
         <td>
 
             <!-- copy to clipboard button -->
-            <copy-clipboard [encryptedValue]="historicValue"></copy-clipboard>
+            <copy-clipboard [nodeId]="currentNode.getId()" [encryptedValue]="historicValue"></copy-clipboard>
 
             <!-- restore button -->
             <button class="btn btn-default" (click)="restore(historicValue)">

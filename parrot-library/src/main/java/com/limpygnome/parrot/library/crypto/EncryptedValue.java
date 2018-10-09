@@ -30,10 +30,19 @@ public abstract class EncryptedValue
     /**
      * @return unique identifier for this value
      */
-    public UUID getId()
+    public UUID getUuid()
     {
         return id;
     }
+
+    /**
+     * @return unique identifier for this value
+     */
+    public String getId()
+    {
+        return id != null ? id.toString() : null;
+    }
+
 
     /**
      * @return epoch time of when this value was last modified

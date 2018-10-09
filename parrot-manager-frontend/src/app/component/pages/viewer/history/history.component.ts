@@ -1,6 +1,8 @@
-import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Renderer, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { EncryptedValue } from "app/model/encryptedValue"
 
-import { RuntimeService } from 'app/service/runtime.service'
+import { RuntimeService } from "app/service/runtime.service"
+import { DatabaseHistoryService } from "app/service/databaseHistory.service"
 
 @Component({
     selector: 'history',
@@ -13,29 +15,42 @@ export class HistoryComponent
     // The current node being changed; passed from parent
     @Input() currentNode : any;
 
+    // Current history of the current node; cache to avoid fetching multiple times (cheaper)
+    history: EncryptedValue[];
+
     constructor(
         private runtimeService: RuntimeService,
+        private databaseHistoryService: DatabaseHistoryService,
         private renderer: Renderer
     ) { }
 
+    ngOnChanges(changes: SimpleChanges)
+    {
+        var nodeId = this.currentNode.getId();
+        this.history = this.databaseHistoryService.fetch(nodeId);
+    }
+
     trackChildren(index, historicValue)
     {
-        return historicValue ? historicValue.getLastModified() : null;
+        return historicValue ? historicValue.lastModified : null;
     }
 
     clearAll()
     {
-        this.currentNode.getHistory().clearAll();
+        // TODO pass ID to service
+        //this.currentNode.getHistory().clearAll();
     }
 
     delete(encryptedValue)
     {
-        this.currentNode.getHistory().remove(encryptedValue);
+        // TODO pass ID
+        //this.currentNode.getHistory().remove(encryptedValue);
     }
 
     restore(encryptedValue)
     {
-        this.currentNode.setValue(encryptedValue);
+        // TODO pass ID to service
+        //this.currentNode.setValue(encryptedValue);
     }
 
 }

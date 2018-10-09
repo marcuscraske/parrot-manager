@@ -59,7 +59,7 @@ public class EncryptedAesValue extends EncryptedValue
     public EncryptedValue clone()
     {
         EncryptedAesValue clone = new EncryptedAesValue(
-                getId(), getLastModified(), iv.clone(), value.clone()
+                getUuid(), getLastModified(), iv.clone(), value.clone()
         );
 
         return clone;

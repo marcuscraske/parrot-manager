@@ -75,7 +75,7 @@ class EncryptedValueJsonReaderWriter
 
             // build child data
             JsonObject jsonEncryptedValue = new JsonObject();
-            jsonEncryptedValue.addProperty("id", aesValue.getId().toString());
+            jsonEncryptedValue.addProperty("id", aesValue.getUuid().toString());
             jsonEncryptedValue.addProperty("iv", ivStr);
             jsonEncryptedValue.addProperty("data", dataStr);
             jsonEncryptedValue.addProperty("modified", aesValue.getLastModified());

@@ -5,6 +5,7 @@ import { InactivityWatcherService } from 'app/service/inactivityWatcher.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { ClipboardService } from 'app/service/clipboard.service'
 import { DatabaseService } from 'app/service/database.service'
+import { DatabaseHistoryService } from 'app/service/databaseHistory.service'
 import { BackupService } from 'app/service/backup.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { SettingsService } from 'app/service/settings.service'
@@ -25,6 +26,7 @@ import { SyncResultService } from 'app/service/syncResult.service'
         RuntimeService,
         ClipboardService,
         DatabaseService,
+        DatabaseHistoryService,
         BackupService,
         EncryptedValueService,
         SettingsService,

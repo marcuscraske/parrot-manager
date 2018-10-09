@@ -41,7 +41,7 @@
             </span>
         </td>
         <td>
-            <toggle-value [encryptedValue]="node.getValue()"></toggle-value>
+            <toggle-value [nodeId]="node.getId()" [encryptedValue]="node.getValue()"></toggle-value>
         </td>
         <td>
             <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())" title="View entry">

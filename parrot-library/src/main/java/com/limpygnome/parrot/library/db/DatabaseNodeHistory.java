@@ -59,7 +59,7 @@ public class DatabaseNodeHistory
      */
     public synchronized void add(EncryptedValue encryptedValue)
     {
-        history.put(encryptedValue.getId(), encryptedValue);
+        history.put(encryptedValue.getUuid(), encryptedValue);
         setDirty();
     }
 
@@ -69,7 +69,7 @@ public class DatabaseNodeHistory
     public synchronized void addAll(Collection<? extends EncryptedValue> values)
     {
         // Add each value
-        values.stream().forEach(encryptedValue -> history.put(encryptedValue.getId(), encryptedValue));
+        values.stream().forEach(encryptedValue -> history.put(encryptedValue.getUuid(), encryptedValue));
         setDirty();
     }
 
@@ -82,6 +82,24 @@ public class DatabaseNodeHistory
     }
 
     /**
+     * TODO test
+     *
+     * @param id the id
+     * @return retrieves item by id (string uuid)
+     */
+    public synchronized EncryptedValue fetchById(String id)
+    {
+        EncryptedValue result = null;
+
+        if (id != null)
+        {
+            result = history.get(UUID.fromString(id));
+        }
+
+        return result;
+    }
+
+    /**
      * Removes specified value from history.
      *
      * @param encryptedValue value to be removed
@@ -89,10 +107,10 @@ public class DatabaseNodeHistory
     public synchronized void remove(EncryptedValue encryptedValue)
     {
         // Remove from collection
-        if (history.remove(encryptedValue.getId()) != null)
+        if (history.remove(encryptedValue.getUuid()) != null)
         {
             // Add to list of values deleted
-            deleted.add(encryptedValue.getId());
+            deleted.add(encryptedValue.getUuid());
         }
 
         setDirty();
@@ -134,10 +152,10 @@ public class DatabaseNodeHistory
 
         for (EncryptedValue encryptedValue : otherHistory.history.values())
         {
-            if (!deleted.contains(encryptedValue.getId()) && !this.history.containsKey(encryptedValue.getId()))
+            if (!deleted.contains(encryptedValue.getUuid()) && !this.history.containsKey(encryptedValue.getUuid()))
             {
                 clone = encryptedValue.clone();
-                this.history.put(clone.getId(), clone);
+                this.history.put(clone.getUuid(), clone);
                 isDirty = true;
             }
         }

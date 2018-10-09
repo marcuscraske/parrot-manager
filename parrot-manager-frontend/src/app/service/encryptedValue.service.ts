@@ -1,43 +1,61 @@
-import { Injectable } from '@angular/core';
-
-import { DatabaseService } from 'app/service/database.service'
+import { Injectable } from "@angular/core";
+import { EncryptedValue } from "app/model/encryptedValue"
+import { DatabaseService } from "app/service/database.service"
+import { DatabaseHistoryService } from "app/service/databaseHistory.service"
 
 @Injectable()
-export class EncryptedValueService {
-
+export class EncryptedValueService
+{
     encryptedValueService : any;
 
     constructor(
-        private databaseService: DatabaseService
+        private databaseService: DatabaseService,
+        private databaseHistoryService: DatabaseHistoryService,
     ) {
         this.encryptedValueService = (window as any).encryptedValueService;
     }
 
-    // Persists SSH options; defined in this service to keep the actual injected service in this layer
-    persistSshOptions(options)
+    setString(nodeId: string, value: string)
     {
-        var database = this.databaseService.getDatabase();
-        options.persist(this.encryptedValueService, database);
+        var nativeDatabase = this.databaseService.getDatabase();
+        var nativeDatabaseNode = nativeDatabase.getNode(nodeId);
+
+        if (nativeDatabaseNode != null)
+        {
+            var nativeEncryptedValue = this.encryptedValueService.fromString(nativeDatabase, value);
+            nativeDatabaseNode.setValue(nativeEncryptedValue);
+        }
     }
 
-    setString(databaseNode, value)
-    {
-        var database = this.databaseService.getDatabase();
-        var encryptedValue = this.encryptedValueService.fromString(database, value);
-        databaseNode.setValue(encryptedValue);
-    }
+    /*
+        Retrieves an encrypted value from a database node.
 
-    getString(databaseNode) : string
+        Param 'historicItem' can be null if the value is the main database node value.
+    */
+    getString(nodeId: string, historicItem: EncryptedValue) : string
     {
-        var encryptedValue = databaseNode.getValue();
-        var result = this.getStringFromValue(encryptedValue);
-        return result;
-    }
+        var result = null;
 
-    getStringFromValue(encryptedValue) : string
-    {
-        var database = this.databaseService.getDatabase();
-        var result = this.encryptedValueService.asString(database, encryptedValue);
+        var nativeDatabase = this.databaseService.getDatabase();
+        var nativeDatabaseNode = nativeDatabase.getNode(nodeId);
+
+        if (nativeDatabaseNode != null)
+        {
+            // Retrieve native encrypted value
+            var nativeEncryptedValue;
+            if (historicItem == null)
+            {
+                nativeEncryptedValue = nativeDatabaseNode.getValue();
+            }
+            else
+            {
+                var nativeHistory = nativeDatabaseNode.getHistory();
+                nativeEncryptedValue = nativeHistory.fetchById(historicItem.id);
+            }
+
+            // Decrypt data
+            result = this.encryptedValueService.asString(nativeDatabase, nativeEncryptedValue);
+        }
         return result;
     }
 

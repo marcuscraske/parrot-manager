@@ -59,10 +59,10 @@ public class DatabaseNodeHistoryTest
         UUID encryptedValueId = UUID.randomUUID();
         UUID encryptedValueId2 = UUID.randomUUID();
 
-        given(encryptedValue.getId()).willReturn(encryptedValueId);
-        given(encryptedValue2.getId()).willReturn(encryptedValueId2);
-        given(encryptedValueClone.getId()).willReturn(encryptedValueId);
-        given(encryptedValue2Clone.getId()).willReturn(encryptedValueId2);
+        given(encryptedValue.getUuid()).willReturn(encryptedValueId);
+        given(encryptedValue2.getUuid()).willReturn(encryptedValueId2);
+        given(encryptedValueClone.getUuid()).willReturn(encryptedValueId);
+        given(encryptedValue2Clone.getUuid()).willReturn(encryptedValueId2);
 
         // Setup array of multiple values
         values = new LinkedList<>();

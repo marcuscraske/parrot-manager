@@ -43,7 +43,7 @@ public class EncryptedValueTest
     public void getId_isReflected()
     {
         // when
-        UUID id = encryptedValue.getId();
+        UUID id = encryptedValue.getUuid();
 
         // then
         assertEquals("Identifier should be same as construction", this.id, id);

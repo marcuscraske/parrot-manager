@@ -98,9 +98,10 @@ export class ViewerComponent
             console.log("databaseClipboardEvent event raised");
 
             // Decrypt value
+            // TODO convert and test
             var targetNode = event.data;
             var encryptedValue = targetNode.getValue();
-            var decryptedValue = this.encryptedValueService.getStringFromValue(encryptedValue);
+            var decryptedValue = this.encryptedValueService.getString(targetNode.getId(), encryptedValue);
 
             // Set on clipboard
             this.clipboardService.setText(decryptedValue);
@@ -376,7 +377,7 @@ export class ViewerComponent
             value = "";
         }
 
-        var decryptedValue = this.encryptedValueService.getString(this.currentNode);
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode.getId(), null);
         if (decryptedValue == null)
         {
             decryptedValue = "";

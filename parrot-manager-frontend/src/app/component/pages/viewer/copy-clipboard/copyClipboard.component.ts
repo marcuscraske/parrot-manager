@@ -4,6 +4,8 @@ import { RuntimeService } from 'app/service/runtime.service'
 import { ClipboardService } from 'app/service/clipboard.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
+import { EncryptedValue } from "app/model/encryptedValue"
+
 @Component({
     selector: 'copy-clipboard',
     templateUrl: 'copyClipboard.component.html',
@@ -12,9 +14,11 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
 })
 export class CopyClipboardComponent
 {
+    // Current node ID
+    @Input() nodeId: string;
 
     // The encrypted value being displayed
-    @Input() encryptedValue : any;
+    @Input() encryptedValue : EncryptedValue;
 
     constructor(
         private runtimeService: RuntimeService,
@@ -26,7 +30,7 @@ export class CopyClipboardComponent
     {
         console.log("decrypting value for clipboard");
 
-        var decryptedValue = this.encryptedValueService.getStringFromValue(this.encryptedValue);
+        var decryptedValue = this.encryptedValueService.getString(this.nodeId, this.encryptedValue);
 
         if (decryptedValue == null)
         {
