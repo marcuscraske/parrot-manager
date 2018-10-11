@@ -9,6 +9,7 @@
     padding: 0.4em 0.2em 0.2em 0;
     width: 100%;
     font-weight: bold;
+    color: #666;
 }
 
 .header .button,
@@ -22,7 +23,7 @@
 .header .title
 {
     width: 100%;
-    color: #666;
+
 }
 
 .header .btn .icon

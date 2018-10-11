@@ -31,26 +31,26 @@
         </td>
     </tr>
 
-    <tr *ngFor="let node of (getFilteredChildren() | orderBy: ['+getName()']); trackBy: trackChildren">
+    <tr *ngFor="let node of (children | orderBy: ['+getName()']); trackBy: trackChildren">
         <td>
-            <input type="checkbox" attr.data-node-id="{{ node.getId() }}" />
+            <input type="checkbox" attr.data-node-id="{{ node.id }}" />
         </td>
         <td>
-            <span (click)="changeNodeBeingViewed.emit(node.getId())">
-                {{ node.getName() != null && node.getName().length > 0 ? node.getName() : "(unnamed)" }}
+            <span (click)="changeNodeBeingViewed.emit(node.id)">
+                {{ node.name != null && node.name.length > 0 ? node.name : "(unnamed)" }}
             </span>
         </td>
         <td>
-            <toggle-value [nodeId]="node.getId()" [encryptedValue]="node.getValue()"></toggle-value>
+            <toggle-value [nodeId]="node.id"></toggle-value>
         </td>
         <td>
-            <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.getId())" title="View entry">
+            <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.id)" title="View entry">
                 <span class="icon icon-folder"></span>
                 View
             </button>
-            <copy-clipboard [encryptedValue]="node.getValue()"></copy-clipboard>
-            <send-keys [encryptedValue]="node.getValue()"></send-keys>
-            <button class="btn btn-danger" (click)="deleteEntry(node.getId())" title="Delete">
+            <copy-clipboard [nodeId]="node.id"></copy-clipboard>
+            <send-keys [nodeId]="node.id"></send-keys>
+            <button class="btn btn-danger" (click)="deleteEntry(node.id)" title="Delete">
                 <span class="icon icon-cross"></span>
             </button>
         </td>

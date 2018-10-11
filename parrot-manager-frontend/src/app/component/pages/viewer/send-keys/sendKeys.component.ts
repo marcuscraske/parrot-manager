@@ -1,7 +1,10 @@
 import { Component, Input, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subscription, timer } from "rxjs";
 
+import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { SendKeysService } from 'app/service/sendKeys.service'
+
+import { EncryptedValue } from "app/model/encryptedValue"
 
 @Component({
     selector: 'send-keys',
@@ -12,8 +15,11 @@ import { SendKeysService } from 'app/service/sendKeys.service'
 export class SendKeysComponent
 {
 
+    // Current node ID
+    @Input() nodeId: string;
+
     // The encrypted value being displayed
-    @Input() encryptedValue : any;
+    @Input() encryptedValue? : EncryptedValue;
 
     // Holds state as to whether this button's value is queued to be sent as keys
     public isQueued : boolean;
@@ -23,6 +29,7 @@ export class SendKeysComponent
 
     constructor(
         private changeDetection: ChangeDetectorRef,
+        private encryptedValueService: EncryptedValueService,
         private sendKeysService: SendKeysService
     ) {
         this.isQueued = false;

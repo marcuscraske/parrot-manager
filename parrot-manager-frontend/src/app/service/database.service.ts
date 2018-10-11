@@ -200,14 +200,14 @@ export class DatabaseService
         }
     }
 
-    getNode(id) : any
+    getNativeNode(nodeId) : any
     {
         var database = this.databaseService.getDatabase();
         var node = null;
 
         if (database != null)
         {
-            node = database.getNode(id);
+            node = database.getNode(nodeId);
         }
         else
         {

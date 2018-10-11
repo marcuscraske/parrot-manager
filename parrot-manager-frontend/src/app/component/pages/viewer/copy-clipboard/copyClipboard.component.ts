@@ -18,7 +18,7 @@ export class CopyClipboardComponent
     @Input() nodeId: string;
 
     // The encrypted value being displayed
-    @Input() encryptedValue : EncryptedValue;
+    @Input() encryptedValue? : EncryptedValue;
 
     constructor(
         private runtimeService: RuntimeService,

@@ -19,7 +19,7 @@ export class ToggleValueComponent
     @Input() nodeId: string;
 
     // The encrypted value being displayed
-    @Input() encryptedValue : EncryptedValue;
+    @Input() encryptedValue? : EncryptedValue;
 
     // The value currently displayed by this component; toggled between masked chars and the decrypted value
     public displayedValue : string;

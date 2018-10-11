@@ -54,7 +54,10 @@ export class EncryptedValueService
             }
 
             // Decrypt data
-            result = this.encryptedValueService.asString(nativeDatabase, nativeEncryptedValue);
+            if (nativeEncryptedValue != null)
+            {
+                result = this.encryptedValueService.asString(nativeDatabase, nativeEncryptedValue);
+            }
         }
         return result;
     }

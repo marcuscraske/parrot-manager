@@ -6,6 +6,8 @@ import { RuntimeService } from 'app/service/runtime.service'
 import { SyncService } from 'app/service/sync.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
+
+
 @Component({
     selector: 'current-entry',
     templateUrl: 'current-entry.component.html',

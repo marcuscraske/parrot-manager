@@ -235,14 +235,14 @@ export class ViewerComponent
             // Hook tree for collapse/expand events
             $("#tree").on("open_node.jstree", (e, data) => {
                 var nodeId = data.node.id;
-                var node = this.databaseService.getNode(nodeId);
+                var node = this.databaseService.getNativeNode(nodeId);
                 node.setLocalProperty("collapsed", "false");
                 console.log("node expanded - id: " + nodeId);
             });
 
             $("#tree").on("close_node.jstree", (e, data) => {
                 var nodeId = data.node.id;
-                var node = this.databaseService.getNode(nodeId);
+                var node = this.databaseService.getNativeNode(nodeId);
                 node.setLocalProperty("collapsed", "true");
                 console.log("node collapsed - id: " + nodeId);
             });
@@ -252,8 +252,8 @@ export class ViewerComponent
                 var nodeId = data.node.id;
                 var newParentId = data.parent;
 
-                var node = this.databaseService.getNode(nodeId);
-                var newParentNode = this.databaseService.getNode(newParentId);
+                var node = this.databaseService.getNativeNode(nodeId);
+                var newParentNode = this.databaseService.getNativeNode(newParentId);
                 var isCurrentNode = (nodeId == node.getId());
 
                 // Move the node to new target node
@@ -347,7 +347,7 @@ export class ViewerComponent
         console.log("request to change node - id: " + nodeId);
 
         // Update node being viewed
-        this.currentNode = this.databaseService.getNode(nodeId);
+        this.currentNode = this.databaseService.getNativeNode(nodeId);
 
         // Update node selected in tree
         this.updateTreeSelection();

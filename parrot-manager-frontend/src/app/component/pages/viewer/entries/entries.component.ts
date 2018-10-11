@@ -1,8 +1,11 @@
-import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges } from '@angular/core';
 
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
+import { DatabaseNodeService } from 'app/service/databaseNode.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
+
+import { DatabaseNode } from "app/model/databaseNode"
 
 @Component({
     selector: 'viewer-entries',
@@ -20,12 +23,22 @@ export class ViewerEntriesComponent
     @Output() updateTree = new EventEmitter();
     @Output() changeNodeBeingViewed = new EventEmitter();
 
+    // Cached children for current node being viewed
+    children: DatabaseNode[];
+
     constructor(
         private runtimeService: RuntimeService,
         private databaseService: DatabaseService,
+        private databaseNodeService: DatabaseNodeService,
         private encryptedValueService: EncryptedValueService,
         private renderer: Renderer
     ) { }
+
+    ngOnChanges(changes: SimpleChanges)
+    {
+        var nodeId = this.currentNode.getId();
+        this.children = this.databaseNodeService.getChildren(nodeId);
+    }
 
     addNewEntry()
     {
@@ -71,7 +84,7 @@ export class ViewerEntriesComponent
             var nodeId = $(this).attr("data-node-id");
             console.log("deleting node - id: " + nodeId);
 
-            var node = self.databaseService.getNode(nodeId);
+            var node = self.databaseService.getNativeNode(nodeId);
 
             if (node != null)
             {
@@ -94,7 +107,7 @@ export class ViewerEntriesComponent
         console.log("deleting entry - node id: " + nodeId);
 
         // Fetch node
-        var node = this.databaseService.getNode(nodeId);
+        var node = this.databaseService.getNativeNode(nodeId);
 
         // Delete the node
         node.remove();
@@ -107,55 +120,12 @@ export class ViewerEntriesComponent
     // http://blog.angular-university.io/angular-2-ngfor/
     trackChildren(index, node)
     {
-        return node ? node.getId() : null;
+        return node ? node.id : null;
     }
 
     isChildren()
     {
-        var count;
-
-        if (this.currentNode.isRoot())
-        {
-            var filtered = this.getFilteredChildren();
-            count = filtered.length;
-        }
-        else
-        {
-            count = this.currentNode.getChildCount();
-        }
-
-        return count > 0;
-    }
-
-    getFilteredChildren()
-    {
-        var result;
-
-        var children = this.currentNode.getChildren();
-
-        if (this.currentNode.isRoot())
-        {
-            var filtered = [];
-            var child;
-
-            for (var i = 0; i < children.length; i++)
-            {
-                child = children[i];
-
-                if (child.getName() != "remote-sync")
-                {
-                    filtered.push(child);
-                }
-            }
-
-            result = filtered;
-        }
-        else
-        {
-            result = children;
-        }
-
-        return result;
+        return this.children != null && this.children.length > 0;
     }
 
 }

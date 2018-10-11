@@ -15,12 +15,12 @@ export class DatabaseHistoryService
         var result = [];
 
         // Fetch the node
-        var node = this.databaseService.getNode(nodeId);
+        var nativeNode = this.databaseService.getNativeNode(nodeId);
 
-        if (node != null)
+        if (nativeNode != null)
         {
             // Fetch entries
-            var nativeEncryptedValues = node.getHistory().fetch();
+            var nativeEncryptedValues = nativeNode.getHistory().fetch();
 
             // Translate to JSON objects
             for (var i = 0; i < nativeEncryptedValues.length; i++)
