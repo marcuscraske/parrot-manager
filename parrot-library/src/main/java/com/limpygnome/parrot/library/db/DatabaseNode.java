@@ -226,10 +226,19 @@ public class DatabaseNode
      *
      * @param key the key/name of the local property
      * @param value the value
+     * @param applyToChildren indicates whether to apply the same property to all the child nodes
      */
-    public void setLocalProperty(String key, String value)
+    public synchronized void setLocalProperty(String key, String value, boolean applyToChildren)
     {
         localProperties.put(key, value);
+
+        if (applyToChildren)
+        {
+            for (DatabaseNode child : childrenCached)
+            {
+                child.setLocalProperty(key, value, true);
+            }
+        }
     }
 
     /**

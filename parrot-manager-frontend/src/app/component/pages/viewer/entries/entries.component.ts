@@ -36,14 +36,15 @@ export class ViewerEntriesComponent
 
     ngOnChanges(changes: SimpleChanges)
     {
-        var nodeId = this.currentNode.getId();
+        var nodeId = this.currentNode.id;
         this.children = this.databaseNodeService.getChildren(nodeId);
     }
 
     addNewEntry()
     {
         // Add new node to current node
-        var newNode = this.currentNode.addNew();
+        var nodeId = this.currentNode.id;
+        var newNode = this.databaseNodeService.addChild(nodeId);
 
         if (newNode != null)
         {
@@ -51,14 +52,14 @@ export class ViewerEntriesComponent
             this.updateTree.emit();
 
             // Change view to new node
-            var nodeId = newNode.getId();
-            this.changeNodeBeingViewed.emit(nodeId);
+            var newNodeId = newNode.id;
+            this.changeNodeBeingViewed.emit(newNodeId);
 
-            console.log("added new entry - id: " + nodeId);
+            console.log("added new entry - id: " + newNodeId);
         }
         else
         {
-            console.log("failed to create new node - curr node: " + this.currentNode.getId());
+            console.log("failed to create new node - curr node: " + this.currentNode.id);
         }
     }
 

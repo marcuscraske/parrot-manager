@@ -12,6 +12,13 @@ export class DatabaseNode
     constructor(nativeDatabaseNode)
     {
         this.id = nativeDatabaseNode.getId();
+
+        var parentNativeNode = nativeDatabaseNode.getParent();
+        if (parentNativeNode != null)
+        {
+            this.parentId = parentNativeNode.getId();
+        }
+
         this.name = nativeDatabaseNode.getName();
         this.lastModified = nativeDatabaseNode.getLastModified();
         this.isRoot = nativeDatabaseNode.isRoot();

@@ -113,7 +113,7 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
             MenuItem itemCopyClipboard = new MenuItem("Copy to clipboard");
             itemCopyClipboard.setOnAction(e ->
             {
-                webViewStage.triggerEvent("document", "databaseClipboardEvent", databaseNode);
+                webViewStage.triggerEvent("document", "databaseClipboardEvent", databaseNode.getId());
             });
 
             contextMenu.getItems().addAll(itemCopyClipboard);
@@ -121,7 +121,7 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
 
         MenuItem itemAddEntry = new MenuItem("Add Entry");
         itemAddEntry.setOnAction(e -> {
-            webViewStage.triggerEvent("document", "databaseEntryAdd", databaseNode);
+            webViewStage.triggerEvent("document", "databaseEntryAdd", databaseNode.getId());
         });
 
         contextMenu.getItems().add(itemAddEntry);
@@ -131,7 +131,7 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
             MenuItem itemDeleteEntry = new MenuItem("Delete Entry");
             itemDeleteEntry.setOnAction(e ->
             {
-                webViewStage.triggerEvent("document", "databaseEntryDelete", databaseNode);
+                webViewStage.triggerEvent("document", "databaseEntryDelete", databaseNode.getId());
             });
 
             contextMenu.getItems().addAll(itemDeleteEntry);
@@ -143,25 +143,25 @@ public class ContextMenuHandler implements EventHandler<MouseEvent>
         MenuItem itemExpand = new MenuItem("Expand");
         itemExpand.setOnAction(e ->
         {
-            webViewStage.triggerEvent("document", "databaseEntryExpand", databaseNode);
+            webViewStage.triggerEvent("document", "databaseEntryExpand", databaseNode.getId());
         });
 
         MenuItem itemExpandAll = new MenuItem("Expand All");
         itemExpandAll.setOnAction(e ->
         {
-            webViewStage.triggerEvent("document", "databaseEntryExpandAll", databaseNode);
+            webViewStage.triggerEvent("document", "databaseEntryExpandAll", databaseNode.getId());
         });
 
         MenuItem itemCollapse = new MenuItem("Collapse");
         itemCollapse.setOnAction(e ->
         {
-            webViewStage.triggerEvent("document", "databaseEntryCollapse", databaseNode);
+            webViewStage.triggerEvent("document", "databaseEntryCollapse", databaseNode.getId());
         });
 
         MenuItem itemCollapseAll = new MenuItem("Collapse All");
         itemCollapseAll.setOnAction(e ->
         {
-            webViewStage.triggerEvent("document", "databaseEntryCollapseAll", databaseNode);
+            webViewStage.triggerEvent("document", "databaseEntryCollapseAll", databaseNode.getId());
         });
 
         contextMenu.getItems().addAll(collapseExpandSeparator, itemExpand, itemExpandAll, itemCollapse, itemCollapseAll);

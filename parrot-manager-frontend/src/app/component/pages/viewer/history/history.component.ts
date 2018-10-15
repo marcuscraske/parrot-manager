@@ -4,6 +4,8 @@ import { EncryptedValue } from "app/model/encryptedValue"
 import { RuntimeService } from "app/service/runtime.service"
 import { DatabaseHistoryService } from "app/service/databaseHistory.service"
 
+import { DatabaseNode } from "app/model/databaseNode"
+
 @Component({
     selector: 'history',
     templateUrl: 'history.component.html',
@@ -13,7 +15,7 @@ export class HistoryComponent
 {
 
     // The current node being changed; passed from parent
-    @Input() currentNode : any;
+    @Input() currentNode : DatabaseNode;
 
     // Current history of the current node; cache to avoid fetching multiple times (cheaper)
     history: EncryptedValue[];
@@ -26,7 +28,7 @@ export class HistoryComponent
 
     ngOnChanges(changes: SimpleChanges)
     {
-        var nodeId = this.currentNode.getId();
+        var nodeId = this.currentNode.id;
         this.history = this.databaseHistoryService.fetch(nodeId);
     }
 

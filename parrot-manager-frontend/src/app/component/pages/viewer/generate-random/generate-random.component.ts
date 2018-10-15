@@ -59,7 +59,7 @@ export class GenerateRandomComponent
         {
             // Update value of current node
             this.encryptedValueService.setString(this.currentNode, randomPassword);
-            console.log("current password updated with random string - node id: " + this.currentNode.getId());
+            console.log("current password updated with random string - node id: " + this.currentNode.id);
 
             // Show notification
             toastr.info("Updated with random value");

@@ -1,12 +1,13 @@
-import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
+import { DatabaseNodeService } from 'app/service/databaseNode.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { SyncService } from 'app/service/sync.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
-
+import { DatabaseNode } from "app/model/databaseNode"
 
 @Component({
     selector: 'current-entry',
@@ -17,7 +18,7 @@ export class CurrentEntryComponent
 {
 
     // The current node being changed; passed from parent
-    @Input() currentNode : any;
+    @Input() currentNode : DatabaseNode;
 
     // The form for the encrypted value
     @Input() updateEntryForm : FormGroup;
@@ -30,16 +31,18 @@ export class CurrentEntryComponent
 
     constructor(
         public databaseService: DatabaseService,
+        public databaseNodeService: DatabaseNodeService,
         public runtimeService: RuntimeService,
         public syncService: SyncService,
         public encryptedValueService: EncryptedValueService,
         public renderer: Renderer,
-        public fb: FormBuilder
+        public fb: FormBuilder,
+        public changeDetectorRef: ChangeDetectorRef
     ) { }
 
     navigateToParent()
     {
-        var parentNodeId = this.currentNode.getParent().getId();
+        var parentNodeId = this.currentNode.parentId;
         console.log("navigating to parent: " + parentNodeId);
         this.changeNodeBeingViewed.emit(parentNodeId);
     }
@@ -48,18 +51,17 @@ export class CurrentEntryComponent
     {
         console.log("deleting current entry");
 
-        // Save parent identifier
-        var parentNodeId = this.currentNode.getParent().getId();
-
-        // Delete the node
-        this.currentNode.remove();
-
-        // Update tree
-        this.updateTree.emit();
+        var parentNodeId = this.currentNode.parentId;
 
         // Navigate to parent node
         console.log("navigating to parent node - id: " + parentNodeId);
         this.changeNodeBeingViewed.emit(parentNodeId);
+
+        // Delete the node
+        this.databaseNodeService.delete(parentNodeId);
+
+        // Update tree
+        this.updateTree.emit();
     }
 
     preUpdateName(event)
@@ -86,7 +88,8 @@ export class CurrentEntryComponent
         }
 
         // Update name
-        this.currentNode.setName(newName);
+        var nodeId = this.currentNode.id;
+        this.databaseNodeService.setName(nodeId, newName);
         console.log("updateTitle - new name: " + newName);
 
         // Update tree
@@ -110,7 +113,7 @@ export class CurrentEntryComponent
         var currentValue = $("#currentValue");
 
         // decrypt value for current node
-        var decryptedValue = this.encryptedValueService.getString(this.currentNode, null);
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode.id, null);
         currentValue.val(decryptedValue);
 
         console.log("current value displayed");
@@ -121,9 +124,46 @@ export class CurrentEntryComponent
 
     hideValue()
     {
-        this.saveValue.emit();
+        console.log("saving current value");
+
+        // Fetch values; set to empty string if null, never allow null
+        var currentValue = $("#currentValue");
+        var value = currentValue.val();
+        if (value == null)
+        {
+            value = "";
+        }
+
+        var decryptedValue = this.encryptedValueService.getString(this.currentNode.id, null);
+        if (decryptedValue == null)
+        {
+            decryptedValue = "";
+        }
+
+        // Update value if changed
+        var isChanged = value != decryptedValue;
+
+        if (isChanged)
+        {
+            this.encryptedValueService.setString(this.currentNode.id, value);
+        }
+
+        // Reset form as untouched
+        this.updateEntryForm.reset();
+
+        // Mark as invalid
+        this.markChangeDetection();
+
+        // Resize value box to fit content
         console.log("current value hidden");
         this.resizeValueTextAreaToFitContent();
+    }
+
+    markChangeDetection()
+    {
+        // mark current and all child components for change detection
+        this.changeDetectorRef.markForCheck();
+        console.log("marked for change detection");
     }
 
     // Resets edit mode when leaving text box of current value

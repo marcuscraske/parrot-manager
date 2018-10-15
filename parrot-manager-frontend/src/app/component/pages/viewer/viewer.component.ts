@@ -1,10 +1,13 @@
-import { Component, Renderer, ChangeDetectorRef } from '@angular/core';
+import { Component, Renderer } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
+import { DatabaseNodeService } from 'app/service/databaseNode.service'
 import { ClipboardService } from 'app/service/clipboard.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { SearchFilterService } from 'app/service/searchFilter.service'
+
+import { DatabaseNode } from "app/model/databaseNode"
 
 @Component({
     selector: 'viewer',
@@ -26,7 +29,7 @@ export class ViewerComponent
     private remoteSyncingFinishedEvent: Function;
 
     // The current node being edited
-    public currentNode: any;
+    public currentNode: DatabaseNode;
 
     // The node's current sub view (entries, history)
     public currentSubView: string = "entries";
@@ -41,12 +44,12 @@ export class ViewerComponent
 
     constructor(
         public databaseService: DatabaseService,
+        public databaseNodeService: DatabaseNodeService,
         public clipboardService: ClipboardService,
         public encryptedValueService: EncryptedValueService,
         public searchFilterService: SearchFilterService,
         public renderer: Renderer,
-        public fb: FormBuilder,
-        public changeDetectorRef: ChangeDetectorRef
+        public fb: FormBuilder
     )
     {
         // Setup tree
@@ -56,22 +59,17 @@ export class ViewerComponent
         this.databaseEntryDeleteEvent = renderer.listenGlobal("document", "databaseEntryDelete", (event) => {
             console.log("databaseEntryDeleted event raised");
 
-            var targetNode = event.data;
-
-            // Fetch parent node
-            var parentNode = targetNode.getParent();
-
-            // Delete target node
-            targetNode.remove();
+            var nodeId = event.data;
+            var node = this.databaseNodeService.delete(nodeId);
 
             // Update tree
             this.updateTree();
 
             // Check current node still exists
-            if (this.currentNode != null && this.currentNode.getId() == targetNode.getId())
+            if (this.currentNode != null && this.currentNode.id == node.id)
             {
                 console.log("current node deleted, navigating to parent...");
-                this.changeNodeBeingViewed(parentNode.getId());
+                this.changeNodeBeingViewed(node.parentId);
             }
             else
             {
@@ -82,60 +80,55 @@ export class ViewerComponent
         this.databaseEntryAddEvent = renderer.listenGlobal("document", "databaseEntryAdd", (event) => {
             console.log("databaseEntryAdded event raised");
 
-            var targetNode = event.data;
+            var nodeId = event.data;
 
             // Add new node
-            var newNode = targetNode.addNew();
+            var newNode = this.databaseNodeService.addChild(nodeId);
 
             // Update tree
             this.updateTree();
 
             // Navigate to new node
-            this.changeNodeBeingViewed(newNode.getId());
+            this.changeNodeBeingViewed(newNode.id);
         });
 
         this.databaseClipboardEvent = renderer.listenGlobal("document", "databaseClipboardEvent", (event) => {
             console.log("databaseClipboardEvent event raised");
 
-            // Decrypt value
-            // TODO convert and test
-            var targetNode = event.data;
-            var encryptedValue = targetNode.getValue();
-            var decryptedValue = this.encryptedValueService.getString(targetNode.getId(), encryptedValue);
-
-            // Set on clipboard
+            var nodeId = event.data;
+            var decryptedValue = this.encryptedValueService.getString(nodeId, null);
             this.clipboardService.setText(decryptedValue);
         });
 
         this.databaseEntryExpandEvent = renderer.listenGlobal("document", "databaseEntryExpand", (event) => {
             console.log("databaseEntryExpand event raised");
 
-            var targetNode = event.data;
-            targetNode.setLocalProperty("collapsed", "false");
+            var nodeId = event.data;
+            this.databaseNodeService.setLocalProperty(nodeId, "collapsed", "false", false);
             this.updateTree();
         });
 
         this.databaseEntryExpandAllEvent = renderer.listenGlobal("document", "databaseEntryExpandAll", (event) => {
             console.log("databaseEntryExpandAll event raised");
 
-            var targetNode = event.data;
-            this.setLocalPropertyRecurse(targetNode, "collapsed", "false");
+            var nodeId = event.data;
+            this.databaseNodeService.setLocalProperty(nodeId, "collapsed", "false", true);
             this.updateTree();
         });
 
         this.databaseEntryCollapseEvent = renderer.listenGlobal("document", "databaseEntryCollapse", (event) => {
             console.log("databaseEntryCollapse event raised");
 
-            var targetNode = event.data;
-            targetNode.setLocalProperty("collapsed", "true");
+            var nodeId = event.data;
+            this.databaseNodeService.setLocalProperty(nodeId, "collapsed", "true", false);
             this.updateTree();
         });
 
         this.databaseEntryCollapseAllEvent = renderer.listenGlobal("document", "databaseEntryCollapseAll", (event) => {
             console.log("databaseEntryCollapseAll event raised");
 
-            var targetNode = event.data;
-            this.setLocalPropertyRecurse(targetNode, "collapsed", "true");
+            var nodeId = event.data;
+            this.databaseNodeService.setLocalProperty(nodeId, "collapsed", "true", true);
             this.updateTree();
         });
 
@@ -144,34 +137,11 @@ export class ViewerComponent
         });
     }
 
-    setLocalPropertyRecurse(parentNode, key, value)
-    {
-        parentNode.setLocalProperty(key, value);
-
-        var childNodes = parentNode.getChildren();
-        for (var i = 0; i < childNodes.length; i++)
-        {
-            this.setLocalPropertyRecurse(childNodes[i], key, value);
-        }
-    }
-
     ngOnInit()
     {
         // Set root node as current by default
-        var database = this.databaseService.getDatabase();
-        var rootNode = database.getRoot();
-
-        if (database == null)
-        {
-            console.error("database is null");
-        }
-
-        if (rootNode == null)
-        {
-            console.error("root node is null");
-        }
-
-        this.changeNodeBeingViewed(rootNode.getId());
+        var rootNode = this.databaseNodeService.getRoot();
+        this.changeNodeBeingViewed(rootNode.id);
     }
 
     ngOnDestroy()
@@ -254,7 +224,7 @@ export class ViewerComponent
 
                 var node = this.databaseService.getNativeNode(nodeId);
                 var newParentNode = this.databaseService.getNativeNode(newParentId);
-                var isCurrentNode = (nodeId == node.getId());
+                var isCurrentNode = (nodeId == node.id);
 
                 // Move the node to new target node
                 console.log("moving node: " + nodeId);
@@ -268,7 +238,7 @@ export class ViewerComponent
                 {
                     console.log("viewing moved node, re-navigating...");
 
-                    var newNodeId = node.getId();
+                    var newNodeId = node.id;
                     this.changeNodeBeingViewed(newNodeId);
                 }
             });
@@ -321,7 +291,7 @@ export class ViewerComponent
             // Update selected item to match current node being viewed
             if (this.currentNode != null)
             {
-                var targetNodeId = this.currentNode.getId();
+                var targetNodeId = this.currentNode.id;
 
                 // Check node exists in tree
                 var exists = ($("#tree").find("#" + targetNodeId).length > 0);
@@ -347,7 +317,7 @@ export class ViewerComponent
         console.log("request to change node - id: " + nodeId);
 
         // Update node being viewed
-        this.currentNode = this.databaseService.getNativeNode(nodeId);
+        this.currentNode = this.databaseNodeService.getNode(nodeId);
 
         // Update node selected in tree
         this.updateTreeSelection();
@@ -364,52 +334,11 @@ export class ViewerComponent
         console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
     }
 
-    // Saves the current (decrypted) value
-    saveValue()
-    {
-        console.log("saving current value");
-
-        // Fetch values; set to empty string if null, never allow null
-        var currentValue = $("#currentValue");
-        var value = currentValue.val();
-        if (value == null)
-        {
-            value = "";
-        }
-
-        var decryptedValue = this.encryptedValueService.getString(this.currentNode.getId(), null);
-        if (decryptedValue == null)
-        {
-            decryptedValue = "";
-        }
-
-        // Update value if changed
-        var isChanged = value != decryptedValue;
-
-        if (isChanged)
-        {
-            this.encryptedValueService.setString(this.currentNode, value);
-        }
-
-        // reset form as untouched
-        this.updateEntryForm.reset();
-
-        // mark as invalid
-        this.markChangeDetection();
-    }
-
     updateSearchFilter(searchFilter)
     {
         console.log("search filter changed: " + searchFilter);
         this.searchFilter = searchFilter;
         this.updateTree();
-    }
-
-    markChangeDetection()
-    {
-        // mark current and all child components for change detection
-        this.changeDetectorRef.markForCheck();
-        console.log("marked for change detection");
     }
 
 }

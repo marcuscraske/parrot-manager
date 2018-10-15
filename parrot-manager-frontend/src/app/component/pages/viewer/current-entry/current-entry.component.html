@@ -1,5 +1,5 @@
 <!-- root node content -->
-<div *ngIf="currentNode.isRoot()">
+<div *ngIf="currentNode.isRoot">
     <div class="header">
         {{ databaseService.getFileName() | fileNameWithoutExtension }}
     </div>
@@ -14,9 +14,9 @@
 </div>
 
 <!-- child node content -->
-<div *ngIf="!currentNode.isRoot()">
+<div *ngIf="!currentNode.isRoot">
 
-    <div class="header" *ngIf="!currentNode.isRoot()" title="node id: {{ currentNode.getId() }}">
+    <div class="header" title="node id: {{ currentNode.id }}">
         <div class="button">
             <button class="btn btn-default" (click)="navigateToParent()">
                 <span class="icon icon-arrow-up2"></span>
@@ -27,24 +27,24 @@
                    (change)="updateName($event)"
                    (click)="preUpdateName($event)"
                    (blur)="postUpdateName($event)"
-                   value="{{ currentNode.getName() != null ? currentNode.getName() : '(unnamed)' }}"
+                   value="{{ currentNode.name != null ? currentNode.name : '(unnamed)' }}"
             />
         </div>
     </div>
 
-    <p title="{{ currentNode.getLastModified() | formattedDate }}">
-        Last modified {{ currentNode.getLastModified() | friendlyTime }}
+    <p title="{{ currentNode.lastModified | formattedDate }}">
+        Last modified {{ currentNode.lastModified | friendlyTime }}
     </p>
 
     <!-- Value Options -->
     <div class="form-group options">
-        <copy-clipboard [encryptedValue]="currentNode.getValue()"></copy-clipboard>
-        <send-keys [encryptedValue]="currentNode.getValue()"></send-keys>
+        <copy-clipboard [nodeId]="currentNode.id"></copy-clipboard>
+        <send-keys [nodeId]="currentNode.id"></send-keys>
         <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer" title="Generate random value">
             <span class="icon icon-equalizer"></span>
             Generate Random
         </button>
-        <button class="btn btn-danger" *ngIf="!currentNode.isRoot()" (click)="deleteCurrentEntry(currentNode.getId())" title="Delete current entry">
+        <button class="btn btn-danger" (click)="deleteCurrentEntry(currentNode.id)" title="Delete current entry">
             <span class="icon icon-cross"></span>
             Delete
         </button>

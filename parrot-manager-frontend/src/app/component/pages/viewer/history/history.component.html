@@ -29,12 +29,12 @@
             {{ historicValue.lastModified | friendlyTime }}
         </td>
         <td>
-            <toggle-value [nodeId]="currentNode.getId()" [encryptedValue]="historicValue"></toggle-value>
+            <toggle-value [nodeId]="currentNode.id" [encryptedValue]="historicValue"></toggle-value>
         </td>
         <td>
 
             <!-- copy to clipboard button -->
-            <copy-clipboard [nodeId]="currentNode.getId()" [encryptedValue]="historicValue"></copy-clipboard>
+            <copy-clipboard [nodeId]="currentNode.id" [encryptedValue]="historicValue"></copy-clipboard>
 
             <!-- restore button -->
             <button class="btn btn-default" (click)="restore(historicValue)">

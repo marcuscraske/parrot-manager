@@ -12,7 +12,7 @@
 <table class="table entries" id="currentValueEntries">
     <tr>
         <th>
-            <input type="checkbox" *ngIf="currentNode.getChildCount() != 0" (change)="deleteSelectAll($event)" />
+            <input type="checkbox" *ngIf="isChildren()" (change)="deleteSelectAll($event)" />
         </th>
         <th>
             Name

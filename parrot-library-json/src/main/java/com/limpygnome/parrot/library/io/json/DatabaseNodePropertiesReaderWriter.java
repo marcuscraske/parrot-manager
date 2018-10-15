@@ -25,7 +25,7 @@ class DatabaseNodePropertiesReaderWriter
             {
                 key = kv.getKey();
                 value = kv.getValue().getAsString();
-                node.setLocalProperty(key, value);
+                node.setLocalProperty(key, value, false);
             }
         }
     }
