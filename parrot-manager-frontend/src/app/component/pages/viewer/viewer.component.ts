@@ -1,4 +1,4 @@
-import { Component, Renderer } from '@angular/core';
+import { Component, Renderer, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 import { DatabaseService } from 'app/service/database.service'
@@ -18,6 +18,12 @@ import { DatabaseNode } from "app/model/databaseNode"
 export class ViewerComponent
 {
 
+    // The current node being edited
+    public currentNode: DatabaseNode;
+
+    // The node's current sub view (entries, history)
+    public currentSubView: string = "entries";
+
     // Event handle for "databaseUpdated" events
     private databaseEntryDeleteEvent: Function;
     private databaseEntryAddEvent: Function;
@@ -28,11 +34,6 @@ export class ViewerComponent
     private databaseEntryCollapseAllEvent: Function;
     private remoteSyncingFinishedEvent: Function;
 
-    // The current node being edited
-    public currentNode: DatabaseNode;
-
-    // The node's current sub view (entries, history)
-    public currentSubView: string = "entries";
 
     // Form for editing encrypted value; stored at parent level so we can check for change
     public updateEntryForm = this.fb.group({
@@ -244,6 +245,12 @@ export class ViewerComponent
             });
 
             $("#tree").on("changed.jstree", (e, data) => {
+                console.log("tree changed");
+                this.updateTreeSelection();
+            });
+
+            $("#tree").on("refresh.jstree", (e, data) => {
+                console.log("tree refreshed");
                 this.updateTreeSelection();
             });
 
@@ -270,11 +277,11 @@ export class ViewerComponent
             // Update tree
             var tree = $("#tree").jstree(true);
 
-            // wipe tree; seems to be a bug with jstree where state is lost
+            // Wipe tree; seems to be a bug with jstree where state is lost
             tree.settings.core.data = { };
             tree.refresh();
 
-            // restore data
+            // Restore data
             tree.settings.core.data = data;
             tree.refresh();
 
@@ -297,11 +304,22 @@ export class ViewerComponent
                 var exists = ($("#tree").find("#" + targetNodeId).length > 0);
 
                 // Check the node is not already selected
-                if (exists && (currentSelected == null || targetNodeId != currentSelected))
+                if (exists)
                 {
-                    $("#tree").jstree("deselect_all");
-                    $("#tree").jstree("select_node", "#" + targetNodeId);
-                    console.log("updated tree selection #2 - id: " + targetNodeId);
+                    if (currentSelected == null || targetNodeId != currentSelected)
+                    {
+                        $("#tree").jstree("deselect_all");
+                        $("#tree").jstree("select_node", "#" + targetNodeId);
+                        console.log("updated tree selection #2 - id: " + targetNodeId);
+                    }
+                    else
+                    {
+                        console.log("tree item already selected");
+                    }
+                }
+                else
+                {
+                    console.log("unable to select tree node - not found - id: " + targetNodeId);
                 }
             }
             else

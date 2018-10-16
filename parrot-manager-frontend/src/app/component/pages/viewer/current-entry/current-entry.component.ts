@@ -49,7 +49,8 @@ export class CurrentEntryComponent
 
     deleteCurrentEntry()
     {
-        console.log("deleting current entry");
+        var nodeId = this.currentNode.id;
+        console.log("deleting current entry - id: " + nodeId);
 
         var parentNodeId = this.currentNode.parentId;
 
@@ -58,7 +59,7 @@ export class CurrentEntryComponent
         this.changeNodeBeingViewed.emit(parentNodeId);
 
         // Delete the node
-        this.databaseNodeService.delete(parentNodeId);
+        this.databaseNodeService.delete(nodeId);
 
         // Update tree
         this.updateTree.emit();

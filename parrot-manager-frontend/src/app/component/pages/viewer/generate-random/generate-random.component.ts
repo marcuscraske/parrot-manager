@@ -5,6 +5,8 @@ import { DatabaseService } from 'app/service/database.service'
 import { RandomGeneratorService } from 'app/service/randomGenerator.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
 
+import { DatabaseNode } from "app/model/databaseNode"
+
 @Component({
     selector: 'generate-random',
     templateUrl: 'generate-random.component.html',
@@ -14,7 +16,7 @@ export class GenerateRandomComponent
 {
 
     // The current node being changed; passed from parent
-    @Input() currentNode : any;
+    @Input() currentNode : DatabaseNode;
 
     // Form of options for random value generator
     public randomOptions : any;
@@ -58,7 +60,7 @@ export class GenerateRandomComponent
         if (randomPassword != null)
         {
             // Update value of current node
-            this.encryptedValueService.setString(this.currentNode, randomPassword);
+            this.encryptedValueService.setString(this.currentNode.id, randomPassword);
             console.log("current password updated with random string - node id: " + this.currentNode.id);
 
             // Show notification

@@ -1,4 +1,4 @@
-import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Renderer, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
@@ -10,8 +10,7 @@ import { DatabaseNode } from "app/model/databaseNode"
 @Component({
     selector: 'viewer-entries',
     templateUrl: 'entries.component.html',
-    styleUrls: ['entries.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['entries.component.css']
 })
 export class ViewerEntriesComponent
 {

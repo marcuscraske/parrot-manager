@@ -31,23 +31,17 @@
         </td>
     </tr>
 
-    <tr *ngFor="let node of (children | orderBy: ['+getName()']); trackBy: trackChildren">
+    <tr *ngFor="let node of (children | orderBy: ['+name']); trackBy: trackChildren">
         <td>
             <input type="checkbox" attr.data-node-id="{{ node.id }}" />
         </td>
-        <td>
-            <span (click)="changeNodeBeingViewed.emit(node.id)">
-                {{ node.name != null && node.name.length > 0 ? node.name : "(unnamed)" }}
-            </span>
+        <td (click)="changeNodeBeingViewed.emit(node.id)">
+            {{ node.name != null && node.name.length > 0 ? node.name : "(unnamed)" }}
         </td>
         <td>
             <toggle-value [nodeId]="node.id"></toggle-value>
         </td>
         <td>
-            <button class="btn btn-primary" (click)="changeNodeBeingViewed.emit(node.id)" title="View entry">
-                <span class="icon icon-folder"></span>
-                View
-            </button>
             <copy-clipboard [nodeId]="node.id"></copy-clipboard>
             <send-keys [nodeId]="node.id"></send-keys>
             <button class="btn btn-danger" (click)="deleteEntry(node.id)" title="Delete">
