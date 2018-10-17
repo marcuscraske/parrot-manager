@@ -47,6 +47,8 @@ public class DatabaseNodeHistoryTest
 
     // Test data
     private List<EncryptedValue> values;
+    UUID encryptedValueId = UUID.randomUUID();
+    UUID encryptedValueId2 = UUID.randomUUID();
 
     @Before
     public void setup()
@@ -56,9 +58,6 @@ public class DatabaseNodeHistoryTest
         given(currentNode.getDatabase()).willReturn(database);
 
         // Setup fake IDs
-        UUID encryptedValueId = UUID.randomUUID();
-        UUID encryptedValueId2 = UUID.randomUUID();
-
         given(encryptedValue.getUuid()).willReturn(encryptedValueId);
         given(encryptedValue2.getUuid()).willReturn(encryptedValueId2);
         given(encryptedValueClone.getUuid()).willReturn(encryptedValueId);
@@ -142,7 +141,7 @@ public class DatabaseNodeHistoryTest
         history.add(encryptedValue2);
 
         // When
-        history.remove(encryptedValue);
+        history.delete(encryptedValueId.toString());
         EncryptedValue[] fetchedValues = history.fetch();
 
         // Then
@@ -154,7 +153,7 @@ public class DatabaseNodeHistoryTest
     public void remove_setsDirty()
     {
         // When
-        history.remove(encryptedValue);
+        history.delete(encryptedValue.toString());
 
         // Then
         verify(database).setDirty(true);
@@ -167,7 +166,7 @@ public class DatabaseNodeHistoryTest
         history.addAll(values);
 
         // When
-        history.clearAll();
+        history.deleteAll();
         EncryptedValue[] fetchedValues = history.fetch();
 
         // Then
@@ -181,7 +180,7 @@ public class DatabaseNodeHistoryTest
         history.addAll(values);
 
         // When
-        history.clearAll();
+        history.deleteAll();
 
         // Then
         verify(database, times(2)).setDirty(true);

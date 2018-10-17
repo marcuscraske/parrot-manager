@@ -102,32 +102,52 @@ public class DatabaseNodeHistory
     /**
      * Removes specified value from history.
      *
-     * @param encryptedValue value to be removed
+     * @param id value to be removed
      */
-    public synchronized void remove(EncryptedValue encryptedValue)
+    public synchronized void delete(String id)
     {
-        // Remove from collection
-        if (history.remove(encryptedValue.getUuid()) != null)
+        UUID uuid = UUID.fromString(id);
+
+        if (history.remove(uuid) != null)
         {
             // Add to list of values deleted
-            deleted.add(encryptedValue.getUuid());
+            deleted.add(uuid);
         }
 
         setDirty();
     }
 
     /**
-     * clears all stored history.
+     * Clears all stored history.
+     *
+     * TODO update unit test
      */
-    public synchronized void clearAll()
+    public synchronized void deleteAll()
     {
+        // Add all current items as deleted
+        deleted.addAll(history.keySet());
+
         // Clear history
         history.clear();
 
-        // Clear deleted values
-        deleted.clear();
-
         setDirty();
+    }
+
+    /**
+     * Restores a historic value as the current value.
+     *
+     * TODO unit test
+     *
+     * @param id encrypted value identifier
+     */
+    public synchronized void restore(String id)
+    {
+        EncryptedValue encryptedValue = fetchById(id);
+
+        if (encryptedValue != null)
+        {
+            this.currentNode.setValue(encryptedValue);
+        }
     }
 
     /**

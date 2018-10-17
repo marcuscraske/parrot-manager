@@ -92,7 +92,7 @@ public class DatabaseOptimizerTest
         databaseOptimizer.deleteAllValueHistory(database);
 
         // Then
-        verify(history).clearAll();
+        verify(history).deleteAll();
     }
 
     @Test
@@ -102,7 +102,7 @@ public class DatabaseOptimizerTest
         databaseOptimizer.deleteAllValueHistory(database);
 
         // Then
-        verify(childHistory).clearAll();
+        verify(childHistory).deleteAll();
     }
 
 }

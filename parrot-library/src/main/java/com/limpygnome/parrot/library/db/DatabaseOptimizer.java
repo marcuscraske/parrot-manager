@@ -45,7 +45,7 @@ public class DatabaseOptimizer
     private void deleteAllValueHistoryIterate(DatabaseNode node)
     {
         // Clear history
-        node.getHistory().clearAll();
+        node.getHistory().deleteAll();
 
         // Iterate children
         for (DatabaseNode childNode : node.getChildren())

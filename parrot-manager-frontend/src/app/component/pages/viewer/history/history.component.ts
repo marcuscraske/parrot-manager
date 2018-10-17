@@ -1,10 +1,10 @@
 import { Component, Renderer, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { EncryptedValue } from "app/model/encryptedValue"
 
 import { RuntimeService } from "app/service/runtime.service"
 import { DatabaseHistoryService } from "app/service/databaseHistory.service"
 
 import { DatabaseNode } from "app/model/databaseNode"
+import { EncryptedValue } from "app/model/encryptedValue"
 
 @Component({
     selector: 'history',
@@ -44,20 +44,20 @@ export class HistoryComponent
 
     clearAll()
     {
-        // TODO pass ID to service
-        //this.currentNode.getHistory().clearAll();
+        var nodeId = this.currentNode.id;
+        this.databaseHistoryService.deleteAll(nodeId);
     }
 
-    delete(encryptedValue)
+    delete(encryptedValue: EncryptedValue)
     {
-        // TODO pass ID
-        //this.currentNode.getHistory().remove(encryptedValue);
+        var nodeId = this.currentNode.id;
+        this.databaseHistoryService.delete(nodeId, encryptedValue);
     }
 
     restore(encryptedValue)
     {
-        // TODO pass ID to service
-        //this.currentNode.setValue(encryptedValue);
+        var nodeId = this.currentNode.id;
+        this.databaseHistoryService.restore(nodeId, encryptedValue);
     }
 
 }
