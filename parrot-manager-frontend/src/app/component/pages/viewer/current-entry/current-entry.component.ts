@@ -1,6 +1,7 @@
-import { Component, Renderer, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
+import { ViewerService } from 'app/service/ui/viewer.service'
 import { DatabaseService } from 'app/service/database.service'
 import { DatabaseNodeService } from 'app/service/databaseNode.service'
 import { RuntimeService } from 'app/service/runtime.service'
@@ -30,14 +31,14 @@ export class CurrentEntryComponent
     @Output() saveValue = new EventEmitter();
 
     constructor(
+        private viewerService: ViewerService,
         public databaseService: DatabaseService,
         public databaseNodeService: DatabaseNodeService,
         public runtimeService: RuntimeService,
         public syncService: SyncService,
         public encryptedValueService: EncryptedValueService,
         public renderer: Renderer,
-        public fb: FormBuilder,
-        public changeDetectorRef: ChangeDetectorRef
+        public fb: FormBuilder
     ) { }
 
     navigateToParent()
@@ -95,6 +96,9 @@ export class CurrentEntryComponent
 
         // Update tree
         this.updateTree.emit();
+
+        // Update rest of view
+        this.viewerService.changed();
     }
 
     postUpdateName(event)
@@ -152,19 +156,12 @@ export class CurrentEntryComponent
         // Reset form as untouched
         this.updateEntryForm.reset();
 
-        // Mark as invalid
-        this.markChangeDetection();
+        // Update rest of view
+        this.viewerService.changed();
 
         // Resize value box to fit content
         console.log("current value hidden");
         this.resizeValueTextAreaToFitContent();
-    }
-
-    markChangeDetection()
-    {
-        // mark current and all child components for change detection
-        this.changeDetectorRef.markForCheck();
-        console.log("marked for change detection");
     }
 
     // Resets edit mode when leaving text box of current value

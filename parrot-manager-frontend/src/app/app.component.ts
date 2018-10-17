@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { ViewerService } from 'app/service/ui/viewer.service'
 import { KeyBindsService } from 'app/service/keyBinds.service'
 import { InactivityWatcherService } from 'app/service/inactivityWatcher.service'
 import { RuntimeService } from 'app/service/runtime.service'
@@ -22,6 +23,7 @@ import { SyncResultService } from 'app/service/syncResult.service'
   selector: 'my-app',
   templateUrl: 'app.component.html',
   providers: [
+        ViewerService,
         KeyBindsService,
         InactivityWatcherService,
         RuntimeService,

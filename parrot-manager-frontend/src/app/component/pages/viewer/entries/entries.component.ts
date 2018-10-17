@@ -1,5 +1,6 @@
 import { Component, Renderer, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 
+import { ViewerService } from 'app/service/ui/viewer.service'
 import { RuntimeService } from 'app/service/runtime.service'
 import { DatabaseService } from 'app/service/database.service'
 import { DatabaseNodeService } from 'app/service/databaseNode.service'
@@ -26,14 +27,24 @@ export class ViewerEntriesComponent
     children: DatabaseNode[];
 
     constructor(
+        private viewerService: ViewerService,
         private runtimeService: RuntimeService,
         private databaseService: DatabaseService,
         private databaseNodeService: DatabaseNodeService,
         private encryptedValueService: EncryptedValueService,
         private renderer: Renderer
-    ) { }
+    ) {
+        this.viewerService.getChanges().subscribe(data => {
+            this.refreshData();
+        });
+    }
 
     ngOnChanges(changes: SimpleChanges)
+    {
+        this.refreshData();
+    }
+
+    refreshData()
     {
         var nodeId = this.currentNode.id;
         this.children = this.databaseNodeService.getChildren(nodeId);
@@ -60,6 +71,9 @@ export class ViewerEntriesComponent
         {
             console.log("failed to create new node - curr node: " + this.currentNode.id);
         }
+
+        // Update rest of view
+        this.viewerService.changed();
     }
 
     deleteSelectAll(event)
@@ -100,6 +114,9 @@ export class ViewerEntriesComponent
 
         // Update tree
         this.updateTree.emit();
+
+        // Update rest of view
+        this.viewerService.changed();
     }
 
     deleteEntry(nodeId)
@@ -114,6 +131,9 @@ export class ViewerEntriesComponent
 
         // Update tree
         this.updateTree.emit();
+
+        // Update rest of view
+        this.viewerService.changed();
     }
 
     // Used by ngFor for custom tracking of nodes, otherwise DOM is spammed with create/destroy of children

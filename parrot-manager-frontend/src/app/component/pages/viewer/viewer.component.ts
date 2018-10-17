@@ -1,6 +1,7 @@
-import { Component, Renderer, EventEmitter } from '@angular/core';
+import { Component, Renderer, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
+import { ViewerService } from 'app/service/ui/viewer.service'
 import { DatabaseService } from 'app/service/database.service'
 import { DatabaseNodeService } from 'app/service/databaseNode.service'
 import { ClipboardService } from 'app/service/clipboard.service'
@@ -8,6 +9,7 @@ import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { SearchFilterService } from 'app/service/searchFilter.service'
 
 import { DatabaseNode } from "app/model/databaseNode"
+import { EncryptedValue } from "app/model/encryptedValue"
 
 @Component({
     selector: 'viewer',
@@ -19,6 +21,7 @@ export class ViewerComponent
 {
 
     // The current node being edited
+    public currentNodeId: string;
     public currentNode: DatabaseNode;
 
     // The node's current sub view (entries, history)
@@ -44,6 +47,7 @@ export class ViewerComponent
     public searchFilter: string = "";
 
     constructor(
+        public viewerService: ViewerService,
         public databaseService: DatabaseService,
         public databaseNodeService: DatabaseNodeService,
         public clipboardService: ClipboardService,
@@ -135,6 +139,10 @@ export class ViewerComponent
 
         this.remoteSyncingFinishedEvent = renderer.listenGlobal("document", "sync.finish", (event) => {
             this.updateTree();
+        });
+
+        this.viewerService.getChanges().subscribe(data => {
+            this.refreshData();
         });
     }
 
@@ -335,7 +343,8 @@ export class ViewerComponent
         console.log("request to change node - id: " + nodeId);
 
         // Update node being viewed
-        this.currentNode = this.databaseNodeService.getNode(nodeId);
+        this.currentNodeId = nodeId;
+        this.refreshData();
 
         // Update node selected in tree
         this.updateTreeSelection();
@@ -350,6 +359,11 @@ export class ViewerComponent
         this.currentSubView = "entries";
 
         console.log("updated current node being edited: " + nodeId + " - result found: " + (this.currentNode != null));
+    }
+
+    refreshData()
+    {
+        this.currentNode = this.databaseNodeService.getNode(this.currentNodeId);
     }
 
     updateSearchFilter(searchFilter)

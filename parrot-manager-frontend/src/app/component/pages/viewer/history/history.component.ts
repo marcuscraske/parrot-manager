@@ -15,7 +15,7 @@ export class HistoryComponent
 {
 
     // The current node being changed; passed from parent
-    @Input() currentNode : DatabaseNode;
+    @Input() currentNode: DatabaseNode;
 
     // Current history of the current node; cache to avoid fetching multiple times (cheaper)
     history: EncryptedValue[];
@@ -27,6 +27,11 @@ export class HistoryComponent
     ) { }
 
     ngOnChanges(changes: SimpleChanges)
+    {
+        this.refreshData();
+    }
+
+    refreshData()
     {
         var nodeId = this.currentNode.id;
         this.history = this.databaseHistoryService.fetch(nodeId);
