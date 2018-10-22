@@ -8,7 +8,6 @@
                class="form-control"
                placeholder="Number of minutes"
                formControlName="remoteSyncInterval"
-               [(ngModel)]="globalSettingsForm.value['remoteSyncInterval']"
         />
         <small class="form-text text-muted">
             Leave as zero to disable.
@@ -20,7 +19,6 @@
                    class="form-check-input"
                    id="remoteSyncIntervalEnabled"
                    formControlName="remoteSyncIntervalEnabled"
-                   [(ngModel)]="globalSettingsForm.value['remoteSyncIntervalEnabled']"
             />
             <label class="form-check-label">
                 Sync at interval
@@ -33,7 +31,6 @@
                    class="form-check-input"
                    id="remoteSyncOnOpeningDatabase"
                    formControlName="remoteSyncOnOpeningDatabase"
-                   [(ngModel)]="globalSettingsForm.value['remoteSyncOnOpeningDatabase']"
             />
             <label class="form-check-label">
                 Sync on opening database
@@ -46,7 +43,6 @@
                    class="form-check-input"
                    id="remoteSyncOnChange"
                    formControlName="remoteSyncOnChange"
-                   [(ngModel)]="globalSettingsForm.value['remoteSyncOnChange']"
             />
             <label class="form-check-label">
                 Sync on save
@@ -62,7 +58,6 @@
                class="form-control"
                placeholder="Number of minutes"
                formControlName="remoteSyncOnChangeDelay"
-               [(ngModel)]="globalSettingsForm.value['remoteSyncOnChangeDelay']"
         />
         <small class="form-text text-muted">
             Leave as zero for no delay.

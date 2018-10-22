@@ -8,7 +8,6 @@
                class="form-control"
                placeholder="Leave empty for unlimited"
                formControlName="automaticBackupsRetained"
-               [(ngModel)]="globalSettingsForm.value['automaticBackupsRetained']"
         />
         <small class="form-text text-muted">
             After the maximum, older backups are deleted. Leave empty for no limit.
@@ -20,7 +19,6 @@
                    class="form-check-input"
                    id="automaticBackupsOnSave"
                    formControlName="automaticBackupsOnSave"
-                   [(ngModel)]="globalSettingsForm.value['automaticBackupsOnSave']"
             />
             <label class="form-check-label">
                 Backup on save
@@ -36,7 +34,6 @@
                class="form-control"
                placeholder="Leave empty to disable"
                formControlName="automaticBackupDelay"
-               [(ngModel)]="globalSettingsForm.value['automaticBackupDelay']"
         />
         <small class="form-text text-muted">
             Useful when automatic saving is enabled, as to prevent creating a backup for each small
@@ -52,7 +49,6 @@
                class="form-control"
                placeholder="Leave empty to disable"
                formControlName="remoteBackupsRetained"
-               [(ngModel)]="globalSettingsForm.value['remoteBackupsRetained']"
         />
         <small class="form-text text-muted">
             Leave as zero or empty to disable.

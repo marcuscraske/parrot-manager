@@ -1,11 +1,12 @@
 <div [formGroup]="globalSettingsForm" #form="ngForm">
     <div class="form-group">
-        <label class="form-control-label" for="remoteSyncInterval">
+        <label class="form-control-label" for="keyboardLayout">
             Keyboard layout
         </label>
-        <select id="keyboardLayout" class="form-control"
+        <select id="keyboardLayout"
+                class="form-control"
                 (change)="sendKeysService.refreshKeyboardLayout()"
-                formControlName="keyboardLayout"  [(ngModel)]="globalSettingsForm.value['keyboardLayout']">
+                formControlName="keyboardLayout">
 
             <option value="">automatic - {{ sendKeysService.getKeyboardLayout().getName() }}</option>
             <option *ngFor="let layout of sendKeysService.getKeyboardLayouts(); trackBy: trackChildrenKeyboardLayouts">{{ layout.getName() }}</option>

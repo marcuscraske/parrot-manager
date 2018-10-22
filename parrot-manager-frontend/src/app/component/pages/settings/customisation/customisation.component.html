@@ -4,9 +4,10 @@
         <label class="form-control-label" for="theme">
             Theme
         </label>
-        <select id="theme" class="form-control"
+        <select id="theme"
+                class="form-control"
                 (change)="themeService.set($event.target.value)"
-                formControlName="theme"  [(ngModel)]="globalSettingsForm.value['theme']">
+                formControlName="theme">
             <option>light</option>
             <option>dark</option>
             <option>hacker</option>
@@ -19,7 +20,6 @@
                    class="form-check-input"
                    id="saveWindowState"
                    formControlName="saveWindowState"
-                   [(ngModel)]="globalSettingsForm.value['saveWindowState']"
             />
             <label class="form-check-label">
                 Save window state (size, location, etc)

@@ -5,7 +5,6 @@
                    class="form-check-input"
                    id="ignoreJavaVersion"
                    formControlName="ignoreJavaVersion"
-                   [(ngModel)]="globalSettingsForm.value['ignoreJavaVersion']"
             />
             <label class="form-check-label">
                 Ignore outdated and incompatible Java runtime version (hides warning banner)
@@ -21,7 +20,6 @@
                class="form-control"
                placeholder="Number of minutes"
                formControlName="inactivityTimeout"
-               [(ngModel)]="globalSettingsForm.value['inactivityTimeout']"
         />
         <small class="form-text text-muted">
             Leave as zero to disable.
@@ -36,7 +34,6 @@
                class="form-control"
                placeholder="Number of seconds"
                formControlName="wipeClipboardDelay"
-               [(ngModel)]="globalSettingsForm.value['wipeClipboardDelay']"
         />
         <small class="form-text text-muted">
             Leave as zero to disable.

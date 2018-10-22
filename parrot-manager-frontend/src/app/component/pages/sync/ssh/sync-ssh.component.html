@@ -59,7 +59,7 @@
     Form
 -->
 
-<form id="openRemoteSsh" *ngIf="!showSpinner" [formGroup]="openForm" #form="ngForm" [ngClass]="{ 'was-validated' : form.submitted && form.valid }" novalidate>
+<form id="openRemoteSsh" class="options" *ngIf="!showSpinner" [formGroup]="openForm" #form="ngForm" [ngClass]="{ 'was-validated' : form.submitted && form.valid }" novalidate>
 
     <p *ngIf="currentMode == 'edit'">
         <button type="button" class="btn btn-default" routerLink="/sync">
