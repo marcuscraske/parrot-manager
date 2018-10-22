@@ -1,6 +1,7 @@
 import { Component, Renderer, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
+import { ViewerService } from 'app/service/ui/viewer.service'
 import { DatabaseService } from 'app/service/database.service'
 import { RandomGeneratorService } from 'app/service/randomGenerator.service'
 import { EncryptedValueService } from 'app/service/encryptedValue.service'
@@ -22,6 +23,7 @@ export class GenerateRandomComponent
     public randomOptions : any;
 
     constructor(
+        private viewerService: ViewerService,
         private databaseService: DatabaseService,
         private randomGeneratorService: RandomGeneratorService,
         private encryptedValueService: EncryptedValueService,
@@ -65,6 +67,9 @@ export class GenerateRandomComponent
 
             // Show notification
             toastr.info("Updated with random value");
+
+            // Mark entire viewer as invalid
+            this.viewerService.changed();
         }
         else
         {

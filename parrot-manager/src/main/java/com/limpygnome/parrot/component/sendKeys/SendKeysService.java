@@ -8,6 +8,8 @@ import com.limpygnome.parrot.component.ui.WebStageInitService;
 import com.limpygnome.parrot.component.ui.WebViewStage;
 import com.limpygnome.parrot.library.crypto.EncryptedValue;
 import com.limpygnome.parrot.library.db.Database;
+import com.limpygnome.parrot.library.db.DatabaseNode;
+import com.limpygnome.parrot.library.db.DatabaseNodeHistory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,13 +90,36 @@ public class SendKeysService implements SettingsRefreshedEvent
     /**
      * Sends keys once the application is minimized.
      *
-     * @param encryptedValue the value to be sent
+     * @param rawNodeId raw node id
+     * @param rawEncryptedValueId the raw id of the encrypted value (optional)
      */
-    public synchronized void send(EncryptedValue encryptedValue) throws Exception
+    public synchronized void send(String rawNodeId, String rawEncryptedValueId) throws Exception
     {
+        EncryptedValue encryptedValue = null;
+        boolean queued = false;
+
+        // Retrieve encrypted value
+        Database database = databaseService.getDatabase();
+        DatabaseNode node = database.getNode(rawNodeId);
+
+        if (rawEncryptedValueId != null && rawEncryptedValueId.length() > 0)
+        {
+            DatabaseNodeHistory history = node.getHistory();
+            encryptedValue = history.fetchById(rawEncryptedValueId);
+        }
+        else if (node != null)
+        {
+            encryptedValue = node.getValue();
+        }
+        else
+        {
+            LOG.warn("failed to find node for send keys - id: {}", rawNodeId);
+        }
+
+        // Handle encrypted value
         if (encryptedValue != null)
         {
-            // Reset if same key
+            // Reset if same encrypted value - allows user to toggle sending keys
             if (pendingEncryptedValueId != null && pendingEncryptedValueId.equals(encryptedValue.getUuid()))
             {
                 pendingData = null;
@@ -107,10 +132,9 @@ public class SendKeysService implements SettingsRefreshedEvent
                 LOG.info("queueing sending keys");
 
                 // Fetch and store decrypted value and id
-                Database database = databaseService.getDatabase();
-
                 pendingEncryptedValueId = encryptedValue.getUuid();
                 pendingData = encryptedValueService.asString(database, encryptedValue);
+                queued = true;
 
                 // Ensure we know when the app is minimized
                 hookStageMinimized();
@@ -123,6 +147,10 @@ public class SendKeysService implements SettingsRefreshedEvent
 
             LOG.debug("null encrypted value, not sending keys");
         }
+
+        // Raise event to trigger any front-end changes
+        SendKeysChangeEvent event = new SendKeysChangeEvent(rawNodeId, rawEncryptedValueId, queued);
+        initService.triggerEvent("document", "sendKeys.change", event);
     }
 
     /**
@@ -263,6 +291,10 @@ public class SendKeysService implements SettingsRefreshedEvent
                 pendingEncryptedValueId = null;
                 pendingData = null;
 
+                // Raise event for changed state
+                SendKeysChangeEvent event = new SendKeysChangeEvent(null, null, false);
+                initService.triggerEvent("document", "sendKeys.change", event);
+
                 LOG.debug("finished simulating keys");
 
             }
@@ -275,14 +307,6 @@ public class SendKeysService implements SettingsRefreshedEvent
         {
             LOG.debug("skipped simulating keys, pending data is empty");
         }
-    }
-
-    /**
-     * @return indicates if the specified value is pending to be sent as keys
-     */
-    public synchronized boolean isQueued(EncryptedValue value)
-    {
-        return pendingEncryptedValueId != null && value != null && pendingEncryptedValueId.equals(value.getUuid());
     }
 
     private synchronized void type(Robot robot, char key)

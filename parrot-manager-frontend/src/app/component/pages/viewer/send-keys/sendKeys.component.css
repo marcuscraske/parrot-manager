@@ -1,4 +1,42 @@
 .queued
 {
-    background: #ccc;
+    animation-name: pulse;
+    animation-duration: 1500ms;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 1500ms;
+    -webkit-animation-iteration-count: infinite;
+}
+
+@keyframes pulse
+{
+    0%
+    {
+        opacity: 0.2;
+    }
+    50%
+    {
+        opacity: 0.8;
+    }
+    100%
+    {
+        opacity: 0.2;
+    }
+}
+
+@-webkit-keyframes pulse
+{
+    0%
+    {
+        opacity: 0.2;
+    }
+    50%
+    {
+        opacity: 0.8;
+    }
+    100%
+    {
+        opacity: 0.2;
+    }
 }

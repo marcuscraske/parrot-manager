@@ -1,7 +1,5 @@
-import { Component, Input, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Subscription, timer } from "rxjs";
+import { Component, Input, EventEmitter, ChangeDetectionStrategy, Renderer } from '@angular/core';
 
-import { EncryptedValueService } from 'app/service/encryptedValue.service'
 import { SendKeysService } from 'app/service/sendKeys.service'
 
 import { EncryptedValue } from "app/model/encryptedValue"
@@ -24,64 +22,44 @@ export class SendKeysComponent
     // Holds state as to whether this button's value is queued to be sent as keys
     public isQueued : boolean;
 
-    // Used to hold a subscription for checking if this button/encrypted value is still queued for being sent
-    private queueSubscription : Subscription;
+    // Holds event for send keys changing
+    public sendKeysChangeEvent: Function;
 
     constructor(
-        private changeDetection: ChangeDetectorRef,
-        private encryptedValueService: EncryptedValueService,
-        private sendKeysService: SendKeysService
+        private sendKeysService: SendKeysService,
+        private renderer: Renderer
     ) {
         this.isQueued = false;
-    }
 
-    sendKeys()
-    {
-        if (this.encryptedValue != null)
-        {
-            console.log("sending keys...");
-            this.sendKeysService.send(this.encryptedValue);
-            toastr.info("Click in a different application to send value as keys...");
-
-            // Unsubscribe existing (if it exists)
-            if (this.queueSubscription)
+        this.sendKeysChangeEvent = this.renderer.listenGlobal("document", "sendKeys.change", (event) => {
+            // Check whether still pending when sendKeys service raises change event
+            if (this.isQueued)
             {
-                this.queueSubscription.unsubscribe();
+                var currentEncryptedValueId = (this.encryptedValue != null ? this.encryptedValue.id : null);
+
+                var nodeId = event.data.getNodeId();
+                var encryptedValueId = event.data.getEncryptedValueId();
+                var queued = event.data.isQueued();
+
+                if (nodeId != this.nodeId || encryptedValueId != currentEncryptedValueId || !queued)
+                {
+                    this.isQueued = false;
+                }
             }
-
-            // Subscribe for queue changes
-            var timer = timer(0, 100);
-            this.queueSubscription = timer.subscribe(() => this.updateIsQueued());
-        }
-        else
-        {
-            console.log("empty value, cannot send keys");
-            toastr.error("Cannot send empty value as keys...");
-        }
-    }
-
-    updateIsQueued()
-    {
-        // Update value
-        this.isQueued = this.sendKeysService.isQueued(this.encryptedValue);
-
-        // Unsubscribe once sent
-        if (!this.isQueued)
-        {
-            this.queueSubscription.unsubscribe();
-        }
-
-        this.changeDetection.markForCheck();
-
-        console.log("polled for send keys - " + this.isQueued);
+        });
     }
 
     ngOnDestroy()
     {
-        if (this.queueSubscription != null)
-        {
-            this.queueSubscription.unsubscribe();
-        }
+        this.sendKeysChangeEvent();
+    }
+
+    sendKeys()
+    {
+        console.log("sending keys...");
+        this.sendKeysService.send(this.nodeId, this.encryptedValue);
+        toastr.info("Click in a different application to send value as keys...");
+        this.isQueued = true;
     }
 
 }

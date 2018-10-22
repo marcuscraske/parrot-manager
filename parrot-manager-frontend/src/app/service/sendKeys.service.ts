@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { EncryptedValue } from "app/model/encryptedValue"
+
 @Injectable()
 export class SendKeysService
 {
@@ -10,9 +12,10 @@ export class SendKeysService
         this.sendKeysService = (window as any).sendKeysService;
     }
 
-    send(encryptedValue) : string
+    send(nodeId: string, encryptedValue: EncryptedValue) : string
     {
-        var result = this.sendKeysService.send(encryptedValue);
+        var encryptedValueId = (encryptedValue != null ? encryptedValue.id : null);
+        var result = this.sendKeysService.send(nodeId, encryptedValueId);
         return result;
     }
 
@@ -21,9 +24,10 @@ export class SendKeysService
         this.sendKeysService.sendTest(text);
     }
 
-    isQueued(encryptedValue) : boolean
+    isQueued(nodeId: string, encryptedValue: EncryptedValue) : boolean
     {
-        return this.sendKeysService.isQueued(encryptedValue);
+        var encryptedValueId = (encryptedValue != null ? encryptedValue.id : null);
+        return this.sendKeysService.isQueued(nodeId, encryptedValueId);
     }
 
     reload()
