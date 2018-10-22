@@ -28,7 +28,6 @@ export class CurrentEntryComponent
     @Output() updateTree = new EventEmitter();
     @Output() updateTreeSelection = new EventEmitter();
     @Output() changeNodeBeingViewed = new EventEmitter();
-    @Output() saveValue = new EventEmitter();
 
     constructor(
         private viewerService: ViewerService,

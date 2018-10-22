@@ -153,7 +153,7 @@ public class DatabaseNodeHistoryTest
     public void remove_setsDirty()
     {
         // When
-        history.delete(encryptedValue.toString());
+        history.delete(encryptedValueId.toString());
 
         // Then
         verify(database).setDirty(true);

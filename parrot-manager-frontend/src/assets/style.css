@@ -204,6 +204,6 @@ main h1 a:hover
 /* fixes for bootstrap */
 .form-check-label
 {
-    margin-top: 0.2em;
+    margin-top: 0.4em;
     margin-left: 0.25em;
 }

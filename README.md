@@ -2,7 +2,9 @@
     parrot manager
 </h1>
 <p align="center">
-    <i>passwords made simple</i>
+    <i>
+        passwords made simple
+    </i>
 </p>
 
 <p align="center">
@@ -22,7 +24,10 @@ A simple password manager with a modern interface, with ability to synchronize d
 Supports Linux, Windows and Mac.
 
 <p align="center">
-    <img src="docs/screenshots/7.0/parrot-window2.png" alt="Parrot manager window" />
+    <img src="docs/screenshots/7.0/parrot-window.png" alt="Parrot manager window" />
+</p>
+<p align="center">
+    More screenshots can be found [here](docs/screenshots).
 </p>
 
 
@@ -41,8 +46,6 @@ Supports Linux, Windows and Mac.
     - Currently supports csv and json
 - Modern UI
 - Standalone mode - useful for memory sticks and restrictive environments
-
-Screenshots can be found in [here](docs/screenshots).
 
 Upcoming features can be seen on the [roadmap](ROADMAP.md).
 
