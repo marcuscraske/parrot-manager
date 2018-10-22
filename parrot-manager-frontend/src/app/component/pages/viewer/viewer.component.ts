@@ -285,15 +285,22 @@ export class ViewerComponent
             // Update tree
             var tree = $("#tree").jstree(true);
 
-            // Wipe tree; seems to be a bug with jstree where state is lost
-            tree.settings.core.data = { };
-            tree.refresh();
+            if (tree)
+            {
+                // Wipe tree; seems to be a bug with jstree where state is lost
+                tree.settings.core.data = { };
+                tree.refresh();
 
-            // Restore data
-            tree.settings.core.data = data;
-            tree.refresh();
+                // Restore data
+                tree.settings.core.data = data;
+                tree.refresh();
 
-            console.log("tree updated");
+                console.log("tree updated");
+            }
+            else
+            {
+                console.log("tree not found");
+            }
         });
     }
 

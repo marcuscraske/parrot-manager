@@ -176,6 +176,8 @@ public class BackupService implements SettingsRefreshedEvent
     /**
      * Deletes a backup.
      *
+     * TODO move this to use IDs, rather than paths - potentially dangerous in future otherwise
+     *
      * @param path the path of the backup file to be deleted
      * @return error message; null if successful
      */
@@ -198,12 +200,32 @@ public class BackupService implements SettingsRefreshedEvent
             {
                 result = "Unable to delete file (unknown reason)";
             }
+            else
+            {
+                LOG.info("wiped backup - path={}", file.getAbsolutePath());
+            }
 
             // Refresh files
             updateCache();
         }
 
         return result;
+    }
+
+    public synchronized void wipeAll()
+    {
+        LOG.info("wiping all backups...");
+
+        File[] files = fetchFiles();
+        for (File file : files)
+        {
+            file.delete();
+            LOG.info("wiped backup - path={}", file.getAbsolutePath());
+        }
+
+        LOG.info("wiped all backups.");
+
+        updateCache();
     }
 
     // Layer of protection against front-end playing with non-backup files

@@ -17,9 +17,12 @@ a:hover,
 a:focus
 {
     color: #0f0;
-    text-decoration: underline;
 }
 
+.header
+{
+    color: #0f0 !important;
+}
 
 header
 {
@@ -199,4 +202,27 @@ header div a.selected
     background: #000 !important;
     color: #0f0 !important;
     border-color: #000 !important;
+}
+
+.card
+{
+    border: solid 1px #0f0;
+}
+
+.card-header
+{
+    background: #0f0;
+    color: #000;
+}
+
+.card-body
+{
+    background: #000;
+}
+
+.input-group-text
+{
+    border: solid 1px #0f0;
+    color: #000;
+    background: #0f0;
 }

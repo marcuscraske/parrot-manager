@@ -57,6 +57,11 @@ export class BackupsComponent {
         this.errorMessage = this.backupService.create();
     }
 
+    wipeAll()
+    {
+        this.backupService.wipeAll();
+    }
+
     isBackups()
     {
         return this.backupFiles != null && this.backupFiles.length > 0;

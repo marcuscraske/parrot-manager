@@ -7,3 +7,9 @@ table tr td:nth-child(2)
 {
     width: 100%;
 }
+
+table tr th,
+table tr td
+{
+    vertical-align: middle;
+}

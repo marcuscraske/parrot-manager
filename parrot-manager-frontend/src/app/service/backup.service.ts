@@ -45,6 +45,11 @@ export class BackupService
         return results;
     }
 
+    wipeAll()
+    {
+        this.backupService.wipeAll();
+    }
+
     delete(path) : string
     {
         var result = this.backupService.delete(path);

@@ -2,9 +2,10 @@ html,
 body
 {
     background: #444;
-    color: #fff;
+    color: #ccc;
 }
 
+.header,
 input::placeholder,
 textarea::placeholder
 {
@@ -91,7 +92,8 @@ textarea
 }
 
 
-.modal-content
+.modal-content,
+.card-body
 {
     background: #444;
 }
@@ -101,7 +103,9 @@ textarea
     color: #333;
 }
 
-.list-group-item
+.list-group-item,
+.card-header,
+.input-group-text
 {
     background: #333;
 }
@@ -112,4 +116,11 @@ textarea
 {
     background: #000;
     border-color: #000;
+}
+
+.card,
+.input-group-text
+{
+    border: solid 1px #333;
+    color: inherit;
 }
