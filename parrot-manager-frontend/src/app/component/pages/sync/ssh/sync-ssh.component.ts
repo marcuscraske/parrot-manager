@@ -193,7 +193,7 @@ export class SyncSshComponent {
         }
     }
 
-    persist()
+    persist(event)
     {
         var form = this.openForm;
 

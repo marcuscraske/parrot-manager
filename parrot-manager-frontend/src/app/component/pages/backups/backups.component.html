@@ -8,11 +8,11 @@
 </p>
 
 <p class="mb-4">
-    <button class="btn btn-default" (click)="create()">
+    <button class="btn btn-default" (click)="create()" title="Captures a snapshot of the current database and saves it to a separate file as a backup">
         <span class="icon icon-floppy-disk"></span>
         Create Backup
     </button>
-    <button class="btn btn-danger" (click)="wipeAll()">
+    <button class="btn btn-danger" (click)="wipeAll()" title="Wipes all backups created below">
         <span class="icon icon-bin"></span>
         Wipe All
     </button>
@@ -37,15 +37,15 @@
                 {{ file.lastModified | friendlyTime }}
             </td>
             <td>
-                <button class="btn btn-default" (click)="open(file)">
+                <button class="btn btn-default" (click)="open(file)" title="Open this backup, this will close the current database">
                     <span class="icon icon-folder"></span>
                     Open
                 </button>
-                <button class="btn btn-default" (click)="restore(file)">
+                <button class="btn btn-default" (click)="restore(file)" title="Creates a backup and closes the current database, then replaces it with this backup">
                     <span class="icon icon-undo2"></span>
                     Restore
                 </button>
-                <button class="btn btn-danger" (click)="delete(file)">
+                <button class="btn btn-danger" (click)="delete(file)" title="Deletes this backup">
                     <span class="icon icon-cross"></span>
                     Delete
                 </button>

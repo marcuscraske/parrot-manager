@@ -3,33 +3,39 @@
     Sync
 </h1>
 
+<p>
+    Synchronize changes across multiple devices.
+</p>
+
 <div *ngIf="!isSyncing()">
 
+    <h2 class="mt-4 mb-3">
+        Profiles
+    </h2>
+
     <div class="form-group">
-        <button class="btn btn-default" routerLink="/sync/ssh/new">
+        <button class="btn btn-default" routerLink="/sync/ssh/new" title="Add a new profile to synchronize with a remote database over SSH">
             <span class="icon icon-plus"></span>
-            Add
+            Add remote database via SSH
         </button>
     </div>
 
     <table class="table sync" *ngIf="profiles.length > 0" id="remoteSyncTargets">
         <tr *ngFor="let profile of profiles; trackBy: trackChildren">
             <td>
-                <button class="btn btn-primary" (click)="syncService.sync(syncService.getDefaultSyncOptions(), profile.id)">
+                <button class="btn btn-primary"
+                        (click)="syncService.sync(syncService.getDefaultSyncOptions(), profile.id)"
+                        title="Synchronizes this profile.">
                     <span class="icon icon-download"></span>
                 </button>
             </td>
             <td routerLink="/sync/ssh/{{ profile.id }}">
-                <a routerLink="/sync/ssh/{{ profile.id }}" title="{{ profile.id }}">
+                <a routerLink="/sync/ssh/{{ profile.id }}" title="Edits the profile, id: {{ profile.id }}">
                     {{ profile.name }}
                 </a>
             </td>
         </tr>
     </table>
-
-    <p *ngIf="profiles.length == 0">
-        Add a remote database to synchronize changes across multiple device.
-    </p>
 
 </div>
 
@@ -44,7 +50,7 @@
     </p>
 
     <p class="text-center">
-        <button class="btn btn-danger" (click)="abort()">
+        <button class="btn btn-danger" (click)="abort()" title="Abort the current profile(s) being synchronized">
             <span class="icon icon-cross"></span>
             Abort
         </button>
@@ -57,16 +63,16 @@
 -->
 
 <div *ngIf="syncResults != null && syncResults.length > 0">
-    <h2 class="mt-5 mb-3">
+    <h2 class="mt-4 mb-3">
         Change Log
     </h2>
 
     <p>
-        <button class="btn btn-default" (click)="copySyncLogToClipboard()">
+        <button class="btn btn-default" (click)="copySyncLogToClipboard()" title="Copy the change-log to your clipboard">
             <span class="icon icon-clipboard"></span>
             Copy to Clipboard
         </button>
-        <button class="btn btn-default" (click)="syncResultService.clear()">
+        <button class="btn btn-default" (click)="syncResultService.clear()" title="Clear the change-log">
             <span class="icon icon-bin"></span>
             Clear
         </button>

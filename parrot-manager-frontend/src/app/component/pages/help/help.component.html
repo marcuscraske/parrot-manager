@@ -32,7 +32,7 @@
     Visit our Github repo to contribute, suggest improvements and raise issues:
 </p>
 <p>
-    <button class="btn btn-primary" (click)="browserService.open('github')">
+    <button class="btn btn-primary" (click)="browserService.open('github')" title="Opens the link in your default web browser">
         <span class="icon icon-github"></span>
         https://github.com/limpygnome/parrot-manager
     </button>
@@ -43,11 +43,11 @@
 </h2>
 
 <div class="form-group">
-    <textarea id="buildInfo" class="form-control">unknown</textarea>
+    <textarea id="buildInfo" class="form-control" readonly>unknown</textarea>
 </div>
 
 <div class="form-group">
-    <button class="btn btn-default" (click)="copyBuildInfo()">
+    <button class="btn btn-default" (click)="copyBuildInfo()" title="Copy build information to your clipboard">
         <span class="icon icon-clipboard"></span>
         Copy to Clipboard
     </button>

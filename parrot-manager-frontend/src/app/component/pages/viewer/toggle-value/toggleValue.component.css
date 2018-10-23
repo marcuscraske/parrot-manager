@@ -7,3 +7,8 @@
 {
     padding: 0.4em 0.5em 0.4em 0.9em;
 }
+
+.btn .icon
+{
+    margin: 0;
+}

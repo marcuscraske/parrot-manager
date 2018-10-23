@@ -4,7 +4,7 @@
 </h1>
 
 <form [formGroup]="createForm" (ngSubmit)="create($event)" #form="ngForm" [ngClass]="{ 'was-validated' : form.submitted && form.valid }" novalidate>
-    <div class="form-group" [ngClass]="{ 'has-error' : form.submitted && !createForm.controls['location'].valid }">
+    <div class="form-group">
         <label class="form-label" for="location">
             Location
         </label>
@@ -14,9 +14,13 @@
                    type="text"
                    class="form-control"
                    placeholder="Path of database"
+                   [ngClass]="{ 'is-invalid' : form.submitted && !createForm.controls['location'].valid }"
             />
             <span class="input-group-btn">
-                <button class="btn btn-default form-control" type="button" (click)="openSaveFileDialogue()">
+                <button class="btn btn-default form-control"
+                        type="button"
+                        (click)="openSaveFileDialogue()"
+                        title="Prompts for location to save file">
                     Find
                 </button>
             </span>

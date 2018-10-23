@@ -40,9 +40,12 @@
     <div class="form-group options">
         <copy-clipboard [nodeId]="currentNode.id"></copy-clipboard>
         <send-keys [nodeId]="currentNode.id"></send-keys>
-        <button class="btn btn-default" data-toggle="collapse" data-target="#generateRandomContainer" title="Generate random value">
+        <button class="btn btn-default"
+                data-toggle="collapse"
+                data-target="#generateRandomContainer"
+                title="Replace current password with a randomly generated value (shows dialogue first)">
             <span class="icon icon-equalizer"></span>
-            Generate Random
+            Generate Random Password
         </button>
         <button class="btn btn-danger" (click)="deleteCurrentEntry()" title="Delete current entry">
             <span class="icon icon-cross"></span>

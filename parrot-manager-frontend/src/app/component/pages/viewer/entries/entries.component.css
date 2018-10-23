@@ -22,4 +22,5 @@ table.entries tr td:nth-child(3)
 .icon-cross
 {
     font-size: 0.8em;
+    margin: 0;
 }

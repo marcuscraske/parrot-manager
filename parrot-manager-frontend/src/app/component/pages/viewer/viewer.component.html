@@ -26,11 +26,11 @@
 
         <ul class="nav nav-tabs">
             <li class="nav-item" (click)="currentSubView = 'entries'">
-                <a class="nav-link" [ngClass]="{ 'active' : currentSubView == 'entries' }">
+                <a class="nav-link" [ngClass]="{ 'active' : currentSubView == 'entries' }" title="Sub-elements / children of the current entry">
                     Entries
                 </a>
             </li>
-            <li class="nav-item" *ngIf="!this.currentNode.isRoot" (click)="currentSubView = 'history'">
+            <li class="nav-item" *ngIf="!this.currentNode.isRoot" (click)="currentSubView = 'history'" title="Past values for the current entry">
                 <a class="nav-link" [ngClass]="{ 'active' : currentSubView == 'history' }">
                     History
                 </a>

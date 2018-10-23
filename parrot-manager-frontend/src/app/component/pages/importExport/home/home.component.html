@@ -12,8 +12,18 @@
 </h2>
 
 <ul class="list-group text-center mt-3">
-    <li class="list-group-item" [ngClass]="{ 'active' : format == 'json' }" (click)="format = 'json'">JSON</li>
-    <li class="list-group-item" [ngClass]="{ 'active' : format == 'csv' }" (click)="format = 'csv'">CSV</li>
+    <li class="list-group-item"
+        [ngClass]="{ 'active' : format == 'json' }"
+        (click)="format = 'json'"
+        title="Imports/exports data as JSON">
+        JSON
+    </li>
+    <li class="list-group-item"
+        [ngClass]="{ 'active' : format == 'csv' }"
+        (click)="format = 'csv'"
+        title="Imports/exports data as comma-separated values">
+        CSV
+    </li>
 </ul>
 
 <h2 class="text-center mt-4">
@@ -33,34 +43,24 @@
     </div>
 </div>
 
-<div class="row mt-3">
-    <div class="col-md-6 text-right">
-        <h2>
-            Import
-        </h2>
-        <p>
-            <button class="btn btn-lg btn-default" (click)="chooseImportText()">
-                Text
-            </button>
-            <button class="btn btn-lg btn-default" (click)="chooseImportFile()">
-                File
-            </button>
-        </p>
-    </div>
-    <div class="col-md-6">
-        <h2>
-            Export
-        </h2>
-        <p>
-            <button class="btn btn-lg btn-default" (click)="chooseExportText()">
-                Text
-            </button>
-            <button class="btn btn-lg btn-default" (click)="chooseExportFile()">
-                File
-            </button>
-        </p>
-    </div>
-</div>
+<h2 class="text-center mt-5">
+    Choose Action
+</h2>
+
+<p class="text-center">
+    <button class="btn btn-lg btn-default" (click)="chooseImportText()" title="Displays textbox for data to be pasted and imported in chosen data format">
+        Import as text
+    </button>
+    <button class="btn btn-lg btn-default" (click)="chooseImportFile()" title="Prompts for file to import in chosen data format">
+        Import from file
+    </button>
+    <button class="btn btn-lg btn-default" (click)="chooseExportText()" title="This will display the database in the chosen format in a textbox; this may reveal sensitive informnation">
+        Export as text
+    </button>
+    <button class="btn btn-lg btn-default" (click)="chooseExportFile()" title="Saves the database in the chosen format to file">
+        Export to file
+    </button>
+</p>
 
 <div *ngIf="importText">
     <p class="text-center">
