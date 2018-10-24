@@ -29,7 +29,7 @@ export class SearchBoxComponent
 
         this.delayHandle = setTimeout(() => {
             this.update();
-        }, 500);
+        }, 100);
     }
 
     update()
@@ -41,6 +41,7 @@ export class SearchBoxComponent
     reset()
     {
         $("#search").val("");
+        this.update();
     }
 
     isResetVisible()
