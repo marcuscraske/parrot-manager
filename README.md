@@ -15,7 +15,7 @@
 [![Release](https://img.shields.io/github/release/limpygnome/parrot-manager.svg)](https://github.com/limpygnome/parrot-manager/releases)
 [![Downloads](https://img.shields.io/github/downloads/limpygnome/parrot-manager/total.svg)](https://github.com/limpygnome/parrot-manager/releases)
 [![Linux and Mac Builds](https://img.shields.io/travis/limpygnome/parrot-manager.svg?label=Linux%20and%20Mac%20build)](https://travis-ci.org/limpygnome/parrot-manager)
-[![Windows Build](https://img.shields.io/appveyor/ci/limpygnome/parrot-manager.svg?label=Windows%20build)](https://travis-ci.org/limpygnome/parrot-manager)
+[![Windows Build](https://img.shields.io/appveyor/ci/limpygnome/parrot-manager.svg?label=Windows%20build)](https://ci.appveyor.com/project/limpygnome/parrot-manager)
 [![Github Issues](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/issues.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/issues)
 [![Pending Pull-Requests](https://img.shields.io/github/issues-pr/limpygnome/parrot-manager.svg)](https://github.com/limpygnome/parrot-manager/pulls)
 [![Known Vulnerabilities](https://snyk.io/test/github/limpygnome/parrot-manager/badge.svg)](https://snyk.io/test/github/limpygnome/parrot-manager)
@@ -48,7 +48,7 @@ Supports Linux, Windows and Mac.
 - Modern UI
 - Standalone mode - useful for memory sticks and restrictive environments
 
-Upcoming features can be seen on the [roadmap](ROADMAP.md).
+Upcoming features can be seen on the [roadmap](roadmap.md).
 
 
 ## Download
@@ -65,6 +65,3 @@ For help installing on your platform, see [installation](docs/installation.md).
 
 ## Contribute
 This project is open to [contributions](CONTRIBUTING.md).
-
-Donations can be sent to:
-* PayPal: limpygnome@gmail.com
