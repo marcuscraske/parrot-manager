@@ -11,7 +11,8 @@
     <img src="parrot-manager/src/main/resources/icons/parrot-icon.png" alt="parrot logo" />
 </p>
 
-[![Build Status](https://travis-ci.org/limpygnome/parrot-manager.svg)](https://travis-ci.org/limpygnome/parrot-manager)
+[![Linux and Mac Build](https://img.shields.io/travis/limpygnome/parrot-manager.svg?label=Linux%20and%20Mac%20build)](https://travis-ci.org/limpygnome/parrot-manager)
+[![Windows Build](https://img.shields.io/appveyor/ci/limpygnome/parrot-manager.svg?label=Windows%20build)](https://travis-ci.org/limpygnome/parrot-manager)
 [![Github All Releases](https://img.shields.io/github/downloads/limpygnome/parrot-manager/total.svg)](https://github.com/limpygnome/parrot-manager)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 [![Github Issues](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/issues.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/issues)
@@ -27,7 +28,7 @@ Supports Linux, Windows and Mac.
     <img src="docs/screenshots/7.0/parrot-window.png" alt="Parrot manager window" />
 </p>
 <p align="center">
-    More screenshots can be found [here](docs/screenshots).
+    More screenshots can be found <a href="https://github.com/limpygnome/parrot-manager/tree/develop/docs/screenshots">here</a>.
 </p>
 
 

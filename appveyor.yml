@@ -1,0 +1,29 @@
+version: '{build}'
+environment:
+  matrix:
+    - JAVA_HOME: C:\Program Files\Java\jdk9
+      MAVEN_VERSION: 3.5.2
+      NODE_VERSION: 9.3.0
+install:
+  - ps: |
+      Add-Type -AssemblyName System.IO.Compression.FileSystem
+      if (!(Test-Path -Path "C:\maven" )) {
+        Write-Host "Downloading Maven $env:MAVEN_VERSION"
+        (new-object System.Net.WebClient).DownloadFile("https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$env:MAVEN_VERSION/apache-maven-$env:MAVEN_VERSION-bin.zip", 'C:\maven-bin.zip')
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin.zip", "C:\maven")
+      }
+  - ps: Install-Product node $env:NODE_VERSION
+  - npm install -g npm
+  - ps: $env:path = $env:appdata + "\npm;" + $env:path
+  - cmd: SET M2_HOME=C:\maven\apache-maven-%MAVEN_VERSION%
+  - cmd: SET PATH=%M2_HOME%\bin;%JAVA_HOME%/bin;%PATH%
+  - cmd: SET MAVEN_OPTS=-Xmx4g
+  - cmd: SET JAVA_OPTS=-Xmx4g
+  - cmd: mvn -v
+  - node --version && npm --version
+build_script:
+  - mvn clean package -Pwindows
+cache:
+  - C:\maven\ -> appveyor.yml
+  - C:\Users\appveyor\.m2\ -> pom.xml
+  - parrot-manager-frontend\node_modules

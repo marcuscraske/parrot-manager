@@ -7,10 +7,7 @@ matrix:
     - os: osx
       osx_image: xcode9.2
 node_js:
-  - "4"
-  - "5"
-  - "6"
-  - "node"
+  - "9"
 before_install:
   - npm i npm@^4 -g
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y fakeroot; fi
