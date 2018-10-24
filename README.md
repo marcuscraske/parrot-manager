@@ -11,13 +11,13 @@
     <img src="parrot-manager/src/main/resources/icons/parrot-icon.png" alt="parrot logo" />
 </p>
 
-[![Linux and Mac Build](https://img.shields.io/travis/limpygnome/parrot-manager.svg?label=Linux%20and%20Mac%20build)](https://travis-ci.org/limpygnome/parrot-manager)
-[![Windows Build](https://img.shields.io/appveyor/ci/limpygnome/parrot-manager.svg?label=Windows%20build)](https://travis-ci.org/limpygnome/parrot-manager)
-[![Github All Releases](https://img.shields.io/github/downloads/limpygnome/parrot-manager/total.svg)](https://github.com/limpygnome/parrot-manager)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+[![Release](https://img.shields.io/github/release/limpygnome/parrot-manager.svg)](https://github.com/limpygnome/parrot-manager/releases)
+[![Downloads](https://img.shields.io/github/downloads/limpygnome/parrot-manager/total.svg)](https://github.com/limpygnome/parrot-manager/releases)
+[![Linux and Mac Builds](https://img.shields.io/travis/limpygnome/parrot-manager.svg?label=Linux%20and%20Mac%20build)](https://travis-ci.org/limpygnome/parrot-manager)
+[![Windows Build](https://img.shields.io/appveyor/ci/limpygnome/parrot-manager.svg?label=Windows%20build)](https://travis-ci.org/limpygnome/parrot-manager)
 [![Github Issues](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/issues.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/issues)
-[![Pending Pull-Requests](http://githubbadges.herokuapp.com/limpygnome/parrot-manager/pulls.svg?style=flat-square)](https://github.com/limpygnome/parrot-manager/pulls)
-[![Join the chat at https://gitter.im/parrot-manager/Lobby](https://badges.gitter.im/parrot-manager/chat.svg)](https://gitter.im/parrot-manager/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+[![Pending Pull-Requests](https://img.shields.io/github/issues-pr/limpygnome/parrot-manager.svg)](https://github.com/limpygnome/parrot-manager/pulls)
 [![Known Vulnerabilities](https://snyk.io/test/github/limpygnome/parrot-manager/badge.svg)](https://snyk.io/test/github/limpygnome/parrot-manager)
 
 A simple password manager with a modern interface, with ability to synchronize databases using SSH.

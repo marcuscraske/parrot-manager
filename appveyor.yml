@@ -26,4 +26,3 @@ build_script:
 cache:
   - C:\maven\ -> appveyor.yml
   - C:\Users\appveyor\.m2\ -> pom.xml
-  - parrot-manager-frontend\node_modules

@@ -5,11 +5,11 @@ matrix:
       dist: trusty
       jdk: oraclejdk9
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode10
 node_js:
   - "9"
 before_install:
-  - npm i npm@^4 -g
+  - npm i -g npm@^9
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y fakeroot; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y rpm; fi
 install: true
