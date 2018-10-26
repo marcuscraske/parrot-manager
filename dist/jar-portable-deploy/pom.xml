@@ -10,7 +10,7 @@
         <version>7.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
-    <artifactId>jar-standalone-deploy</artifactId>
+    <artifactId>jar-portable-deploy</artifactId>
     <packaging>pom</packaging>
 
     <scm>
@@ -28,9 +28,9 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/assembly/jar-standalone.xml</descriptor>
+                        <descriptor>src/assembly/jar-portable.xml</descriptor>
                     </descriptors>
-                    <finalName>parrot-manager-jar-standalone-${project.version}</finalName>
+                    <finalName>parrot-manager-jar-portable-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
@@ -63,8 +63,8 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-manager-jar-standalone-${project.version}.zip</include>
-                                <include>parrot-manager-jar-standalone-${project.version}.tar.gz</include>
+                                <include>parrot-manager-jar-portable-${project.version}.zip</include>
+                                <include>parrot-manager-jar-portable-${project.version}.tar.gz</include>
                             </includes>
                         </fileSet>
                     </fileSets>

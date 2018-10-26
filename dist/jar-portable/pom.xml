@@ -10,7 +10,7 @@
         <version>7.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
-    <artifactId>jar-standalone</artifactId>
+    <artifactId>jar-portable</artifactId>
     <packaging>pom</packaging>
 
     <build>
@@ -26,7 +26,7 @@
                             <target>
 
                                 <!-- copy original jar to our targt dir -->
-                                <copy file="${project.basedir}/../../parrot-manager/target/parrot.jar" tofile="${project.build.directory}/parrot-standalone.jar" />
+                                <copy file="${project.basedir}/../../parrot-manager/target/parrot.jar" tofile="${project.build.directory}/parrot-portable.jar" />
 
                                 <!-- create blank file to be our marker -->
                                 <echo file="${project.build.directory}/.standalone" message="" />
@@ -57,7 +57,7 @@
                     <workingDirectory>${project.build.directory}</workingDirectory>
                     <arguments>
                         <argument>uf</argument>
-                        <argument>parrot-standalone.jar</argument>
+                        <argument>parrot-portable.jar</argument>
                         <argument>.standalone</argument>
                     </arguments>
                 </configuration>

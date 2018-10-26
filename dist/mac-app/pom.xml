@@ -10,7 +10,7 @@
         <version>7.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
-    <artifactId>linux-deb</artifactId>
+    <artifactId>mac-app</artifactId>
     <packaging>pom</packaging>
 
     <scm>
@@ -23,6 +23,7 @@
     <build>
         <plugins>
 
+            <!-- use javapackager to create pkg; app is broken at present (JDK-8188763) -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -39,16 +40,11 @@
                     <workingDirectory>${project.build.directory}</workingDirectory>
                     <arguments>
                         <argument>-deploy</argument>
-                        <argument>-Bicon=${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot-icon.png</argument>
+                        <argument>-Bicon=${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot.icns</argument>
                         <argument>-BappVersion=${project.version}</argument>
                         <argument>-Bruntime=${JAVA_HOME}/jre</argument>
-                        <argument>-Bcategory=web</argument>
-                        <argument>-BlicenseType=MIT License (Open Source)</argument>
-                        <argument>-Bvendor=limpygnome</argument>
-                        <argument>-Bcopyright=MIT License (Open Source)</argument>
-                        <argument>-Bemail=limpygnome@gmail.com</argument>
                         <argument>-native</argument>
-                        <argument>deb</argument>
+                        <argument>image</argument>
                         <argument>-srcdir</argument>
                         <argument>${project.build.directory}/../../../parrot-manager/target</argument>
                         <argument>-srcfiles</argument>
@@ -60,7 +56,7 @@
                         <argument>-appclass</argument>
                         <argument>com.limpygnome.parrot.Program</argument>
                         <argument>-name</argument>
-                        <argument>parrot-manager</argument>
+                        <argument>parrot-manager-${project.version}</argument>
                         <argument>-title</argument>
                         <argument>parrot-manager</argument>
                         <argument>-nosign</argument>
@@ -80,11 +76,10 @@
                         <id>copy-icons</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <tasks>
-                                <mkdir dir="target/package/deb"/>
-                                <copy file="${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot-icon-512.png" tofile="target/package/deb/parrot-manager-background.png" />
-                                <copy file="${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot.bmp" tofile="target/package/deb/parrot-manager-setup-icon.bmp" />
-                            </tasks>
+                            <target>
+                                <mkdir dir="${project.build.directory}/package/macosx"/>
+                                <copy file="${project.build.directory}/../../../parrot-manager/src/main/resources/icons/parrot-icon-512.png" tofile="target/package/macosx/parrot-manager-background.png" />
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -100,15 +95,21 @@
                         <configuration>
                             <target>
 
-                                <!-- some runtime's / JDKs where exe is actually in target/bundles sub-dir -->
-                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.deb"
-                                      tofile="${project.build.directory}/parrot-manager-${project.version}.deb"
+                                <!-- some runtime's / JDKs where pkg is actually in target/bundles sub-dir -->
+                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.app"
+                                      tofile="${project.build.directory}/parrot-manager-${project.version}.app"
                                       failonerror="false"
                                 />
 
-                                <!-- rename -->
-                                <move file="${project.build.directory}/parrot-manager-${project.version}.deb"
-                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}.deb" />
+                                <!-- rename to include os -->
+                                <move file="${project.build.directory}/parrot-manager-${project.version}.app"
+                                      tofile="${project.build.directory}/parrot-manager-mac-${project.version}.app"
+                                />
+
+                                <!-- zip app file -->
+                                <zip destfile="${project.build.directory}/parrot-manager-mac-${project.version}.zip" level="9">
+                                    <zipfileset filemode="755" dir="${project.build.directory}" includes="parrot-manager-mac-${project.version}.app/**/*" />
+                                </zip>
 
                             </target>
                         </configuration>
@@ -136,7 +137,7 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-manager-linux-${project.version}.deb</include>
+                                <include>parrot-manager-mac-${project.version}.zip</include>
                             </includes>
                         </fileSet>
                     </fileSets>

@@ -90,7 +90,7 @@
                     </execution>
 
                     <execution>
-                        <id>generate-checksum</id>
+                        <id>rename</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>
@@ -110,11 +110,8 @@
 
                                 <!-- rename -->
                                 <move file="${project.build.directory}/parrot-manager-${project.version}-1.x86_64.rpm"
-                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}.rpm" />
-
-                                <!-- generate md5 checksum -->
-                                <checksum file="${project.build.directory}/parrot-manager-linux-${project.version}.rpm" property="dist.rpm.md5" />
-                                <echo message="parrot-manager-linux-${project.version}.rpm checksum: ${dist.rpm.md5}" />
+                                      tofile="${project.build.directory}/parrot-manager-linux-${project.version}.rpm"
+                                />
 
                             </target>
                         </configuration>

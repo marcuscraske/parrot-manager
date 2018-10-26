@@ -26,14 +26,20 @@
             <id>jar</id>
             <modules>
                 <module>jar</module>
-                <module>jar-standalone</module>
-                <module>jar-standalone-deploy</module>
+                <module>jar-portable</module>
+                <module>jar-portable-deploy</module>
             </modules>
         </profile>
         <profile>
             <id>mac</id>
             <modules>
-                <module>mac</module>
+                <module>mac-app</module>
+                <!--
+                    Disabled due to lots of bugs in JDK around javapackager on Sierra+ due to filesystem bug
+                    https://bugs.openjdk.java.net/browse/JDK-8190758
+                -->
+                <!--<module>mac-pkg</module>-->
+                <!--<module>mac-dmg</module>-->
             </modules>
         </profile>
         <profile>

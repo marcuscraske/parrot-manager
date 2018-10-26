@@ -1,6 +1,11 @@
 # Roadmap
 
 ## Upcoming
+- Support building with JDK 11
+    - Add JavaFX dependency
+    - Move away from `javapackager` (dropped from JDK since 11).
+    - Should be able to use [jarbundler](https://stackoverflow.com/questions/14917908/convert-java-to-app-file-for-macosx-using-jarbundler)
+      on Mac.
 - Reduce CPU usage
 - Document database format
 - Database version marker, for future format changes

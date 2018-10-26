@@ -10,7 +10,7 @@
         <version>7.0</version>
     </parent>
     <groupId>com.limpygnome.parrot.dist</groupId>
-    <artifactId>mac</artifactId>
+    <artifactId>mac-dmg</artifactId>
     <packaging>pom</packaging>
 
     <scm>
@@ -44,7 +44,7 @@
                         <argument>-BappVersion=${project.version}</argument>
                         <argument>-Bruntime=${JAVA_HOME}/jre</argument>
                         <argument>-native</argument>
-                        <argument>pkg</argument>
+                        <argument>dmg</argument>
                         <argument>-srcdir</argument>
                         <argument>${project.build.directory}/../../../parrot-manager/target</argument>
                         <argument>-srcfiles</argument>
@@ -87,7 +87,7 @@
                     </execution>
 
                     <execution>
-                        <id>md5-checksum</id>
+                        <id>rename</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>
@@ -96,19 +96,15 @@
                             <target>
 
                                 <!-- some runtime's / JDKs where pkg is actually in target/bundles sub-dir -->
-                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.pkg"
-                                      tofile="${project.build.directory}/parrot-manager-${project.version}.pkg"
+                                <move file="${project.build.directory}/bundles/parrot-manager-${project.version}.dmg"
+                                      tofile="${project.build.directory}/parrot-manager-${project.version}.dmg"
                                       failonerror="false"
                                 />
 
-                                <!-- rename pkg -->
-                                <move file="${project.build.directory}/parrot-manager-${project.version}.pkg"
-                                      tofile="${project.build.directory}/parrot-manager-mac-${project.version}.pkg"
+                                <!-- rename to include os -->
+                                <move file="${project.build.directory}/parrot-manager-${project.version}.dmg"
+                                      tofile="${project.build.directory}/parrot-manager-mac-${project.version}.dmg"
                                 />
-
-                                <!-- generate md5 checksum -->
-                                <checksum file="${project.build.directory}/parrot-manager-mac-${project.version}.pkg" property="dist.mac.md5" />
-                                <echo message="parrot-manager-mac-${project.version}.pkg checksum: ${dist.mac.md5}" />
 
                             </target>
                         </configuration>
@@ -136,7 +132,7 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <includes>
-                                <include>parrot-manager-mac-${project.version}.pkg</include>
+                                <include>parrot-manager-mac-${project.version}.dmg</include>
                             </includes>
                         </fileSet>
                     </fileSets>

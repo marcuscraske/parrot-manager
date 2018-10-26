@@ -56,9 +56,8 @@ Binaries are available on the [releases](https://github.com/limpygnome/parrot-ma
 
 
 ## Installation
-Prerequisites:
-- Recommended [Java Runtime 1.9](http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html).
-    - Older versions have stability issues around webkit.
+The portable and stand-alone releases require
+[Java 9](http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html).
 
 For help installing on your platform, see [installation](docs/installation.md).
 
