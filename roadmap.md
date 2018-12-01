@@ -1,7 +1,8 @@
 # Roadmap
 
 ## Upcoming
-- Support building with JDK 11
+- Support building with JDK 11 (only)
+    - Ensure bundle dist available for every platform with OpenJDK jre
     - Add JavaFX dependency
     - Move away from `javapackager` (dropped from JDK since 11).
     - Should be able to use [jarbundler](https://stackoverflow.com/questions/14917908/convert-java-to-app-file-for-macosx-using-jarbundler)
@@ -9,13 +10,15 @@
 - Reduce CPU usage
 - Document database format
 - Database version marker, for future format changes
-- Closing database after inactivity moved out of front-end.
+- Allow files to be saved, viewed and downloaded
 
 ## Later
+- Use haveibeenpwned.com API for breach alerts
 - Change entry types
   - File: encrypted payload is bytes; base64 can be copypasta or saved to directory
   - URL: value can be opened in browser
 - Persist random generator settings to local user file
+- Closing database after inactivity moved out of front-end.
 
 # Maybe
 - Key-pair used to encrypt/decrypt file.
