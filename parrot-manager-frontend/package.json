@@ -34,7 +34,7 @@
     "cuint": "0.2.2",
     "jquery": "3.3.1",
     "jstree": "3.3.6",
-    "npm": "^6.4.0",
+    "npm": "^6.14.6",
     "reflect-metadata": "0.1.12",
     "rxjs": "6.2.2",
     "systemjs": "0.21.4",
